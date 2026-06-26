@@ -438,7 +438,19 @@ def analyser_csv(url: str, verbose: bool = True,
             print("  (Fichier binaire détecté, non supporté)")
         return None
 
+    # Détection de réponse HTML (redirection, page d'erreur, auth)
+    debut = contenu[:100].lstrip().lower()
+    if debut.startswith((b"<!doctype", b"<html")):
+        log["erreur"] = "réponse HTML reçue (redirection ou authentification requise)"
+        log_analyse(log)
+        if verbose:
+            print("  (Réponse HTML reçue — redirection ou authentification)")
+        return None
+
+    # Décodage avec fallback latin-1 si trop d'erreurs UTF-8
     texte = contenu.decode("utf-8-sig", errors="replace")
+    if texte.count("�") > 10:
+        texte = contenu.decode("latin-1")
     sample = texte[:4096]
     try:
         dialect = csv.Sniffer().sniff(sample, delimiters=";,\t|")

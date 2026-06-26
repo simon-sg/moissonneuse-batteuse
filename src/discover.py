@@ -159,6 +159,11 @@ def est_org_hors_rm(dataset: dict) -> bool:
             nom_commune = nom[len(prefix):]
             return not est_commune_rm(nom_commune)
 
+    # Organisation dont le nom contient un territoire hors RM
+    # ex: "Occitanie Pyrénées en Intelligence Géomatique", "SIG Normandie"
+    if any(region in nom for region in TITRES_HORS_RM):
+        return True
+
     return False
 
 

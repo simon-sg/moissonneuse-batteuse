@@ -11,6 +11,7 @@ import csv
 import io
 import textwrap
 import datetime
+import hashlib
 from concurrent.futures import ThreadPoolExecutor
 
 import requests
@@ -63,14 +64,11 @@ CHAMPS_VILLE = ["ville", "commune", "libelle_commune", "nom_commune",
 
 PAGE_SIZE = 20  # résultats par page
 
-DECOUVERTE_FILE = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-    "data", "decouverte.json"
-)
-LOG_FILE = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-    "data", "discover.log"
-)
+_DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
+
+DECOUVERTE_FILE = os.path.join(_DATA_DIR, "decouverte.json")
+LOG_FILE        = os.path.join(_DATA_DIR, "discover.log")
+CACHE_DIR       = os.path.join(_DATA_DIR, "cache")
 
 # ---------------------------------------------------------------------------
 # Recherche
@@ -363,25 +361,32 @@ def log_analyse(entry: dict) -> None:
         f.write(json.dumps(entry, ensure_ascii=False) + "\n")
 
 
-def analyser_csv(url: str, verbose: bool = True,
-                 dataset_id: str = "", titre: str = "") -> dict | None:
+def _chemin_cache(url: str) -> str:
+    cle = hashlib.md5(url.encode()).hexdigest()
+    return os.path.join(CACHE_DIR, cle)
+
+
+def _telecharger(url: str, verbose: bool) -> tuple:
     """
-    Télécharge un CSV complet et cherche des données Rennes Métropole.
-    verbose=False supprime les prints (pour l'exécution en arrière-plan).
-    Retourne None si le téléchargement ou le parsing échoue (le JDD sera reproposé).
+    Retourne (contenu_bytes, taille_mo, depuis_cache, erreur).
+    Utilise le cache si le fichier a déjà été téléchargé.
     """
-    log = {"url": url, "dataset_id": dataset_id, "titre": titre}
+    chemin = _chemin_cache(url)
+    if os.path.exists(chemin):
+        with open(chemin, "rb") as f:
+            contenu = f.read()
+        taille = len(contenu) / 1024 / 1024
+        if verbose:
+            print(f"  Cache ({taille:.1f} Mo).")
+        return contenu, taille, True, None
+
     if verbose:
         print("  Téléchargement en cours...")
     try:
         response = requests.get(url, stream=True, timeout=60)
         response.raise_for_status()
     except Exception as e:
-        log["erreur"] = f"téléchargement : {e}"
-        log_analyse(log)
-        if verbose:
-            print(f"  (Échec du téléchargement : {e})")
-        return None
+        return None, 0, False, f"téléchargement : {e}"
 
     contenu = b""
     total = 0
@@ -392,15 +397,38 @@ def analyser_csv(url: str, verbose: bool = True,
             if verbose:
                 print(f"  {total / 1024 / 1024:.1f} Mo...", end="\r")
     except Exception as e:
-        log["erreur"] = f"téléchargement interrompu : {e}"
-        log_analyse(log)
         if verbose:
-            print(f"\n  (Interruption du téléchargement : {e})")
-        return None
+            print()
+        return None, 0, False, f"téléchargement interrompu : {e}"
     if verbose:
         print()
 
-    log["taille_mo"] = round(total / 1024 / 1024, 2)
+    os.makedirs(CACHE_DIR, exist_ok=True)
+    with open(chemin, "wb") as f:
+        f.write(contenu)
+
+    return contenu, total / 1024 / 1024, False, None
+
+
+def analyser_csv(url: str, verbose: bool = True,
+                 dataset_id: str = "", titre: str = "") -> dict | None:
+    """
+    Télécharge (ou récupère du cache) un CSV et cherche des données Rennes Métropole.
+    verbose=False supprime les prints (pour l'exécution en arrière-plan).
+    Retourne None si le téléchargement ou le parsing échoue (le JDD sera reproposé).
+    """
+    log = {"url": url, "dataset_id": dataset_id, "titre": titre}
+
+    contenu, taille_mo, depuis_cache, erreur = _telecharger(url, verbose)
+    if erreur:
+        log["erreur"] = erreur
+        log_analyse(log)
+        if verbose:
+            print(f"  (Échec : {erreur})")
+        return None
+
+    log["taille_mo"] = round(taille_mo, 2)
+    log["cache"] = depuis_cache
 
     # Détection précoce de fichiers binaires (PDF, ZIP…)
     if contenu[:5] in (b"%PDF-", b"PK\x03\x04", b"\x1f\x8b\x08"):

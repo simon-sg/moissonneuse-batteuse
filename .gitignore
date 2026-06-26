@@ -1,6 +1,7 @@
 # Données (fichiers volumineux et temporaires)
 data/*/source.json
 data/state.json
+data/cache/
 
 # Python
 __pycache__/

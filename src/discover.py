@@ -101,6 +101,47 @@ def est_org_exclue(dataset: dict) -> bool:
     return any(exclu in slug for exclu in ORGS_EXCLUES)
 
 
+def est_org_hors_rm(dataset: dict) -> bool:
+    """
+    Retourne True si l'organisation est clairement hors RM :
+    - Département autre que le 35 / Ille-et-Vilaine
+    - Région autre que Bretagne
+    - Intercommunalité (CA, CC, CU, métropole) autre que RM
+    - Commune hors RM
+    """
+    org = dataset.get("organization") or {}
+    nom = normaliser(org.get("name") or "")
+    slug = (org.get("slug") or "").lower()
+
+    # Département : slug "departement-*" ou nom commence par "departement"
+    # Garde le 35 (ille-et-vilaine) et exclut tous les autres
+    if nom.startswith("departement") or slug.startswith("departement-"):
+        return "35" not in slug and "ille" not in slug
+
+    # Région : garde Bretagne, exclut toutes les autres
+    if nom.startswith("region") or slug.startswith("region-"):
+        return "bretagne" not in slug and "bretagne" not in nom
+
+    # Intercommunalités hors RM (CA, CC, CU, métropoles, agglo)
+    # Repère via le slug (plus fiable que le nom) ou le nom normalisé
+    if ("agglomeration" in slug
+            or "communaute-de-communes" in slug
+            or "communaute-urbaine" in slug
+            or "metropole" in slug
+            or "agglomeration" in nom
+            or "communaute de communes" in nom
+            or "metropole" in nom):
+        return "rennes" not in slug and "rennes" not in nom
+
+    # Communes hors RM
+    for prefix in ("ville de ", "commune de ", "mairie de ", "municipalite de "):
+        if nom.startswith(prefix):
+            nom_commune = nom[len(prefix):]
+            return not est_commune_rm(nom_commune)
+
+    return False
+
+
 def titre_hors_rm(dataset: dict) -> bool:
     """
     Retourne True si le titre indique clairement un territoire hors RM,
@@ -379,6 +420,7 @@ def main():
     candidats = [
         ds for ds in datasets_trouves
         if not est_org_exclue(ds)
+        and not est_org_hors_rm(ds)
         and couvre_rennes(ds)
         and not titre_hors_rm(ds)
         and ds["id"] not in deja_vus

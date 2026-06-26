@@ -523,10 +523,13 @@ def analyser_csv(url: str, verbose: bool = True,
     nb_total = 0
     nb_rm = 0
     exemples = []
+    premieres_lignes = []
 
     try:
         for row in reader:
             nb_total += 1
+            if len(premieres_lignes) < 5:
+                premieres_lignes.append(dict(row))
             if champ_iris:
                 in_rm = est_iris_rm(str(row.get(champ_iris, "")))
             else:
@@ -543,7 +546,7 @@ def analyser_csv(url: str, verbose: bool = True,
             if in_rm:
                 nb_rm += 1
                 if len(exemples) < 3:
-                    exemples.append({k: v for k, v in row.items()})
+                    exemples.append(dict(row))
     except csv.Error as e:
         log["erreur"] = f"parsing CSV : {e}"
         log_analyse(log)
@@ -560,7 +563,9 @@ def analyser_csv(url: str, verbose: bool = True,
         "nb_rm": nb_rm,
         "champ_cp": champ_cp,
         "champ_ville": champ_ville,
+        "champ_iris": champ_iris,
         "exemples": exemples,
+        "premieres_lignes": premieres_lignes,
     }
 
 
@@ -607,13 +612,31 @@ def traiter_resultat(ds: dict, resultat: dict | None, decouverte: dict) -> None:
 
     print(f"  Total enregistrements : {resultat['nb_total']}")
     print(f"  Dont Rennes Métropole  : {resultat['nb_rm']}")
-    if resultat["exemples"]:
-        print("  Exemples RM :")
-        for ex in resultat["exemples"]:
-            print(f"    {ex}")
 
     if resultat["nb_rm"] > 0:
-        ajout = input("\n  Ajouter à datasets.py ? (o/n) ").strip().lower()
+        # Données RM trouvées → ajout automatique
+        if resultat["exemples"]:
+            print("  Exemples RM :")
+            for ex in resultat["exemples"]:
+                print(f"    {ex}")
+        candidat = {
+            "dataset_id": ds["id"],
+            "titre": ds["title"],
+            "dossier": ds["id"][:30].replace("-", "_"),
+            "champ_cp": resultat["champ_cp"],
+            "champ_ville": resultat["champ_ville"],
+            "champ_iris": resultat.get("champ_iris"),
+            "nb_rm": resultat["nb_rm"],
+        }
+        decouverte["candidats"].append(candidat)
+        print(f"  Ajouté automatiquement aux candidats.")
+        print(f"  >>> src/conf/datasets.py : {json.dumps(candidat, ensure_ascii=False)}")
+    else:
+        # Aucune donnée RM : montrer les premières lignes pour vérification manuelle
+        print("  Premières lignes du fichier :")
+        for ligne in resultat.get("premieres_lignes", []):
+            print(f"    {ligne}")
+        ajout = input("\n  Ajouter quand même aux candidats ? (o/n) ").strip().lower()
         if ajout == "o":
             candidat = {
                 "dataset_id": ds["id"],
@@ -621,12 +644,12 @@ def traiter_resultat(ds: dict, resultat: dict | None, decouverte: dict) -> None:
                 "dossier": ds["id"][:30].replace("-", "_"),
                 "champ_cp": resultat["champ_cp"],
                 "champ_ville": resultat["champ_ville"],
-                "nb_rm": resultat["nb_rm"],
+                "champ_iris": resultat.get("champ_iris"),
+                "nb_rm": 0,
             }
             decouverte["candidats"].append(candidat)
-            print(f"  Ajouté à la liste des candidats.")
-            print(f"  Ajoute manuellement dans src/conf/datasets.py :")
-            print(f"    {json.dumps(candidat, ensure_ascii=False)}")
+            print(f"  Ajouté aux candidats.")
+            print(f"  >>> src/conf/datasets.py : {json.dumps(candidat, ensure_ascii=False)}")
 
     decouverte["vus"].append(did)
     sauvegarder_decouverte(decouverte)

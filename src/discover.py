@@ -453,12 +453,22 @@ def traiter_resultat(ds: dict, resultat: dict | None, decouverte: dict) -> None:
     Affiche le résultat d'une analyse (sync ou arrière-plan) et demande
     si on ajoute le JDD aux candidats. Ajoute à vus et sauvegarde.
     """
+    did = ds["id"]
     print(f"\n{SEP}")
     print(f"Résultat analyse : {ds['title'][:60]}")
 
     if resultat is None:
         print("  Analyse échouée — ce JDD sera reproposé à la prochaine session.")
-        return  # pas ajouté à vus
+        # Retire de vus (au cas où il y serait par rétrocompat)
+        decouverte["vus"] = [i for i in decouverte["vus"] if i != did]
+        # Ajoute à echecs si absent
+        if did not in decouverte["echecs"]:
+            decouverte["echecs"].append(did)
+        sauvegarder_decouverte(decouverte)
+        return
+
+    # Succès : retire de echecs si c'était une ré-analyse
+    decouverte["echecs"] = [i for i in decouverte["echecs"] if i != did]
 
     print(f"  Total enregistrements : {resultat['nb_total']}")
     print(f"  Dont Rennes Métropole  : {resultat['nb_rm']}")
@@ -483,7 +493,7 @@ def traiter_resultat(ds: dict, resultat: dict | None, decouverte: dict) -> None:
             print(f"  Ajoute manuellement dans src/conf/datasets.py :")
             print(f"    {json.dumps(candidat, ensure_ascii=False)}")
 
-    decouverte["vus"].append(ds["id"])
+    decouverte["vus"].append(did)
     sauvegarder_decouverte(decouverte)
 
 
@@ -495,8 +505,30 @@ def charger_decouverte() -> dict:
     """Charge l'historique des JDD déjà vus (pour ne pas les reproposer)."""
     if os.path.exists(DECOUVERTE_FILE):
         with open(DECOUVERTE_FILE, "r", encoding="utf-8") as f:
-            return json.load(f)
-    return {"vus": [], "candidats": [], "exclus": []}
+            d = json.load(f)
+        d.setdefault("echecs", [])  # rétrocompat
+        return d
+    return {"vus": [], "candidats": [], "exclus": [], "echecs": []}
+
+
+def fetcher_datasets_par_ids(ids: list) -> list:
+    """Récupère les métadonnées de datasets depuis l'API data.gouv.fr."""
+    datasets = []
+    for did in ids:
+        try:
+            r = requests.get(
+                f"https://www.data.gouv.fr/api/1/datasets/{did}/",
+                timeout=10
+            )
+            if r.ok:
+                ds = r.json()
+                ds["_echec"] = True
+                datasets.append(ds)
+            else:
+                print(f"  (impossible de récupérer {did} : HTTP {r.status_code})")
+        except Exception as e:
+            print(f"  (impossible de récupérer {did} : {e})")
+    return datasets
 
 
 def sauvegarder_decouverte(decouverte: dict) -> None:
@@ -514,7 +546,16 @@ def main():
     print(f"Mots-clés recherchés : {', '.join(KEYWORDS)}\n")
 
     decouverte = charger_decouverte()
-    deja_vus = set(decouverte["vus"])
+    echecs_ids = set(decouverte["echecs"])
+    # deja_vus exclut les échecs pour qu'ils ne soient pas filtrés dans les candidats
+    deja_vus = set(decouverte["vus"]) - echecs_ids
+
+    # Repropose les analyses échouées en priorité
+    echecs_datasets = []
+    if decouverte["echecs"]:
+        print(f"Récupération de {len(decouverte['echecs'])} JDD à ré-analyser...")
+        echecs_datasets = fetcher_datasets_par_ids(decouverte["echecs"])
+        print(f"{len(echecs_datasets)} JDD récupérés pour ré-analyse.\n")
 
     datasets_trouves = []
     ids_trouves = set()
@@ -528,15 +569,25 @@ def main():
                 datasets_trouves.append(ds)
                 ids_trouves.add(ds["id"])
 
-    candidats = [
+    # Les échecs sont traités séparément : on les exclut des candidats normaux
+    echecs_ids_fetched = {ds["id"] for ds in echecs_datasets}
+
+    candidats_nouveaux = [
         ds for ds in datasets_trouves
         if not est_org_exclue(ds)
         and not est_org_hors_rm(ds)
         and couvre_rennes(ds)
         and not titre_hors_rm(ds)
         and ds["id"] not in deja_vus
+        and ds["id"] not in echecs_ids_fetched
     ]
-    print(f"\n{len(candidats)} JDD à examiner (hors orgs RM et déjà vus)\n")
+
+    # Les échecs passent en premier
+    candidats = echecs_datasets + candidats_nouveaux
+    print(f"\n{len(candidats)} JDD à examiner", end="")
+    if echecs_datasets:
+        print(f" (dont {len(echecs_datasets)} ré-analyse(s) échouée(s))", end="")
+    print("\n")
 
     executor = ThreadPoolExecutor(max_workers=5)
     en_cours = []  # liste de (ds, future)
@@ -564,19 +615,30 @@ def main():
                 if en_cours:
                     print(f"  ({len(en_cours)} analyse(s) en arrière-plan en cours...)")
 
+            is_echec = ds.get("_echec", False)
             print(f"\n[{i}/{len(candidats)}]")
+            if is_echec:
+                print("  (!) Analyse précédemment échouée")
 
             ressource = trouver_ressource_csv_json(ds)
             if ressource is None:
                 print("  (pas de ressource CSV/JSON, on passe)")
-                decouverte["vus"].append(ds["id"])
-                sauvegarder_decouverte(decouverte)
+                if not is_echec:
+                    decouverte["vus"].append(ds["id"])
+                    sauvegarder_decouverte(decouverte)
                 continue
 
             extrait = obtenir_extrait(ressource)
             afficher_fiche(ds, extrait)
 
-            choix = input("\n(s)kip  (a)nalyse en arrière-plan  (q)uitter ? ").strip().lower()
+            if is_echec:
+                choix = input(
+                    "\n(s)kip définitif  (a)nalyse en arrière-plan  (q)uitter ? "
+                ).strip().lower()
+            else:
+                choix = input(
+                    "\n(s)kip  (a)nalyse en arrière-plan  (q)uitter ? "
+                ).strip().lower()
 
             if choix == "q":
                 break
@@ -588,6 +650,12 @@ def main():
                 print(f"  Analyse lancée en arrière-plan ({len(en_cours)} en cours).")
                 continue  # pas ajouté à vus pour l'instant
             else:
+                # skip (s ou autre)
+                if is_echec:
+                    # Skip définitif : retire des échecs
+                    decouverte["echecs"] = [
+                        i for i in decouverte["echecs"] if i != ds["id"]
+                    ]
                 decouverte["exclus"].append(ds["id"])
 
             decouverte["vus"].append(ds["id"])
@@ -616,6 +684,8 @@ def main():
 
     print("\n=== Session terminée ===")
     print(f"Résultats sauvegardés dans {DECOUVERTE_FILE}")
+    if decouverte["echecs"]:
+        print(f"\n{len(decouverte['echecs'])} JDD en échec — reproposés à la prochaine session.")
     if decouverte["candidats"]:
         print(f"\nJDD candidats retenus : {len(decouverte['candidats'])}")
         for c in decouverte["candidats"]:

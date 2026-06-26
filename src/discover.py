@@ -10,6 +10,7 @@ import json
 import csv
 import io
 import textwrap
+import datetime
 from concurrent.futures import ThreadPoolExecutor
 
 import requests
@@ -65,6 +66,10 @@ PAGE_SIZE = 20  # résultats par page
 DECOUVERTE_FILE = os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
     "data", "decouverte.json"
+)
+LOG_FILE = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+    "data", "discover.log"
 )
 
 # ---------------------------------------------------------------------------
@@ -312,18 +317,30 @@ def deviner_champs(entetes: list[str]) -> tuple[str | None, str | None]:
     return champ_cp, champ_ville
 
 
-def analyser_csv(url: str, verbose: bool = True) -> dict | None:
+def log_analyse(entry: dict) -> None:
+    """Ajoute une entrée JSON à discover.log (une ligne par analyse)."""
+    entry["ts"] = datetime.datetime.now().isoformat(timespec="seconds")
+    os.makedirs(os.path.dirname(LOG_FILE), exist_ok=True)
+    with open(LOG_FILE, "a", encoding="utf-8") as f:
+        f.write(json.dumps(entry, ensure_ascii=False) + "\n")
+
+
+def analyser_csv(url: str, verbose: bool = True,
+                 dataset_id: str = "", titre: str = "") -> dict | None:
     """
     Télécharge un CSV complet et cherche des données Rennes Métropole.
     verbose=False supprime les prints (pour l'exécution en arrière-plan).
     Retourne None si le téléchargement ou le parsing échoue (le JDD sera reproposé).
     """
+    log = {"url": url, "dataset_id": dataset_id, "titre": titre}
     if verbose:
         print("  Téléchargement en cours...")
     try:
         response = requests.get(url, stream=True, timeout=60)
         response.raise_for_status()
     except Exception as e:
+        log["erreur"] = f"téléchargement : {e}"
+        log_analyse(log)
         if verbose:
             print(f"  (Échec du téléchargement : {e})")
         return None
@@ -337,11 +354,15 @@ def analyser_csv(url: str, verbose: bool = True) -> dict | None:
             if verbose:
                 print(f"  {total / 1024 / 1024:.1f} Mo...", end="\r")
     except Exception as e:
+        log["erreur"] = f"téléchargement interrompu : {e}"
+        log_analyse(log)
         if verbose:
             print(f"\n  (Interruption du téléchargement : {e})")
         return None
     if verbose:
         print()
+
+    log["taille_mo"] = round(total / 1024 / 1024, 2)
 
     texte = contenu.decode("utf-8-sig", errors="replace")
     sample = texte[:4096]
@@ -350,10 +371,16 @@ def analyser_csv(url: str, verbose: bool = True) -> dict | None:
         delimiteur = dialect.delimiter
     except csv.Error:
         delimiteur = ","
+    log["delimiteur"] = delimiteur
+
     reader = csv.DictReader(io.StringIO(texte), delimiter=delimiteur)
     entetes = reader.fieldnames or []
+    log["entetes"] = list(entetes)[:15]
 
     champ_cp, champ_ville = deviner_champs(list(entetes))
+    log["champ_cp"] = champ_cp
+    log["champ_ville"] = champ_ville
+
     if verbose:
         print(f"  En-têtes détectés : {list(entetes)[:10]}")
         print(f"  Champ CP trouvé : {champ_cp} | Champ ville trouvé : {champ_ville}")
@@ -381,9 +408,15 @@ def analyser_csv(url: str, verbose: bool = True) -> dict | None:
                 if len(exemples) < 3:
                     exemples.append({k: v for k, v in row.items()})
     except csv.Error as e:
+        log["erreur"] = f"parsing CSV : {e}"
+        log_analyse(log)
         if verbose:
             print(f"  (Erreur de parsing CSV : {e})")
         return None
+
+    log["nb_total"] = nb_total
+    log["nb_rm"] = nb_rm
+    log_analyse(log)
 
     return {
         "nb_total": nb_total,
@@ -531,7 +564,9 @@ def main():
             if choix == "q":
                 break
             elif choix == "a":
-                future = executor.submit(analyser_csv, ressource["url"], False)
+                future = executor.submit(
+                    analyser_csv, ressource["url"], False, ds["id"], ds["title"]
+                )
                 en_cours.append((ds, future))
                 print(f"  Analyse lancée en arrière-plan ({len(en_cours)} en cours).")
                 continue  # pas ajouté à vus pour l'instant

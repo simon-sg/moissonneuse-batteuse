@@ -193,16 +193,25 @@ def couvre_rennes(dataset: dict) -> bool:
     return False
 
 
+EXTENSIONS_EXCLUES = (
+    ".gz", ".zip",                          # compressés (non supportés)
+    ".pdf", ".doc", ".docx",               # documents
+    ".xls", ".xlsx", ".ods",               # tableurs binaires
+    ".shp", ".geojson", ".gpkg", ".kml",   # géo
+    ".html", ".htm",                        # pages web
+)
+
 def trouver_ressource_csv_json(dataset: dict) -> dict | None:
-    """Retourne la première ressource CSV ou JSON du dataset (exclut les .gz)."""
+    """Retourne la première ressource CSV ou JSON du dataset.
+    Exclut les fichiers compressés, binaires ou non-tabulaires."""
     for fmt in ["csv", "json"]:
         for r in dataset.get("resources", []):
             fmt_r = (r.get("format") or "").lower()
             url_r = (r.get("url") or "").lower().split("?")[0]
-            # Exclut les formats compressés (.gz, .zip) — non supportés pour l'instant
-            if "gz" in fmt_r or "zip" in fmt_r:
+            # Exclut par extension d'URL ou contenu du champ format
+            if any(ext in fmt_r for ext in (".gz", ".zip", "pdf", "excel", "shapefile")):
                 continue
-            if url_r.endswith(".gz") or url_r.endswith(".zip"):
+            if any(url_r.endswith(ext) for ext in EXTENSIONS_EXCLUES):
                 continue
             if fmt in fmt_r or url_r.endswith(f".{fmt}"):
                 return r
@@ -363,6 +372,14 @@ def analyser_csv(url: str, verbose: bool = True,
         print()
 
     log["taille_mo"] = round(total / 1024 / 1024, 2)
+
+    # Détection précoce de fichiers binaires (PDF, ZIP…)
+    if contenu[:5] in (b"%PDF-", b"PK\x03\x04", b"\x1f\x8b\x08"):
+        log["erreur"] = "fichier binaire détecté (PDF/ZIP/GZ), non supporté"
+        log_analyse(log)
+        if verbose:
+            print("  (Fichier binaire détecté, non supporté)")
+        return None
 
     texte = contenu.decode("utf-8-sig", errors="replace")
     sample = texte[:4096]
@@ -582,9 +599,14 @@ def main():
     # Attend et affiche toutes les analyses restantes
     if en_cours:
         print(f"\n{len(en_cours)} analyse(s) en cours, attente des résultats...")
+        print("(Ctrl+C pour abandonner les analyses restantes)\n")
         for ds_a, fut in en_cours:
             try:
                 resultat = fut.result(timeout=180)
+            except KeyboardInterrupt:
+                print("\nAbandon des analyses restantes — elles seront reproposées.")
+                fut.cancel()
+                break
             except Exception as e:
                 print(f"  Erreur : {e}")
                 resultat = None

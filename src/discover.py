@@ -193,29 +193,44 @@ def couvre_rennes(dataset: dict) -> bool:
     return False
 
 
-EXTENSIONS_EXCLUES = (
-    ".gz", ".zip",                          # compressés (non supportés)
-    ".pdf", ".doc", ".docx",               # documents
-    ".xls", ".xlsx", ".ods",               # tableurs binaires
-    ".shp", ".geojson", ".gpkg", ".kml",   # géo
-    ".html", ".htm",                        # pages web
-)
+# Formats supportés pour l'analyse automatique (seront étendus progressivement)
+FORMATS_SUPPORTES = ("csv", "json")
+
+# Extensions/formats exclus de la détection CSV/JSON (pas encore supportés)
+# Ces datasets ne sont PAS stockés dans une liste permanente : quand on ajoutera
+# le support XLS, ZIP, geo, etc., ils réapparaîtront automatiquement.
+FORMATS_NON_SUPPORTES_FMT = (".gz", ".zip", "pdf", "excel", "shapefile",
+                              "xls", "xlsx", "ods", "geojson", "shapefile",
+                              "wms", "wfs", "ogc")
+FORMATS_NON_SUPPORTES_EXT = (".gz", ".zip", ".pdf", ".doc", ".docx",
+                              ".xls", ".xlsx", ".ods",
+                              ".shp", ".geojson", ".gpkg", ".kml",
+                              ".html", ".htm")
+
 
 def trouver_ressource_csv_json(dataset: dict) -> dict | None:
-    """Retourne la première ressource CSV ou JSON du dataset.
-    Exclut les fichiers compressés, binaires ou non-tabulaires."""
-    for fmt in ["csv", "json"]:
+    """Retourne la première ressource CSV ou JSON du dataset, ou None."""
+    for fmt in FORMATS_SUPPORTES:
         for r in dataset.get("resources", []):
             fmt_r = (r.get("format") or "").lower()
             url_r = (r.get("url") or "").lower().split("?")[0]
-            # Exclut par extension d'URL ou contenu du champ format
-            if any(ext in fmt_r for ext in (".gz", ".zip", "pdf", "excel", "shapefile")):
+            if any(token in fmt_r for token in FORMATS_NON_SUPPORTES_FMT):
                 continue
-            if any(url_r.endswith(ext) for ext in EXTENSIONS_EXCLUES):
+            if any(url_r.endswith(ext) for ext in FORMATS_NON_SUPPORTES_EXT):
                 continue
             if fmt in fmt_r or url_r.endswith(f".{fmt}"):
                 return r
     return None
+
+
+def formats_disponibles(dataset: dict) -> list:
+    """Retourne les formats uniques des ressources d'un dataset (pour stats)."""
+    fmts = set()
+    for r in dataset.get("resources", []):
+        fmt = (r.get("format") or "").upper()
+        if fmt:
+            fmts.add(fmt)
+    return sorted(fmts)
 
 
 # ---------------------------------------------------------------------------
@@ -610,6 +625,8 @@ def main():
                 restants.append((ds_a, fut))
         en_cours[:] = restants
 
+    nb_format_non_supporte = 0  # compteur pour stats fin de session
+
     try:
         for i, ds in enumerate(candidats, 1):
             # Affiche les analyses en arrière-plan terminées avant chaque nouveau JDD
@@ -623,28 +640,31 @@ def main():
             ressource = trouver_ressource_csv_json(ds)
 
             if ressource is None:
-                if not is_echec:
-                    if did in sans_ressource_ids:
-                        # Déjà connu sans ressource : passe silencieusement
-                        continue
-                    # Nouvelle découverte sans ressource
-                    decouverte["sans_ressource"].append(did)
-                    sauvegarder_decouverte(decouverte)
-                    print(f"\n[{i}/{len(candidats)}]  (pas de ressource CSV/JSON, on passe)")
+                ressources = ds.get("resources", [])
+                if not ressources:
+                    # Vraiment vide : on mémorise pour ne plus jamais vérifier
+                    if did not in sans_ressource_ids:
+                        decouverte["sans_ressource"].append(did)
+                        sans_ressource_ids.add(did)
+                        sauvegarder_decouverte(decouverte)
+                else:
+                    # A des ressources mais dans un format non encore supporté
+                    # → on ne stocke rien, il réapparaîtra quand le support sera ajouté
+                    nb_format_non_supporte += 1
                 continue
 
             print(f"\n[{i}/{len(candidats)}]")
             if is_echec:
                 print("  (!) Analyse précédemment échouée")
 
-            # Si le dataset était dans sans_ressource mais a maintenant une ressource → on le retire
+            # Si le dataset était dans sans_ressource mais a maintenant des ressources → on le retire
             if did in sans_ressource_ids:
                 decouverte["sans_ressource"] = [
-                    i for i in decouverte["sans_ressource"] if i != did
+                    j for j in decouverte["sans_ressource"] if j != did
                 ]
                 sans_ressource_ids.discard(did)
                 sauvegarder_decouverte(decouverte)
-                print("  (ressource CSV/JSON détectée — analyse disponible)")
+                print("  (ressources détectées — analyse disponible)")
 
             extrait = obtenir_extrait(ressource)
             afficher_fiche(ds, extrait)
@@ -702,6 +722,9 @@ def main():
 
     print("\n=== Session terminée ===")
     print(f"Résultats sauvegardés dans {DECOUVERTE_FILE}")
+    if nb_format_non_supporte:
+        print(f"\n{nb_format_non_supporte} JDD ignorés cette session (format non encore supporté : "
+              f"XLS, ZIP, géo, WMS…) — ils réapparaîtront quand le support sera ajouté.")
     if decouverte["echecs"]:
         print(f"\n{len(decouverte['echecs'])} JDD en échec — reproposés à la prochaine session.")
     if decouverte["candidats"]:

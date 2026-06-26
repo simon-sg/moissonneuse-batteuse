@@ -447,6 +447,7 @@ def _telecharger(url: str, verbose: bool) -> tuple:
 
     contenu = b""
     total = 0
+    interrompu = None
     try:
         for chunk in response.iter_content(chunk_size=1024 * 1024):
             contenu += chunk
@@ -454,11 +455,17 @@ def _telecharger(url: str, verbose: bool) -> tuple:
             if verbose:
                 print(f"  {total / 1024 / 1024:.1f} Mo...", end="\r")
     except Exception as e:
-        if verbose:
-            print()
-        return None, 0, False, f"téléchargement interrompu : {e}"
+        interrompu = str(e)
     if verbose:
         print()
+
+    if interrompu:
+        # Si on a quand même récupéré des données, on les utilise (transfert partiel)
+        if total >= 1024 * 1024:  # au moins 1 Mo
+            if verbose:
+                print(f"  (Transfert interrompu après {total/1024/1024:.1f} Mo — données partielles utilisées)")
+        else:
+            return None, 0, False, f"téléchargement interrompu : {interrompu}"
 
     os.makedirs(CACHE_DIR, exist_ok=True)
     with open(chemin, "wb") as f:
@@ -540,26 +547,29 @@ def analyser_csv(url: str, verbose: bool = True,
 
     try:
         for row in reader:
-            nb_total += 1
-            if len(premieres_lignes) < 5:
-                premieres_lignes.append(dict(row))
-            if champ_iris:
-                in_rm = est_iris_rm(str(row.get(champ_iris, "")))
-            else:
-                cp = str(row.get(champ_cp, "")).strip() if champ_cp else ""
-                ville = str(row.get(champ_ville, "")).strip() if champ_ville else ""
-                if champ_cp and champ_ville:
-                    in_rm = est_dans_rm(ville, cp)
-                elif champ_ville:
-                    in_rm = est_commune_rm(ville)
-                elif champ_cp:
-                    in_rm = cp in CODES_POSTAUX_RM
+            try:
+                nb_total += 1
+                if len(premieres_lignes) < 5:
+                    premieres_lignes.append(dict(row))
+                if champ_iris:
+                    in_rm = est_iris_rm(str(row.get(champ_iris, "")))
                 else:
-                    in_rm = False
-            if in_rm:
-                nb_rm += 1
-                if len(exemples) < 3:
-                    exemples.append(dict(row))
+                    cp = str(row.get(champ_cp, "")).strip() if champ_cp else ""
+                    ville = str(row.get(champ_ville, "")).strip() if champ_ville else ""
+                    if champ_cp and champ_ville:
+                        in_rm = est_dans_rm(ville, cp)
+                    elif champ_ville:
+                        in_rm = est_commune_rm(ville)
+                    elif champ_cp:
+                        in_rm = cp in CODES_POSTAUX_RM
+                    else:
+                        in_rm = False
+                if in_rm:
+                    nb_rm += 1
+                    if len(exemples) < 3:
+                        exemples.append(dict(row))
+            except csv.Error:
+                break  # ligne tronquée (téléchargement partiel) — on garde ce qu'on a
     except csv.Error as e:
         log["erreur"] = f"parsing CSV : {e}"
         log_analyse(log)

@@ -107,6 +107,12 @@ def est_org_exclue(dataset: dict) -> bool:
     return any(exclu in slug for exclu in ORGS_EXCLUES)
 
 
+def _mot_present(nom: str, mot: str) -> bool:
+    """Vérifie si `mot` est présent dans `nom` comme mot entier
+    (au début ou précédé d'un espace — évite 'interdépartemental')."""
+    return nom.startswith(mot) or (" " + mot) in nom
+
+
 def est_org_hors_rm(dataset: dict) -> bool:
     """
     Retourne True si l'organisation est clairement hors RM :
@@ -119,24 +125,22 @@ def est_org_hors_rm(dataset: dict) -> bool:
     nom = normaliser(org.get("name") or "")
     slug = (org.get("slug") or "").lower()
 
-    # Département : "Département du/de/d'..." ou "Conseil départemental de/du/d'..."
-    # Garde le 35 (ille-et-vilaine) et exclut tous les autres
-    if (nom.startswith("departement")
-            or nom.startswith("conseil departemental")
+    # Département : mot "departement" ou "conseil departemental" n'importe où dans le nom
+    # ex: "Département du Finistère", "Seine-Saint-Denis - Le Département"
+    if (_mot_present(nom, "departement")
+            or _mot_present(nom, "conseil departemental")
             or slug.startswith("departement-")
             or slug.startswith("conseil-departemental-")):
         return "35" not in slug and "ille" not in slug
 
-    # Région : "Région ..." ou "Conseil régional de ..."
-    # Garde Bretagne, exclut toutes les autres
-    if (nom.startswith("region")
-            or nom.startswith("conseil regional")
+    # Région : mot "region" ou "conseil regional" n'importe où dans le nom
+    if (_mot_present(nom, "region")
+            or _mot_present(nom, "conseil regional")
             or slug.startswith("region-")
             or slug.startswith("conseil-regional-")):
         return "bretagne" not in slug and "bretagne" not in nom
 
     # Intercommunalités hors RM (CA, CC, CU, métropoles, agglo)
-    # Repère via le slug (plus fiable que le nom) ou le nom normalisé
     if ("agglomeration" in slug
             or "communaute-de-communes" in slug
             or "communaute-urbaine" in slug

@@ -22,7 +22,7 @@ from conf.communes_rm import CODES_POSTAUX_RM
 # Configuration
 # ---------------------------------------------------------------------------
 
-KEYWORDS = ["commune france", "code postal france", "code insee france"]
+KEYWORDS = ["commune france", "code postal", "code insee"]
 
 NB_PAGES = 5  # pages récupérées par mot-clé (20 résultats/page → 100 max par keyword)
 

@@ -63,8 +63,16 @@ CHAMPS_VILLE = ["ville", "commune", "libelle_commune", "nom_commune",
                 "libgeo", "lib_geo", "libelle_geo", "libcom", "lib_com",
                 "nom_com", "nom_geo", "libelle"]
 # Noms de champs courants pour le code IRIS (9 chiffres : 5 INSEE + 4 IRIS)
-CHAMPS_IRIS = ["code_iris", "code_iris_code", "iris_code", "codeiris",
-               "c_iris", "iris", "com_iris", "code_iris_2024", "code_iris_2023"]
+# Noms normalisés (sans accents, _ → espace) pour les codes IRIS ou INSEE commune
+# normaliser() est appliqué aux en-têtes avant comparaison
+CHAMPS_IRIS = [
+    # Code IRIS complet (9 chiffres : INSEE 5 + IRIS 4)
+    "code iris", "code iris code", "iris code", "codeiris",
+    "c iris", "iris", "com iris", "code iris 2024", "code iris 2023",
+    # Code commune INSEE (5 chiffres) — fichiers IRIS avec codes séparés
+    # ex: 'Numéro commune' + 'Numéro d'IRIS' → on matche la partie INSEE
+    "numero commune", "num commune", "code commune", "depcom", "codgeo",
+]
 
 PAGE_SIZE = 20  # résultats par page
 
@@ -379,12 +387,15 @@ def deviner_champs(entetes: list[str]) -> tuple[str | None, str | None]:
 
 
 def deviner_champ_iris(entetes: list[str]) -> str | None:
-    """Détecte une colonne contenant un code IRIS (9 chiffres = INSEE 5 + IRIS 4)."""
-    entetes_norm = [e.lower().strip() for e in entetes]
+    """Détecte une colonne contenant un code IRIS complet (9 chiffres) ou un code
+    INSEE commune (5 chiffres) — les deux permettent de tester l'appartenance à RM
+    via est_iris_rm() qui ne regarde que les 5 premiers chiffres.
+    Utilise normaliser() pour gérer accents et séparateurs (ex: 'Numéro commune')."""
+    entetes_norm = [normaliser(e) for e in entetes]
     for nom in CHAMPS_IRIS:
         if nom in entetes_norm:
             return entetes[entetes_norm.index(nom)]
-    # Fallback : colonne dont le nom contient "iris" (ex: CODE_IRIS_CODE)
+    # Fallback : colonne dont le nom contient "iris" mais pas "libelle"
     for i, e in enumerate(entetes_norm):
         if "iris" in e and "libelle" not in e and "lib" not in e:
             return entetes[i]

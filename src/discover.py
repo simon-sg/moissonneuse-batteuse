@@ -10,6 +10,7 @@ import json
 import csv
 import io
 import textwrap
+from concurrent.futures import ThreadPoolExecutor
 
 import requests
 
@@ -311,17 +312,20 @@ def deviner_champs(entetes: list[str]) -> tuple[str | None, str | None]:
     return champ_cp, champ_ville
 
 
-def analyser_csv(url: str) -> dict | None:
+def analyser_csv(url: str, verbose: bool = True) -> dict | None:
     """
     Télécharge un CSV complet et cherche des données Rennes Métropole.
+    verbose=False supprime les prints (pour l'exécution en arrière-plan).
     Retourne None si le téléchargement ou le parsing échoue (le JDD sera reproposé).
     """
-    print("  Téléchargement en cours...")
+    if verbose:
+        print("  Téléchargement en cours...")
     try:
         response = requests.get(url, stream=True, timeout=60)
         response.raise_for_status()
     except Exception as e:
-        print(f"  (Échec du téléchargement : {e})")
+        if verbose:
+            print(f"  (Échec du téléchargement : {e})")
         return None
 
     contenu = b""
@@ -330,15 +334,16 @@ def analyser_csv(url: str) -> dict | None:
         for chunk in response.iter_content(chunk_size=1024 * 1024):
             contenu += chunk
             total += len(chunk)
-            print(f"  {total / 1024 / 1024:.1f} Mo...", end="\r")
+            if verbose:
+                print(f"  {total / 1024 / 1024:.1f} Mo...", end="\r")
     except Exception as e:
-        print(f"\n  (Interruption du téléchargement : {e})")
+        if verbose:
+            print(f"\n  (Interruption du téléchargement : {e})")
         return None
-    print()
+    if verbose:
+        print()
 
-    # utf-8-sig supprime automatiquement le BOM (﻿) s'il est présent
     texte = contenu.decode("utf-8-sig", errors="replace")
-    # Détection automatique du séparateur (virgule, point-virgule, tabulation…)
     sample = texte[:4096]
     try:
         dialect = csv.Sniffer().sniff(sample, delimiters=";,\t|")
@@ -349,8 +354,9 @@ def analyser_csv(url: str) -> dict | None:
     entetes = reader.fieldnames or []
 
     champ_cp, champ_ville = deviner_champs(list(entetes))
-    print(f"  En-têtes détectés : {list(entetes)[:10]}")
-    print(f"  Champ CP trouvé : {champ_cp} | Champ ville trouvé : {champ_ville}")
+    if verbose:
+        print(f"  En-têtes détectés : {list(entetes)[:10]}")
+        print(f"  Champ CP trouvé : {champ_cp} | Champ ville trouvé : {champ_ville}")
 
     nb_total = 0
     nb_rm = 0
@@ -365,7 +371,7 @@ def analyser_csv(url: str) -> dict | None:
             if champ_cp and champ_ville:
                 in_rm = est_dans_rm(ville, cp)
             elif champ_ville:
-                in_rm = est_commune_rm(ville)  # pas de CP → nom seul (ex: eau potable)
+                in_rm = est_commune_rm(ville)
             elif champ_cp:
                 in_rm = cp in CODES_POSTAUX_RM
             else:
@@ -375,7 +381,8 @@ def analyser_csv(url: str) -> dict | None:
                 if len(exemples) < 3:
                     exemples.append({k: v for k, v in row.items()})
     except csv.Error as e:
-        print(f"  (Erreur de parsing CSV : {e})")
+        if verbose:
+            print(f"  (Erreur de parsing CSV : {e})")
         return None
 
     return {
@@ -385,6 +392,49 @@ def analyser_csv(url: str) -> dict | None:
         "champ_ville": champ_ville,
         "exemples": exemples,
     }
+
+
+# ---------------------------------------------------------------------------
+# Traitement des résultats d'analyse
+# ---------------------------------------------------------------------------
+
+def traiter_resultat(ds: dict, resultat: dict | None, decouverte: dict) -> None:
+    """
+    Affiche le résultat d'une analyse (sync ou arrière-plan) et demande
+    si on ajoute le JDD aux candidats. Ajoute à vus et sauvegarde.
+    """
+    print(f"\n{SEP}")
+    print(f"Résultat analyse : {ds['title'][:60]}")
+
+    if resultat is None:
+        print("  Analyse échouée — ce JDD sera reproposé à la prochaine session.")
+        return  # pas ajouté à vus
+
+    print(f"  Total enregistrements : {resultat['nb_total']}")
+    print(f"  Dont Rennes Métropole  : {resultat['nb_rm']}")
+    if resultat["exemples"]:
+        print("  Exemples RM :")
+        for ex in resultat["exemples"]:
+            print(f"    {ex}")
+
+    if resultat["nb_rm"] > 0:
+        ajout = input("\n  Ajouter à datasets.py ? (o/n) ").strip().lower()
+        if ajout == "o":
+            candidat = {
+                "dataset_id": ds["id"],
+                "titre": ds["title"],
+                "dossier": ds["id"][:30].replace("-", "_"),
+                "champ_cp": resultat["champ_cp"],
+                "champ_ville": resultat["champ_ville"],
+                "nb_rm": resultat["nb_rm"],
+            }
+            decouverte["candidats"].append(candidat)
+            print(f"  Ajouté à la liste des candidats.")
+            print(f"  Ajoute manuellement dans src/conf/datasets.py :")
+            print(f"    {json.dumps(candidat, ensure_ascii=False)}")
+
+    decouverte["vus"].append(ds["id"])
+    sauvegarder_decouverte(decouverte)
 
 
 # ---------------------------------------------------------------------------
@@ -428,7 +478,6 @@ def main():
                 datasets_trouves.append(ds)
                 ids_trouves.add(ds["id"])
 
-    # Filtrer les orgs exclues, les territoires hors RM, et les déjà vus
     candidats = [
         ds for ds in datasets_trouves
         if not est_org_exclue(ds)
@@ -439,56 +488,74 @@ def main():
     ]
     print(f"\n{len(candidats)} JDD à examiner (hors orgs RM et déjà vus)\n")
 
-    for i, ds in enumerate(candidats, 1):
-        print(f"\n[{i}/{len(candidats)}]")
+    executor = ThreadPoolExecutor(max_workers=2)
+    en_cours = []  # liste de (ds, future)
 
-        ressource = trouver_ressource_csv_json(ds)
-        if ressource is None:
-            print(f"  (pas de ressource CSV/JSON, on passe)")
+    def traiter_finis():
+        """Affiche les analyses terminées, laisse les autres en attente."""
+        restants = []
+        for ds_a, fut in en_cours:
+            if fut.done():
+                try:
+                    resultat = fut.result()
+                except Exception as e:
+                    print(f"\n  Erreur analyse ({ds_a['title'][:40]}) : {e}")
+                    resultat = None
+                traiter_resultat(ds_a, resultat, decouverte)
+            else:
+                restants.append((ds_a, fut))
+        en_cours[:] = restants
+
+    try:
+        for i, ds in enumerate(candidats, 1):
+            # Affiche les analyses en arrière-plan terminées avant chaque nouveau JDD
+            if en_cours:
+                traiter_finis()
+                if en_cours:
+                    print(f"  ({len(en_cours)} analyse(s) en arrière-plan en cours...)")
+
+            print(f"\n[{i}/{len(candidats)}]")
+
+            ressource = trouver_ressource_csv_json(ds)
+            if ressource is None:
+                print("  (pas de ressource CSV/JSON, on passe)")
+                decouverte["vus"].append(ds["id"])
+                sauvegarder_decouverte(decouverte)
+                continue
+
+            extrait = obtenir_extrait(ressource)
+            afficher_fiche(ds, extrait)
+
+            choix = input("\n(s)kip  (a)nalyse en arrière-plan  (q)uitter ? ").strip().lower()
+
+            if choix == "q":
+                break
+            elif choix == "a":
+                future = executor.submit(analyser_csv, ressource["url"], False)
+                en_cours.append((ds, future))
+                print(f"  Analyse lancée en arrière-plan ({len(en_cours)} en cours).")
+                continue  # pas ajouté à vus pour l'instant
+            else:
+                decouverte["exclus"].append(ds["id"])
+
             decouverte["vus"].append(ds["id"])
-            continue
+            sauvegarder_decouverte(decouverte)
 
-        extrait = obtenir_extrait(ressource)
-        afficher_fiche(ds, extrait)
+    except KeyboardInterrupt:
+        print("\n\nInterruption clavier.")
 
-        choix = input("\n(s)kip  (a)nalyse approfondie  (q)uitter ? ").strip().lower()
+    # Attend et affiche toutes les analyses restantes
+    if en_cours:
+        print(f"\n{len(en_cours)} analyse(s) en cours, attente des résultats...")
+        for ds_a, fut in en_cours:
+            try:
+                resultat = fut.result(timeout=180)
+            except Exception as e:
+                print(f"  Erreur : {e}")
+                resultat = None
+            traiter_resultat(ds_a, resultat, decouverte)
 
-        if choix == "q":
-            break
-        elif choix == "a":
-            print("\nAnalyse approfondie...")
-            resultat = analyser_csv(ressource["url"])
-            if resultat is None:
-                print("  → Ce JDD sera reproposé à la prochaine session.")
-                continue  # pas ajouté à vus
-
-            print(f"\n  Total enregistrements : {resultat['nb_total']}")
-            print(f"  Dont Rennes Métropole  : {resultat['nb_rm']}")
-            if resultat['exemples']:
-                print("  Exemples RM :")
-                for ex in resultat['exemples']:
-                    print(f"    {ex}")
-
-            if resultat['nb_rm'] > 0:
-                ajout = input("\n  Ajouter à datasets.py ? (o/n) ").strip().lower()
-                if ajout == "o":
-                    candidat = {
-                        "dataset_id": ds["id"],
-                        "titre": ds["title"],
-                        "dossier": ds["id"][:30].replace("-", "_"),
-                        "champ_cp": resultat["champ_cp"],
-                        "champ_ville": resultat["champ_ville"],
-                        "nb_rm": resultat["nb_rm"],
-                    }
-                    decouverte["candidats"].append(candidat)
-                    print(f"  ✓ Ajouté à la liste des candidats.")
-                    print(f"  → Ajoute manuellement dans src/conf/datasets.py :")
-                    print(f"    {json.dumps(candidat, ensure_ascii=False)}")
-        else:
-            decouverte["exclus"].append(ds["id"])
-
-        decouverte["vus"].append(ds["id"])
-        sauvegarder_decouverte(decouverte)
+    executor.shutdown(wait=False)
 
     print("\n=== Session terminée ===")
     print(f"Résultats sauvegardés dans {DECOUVERTE_FILE}")

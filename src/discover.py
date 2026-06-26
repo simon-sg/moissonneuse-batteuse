@@ -15,14 +15,14 @@ import requests
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from filters.geographic import est_dans_rm, normaliser
+from filters.geographic import est_dans_rm, est_commune_rm, normaliser
 from conf.communes_rm import CODES_POSTAUX_RM
 
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
 
-KEYWORDS = ["commune", "code postal", "code insee"]
+KEYWORDS = ["commune france", "code postal france", "code insee france"]
 
 # Slugs d'organisations à exclure (déjà publient sur RM ou hors-sujet)
 ORGS_EXCLUES = [
@@ -57,16 +57,53 @@ def rechercher_datasets(keyword: str, page: int = 1) -> tuple[list, int]:
     """
     url = f"https://www.data.gouv.fr/api/1/datasets/"
     params = {"q": keyword, "page_size": PAGE_SIZE, "page": page}
-    response = requests.get(url, params=params)
-    response.raise_for_status()
-    data = response.json()
-    return data.get("data", []), data.get("total", 0)
+    try:
+        response = requests.get(url, params=params, timeout=10)
+        response.raise_for_status()
+        data = response.json()
+        return data.get("data", []), data.get("total", 0)
+    except Exception as e:
+        print(f"  (Erreur lors de la recherche : {e})")
+        return [], 0
 
 
 def est_org_exclue(dataset: dict) -> bool:
     org = dataset.get("organization") or {}
     slug = org.get("slug", "")
     return any(exclu in slug for exclu in ORGS_EXCLUES)
+
+
+ZONES_INCLUANT_RM = {
+    "fr:region:53",       # Bretagne
+    "fr:departement:35",  # Ille-et-Vilaine
+    "fr:epci:243500139",  # Rennes Métropole (SIREN)
+}
+
+
+def couvre_rennes(dataset: dict) -> bool:
+    """
+    Retourne True si le périmètre géographique du dataset inclut Rennes Métropole.
+    - Pas de zones → on garde (portée nationale non précisée)
+    - country:* ou country-subset:* → on garde (France entière)
+    - Bretagne, Ille-et-Vilaine, Rennes Métropole, communes RM → on garde
+    - Toute autre zone locale explicite → on exclut
+    """
+    spatial = dataset.get("spatial") or {}
+    zones = spatial.get("zones", [])
+
+    if not zones:
+        return True
+
+    for zone in zones:
+        if zone.startswith(("country:", "country-subset:")):
+            return True
+        if zone in ZONES_INCLUANT_RM:
+            return True
+        # Communes dont le code INSEE commence par 35 (Ille-et-Vilaine)
+        if zone.startswith("fr:commune:35"):
+            return True
+
+    return False
 
 
 def trouver_ressource_csv_json(dataset: dict) -> dict | None:
@@ -170,7 +207,12 @@ def deviner_champs(entetes: list[str]) -> tuple[str | None, str | None]:
     if not champ_cp:
         champ_cp = next((e for e in entetes_norm if "postal" in e or e == "cp"), None)
     if not champ_ville:
-        champ_ville = next((e for e in entetes_norm if "commune" in e or "ville" in e), None)
+        # Exclut les champs "code" ou "insee" qui contiennent "commune" sans être des noms
+        champ_ville = next(
+            (e for e in entetes_norm
+             if ("commune" in e or "ville" in e) and "insee" not in e and not e.startswith("code")),
+            None,
+        )
     # Remappe sur le nom original
     if champ_cp:
         champ_cp = entetes[entetes_norm.index(champ_cp)]
@@ -193,8 +235,16 @@ def analyser_csv(url: str) -> dict:
         print(f"  {total / 1024 / 1024:.1f} Mo...", end="\r")
     print()
 
-    texte = contenu.decode("utf-8", errors="replace")
-    reader = csv.DictReader(io.StringIO(texte))
+    # utf-8-sig supprime automatiquement le BOM (﻿) s'il est présent
+    texte = contenu.decode("utf-8-sig", errors="replace")
+    # Détection automatique du séparateur (virgule, point-virgule, tabulation…)
+    sample = texte[:4096]
+    try:
+        dialect = csv.Sniffer().sniff(sample, delimiters=";,\t|")
+        delimiteur = dialect.delimiter
+    except csv.Error:
+        delimiteur = ","
+    reader = csv.DictReader(io.StringIO(texte), delimiter=delimiteur)
     entetes = reader.fieldnames or []
 
     champ_cp, champ_ville = deviner_champs(list(entetes))
@@ -210,7 +260,15 @@ def analyser_csv(url: str) -> dict:
         cp = str(row.get(champ_cp, "")).strip() if champ_cp else ""
         ville = str(row.get(champ_ville, "")).strip() if champ_ville else ""
 
-        if cp in CODES_POSTAUX_RM or est_dans_rm(ville, cp):
+        if champ_cp and champ_ville:
+            in_rm = est_dans_rm(ville, cp)
+        elif champ_ville:
+            in_rm = est_commune_rm(ville)  # pas de CP → nom seul (ex: eau potable)
+        elif champ_cp:
+            in_rm = cp in CODES_POSTAUX_RM
+        else:
+            in_rm = False
+        if in_rm:
             nb_rm += 1
             if len(exemples) < 3:
                 exemples.append({k: v for k, v in row.items()})
@@ -265,10 +323,12 @@ def main():
                 datasets_trouves.append(ds)
                 ids_trouves.add(ds["id"])
 
-    # Filtrer les orgs exclues et les déjà vus
+    # Filtrer les orgs exclues, les territoires hors RM, et les déjà vus
     candidats = [
         ds for ds in datasets_trouves
-        if not est_org_exclue(ds) and ds["id"] not in deja_vus
+        if not est_org_exclue(ds)
+        and couvre_rennes(ds)
+        and ds["id"] not in deja_vus
     ]
     print(f"\n{len(candidats)} JDD à examiner (hors orgs RM et déjà vus)\n")
 

@@ -24,6 +24,14 @@ _COMMUNES_NORMALISEES = {normaliser(nom): cp for nom, cp in COMMUNES_RM.items()}
 _CODES_RENNES = set(CODES_POSTAUX_RENNES + ["35000"])
 
 
+def est_commune_rm(ville: str) -> bool:
+    """
+    Vérifie si une commune appartient à Rennes Métropole par le nom seul,
+    sans code postal. Utilisé quand le dataset n'a pas de champ CP.
+    """
+    return normaliser(ville) in _COMMUNES_NORMALISEES
+
+
 def est_dans_rm(ville: str, cp: str) -> bool:
     """
     Vérifie si une commune appartient à Rennes Métropole

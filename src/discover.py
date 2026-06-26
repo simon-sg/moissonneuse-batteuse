@@ -221,18 +221,29 @@ def deviner_champs(entetes: list[str]) -> tuple[str | None, str | None]:
     return champ_cp, champ_ville
 
 
-def analyser_csv(url: str) -> dict:
-    """Télécharge un CSV complet et cherche des données Rennes Métropole."""
+def analyser_csv(url: str) -> dict | None:
+    """
+    Télécharge un CSV complet et cherche des données Rennes Métropole.
+    Retourne None si le téléchargement ou le parsing échoue (le JDD sera reproposé).
+    """
     print("  Téléchargement en cours...")
-    response = requests.get(url, stream=True, timeout=60)
-    response.raise_for_status()
+    try:
+        response = requests.get(url, stream=True, timeout=60)
+        response.raise_for_status()
+    except Exception as e:
+        print(f"  (Échec du téléchargement : {e})")
+        return None
 
     contenu = b""
     total = 0
-    for chunk in response.iter_content(chunk_size=1024 * 1024):
-        contenu += chunk
-        total += len(chunk)
-        print(f"  {total / 1024 / 1024:.1f} Mo...", end="\r")
+    try:
+        for chunk in response.iter_content(chunk_size=1024 * 1024):
+            contenu += chunk
+            total += len(chunk)
+            print(f"  {total / 1024 / 1024:.1f} Mo...", end="\r")
+    except Exception as e:
+        print(f"\n  (Interruption du téléchargement : {e})")
+        return None
     print()
 
     # utf-8-sig supprime automatiquement le BOM (﻿) s'il est présent
@@ -351,6 +362,10 @@ def main():
         elif choix == "a":
             print("\nAnalyse approfondie...")
             resultat = analyser_csv(ressource["url"])
+            if resultat is None:
+                print("  → Ce JDD sera reproposé à la prochaine session.")
+                continue  # pas ajouté à vus
+
             print(f"\n  Total enregistrements : {resultat['nb_total']}")
             print(f"  Dont Rennes Métropole  : {resultat['nb_rm']}")
             if resultat['exemples']:

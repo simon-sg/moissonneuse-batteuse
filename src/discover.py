@@ -774,11 +774,11 @@ def main():
                 n_echecs = decouverte["echecs_n"].get(did, 0)
                 suffixe = f" — {n_echecs} échec(s) précédent(s)" if n_echecs else ""
                 choix = input(
-                    f"\n(s)kip définitif  (a)nalyse en arrière-plan  (q)uitter ?{suffixe} "
+                    f"\n(s)kip définitif  (p)asser  (a)nalyse en arrière-plan  (q)uitter ?{suffixe} "
                 ).strip().lower()
             else:
                 choix = input(
-                    "\n(s)kip  (a)nalyse en arrière-plan  (q)uitter ? "
+                    "\n(s)kip  (p)asser  (a)nalyse en arrière-plan  (q)uitter ? "
                 ).strip().lower()
 
             # Affiche immédiatement les analyses terminées pendant la lecture
@@ -787,6 +787,8 @@ def main():
 
             if choix == "q":
                 break
+            elif choix == "p":
+                continue  # passe sans enregistrer — reviendra la prochaine session
             elif choix == "a":
                 future = executor.submit(
                     analyser_csv, ressource["url"], False, ds["id"], ds["title"]
@@ -795,9 +797,9 @@ def main():
                 print(f"  Analyse lancée en arrière-plan ({len(en_cours)} en cours).")
                 continue  # pas ajouté à vus pour l'instant
             else:
-                # skip (s ou autre)
+                # skip définitif (s ou autre)
                 if is_echec:
-                    # Skip définitif : retire des échecs
+                    # Retire des échecs
                     decouverte["echecs"] = [
                         i for i in decouverte["echecs"] if i != ds["id"]
                     ]

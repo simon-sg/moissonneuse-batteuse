@@ -146,8 +146,11 @@ def est_org_hors_rm(dataset: dict) -> bool:
             or "metropole" in nom):
         return "rennes" not in slug and "rennes" not in nom
 
-    # Communes hors RM
-    for prefix in ("ville de ", "commune de ", "mairie de ", "municipalite de "):
+    # Communes hors RM (avec variantes d'élision : "de " et "d'")
+    for prefix in ("ville de ", "ville d'",
+                   "commune de ", "commune d'",
+                   "mairie de ", "mairie d'",
+                   "municipalite de ", "municipalite d'"):
         if nom.startswith(prefix):
             nom_commune = nom[len(prefix):]
             return not est_commune_rm(nom_commune)

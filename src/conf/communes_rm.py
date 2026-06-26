@@ -54,3 +54,51 @@ CODES_POSTAUX_RENNES = ["35000", "35200", "35700"]
 
 # Ensemble des codes postaux RM (pour un premier filtre rapide)
 CODES_POSTAUX_RM = set(COMMUNES_RM.values()) | set(CODES_POSTAUX_RENNES)
+
+# Codes INSEE des 43 communes RM
+# Source : https://geo.api.gouv.fr/epcis/243500139/communes
+CODES_INSEE_RM = {
+    "35001",  # Acigné
+    "35022",  # Bécherel
+    "35024",  # Betton
+    "35032",  # Bourgbarré
+    "35039",  # Brécé
+    "35047",  # Bruz
+    "35051",  # Cesson-Sévigné
+    "35055",  # Chantepie
+    "35058",  # La Chapelle-Chaussée
+    "35059",  # La Chapelle-des-Fougeretz
+    "35065",  # La Chapelle-Thouarault
+    "35066",  # Chartres-de-Bretagne
+    "35076",  # Chavagne
+    "35079",  # Chevaigné
+    "35080",  # Cintré
+    "35081",  # Clayes
+    "35088",  # Corps-Nuds
+    "35120",  # Gévezé
+    "35131",  # L'Hermitage
+    "35139",  # Laillé
+    "35144",  # Langan
+    "35180",  # Miniac-sous-Bécherel
+    "35189",  # Montgermont
+    "35196",  # Mordelles
+    "35204",  # Nouvoitou
+    "35206",  # Noyal-Châtillon-sur-Seiche
+    "35208",  # Orgères
+    "35210",  # Pacé
+    "35216",  # Parthenay-de-Bretagne
+    "35238",  # Rennes
+    "35240",  # Le Rheu
+    "35245",  # Romillé
+    "35250",  # Saint-Armel
+    "35266",  # Saint-Erblon
+    "35275",  # Saint-Gilles
+    "35278",  # Saint-Grégoire
+    "35281",  # Saint-Jacques-de-la-Lande
+    "35315",  # Saint-Sulpice-la-Forêt
+    "35334",  # Thorigné-Fouillard
+    "35351",  # Le Verger
+    "35352",  # Vern-sur-Seiche
+    "35353",  # Vezin-le-Coquet
+    "35363",  # Pont-Péan
+}

@@ -20,7 +20,7 @@ import requests
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from filters.geographic import est_dans_rm, est_commune_rm, normaliser
-from conf.communes_rm import CODES_POSTAUX_RM
+from conf.communes_rm import CODES_POSTAUX_RM, CODES_INSEE_RM
 
 # ---------------------------------------------------------------------------
 # Configuration
@@ -62,6 +62,9 @@ CHAMPS_VILLE = ["ville", "commune", "libelle_commune", "nom_commune",
                 "city", "municipality", "lib_commune",
                 "libgeo", "lib_geo", "libelle_geo", "libcom", "lib_com",
                 "nom_com", "nom_geo", "libelle"]
+# Noms de champs courants pour le code IRIS (9 chiffres : 5 INSEE + 4 IRIS)
+CHAMPS_IRIS = ["code_iris", "code_iris_code", "iris_code", "codeiris",
+               "c_iris", "iris", "com_iris", "code_iris_2024", "code_iris_2023"]
 
 PAGE_SIZE = 20  # résultats par page
 
@@ -375,6 +378,25 @@ def deviner_champs(entetes: list[str]) -> tuple[str | None, str | None]:
     return champ_cp, champ_ville
 
 
+def deviner_champ_iris(entetes: list[str]) -> str | None:
+    """Détecte une colonne contenant un code IRIS (9 chiffres = INSEE 5 + IRIS 4)."""
+    entetes_norm = [e.lower().strip() for e in entetes]
+    for nom in CHAMPS_IRIS:
+        if nom in entetes_norm:
+            return entetes[entetes_norm.index(nom)]
+    # Fallback : colonne dont le nom contient "iris" (ex: CODE_IRIS_CODE)
+    for i, e in enumerate(entetes_norm):
+        if "iris" in e and "libelle" not in e and "lib" not in e:
+            return entetes[i]
+    return None
+
+
+def est_iris_rm(code: str) -> bool:
+    """Retourne True si un code IRIS appartient à une commune de RM."""
+    code = str(code).strip()
+    return len(code) >= 5 and code[:5] in CODES_INSEE_RM
+
+
 def log_analyse(entry: dict) -> None:
     """Ajoute une entrée JSON à discover.log (une ligne par analyse)."""
     entry["ts"] = datetime.datetime.now().isoformat(timespec="seconds")
@@ -486,12 +508,17 @@ def analyser_csv(url: str, verbose: bool = True,
     log["entetes"] = list(entetes)[:15]
 
     champ_cp, champ_ville = deviner_champs(list(entetes))
+    champ_iris = deviner_champ_iris(list(entetes))
     log["champ_cp"] = champ_cp
     log["champ_ville"] = champ_ville
+    log["champ_iris"] = champ_iris
 
     if verbose:
         print(f"  En-têtes détectés : {list(entetes)[:10]}")
-        print(f"  Champ CP trouvé : {champ_cp} | Champ ville trouvé : {champ_ville}")
+        if champ_iris:
+            print(f"  Champ IRIS trouvé : {champ_iris}")
+        else:
+            print(f"  Champ CP trouvé : {champ_cp} | Champ ville trouvé : {champ_ville}")
 
     nb_total = 0
     nb_rm = 0
@@ -500,17 +527,19 @@ def analyser_csv(url: str, verbose: bool = True,
     try:
         for row in reader:
             nb_total += 1
-            cp = str(row.get(champ_cp, "")).strip() if champ_cp else ""
-            ville = str(row.get(champ_ville, "")).strip() if champ_ville else ""
-
-            if champ_cp and champ_ville:
-                in_rm = est_dans_rm(ville, cp)
-            elif champ_ville:
-                in_rm = est_commune_rm(ville)
-            elif champ_cp:
-                in_rm = cp in CODES_POSTAUX_RM
+            if champ_iris:
+                in_rm = est_iris_rm(str(row.get(champ_iris, "")))
             else:
-                in_rm = False
+                cp = str(row.get(champ_cp, "")).strip() if champ_cp else ""
+                ville = str(row.get(champ_ville, "")).strip() if champ_ville else ""
+                if champ_cp and champ_ville:
+                    in_rm = est_dans_rm(ville, cp)
+                elif champ_ville:
+                    in_rm = est_commune_rm(ville)
+                elif champ_cp:
+                    in_rm = cp in CODES_POSTAUX_RM
+                else:
+                    in_rm = False
             if in_rm:
                 nb_rm += 1
                 if len(exemples) < 3:
@@ -769,6 +798,16 @@ def main():
 
             extrait = obtenir_extrait(ressource)
             afficher_fiche(ds, extrait)
+
+            # Auto-analyse si le dataset est clairement IRIS
+            titre_desc = (ds.get("title", "") + " " + (ds.get("description", "") or "")).lower()
+            est_iris = bool(re.search(r'\biris\b', titre_desc))
+            if est_iris and not is_echec:
+                print("  [IRIS] Analyse automatique lancée en arrière-plan.")
+                future = executor.submit(analyser_csv, ressource["url"], False, ds["id"], ds["title"])
+                en_cours.append((ds, future))
+                print(f"  ({len(en_cours)} analyse(s) en cours.)")
+                continue
 
             if is_echec:
                 n_echecs = decouverte["echecs_n"].get(did, 0)

@@ -13,7 +13,7 @@ import re
 import textwrap
 import datetime
 import hashlib
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ThreadPoolExecutor, wait, FIRST_COMPLETED
 
 import requests
 
@@ -902,19 +902,26 @@ def main():
         print(f"\n{total_restants} analyse(s) en cours, attente des résultats...")
         print("(Ctrl+C pour abandonner les analyses restantes)\n")
         futures_map = {fut: ds_a for ds_a, fut in en_cours}
+        en_attente = set(futures_map.keys())
         terminees = 0
         try:
-            for fut in as_completed(futures_map):
-                ds_a = futures_map[fut]
-                terminees += 1
-                print(f"  [{terminees}/{total_restants}] Résultat reçu : {ds_a['title'][:50]}")
-                try:
-                    resultat = fut.result()
-                except Exception as e:
-                    msg = str(e) or type(e).__name__
-                    print(f"  Erreur inattendue : {msg}")
-                    resultat = None
-                traiter_resultat(ds_a, resultat, decouverte)
+            while en_attente:
+                done, en_attente = wait(en_attente, timeout=15, return_when=FIRST_COMPLETED)
+                for fut in done:
+                    ds_a = futures_map[fut]
+                    terminees += 1
+                    print(f"\n  [{terminees}/{total_restants}] Résultat reçu : {ds_a['title'][:50]}")
+                    try:
+                        resultat = fut.result()
+                    except Exception as e:
+                        msg = str(e) or type(e).__name__
+                        print(f"  Erreur inattendue : {msg}")
+                        resultat = None
+                    traiter_resultat(ds_a, resultat, decouverte)
+                if en_attente:
+                    titres = [futures_map[f]["title"][:40] for f in list(en_attente)[:3]]
+                    suite = "…" if len(en_attente) > 3 else ""
+                    print(f"  [{terminees}/{total_restants}] {len(en_attente)} en cours : {', '.join(titres)}{suite}")
         except KeyboardInterrupt:
             print("\nAbandon des analyses restantes — elles seront reproposées.")
 

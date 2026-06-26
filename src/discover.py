@@ -488,7 +488,7 @@ def main():
     ]
     print(f"\n{len(candidats)} JDD à examiner (hors orgs RM et déjà vus)\n")
 
-    executor = ThreadPoolExecutor(max_workers=2)
+    executor = ThreadPoolExecutor(max_workers=5)
     en_cours = []  # liste de (ds, future)
 
     def traiter_finis():

@@ -72,6 +72,8 @@ CHAMPS_IRIS = [
     # Code commune INSEE (5 chiffres) — fichiers IRIS avec codes séparés
     # ex: 'Numéro commune' + 'Numéro d'IRIS' → on matche la partie INSEE
     "numero commune", "num commune", "code commune", "depcom", "codgeo",
+    # Colonne nommée directement 'INSEE' ou 'code_insee' (ex: balances comptables DGFiP)
+    "insee", "code insee",
 ]
 
 PAGE_SIZE = 20  # résultats par page

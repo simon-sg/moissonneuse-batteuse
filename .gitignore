@@ -1,0 +1,12 @@
+# Données (fichiers volumineux et temporaires)
+data/*/source.json
+data/state.json
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+
+# Logs
+*.log

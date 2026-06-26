@@ -75,7 +75,24 @@
     "65e083a89488e7a9eb713e2b",
     "5624ae8ab595080b1989caa4",
     "5efc0a6816a290011b8628f4",
-    "66d10d2e799972dd21227706"
+    "66d10d2e799972dd21227706",
+    "53699848a3a729239d204efa",
+    "5efc0a66be6c12d202adc549",
+    "56d44af588ee3867bcfa79cf",
+    "5efc0a68d041e5facbadc54c",
+    "6465a3c79943272e4f2c4231",
+    "5380850fa3a7297e4d35d722",
+    "64420aa918228ca8eb2ca03d",
+    "61d38f4cc25693f38d5c5aea",
+    "6465a3c5115d6887a98cdb6a",
+    "60956706e0afa792a8f75ba7",
+    "646cc620a614daa1c329c76a",
+    "65a1a2bf610306a7c38d3ca0",
+    "60240e4d525c1974997ce5a6",
+    "67c24ee649cda60331e2609f",
+    "6564969d3579e21795ebd378",
+    "67eb2fdc6d6d5f6e2fa9eaa7",
+    "69f3f1237c84efeeaa2c49bd"
   ],
   "candidats": [
     {
@@ -125,6 +142,14 @@
       "champ_cp": null,
       "champ_ville": "nom_com",
       "nb_rm": 31
+    },
+    {
+      "dataset_id": "6564969d3579e21795ebd378",
+      "titre": "Communes et inventaire SRU",
+      "dossier": "6564969d3579e21795ebd378",
+      "champ_cp": null,
+      "champ_ville": "Nom_commune",
+      "nb_rm": 19
     }
   ],
   "exclus": [
@@ -197,10 +222,22 @@
     "65e083a89488e7a9eb713e2b",
     "5624ae8ab595080b1989caa4",
     "5efc0a6816a290011b8628f4",
-    "66d10d2e799972dd21227706"
+    "66d10d2e799972dd21227706",
+    "5efc0a66be6c12d202adc549",
+    "5efc0a68d041e5facbadc54c",
+    "6465a3c79943272e4f2c4231",
+    "5380850fa3a7297e4d35d722",
+    "64420aa918228ca8eb2ca03d",
+    "61d38f4cc25693f38d5c5aea",
+    "6465a3c5115d6887a98cdb6a",
+    "60956706e0afa792a8f75ba7",
+    "646cc620a614daa1c329c76a",
+    "65a1a2bf610306a7c38d3ca0",
+    "67c24ee649cda60331e2609f",
+    "67eb2fdc6d6d5f6e2fa9eaa7",
+    "69f3f1237c84efeeaa2c49bd"
   ],
   "echecs": [
-    "5d8341258b4c414709e809e9",
     "689c42ee0bc5149514360ed3"
   ],
   "sans_ressource": [
@@ -216,6 +253,10 @@
     "684be52b7dd2fdcc07adfe1e",
     "5c65452a8b4c41062d1bb670",
     "5c61a8e78b4c4111556475b2",
-    "56e93b7bc751df33459abcac"
-  ]
+    "56e93b7bc751df33459abcac",
+    "55520fabc751df78d2190cb3"
+  ],
+  "echecs_n": {
+    "689c42ee0bc5149514360ed3": 1
+  }
 }

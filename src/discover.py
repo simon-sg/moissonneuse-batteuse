@@ -480,17 +480,32 @@ def traiter_resultat(ds: dict, resultat: dict | None, decouverte: dict) -> None:
     print(f"Résultat analyse : {ds['title'][:60]}")
 
     if resultat is None:
-        print("  Analyse échouée — ce JDD sera reproposé à la prochaine session.")
-        # Retire de vus (au cas où il y serait par rétrocompat)
+        # Incrémente le compteur d'échecs consécutifs
+        n = decouverte["echecs_n"].get(did, 0) + 1
+        decouverte["echecs_n"][did] = n
+        # Retire de vus (rétrocompat)
         decouverte["vus"] = [i for i in decouverte["vus"] if i != did]
-        # Ajoute à echecs si absent
         if did not in decouverte["echecs"]:
             decouverte["echecs"].append(did)
+        if n >= 3:
+            print(f"  Analyse échouée ({n} fois) — skip définitif recommandé.")
+            choix = input("  (s)kip définitif  (r)éessayer plus tard  ? ").strip().lower()
+            if choix == "s":
+                decouverte["echecs"] = [i for i in decouverte["echecs"] if i != did]
+                decouverte["echecs_n"].pop(did, None)
+                decouverte["exclus"].append(did)
+                decouverte["vus"].append(did)
+                print("  Skip définitif enregistré.")
+            else:
+                print("  Sera reproposé à la prochaine session.")
+        else:
+            print(f"  Analyse échouée ({n}/3) — sera reproposé à la prochaine session.")
         sauvegarder_decouverte(decouverte)
         return
 
-    # Succès : retire de echecs si c'était une ré-analyse
+    # Succès : retire de echecs et remet le compteur à zéro
     decouverte["echecs"] = [i for i in decouverte["echecs"] if i != did]
+    decouverte["echecs_n"].pop(did, None)
 
     print(f"  Total enregistrements : {resultat['nb_total']}")
     print(f"  Dont Rennes Métropole  : {resultat['nb_rm']}")
@@ -528,10 +543,12 @@ def charger_decouverte() -> dict:
     if os.path.exists(DECOUVERTE_FILE):
         with open(DECOUVERTE_FILE, "r", encoding="utf-8") as f:
             d = json.load(f)
-        d.setdefault("echecs", [])       # rétrocompat
-        d.setdefault("sans_ressource", [])  # rétrocompat
+        d.setdefault("echecs", [])
+        d.setdefault("echecs_n", {})     # {dataset_id: nb_echecs consécutifs}
+        d.setdefault("sans_ressource", [])
         return d
-    return {"vus": [], "candidats": [], "exclus": [], "echecs": [], "sans_ressource": []}
+    return {"vus": [], "candidats": [], "exclus": [],
+            "echecs": [], "echecs_n": {}, "sans_ressource": []}
 
 
 def fetcher_datasets_par_ids(ids: list) -> list:
@@ -656,8 +673,16 @@ def main():
                         sauvegarder_decouverte(decouverte)
                 else:
                     # A des ressources mais dans un format non encore supporté
-                    # → on ne stocke rien, il réapparaîtra quand le support sera ajouté
                     nb_format_non_supporte += 1
+                    if is_echec:
+                        # Echec dû à un format non supporté, pas à une erreur d'analyse
+                        # → retirer de echecs, il reviendra quand le support sera ajouté
+                        fmts = formats_disponibles(ds)
+                        print(f"\n  (!) Echec {ds['title'][:50]!r} : "
+                              f"format non supporté ({', '.join(fmts)}) — retiré des échecs.")
+                        decouverte["echecs"] = [j for j in decouverte["echecs"] if j != did]
+                        decouverte["echecs_n"].pop(did, None)
+                        sauvegarder_decouverte(decouverte)
                 continue
 
             print(f"\n[{i}/{len(candidats)}]")
@@ -677,8 +702,10 @@ def main():
             afficher_fiche(ds, extrait)
 
             if is_echec:
+                n_echecs = decouverte["echecs_n"].get(did, 0)
+                suffixe = f" — {n_echecs} échec(s) précédent(s)" if n_echecs else ""
                 choix = input(
-                    "\n(s)kip définitif  (a)nalyse en arrière-plan  (q)uitter ? "
+                    f"\n(s)kip définitif  (a)nalyse en arrière-plan  (q)uitter ?{suffixe} "
                 ).strip().lower()
             else:
                 choix = input(

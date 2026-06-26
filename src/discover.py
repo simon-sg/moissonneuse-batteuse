@@ -26,7 +26,7 @@ from conf.communes_rm import CODES_POSTAUX_RM
 
 KEYWORDS = ["commune", "code postal", "code insee"]
 
-NB_PAGES = 5  # pages récupérées par mot-clé (20 résultats/page → 100 max par keyword)
+NB_PAGES = 25  # pages récupérées par mot-clé (20 résultats/page → 500 max par keyword)
 
 # Mots dans le titre indiquant un territoire clairement hors RM
 # (datasets sans zones spatiales déclarées mais dont le titre trahit la portée)
@@ -506,9 +506,10 @@ def charger_decouverte() -> dict:
     if os.path.exists(DECOUVERTE_FILE):
         with open(DECOUVERTE_FILE, "r", encoding="utf-8") as f:
             d = json.load(f)
-        d.setdefault("echecs", [])  # rétrocompat
+        d.setdefault("echecs", [])       # rétrocompat
+        d.setdefault("sans_ressource", [])  # rétrocompat
         return d
-    return {"vus": [], "candidats": [], "exclus": [], "echecs": []}
+    return {"vus": [], "candidats": [], "exclus": [], "echecs": [], "sans_ressource": []}
 
 
 def fetcher_datasets_par_ids(ids: list) -> list:
@@ -547,6 +548,7 @@ def main():
 
     decouverte = charger_decouverte()
     echecs_ids = set(decouverte["echecs"])
+    sans_ressource_ids = set(decouverte["sans_ressource"])
     # deja_vus exclut les échecs pour qu'ils ne soient pas filtrés dans les candidats
     deja_vus = set(decouverte["vus"]) - echecs_ids
 
@@ -579,6 +581,7 @@ def main():
         and couvre_rennes(ds)
         and not titre_hors_rm(ds)
         and ds["id"] not in deja_vus
+        and ds["id"] not in sans_ressource_ids
         and ds["id"] not in echecs_ids_fetched
     ]
 
@@ -624,8 +627,10 @@ def main():
             if ressource is None:
                 print("  (pas de ressource CSV/JSON, on passe)")
                 if not is_echec:
-                    decouverte["vus"].append(ds["id"])
-                    sauvegarder_decouverte(decouverte)
+                    did = ds["id"]
+                    if did not in decouverte["sans_ressource"]:
+                        decouverte["sans_ressource"].append(did)
+                        sauvegarder_decouverte(decouverte)
                 continue
 
             extrait = obtenir_extrait(ressource)

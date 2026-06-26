@@ -55,7 +55,9 @@ ORGS_EXCLUES = [
 CHAMPS_CP = ["cp", "code_postal", "codepostal", "code postal", "postal_code",
              "code_post", "cp_ville", "zipcode", "zip"]
 CHAMPS_VILLE = ["ville", "commune", "libelle_commune", "nom_commune",
-                "city", "municipality", "lib_commune"]
+                "city", "municipality", "lib_commune",
+                "libgeo", "lib_geo", "libelle_geo", "libcom", "lib_com",
+                "nom_com", "nom_geo", "libelle"]
 
 PAGE_SIZE = 20  # résultats par page
 
@@ -145,7 +147,9 @@ def trouver_ressource_csv_json(dataset: dict) -> dict | None:
     """Retourne la première ressource CSV ou JSON du dataset."""
     for fmt in ["csv", "json"]:
         for r in dataset.get("resources", []):
-            if r.get("format", "").lower() == fmt:
+            fmt_r = (r.get("format") or "").lower()
+            url_r = (r.get("url") or "").lower().split("?")[0]  # ignore query params
+            if fmt in fmt_r or url_r.endswith(f".{fmt}"):
                 return r
     return None
 
@@ -242,10 +246,12 @@ def deviner_champs(entetes: list[str]) -> tuple[str | None, str | None]:
     if not champ_cp:
         champ_cp = next((e for e in entetes_norm if "postal" in e or e == "cp"), None)
     if not champ_ville:
-        # Exclut les champs "code" ou "insee" qui contiennent "commune" sans être des noms
+        # Exclut les champs de code/insee/dep qui contiennent "commune" sans être des noms
         champ_ville = next(
             (e for e in entetes_norm
-             if ("commune" in e or "ville" in e) and "insee" not in e and not e.startswith("code")),
+             if ("commune" in e or "ville" in e or "libelle" in e or "libgeo" in e)
+             and "insee" not in e and "dep" not in e
+             and not e.startswith("code") and "partenaire" not in e),
             None,
         )
     # Remappe sur le nom original

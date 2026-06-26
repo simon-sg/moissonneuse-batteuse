@@ -10,9 +10,11 @@ from conf.communes_rm import COMMUNES_RM, CODES_POSTAUX_RENNES
 def normaliser(texte: str) -> str:
     """
     Normalise un nom de commune pour la comparaison :
-    minuscules, suppression des accents, espaces nettoyés.
+    minuscules, underscores/tirets → espaces, suppression des accents.
+    Gère les formats LIBGEO style (SAINT_GILLES, CESSON_SEVIGNE…).
     """
     texte = texte.lower().strip()
+    texte = texte.replace("_", " ").replace("-", " ")
     texte = unicodedata.normalize("NFD", texte)
     texte = "".join(c for c in texte if unicodedata.category(c) != "Mn")
     return texte

@@ -26,10 +26,7 @@ from conf.communes_rm import CODES_POSTAUX_RM
 # Configuration
 # ---------------------------------------------------------------------------
 
-KEYWORDS = [
-    "commune", "code postal", "code insee",
-    "logement", "population", "emploi", "iris", "revenus",
-]
+KEYWORDS = ["commune", "code postal", "code insee", "iris"]
 
 NB_PAGES = 25  # pages récupérées par mot-clé (20 résultats/page → 500 max par keyword)
 
@@ -167,18 +164,29 @@ def est_org_hors_rm(dataset: dict) -> bool:
 
 def titre_hors_rm(dataset: dict) -> bool:
     """
-    Retourne True si le titre ou la description indique clairement un territoire hors RM.
+    Retourne True si le titre indique clairement un territoire hors RM,
+    pour filtrer les datasets sans zones spatiales mais géographiquement ciblés ailleurs.
     """
     titre = (dataset.get("title", "") or "").lower().strip()
-    description = (dataset.get("description", "") or "").lower()
-
-    # "COMMUNE DE X" dans le titre → dataset sur une commune spécifique
+    # "COMMUNE DE X" → dataset sur une commune spécifique, non pertinent
     if titre.startswith("commune de ") or titre.startswith("commune d'"):
         return True
+    return any(region in titre for region in TITRES_HORS_RM)
 
-    # Cherche les régions hors RM dans le titre ET le début de la description
-    texte = titre + " " + description[:800]
-    return any(region in texte for region in TITRES_HORS_RM)
+
+# Termes dans la description signalant des données au niveau commune
+_MOTS_DESC_COMMUNE = [
+    "par commune", "par code postal", "par code insee",
+    "données communales", "niveau communal",
+    "chaque commune", "toutes les communes",
+    "code_commune", "code_postal",
+]
+
+
+def description_suggerant_commune(dataset: dict) -> bool:
+    """Retourne True si la description mentionne des données au niveau commune."""
+    desc = (dataset.get("description", "") or "").lower()
+    return any(mot in desc for mot in _MOTS_DESC_COMMUNE)
 
 
 ZONES_INCLUANT_RM = {
@@ -674,7 +682,7 @@ def main():
         if not est_org_exclue(ds)
         and not est_org_hors_rm(ds)
         and couvre_rennes(ds)
-        and not titre_hors_rm(ds)
+        and (not titre_hors_rm(ds) or description_suggerant_commune(ds))
         and ds["id"] not in deja_vus
         and ds["id"] not in echecs_ids_fetched
         # sans_ressource : on garde pour re-vérifier inline (les datasets peuvent évoluer)

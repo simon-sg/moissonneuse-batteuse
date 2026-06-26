@@ -826,7 +826,8 @@ def main():
                 try:
                     resultat = fut.result()
                 except Exception as e:
-                    print(f"  Erreur : {e}")
+                    msg = str(e) or type(e).__name__
+                    print(f"  Erreur inattendue : {msg}")
                     resultat = None
                 traiter_resultat(ds_a, resultat, decouverte)
         except KeyboardInterrupt:

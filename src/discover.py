@@ -119,13 +119,20 @@ def est_org_hors_rm(dataset: dict) -> bool:
     nom = normaliser(org.get("name") or "")
     slug = (org.get("slug") or "").lower()
 
-    # Département : slug "departement-*" ou nom commence par "departement"
+    # Département : "Département du/de/d'..." ou "Conseil départemental de/du/d'..."
     # Garde le 35 (ille-et-vilaine) et exclut tous les autres
-    if nom.startswith("departement") or slug.startswith("departement-"):
+    if (nom.startswith("departement")
+            or nom.startswith("conseil departemental")
+            or slug.startswith("departement-")
+            or slug.startswith("conseil-departemental-")):
         return "35" not in slug and "ille" not in slug
 
-    # Région : garde Bretagne, exclut toutes les autres
-    if nom.startswith("region") or slug.startswith("region-"):
+    # Région : "Région ..." ou "Conseil régional de ..."
+    # Garde Bretagne, exclut toutes les autres
+    if (nom.startswith("region")
+            or nom.startswith("conseil regional")
+            or slug.startswith("region-")
+            or slug.startswith("conseil-regional-")):
         return "bretagne" not in slug and "bretagne" not in nom
 
     # Intercommunalités hors RM (CA, CC, CU, métropoles, agglo)

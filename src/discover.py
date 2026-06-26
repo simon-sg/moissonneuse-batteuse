@@ -9,6 +9,7 @@ import os
 import json
 import csv
 import io
+import re
 import textwrap
 import datetime
 import hashlib
@@ -25,7 +26,10 @@ from conf.communes_rm import CODES_POSTAUX_RM
 # Configuration
 # ---------------------------------------------------------------------------
 
-KEYWORDS = ["commune", "code postal", "code insee"]
+KEYWORDS = [
+    "commune", "code postal", "code insee",
+    "logement", "population", "emploi", "iris", "revenus",
+]
 
 NB_PAGES = 25  # pages récupérées par mot-clé (20 résultats/page → 500 max par keyword)
 
@@ -106,9 +110,10 @@ def est_org_exclue(dataset: dict) -> bool:
 
 
 def _mot_present(nom: str, mot: str) -> bool:
-    """Vérifie si `mot` est présent dans `nom` comme mot entier
-    (au début ou précédé d'un espace — évite 'interdépartemental')."""
-    return nom.startswith(mot) or (" " + mot) in nom
+    """Vérifie si `mot` est présent comme mot entier dans `nom`.
+    Évite les faux positifs : 'departementale' ne matche pas 'departement',
+    'interdepartemental' ne matche pas 'departemental'."""
+    return bool(re.search(r"(^| )" + re.escape(mot) + r"($| )", nom))
 
 
 def est_org_hors_rm(dataset: dict) -> bool:
@@ -162,14 +167,18 @@ def est_org_hors_rm(dataset: dict) -> bool:
 
 def titre_hors_rm(dataset: dict) -> bool:
     """
-    Retourne True si le titre indique clairement un territoire hors RM,
-    pour filtrer les datasets sans zones spatiales mais géographiquement ciblés ailleurs.
+    Retourne True si le titre ou la description indique clairement un territoire hors RM.
     """
-    titre = dataset.get("title", "").lower().strip()
-    # "COMMUNE DE X" → dataset sur une commune spécifique, non pertinent
+    titre = (dataset.get("title", "") or "").lower().strip()
+    description = (dataset.get("description", "") or "").lower()
+
+    # "COMMUNE DE X" dans le titre → dataset sur une commune spécifique
     if titre.startswith("commune de ") or titre.startswith("commune d'"):
         return True
-    return any(region in titre for region in TITRES_HORS_RM)
+
+    # Cherche les régions hors RM dans le titre ET le début de la description
+    texte = titre + " " + description[:800]
+    return any(region in texte for region in TITRES_HORS_RM)
 
 
 ZONES_INCLUANT_RM = {

@@ -581,8 +581,8 @@ def main():
         and couvre_rennes(ds)
         and not titre_hors_rm(ds)
         and ds["id"] not in deja_vus
-        and ds["id"] not in sans_ressource_ids
         and ds["id"] not in echecs_ids_fetched
+        # sans_ressource : on garde pour re-vérifier inline (les datasets peuvent évoluer)
     ]
 
     # Les échecs passent en premier
@@ -619,19 +619,32 @@ def main():
                     print(f"  ({len(en_cours)} analyse(s) en arrière-plan en cours...)")
 
             is_echec = ds.get("_echec", False)
+            did = ds["id"]
+            ressource = trouver_ressource_csv_json(ds)
+
+            if ressource is None:
+                if not is_echec:
+                    if did in sans_ressource_ids:
+                        # Déjà connu sans ressource : passe silencieusement
+                        continue
+                    # Nouvelle découverte sans ressource
+                    decouverte["sans_ressource"].append(did)
+                    sauvegarder_decouverte(decouverte)
+                    print(f"\n[{i}/{len(candidats)}]  (pas de ressource CSV/JSON, on passe)")
+                continue
+
             print(f"\n[{i}/{len(candidats)}]")
             if is_echec:
                 print("  (!) Analyse précédemment échouée")
 
-            ressource = trouver_ressource_csv_json(ds)
-            if ressource is None:
-                print("  (pas de ressource CSV/JSON, on passe)")
-                if not is_echec:
-                    did = ds["id"]
-                    if did not in decouverte["sans_ressource"]:
-                        decouverte["sans_ressource"].append(did)
-                        sauvegarder_decouverte(decouverte)
-                continue
+            # Si le dataset était dans sans_ressource mais a maintenant une ressource → on le retire
+            if did in sans_ressource_ids:
+                decouverte["sans_ressource"] = [
+                    i for i in decouverte["sans_ressource"] if i != did
+                ]
+                sans_ressource_ids.discard(did)
+                sauvegarder_decouverte(decouverte)
+                print("  (ressource CSV/JSON détectée — analyse disponible)")
 
             extrait = obtenir_extrait(ressource)
             afficher_fiche(ds, extrait)

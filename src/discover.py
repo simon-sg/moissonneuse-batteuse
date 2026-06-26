@@ -147,7 +147,10 @@ def titre_hors_rm(dataset: dict) -> bool:
     Retourne True si le titre indique clairement un territoire hors RM,
     pour filtrer les datasets sans zones spatiales mais géographiquement ciblés ailleurs.
     """
-    titre = dataset.get("title", "").lower()
+    titre = dataset.get("title", "").lower().strip()
+    # "COMMUNE DE X" → dataset sur une commune spécifique, non pertinent
+    if titre.startswith("commune de ") or titre.startswith("commune d'"):
+        return True
     return any(region in titre for region in TITRES_HORS_RM)
 
 
@@ -185,11 +188,16 @@ def couvre_rennes(dataset: dict) -> bool:
 
 
 def trouver_ressource_csv_json(dataset: dict) -> dict | None:
-    """Retourne la première ressource CSV ou JSON du dataset."""
+    """Retourne la première ressource CSV ou JSON du dataset (exclut les .gz)."""
     for fmt in ["csv", "json"]:
         for r in dataset.get("resources", []):
             fmt_r = (r.get("format") or "").lower()
-            url_r = (r.get("url") or "").lower().split("?")[0]  # ignore query params
+            url_r = (r.get("url") or "").lower().split("?")[0]
+            # Exclut les formats compressés (.gz, .zip) — non supportés pour l'instant
+            if "gz" in fmt_r or "zip" in fmt_r:
+                continue
+            if url_r.endswith(".gz") or url_r.endswith(".zip"):
+                continue
             if fmt in fmt_r or url_r.endswith(f".{fmt}"):
                 return r
     return None
@@ -348,23 +356,27 @@ def analyser_csv(url: str) -> dict | None:
     nb_rm = 0
     exemples = []
 
-    for row in reader:
-        nb_total += 1
-        cp = str(row.get(champ_cp, "")).strip() if champ_cp else ""
-        ville = str(row.get(champ_ville, "")).strip() if champ_ville else ""
+    try:
+        for row in reader:
+            nb_total += 1
+            cp = str(row.get(champ_cp, "")).strip() if champ_cp else ""
+            ville = str(row.get(champ_ville, "")).strip() if champ_ville else ""
 
-        if champ_cp and champ_ville:
-            in_rm = est_dans_rm(ville, cp)
-        elif champ_ville:
-            in_rm = est_commune_rm(ville)  # pas de CP → nom seul (ex: eau potable)
-        elif champ_cp:
-            in_rm = cp in CODES_POSTAUX_RM
-        else:
-            in_rm = False
-        if in_rm:
-            nb_rm += 1
-            if len(exemples) < 3:
-                exemples.append({k: v for k, v in row.items()})
+            if champ_cp and champ_ville:
+                in_rm = est_dans_rm(ville, cp)
+            elif champ_ville:
+                in_rm = est_commune_rm(ville)  # pas de CP → nom seul (ex: eau potable)
+            elif champ_cp:
+                in_rm = cp in CODES_POSTAUX_RM
+            else:
+                in_rm = False
+            if in_rm:
+                nb_rm += 1
+                if len(exemples) < 3:
+                    exemples.append({k: v for k, v in row.items()})
+    except csv.Error as e:
+        print(f"  (Erreur de parsing CSV : {e})")
+        return None
 
     return {
         "nb_total": nb_total,

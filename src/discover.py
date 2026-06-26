@@ -685,6 +685,10 @@ def main():
                     "\n(s)kip  (a)nalyse en arrière-plan  (q)uitter ? "
                 ).strip().lower()
 
+            # Affiche immédiatement les analyses terminées pendant la lecture
+            if en_cours:
+                traiter_finis()
+
             if choix == "q":
                 break
             elif choix == "a":

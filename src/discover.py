@@ -1,0 +1,331 @@
+"""
+Script de découverte interactive de JDD éligibles sur data.gouv.fr.
+
+Usage : python3 src/discover.py
+"""
+
+import sys
+import os
+import json
+import csv
+import io
+import textwrap
+
+import requests
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+from filters.geographic import est_dans_rm, normaliser
+from conf.communes_rm import CODES_POSTAUX_RM
+
+# ---------------------------------------------------------------------------
+# Configuration
+# ---------------------------------------------------------------------------
+
+KEYWORDS = ["commune", "code postal", "code insee"]
+
+# Slugs d'organisations à exclure (déjà publient sur RM ou hors-sujet)
+ORGS_EXCLUES = [
+    "rennes-metropole",
+    "rennes-metropole-en-acces-libre",
+    "sig-rennes-metropole",
+    "metropole-de-rennes",
+    "ville-de-rennes",
+]
+
+# Noms de champs courants pour le code postal et la commune dans les données
+CHAMPS_CP = ["cp", "code_postal", "codepostal", "code postal", "postal_code",
+             "code_post", "cp_ville", "zipcode", "zip"]
+CHAMPS_VILLE = ["ville", "commune", "libelle_commune", "nom_commune",
+                "city", "municipality", "lib_commune"]
+
+PAGE_SIZE = 20  # résultats par page
+
+DECOUVERTE_FILE = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+    "data", "decouverte.json"
+)
+
+# ---------------------------------------------------------------------------
+# Recherche
+# ---------------------------------------------------------------------------
+
+def rechercher_datasets(keyword: str, page: int = 1) -> tuple[list, int]:
+    """
+    Cherche des JDD sur data.gouv.fr par mot-clé.
+    Retourne (liste de datasets, total de résultats).
+    """
+    url = f"https://www.data.gouv.fr/api/1/datasets/"
+    params = {"q": keyword, "page_size": PAGE_SIZE, "page": page}
+    response = requests.get(url, params=params)
+    response.raise_for_status()
+    data = response.json()
+    return data.get("data", []), data.get("total", 0)
+
+
+def est_org_exclue(dataset: dict) -> bool:
+    org = dataset.get("organization") or {}
+    slug = org.get("slug", "")
+    return any(exclu in slug for exclu in ORGS_EXCLUES)
+
+
+def trouver_ressource_csv_json(dataset: dict) -> dict | None:
+    """Retourne la première ressource CSV ou JSON du dataset."""
+    for fmt in ["csv", "json"]:
+        for r in dataset.get("resources", []):
+            if r.get("format", "").lower() == fmt:
+                return r
+    return None
+
+
+# ---------------------------------------------------------------------------
+# Extrait des données
+# ---------------------------------------------------------------------------
+
+def telecharger_extrait_csv(url: str, n_lignes: int = 5) -> str:
+    """Télécharge les premières lignes d'un CSV (sans télécharger tout le fichier)."""
+    try:
+        response = requests.get(url, stream=True, timeout=15)
+        response.raise_for_status()
+        lignes = []
+        for chunk in response.iter_lines():
+            if chunk:
+                lignes.append(chunk.decode("utf-8", errors="replace"))
+            if len(lignes) >= n_lignes + 1:  # +1 pour l'en-tête
+                break
+        response.close()
+        return "\n".join(lignes)
+    except Exception as e:
+        return f"(Impossible de télécharger l'extrait : {e})"
+
+
+def telecharger_extrait_json(url: str, n_lignes: int = 5) -> str:
+    """Télécharge un petit bout d'un JSON pour en montrer la structure."""
+    try:
+        response = requests.get(url, stream=True, timeout=15)
+        response.raise_for_status()
+        # On lit seulement les premiers Ko
+        contenu = b""
+        for chunk in response.iter_content(chunk_size=4096):
+            contenu += chunk
+            if len(contenu) > 8192:
+                break
+        response.close()
+        texte = contenu.decode("utf-8", errors="replace")
+        # On essaie de trouver les premiers enregistrements
+        debut = texte[:2000]
+        return debut + "\n[... tronqué ...]"
+    except Exception as e:
+        return f"(Impossible de télécharger l'extrait : {e})"
+
+
+def obtenir_extrait(ressource: dict) -> str:
+    fmt = ressource.get("format", "").lower()
+    url = ressource.get("url", "")
+    if fmt == "csv":
+        return telecharger_extrait_csv(url)
+    elif fmt == "json":
+        return telecharger_extrait_json(url)
+    return "(format non supporté pour l'extrait)"
+
+
+# ---------------------------------------------------------------------------
+# Affichage
+# ---------------------------------------------------------------------------
+
+SEP = "─" * 72
+
+def afficher_fiche(dataset: dict, extrait: str) -> None:
+    org = (dataset.get("organization") or {}).get("name", "?")
+    description = dataset.get("description", "") or ""
+    description_courte = textwrap.fill(description[:300].replace("\n", " "), width=70)
+    formats = list(set(
+        r.get("format", "").upper()
+        for r in dataset.get("resources", [])
+        if r.get("format")
+    ))
+
+    print(f"\n{SEP}")
+    print(f"TITRE    : {dataset['title']}")
+    print(f"ORG      : {org}")
+    print(f"LICENCE  : {dataset.get('license', '?')}")
+    print(f"FORMATS  : {', '.join(formats)}")
+    print(f"MAJ      : {dataset.get('last_modified', '?')[:10]}")
+    print(f"URL      : https://www.data.gouv.fr/datasets/{dataset['id']}")
+    print(f"\nDESCRIPTION :\n{description_courte}")
+    print(f"\nEXTRAIT (5 premières lignes) :\n{extrait[:1000]}")
+    print(SEP)
+
+
+# ---------------------------------------------------------------------------
+# Analyse approfondie
+# ---------------------------------------------------------------------------
+
+def deviner_champs(entetes: list[str]) -> tuple[str | None, str | None]:
+    """Devine les champs code postal et ville dans les en-têtes d'un CSV."""
+    entetes_norm = [e.lower().strip() for e in entetes]
+    champ_cp = next((e for e in entetes_norm if e in CHAMPS_CP), None)
+    champ_ville = next((e for e in entetes_norm if e in CHAMPS_VILLE), None)
+    # Si pas trouvé exactement, cherche si un en-tête contient le mot
+    if not champ_cp:
+        champ_cp = next((e for e in entetes_norm if "postal" in e or e == "cp"), None)
+    if not champ_ville:
+        champ_ville = next((e for e in entetes_norm if "commune" in e or "ville" in e), None)
+    # Remappe sur le nom original
+    if champ_cp:
+        champ_cp = entetes[entetes_norm.index(champ_cp)]
+    if champ_ville:
+        champ_ville = entetes[entetes_norm.index(champ_ville)]
+    return champ_cp, champ_ville
+
+
+def analyser_csv(url: str) -> dict:
+    """Télécharge un CSV complet et cherche des données Rennes Métropole."""
+    print("  Téléchargement en cours...")
+    response = requests.get(url, stream=True, timeout=60)
+    response.raise_for_status()
+
+    contenu = b""
+    total = 0
+    for chunk in response.iter_content(chunk_size=1024 * 1024):
+        contenu += chunk
+        total += len(chunk)
+        print(f"  {total / 1024 / 1024:.1f} Mo...", end="\r")
+    print()
+
+    texte = contenu.decode("utf-8", errors="replace")
+    reader = csv.DictReader(io.StringIO(texte))
+    entetes = reader.fieldnames or []
+
+    champ_cp, champ_ville = deviner_champs(list(entetes))
+    print(f"  En-têtes détectés : {list(entetes)[:10]}")
+    print(f"  Champ CP trouvé : {champ_cp} | Champ ville trouvé : {champ_ville}")
+
+    nb_total = 0
+    nb_rm = 0
+    exemples = []
+
+    for row in reader:
+        nb_total += 1
+        cp = str(row.get(champ_cp, "")).strip() if champ_cp else ""
+        ville = str(row.get(champ_ville, "")).strip() if champ_ville else ""
+
+        if cp in CODES_POSTAUX_RM or est_dans_rm(ville, cp):
+            nb_rm += 1
+            if len(exemples) < 3:
+                exemples.append({k: v for k, v in row.items()})
+
+    return {
+        "nb_total": nb_total,
+        "nb_rm": nb_rm,
+        "champ_cp": champ_cp,
+        "champ_ville": champ_ville,
+        "exemples": exemples,
+    }
+
+
+# ---------------------------------------------------------------------------
+# Persistance de la découverte
+# ---------------------------------------------------------------------------
+
+def charger_decouverte() -> dict:
+    """Charge l'historique des JDD déjà vus (pour ne pas les reproposer)."""
+    if os.path.exists(DECOUVERTE_FILE):
+        with open(DECOUVERTE_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return {"vus": [], "candidats": [], "exclus": []}
+
+
+def sauvegarder_decouverte(decouverte: dict) -> None:
+    os.makedirs(os.path.dirname(DECOUVERTE_FILE), exist_ok=True)
+    with open(DECOUVERTE_FILE, "w", encoding="utf-8") as f:
+        json.dump(decouverte, f, ensure_ascii=False, indent=2)
+
+
+# ---------------------------------------------------------------------------
+# Boucle interactive principale
+# ---------------------------------------------------------------------------
+
+def main():
+    print("=== Découverte interactive de JDD éligibles ===")
+    print(f"Mots-clés recherchés : {', '.join(KEYWORDS)}\n")
+
+    decouverte = charger_decouverte()
+    deja_vus = set(decouverte["vus"])
+
+    datasets_trouves = []
+    ids_trouves = set()
+
+    for keyword in KEYWORDS:
+        print(f"Recherche : « {keyword} »...")
+        resultats, total = rechercher_datasets(keyword)
+        print(f"  {total} résultats (affichage des {len(resultats)} premiers)")
+        for ds in resultats:
+            if ds["id"] not in ids_trouves:
+                datasets_trouves.append(ds)
+                ids_trouves.add(ds["id"])
+
+    # Filtrer les orgs exclues et les déjà vus
+    candidats = [
+        ds for ds in datasets_trouves
+        if not est_org_exclue(ds) and ds["id"] not in deja_vus
+    ]
+    print(f"\n{len(candidats)} JDD à examiner (hors orgs RM et déjà vus)\n")
+
+    for i, ds in enumerate(candidats, 1):
+        print(f"\n[{i}/{len(candidats)}]")
+
+        ressource = trouver_ressource_csv_json(ds)
+        if ressource is None:
+            print(f"  (pas de ressource CSV/JSON, on passe)")
+            decouverte["vus"].append(ds["id"])
+            continue
+
+        extrait = obtenir_extrait(ressource)
+        afficher_fiche(ds, extrait)
+
+        choix = input("\n(s)kip  (a)nalyse approfondie  (q)uitter ? ").strip().lower()
+
+        if choix == "q":
+            break
+        elif choix == "a":
+            print("\nAnalyse approfondie...")
+            resultat = analyser_csv(ressource["url"])
+            print(f"\n  Total enregistrements : {resultat['nb_total']}")
+            print(f"  Dont Rennes Métropole  : {resultat['nb_rm']}")
+            if resultat['exemples']:
+                print("  Exemples RM :")
+                for ex in resultat['exemples']:
+                    print(f"    {ex}")
+
+            if resultat['nb_rm'] > 0:
+                ajout = input("\n  Ajouter à datasets.py ? (o/n) ").strip().lower()
+                if ajout == "o":
+                    candidat = {
+                        "dataset_id": ds["id"],
+                        "titre": ds["title"],
+                        "dossier": ds["id"][:30].replace("-", "_"),
+                        "champ_cp": resultat["champ_cp"],
+                        "champ_ville": resultat["champ_ville"],
+                        "nb_rm": resultat["nb_rm"],
+                    }
+                    decouverte["candidats"].append(candidat)
+                    print(f"  ✓ Ajouté à la liste des candidats.")
+                    print(f"  → Ajoute manuellement dans src/conf/datasets.py :")
+                    print(f"    {json.dumps(candidat, ensure_ascii=False)}")
+        else:
+            decouverte["exclus"].append(ds["id"])
+
+        decouverte["vus"].append(ds["id"])
+        sauvegarder_decouverte(decouverte)
+
+    print("\n=== Session terminée ===")
+    print(f"Résultats sauvegardés dans {DECOUVERTE_FILE}")
+    if decouverte["candidats"]:
+        print(f"\nJDD candidats retenus : {len(decouverte['candidats'])}")
+        for c in decouverte["candidats"]:
+            print(f"  - {c['titre'][:60]}")
+
+
+if __name__ == "__main__":
+    main()

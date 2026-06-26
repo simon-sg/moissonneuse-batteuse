@@ -738,9 +738,10 @@ def main():
     # Repropose les analyses échouées en priorité
     echecs_datasets = []
     if decouverte["echecs"]:
-        print(f"Récupération de {len(decouverte['echecs'])} JDD à ré-analyser...")
+        n = len(decouverte["echecs"])
+        print(f"{n} JDD dont l'analyse avait échoué (erreur téléchargement ou parsing) — reproposés en priorité...")
         echecs_datasets = fetcher_datasets_par_ids(decouverte["echecs"])
-        print(f"{len(echecs_datasets)} JDD récupérés pour ré-analyse.\n")
+        print(f"  → {len(echecs_datasets)} JDD récupérés.\n")
 
     datasets_trouves = []
     ids_trouves = set()

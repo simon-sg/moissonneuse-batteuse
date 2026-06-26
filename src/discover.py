@@ -13,7 +13,7 @@ import re
 import textwrap
 import datetime
 import hashlib
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import requests
 
@@ -809,21 +809,26 @@ def main():
     except KeyboardInterrupt:
         print("\n\nInterruption clavier.")
 
-    # Attend et affiche toutes les analyses restantes
+    # Attend et affiche toutes les analyses restantes (dans l'ordre de complétion)
     if en_cours:
-        print(f"\n{len(en_cours)} analyse(s) en cours, attente des résultats...")
+        total_restants = len(en_cours)
+        print(f"\n{total_restants} analyse(s) en cours, attente des résultats...")
         print("(Ctrl+C pour abandonner les analyses restantes)\n")
-        for ds_a, fut in en_cours:
-            try:
-                resultat = fut.result(timeout=180)
-            except KeyboardInterrupt:
-                print("\nAbandon des analyses restantes — elles seront reproposées.")
-                fut.cancel()
-                break
-            except Exception as e:
-                print(f"  Erreur : {e}")
-                resultat = None
-            traiter_resultat(ds_a, resultat, decouverte)
+        futures_map = {fut: ds_a for ds_a, fut in en_cours}
+        terminees = 0
+        try:
+            for fut in as_completed(futures_map):
+                ds_a = futures_map[fut]
+                terminees += 1
+                print(f"  [{terminees}/{total_restants}] Résultat reçu : {ds_a['title'][:50]}")
+                try:
+                    resultat = fut.result()
+                except Exception as e:
+                    print(f"  Erreur : {e}")
+                    resultat = None
+                traiter_resultat(ds_a, resultat, decouverte)
+        except KeyboardInterrupt:
+            print("\nAbandon des analyses restantes — elles seront reproposées.")
 
     executor.shutdown(wait=False)
 

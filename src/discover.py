@@ -24,6 +24,24 @@ from conf.communes_rm import CODES_POSTAUX_RM
 
 KEYWORDS = ["commune france", "code postal france", "code insee france"]
 
+NB_PAGES = 5  # pages récupérées par mot-clé (20 résultats/page → 100 max par keyword)
+
+# Mots dans le titre indiquant un territoire clairement hors RM
+# (datasets sans zones spatiales déclarées mais dont le titre trahit la portée)
+TITRES_HORS_RM = [
+    "île-de-france", "ile-de-france", "île de france", "ile de france",
+    "occitanie", "provence", "paca",
+    "auvergne", "rhône-alpes", "rhone-alpes",
+    "grand est", "alsace", "lorraine",
+    "hauts-de-france", "nord-pas-de-calais", "picardie",
+    "nouvelle-aquitaine", "aquitaine",
+    "pays de la loire",
+    "centre-val de loire",
+    "bourgogne", "franche-comté", "franche-comte",
+    "corse",
+    "normandie",
+]
+
 # Slugs d'organisations à exclure (déjà publient sur RM ou hors-sujet)
 ORGS_EXCLUES = [
     "rennes-metropole",
@@ -50,27 +68,44 @@ DECOUVERTE_FILE = os.path.join(
 # Recherche
 # ---------------------------------------------------------------------------
 
-def rechercher_datasets(keyword: str, page: int = 1) -> tuple[list, int]:
+def rechercher_datasets(keyword: str, nb_pages: int = NB_PAGES) -> tuple[list, int]:
     """
-    Cherche des JDD sur data.gouv.fr par mot-clé.
-    Retourne (liste de datasets, total de résultats).
+    Cherche des JDD sur data.gouv.fr par mot-clé sur plusieurs pages.
+    Retourne (liste de datasets, total de résultats sur data.gouv.fr).
     """
     url = f"https://www.data.gouv.fr/api/1/datasets/"
-    params = {"q": keyword, "page_size": PAGE_SIZE, "page": page}
-    try:
-        response = requests.get(url, params=params, timeout=10)
-        response.raise_for_status()
-        data = response.json()
-        return data.get("data", []), data.get("total", 0)
-    except Exception as e:
-        print(f"  (Erreur lors de la recherche : {e})")
-        return [], 0
+    tous = []
+    total = 0
+    for page in range(1, nb_pages + 1):
+        params = {"q": keyword, "page_size": PAGE_SIZE, "page": page}
+        try:
+            response = requests.get(url, params=params, timeout=10)
+            response.raise_for_status()
+            data = response.json()
+            resultats = data.get("data", [])
+            total = data.get("total", 0)
+            tous.extend(resultats)
+            if len(resultats) < PAGE_SIZE:
+                break  # dernière page atteinte
+        except Exception as e:
+            print(f"  (Erreur page {page} : {e})")
+            break
+    return tous, total
 
 
 def est_org_exclue(dataset: dict) -> bool:
     org = dataset.get("organization") or {}
     slug = org.get("slug", "")
     return any(exclu in slug for exclu in ORGS_EXCLUES)
+
+
+def titre_hors_rm(dataset: dict) -> bool:
+    """
+    Retourne True si le titre indique clairement un territoire hors RM,
+    pour filtrer les datasets sans zones spatiales mais géographiquement ciblés ailleurs.
+    """
+    titre = dataset.get("title", "").lower()
+    return any(region in titre for region in TITRES_HORS_RM)
 
 
 ZONES_INCLUANT_RM = {
@@ -328,7 +363,7 @@ def main():
     for keyword in KEYWORDS:
         print(f"Recherche : « {keyword} »...")
         resultats, total = rechercher_datasets(keyword)
-        print(f"  {total} résultats (affichage des {len(resultats)} premiers)")
+        print(f"  {total} résultats au total, {len(resultats)} récupérés ({NB_PAGES} pages)")
         for ds in resultats:
             if ds["id"] not in ids_trouves:
                 datasets_trouves.append(ds)
@@ -339,6 +374,7 @@ def main():
         ds for ds in datasets_trouves
         if not est_org_exclue(ds)
         and couvre_rennes(ds)
+        and not titre_hors_rm(ds)
         and ds["id"] not in deja_vus
     ]
     print(f"\n{len(candidats)} JDD à examiner (hors orgs RM et déjà vus)\n")

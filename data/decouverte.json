@@ -1,0 +1,82 @@
+{
+  "vus": [
+    "59ae106fb595087a24916974",
+    "698bfed5de3199f2d66b70e6",
+    "5e313aa66f44413bf8c5ba4d",
+    "57868e81a3a7295d371adce0",
+    "5ddd3ee8634f413323b8566a",
+    "53699121a3a729239d203b9c",
+    "56b0c2d3a3a7294d39b88a6a",
+    "66ea186629970c5b4f45d1f7",
+    "5b55e3f588ee3869071ca5af",
+    "67373de3ec00afe5cdc40b68",
+    "67373dbcec00afe5cdc40b42",
+    "67373e6cec00afe5cdc40bba",
+    "60956709e0afa792a8f75bac",
+    "623a9c2a436ba7e64b927462",
+    "6a27ecc2ea8efb2871707782",
+    "536997ffa3a729239d204e36",
+    "6734cf0d55f4ed541ac40a88",
+    "63ce596a11ce57e6a6cfb6df",
+    "69e64e8d5ae8bac0c071c98c",
+    "6a34f17e153f3c387b4cdbae",
+    "684be5cd7dd2fdcc07adff94",
+    "65fc44a6216b5d3d027263d4",
+    "65b1a75854fb88f787f72944",
+    "53699f09a3a729239d206022",
+    "672de493bf9bd19deda0c563",
+    "646d8c611fd41a60af8cdb6a",
+    "67b4a85128673073c987ed90",
+    "61a2872907cfb213600f3f43",
+    "5ced14688b4c4114480ce688",
+    "6769a388c3b64f95ea639e27"
+  ],
+  "candidats": [
+    {
+      "dataset_id": "6a27ecc2ea8efb2871707782",
+      "titre": "Indicateurs par commune (France métropolitaine)",
+      "dossier": "6a27ecc2ea8efb2871707782",
+      "champ_cp": null,
+      "champ_ville": "nom_commune",
+      "nb_rm": 48
+    },
+    {
+      "dataset_id": "6a34f17e153f3c387b4cdbae",
+      "titre": "Indicateurs business par commune (France métropolitaine)",
+      "dossier": "6a34f17e153f3c387b4cdbae",
+      "champ_cp": null,
+      "champ_ville": "nom_commune",
+      "nb_rm": 54
+    },
+    {
+      "dataset_id": "672de493bf9bd19deda0c563",
+      "titre": "Communes enrichies avec la nuance politique (France)",
+      "dossier": "672de493bf9bd19deda0c563",
+      "champ_cp": null,
+      "champ_ville": "nom_commune",
+      "nb_rm": 54
+    },
+    {
+      "dataset_id": "6769a388c3b64f95ea639e27",
+      "titre": "Données sur les communes de France Métropolitaine",
+      "dossier": "6769a388c3b64f95ea639e27",
+      "champ_cp": "Code postal",
+      "champ_ville": "nom commune",
+      "nb_rm": 48
+    }
+  ],
+  "exclus": [
+    "59ae106fb595087a24916974",
+    "57868e81a3a7295d371adce0",
+    "5ddd3ee8634f413323b8566a",
+    "56b0c2d3a3a7294d39b88a6a",
+    "66ea186629970c5b4f45d1f7",
+    "5b55e3f588ee3869071ca5af",
+    "60956709e0afa792a8f75bac",
+    "623a9c2a436ba7e64b927462",
+    "536997ffa3a729239d204e36",
+    "65fc44a6216b5d3d027263d4",
+    "53699f09a3a729239d206022",
+    "646d8c611fd41a60af8cdb6a"
+  ]
+}

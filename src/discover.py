@@ -13,6 +13,8 @@ import re
 import textwrap
 import datetime
 import hashlib
+import zipfile
+import gzip
 from concurrent.futures import ThreadPoolExecutor, wait, FIRST_COMPLETED
 
 import requests
@@ -20,15 +22,33 @@ import requests
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from filters.geographic import est_dans_rm, est_commune_rm, normaliser
-from conf.communes_rm import CODES_POSTAUX_RM, CODES_INSEE_RM
+from conf.communes_rm import CODES_POSTAUX_RM, CODES_INSEE_RM, COMMUNES_RM
+from connectors.sirene import obtenir_sirens_rm
 
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
 
-KEYWORDS = ["commune", "code postal", "code insee", "iris"]
+KEYWORDS = ["commune", "code postal", "code insee", "iris", "adresse"]
 
-NB_PAGES = 25  # pages récupérées par mot-clé (20 résultats/page → 500 max par keyword)
+NB_PAGES = 50  # pages récupérées par mot-clé (20 résultats/page → 1000 max par keyword)
+
+# Recherche structurée : utilise les filtres API plutôt que les mots-clés texte
+# Mettre à False pour revenir à la recherche par mots-clés
+RECHERCHE_STRUCTUREE = True
+
+REQUETES_STRUCTUREES = [
+    {"params": {"featured": "true"},                                              "label": "featured"},
+    {"params": {"q": "commune", "granularity": "fr:commune", "sort": "-views"}, "label": "commune + granularité commune"},
+    {"params": {"q": "iris",    "granularity": "fr:iris",    "sort": "-views"}, "label": "iris + granularité iris"},
+    {"params": {"q": "epci",                                 "sort": "-views"}, "label": "epci"},
+    {"params": {"q": "code insee",                           "sort": "-views"}, "label": "code insee"},
+    {"params": {"q": "code postal",                          "sort": "-views"}, "label": "code postal"},
+    {"params": {"q": "adresse",                              "sort": "-views"}, "label": "adresse"},
+    {"params": {"q": "siren",                                "sort": "-views"}, "label": "siren"},
+    {"params": {"q": "siret",                                "sort": "-views"}, "label": "siret"},
+    {"params": {"q": "sirene",                               "sort": "-views"}, "label": "sirene"},
+]
 
 # Mots dans le titre indiquant un territoire clairement hors RM
 # (datasets sans zones spatiales déclarées mais dont le titre trahit la portée)
@@ -53,6 +73,8 @@ ORGS_EXCLUES = [
     "sig-rennes-metropole",
     "metropole-de-rennes",
     "ville-de-rennes",
+    "agglo",                    # agglomérations hors RM (Saint-Nazaire agglo, etc.)
+    "ressourcerie-datalocale-1", # datacat.datalocale.fr hors service (DNS mort, 524 JDD inaccessibles)
 ]
 
 # Noms de champs courants pour le code postal et la commune dans les données
@@ -73,40 +95,228 @@ CHAMPS_IRIS = [
     # ex: 'Numéro commune' + 'Numéro d'IRIS' → on matche la partie INSEE
     "numero commune", "num commune", "code commune", "depcom", "codgeo",
     # Colonne nommée directement 'INSEE' ou 'code_insee' (ex: balances comptables DGFiP)
-    "insee", "code insee",
+    "insee", "code insee", "codeinsee", "code commune insee", "codecommune",
+    "insee com", "insee comm", "cod commune", "com insee",
+    "icom",  # Comptes individuels DGFiP (identifiant commune, 3 chiffres + dep)
+    # 'Code géographique' = alias INSEE standard (ex: Revenus des français à la commune INSEE)
+    "code geographique",
+    # COG (Code Officiel Géographique) — variantes avec préfixe "geocode"
+    "geocode commune", "geocode epci", "code officiel geographique",
+    "code officiel commune", "cog commune", "cog",
 ]
+# Colonnes contenant le code département (2 chiffres) — utilisées pour reconstituer
+# un code INSEE complet quand la colonne INSEE ne contient que 3 chiffres (ex: DGFiP balances)
+CHAMPS_DEP = ["ndept", "dep", "code dep", "code dept", "num dep", "num dept",
+              "departement", "dept", "codedep", "dep commune"]
+# Noms de champs courants pour les identifiants d'entreprise SIREN/SIRET
+CHAMPS_SIREN = [
+    "siren", "siret",
+    "n siren", "n siret", "no siren", "no siret",
+    "num siren", "num siret", "numero siren", "numero siret",
+    "code siren", "code siret",
+    "siren siege", "siret siege",
+    "siren etablissement", "siret etablissement",
+    "identifiant siren", "identifiant siret",
+]
+# Colonnes combinant lat et lon en un seul champ (format OpenDataSoft "lat,lon")
+CHAMPS_GEO_POINT = [
+    "geo point 2d", "geo_point_2d", "geo point", "geo_point", "geopoint",
+    "coordonnees gps", "coord gps", "point gps", "point_gps",
+]
+# Colonnes latitude et longitude séparées
+CHAMPS_LAT = [
+    "latitude", "lat", "y wgs84", "y_wgs84", "lat wgs84", "lat_wgs84",
+    "wgs84 lat", "wgs84_lat",
+]
+CHAMPS_LON = [
+    "longitude", "lon", "lng", "long",
+    "x wgs84", "x_wgs84", "lon wgs84", "lon_wgs84",
+    "wgs84 lon", "wgs84_lon",
+]
+# Bounding box de Rennes Métropole en WGS84 (avec marge de ~5 km)
+_RM_LAT_MIN, _RM_LAT_MAX = 47.80, 48.35
+_RM_LON_MIN, _RM_LON_MAX = -2.00, -1.30
+
+# Noms de champs courants pour une adresse textuelle complète (fallback si pas de CP/ville/IRIS)
+CHAMPS_ADRESSE = [
+    "adresse", "adresse complete", "adresse_complete", "adresse postale", "adresse_postale",
+    "adresse 1", "adresse1", "adresse voie", "adresse_voie",
+    "voie", "libelle voie", "libelle_voie", "libelle de voie",
+    "localisation", "lieu dit", "lieu_dit",
+]
+
+# Ensemble normalisé des noms de communes RM (pour la recherche dans les adresses)
+_COMMUNES_NORM_RM = {normaliser(c) for c in COMMUNES_RM}
+# Regex pour extraire un code postal 35xxx depuis une adresse textuelle
+_RE_CP_35 = re.compile(r'\b(35\d{3})\b')
+
+# Marqueurs dans le titre (phrase exacte normalisée)
+MARQUEURS_TITRE = ["par commune", "par communes", "par iris", "par code postal",
+                   "par code insee", "par adresse", "par epci"]
+# Marqueurs dans la description (mots isolés suffisent)
+MARQUEURS_DESC = ["commune", "code postal", "code insee", "iris", "adresse", "epci"]
+# Sous-chaînes à chercher dans les en-têtes (wildcard *xxx*) — complètent MARQUEURS_ENTETES
+MARQUEURS_ENTETES_SUBSTR = ["epci", "iris", "insee", "commune", "adresse", "postal"]
+# En-têtes CSV : liste large, faux positifs acceptés
+MARQUEURS_ENTETES = set(
+    CHAMPS_IRIS + CHAMPS_DEP + CHAMPS_ADRESSE + CHAMPS_CP + CHAMPS_VILLE
+) | {
+    # Variantes communes
+    "code com", "cod com", "code_com", "cod_com",
+    "lib com", "lib_com", "libcom", "libelle com", "libelle_com",
+    "lib commune", "lib_commune", "libelle commune", "libelle_commune",
+    "nom com", "nom_com", "nom commune", "nom_commune",
+    "cod commune", "cod_commune",
+    # IRIS variantes
+    "num iris", "num_iris", "numero iris", "numero_iris",
+    "l iris", "l_iris", "lib iris", "lib_iris", "libelle iris", "libelle_iris",
+    "tri iris", "tri_iris", "p iris", "p_iris",
+    # Code postal variantes
+    "postal", "zip", "zipcode", "zip code", "zip_code", "code_zip",
+    # Adresse variantes
+    "adrs", "adr", "adresse1", "adresse2", "adresse 2",
+    "adr1", "adr2", "adr 1", "adr 2",
+    "num rue", "num_rue", "numero rue", "numero_rue",
+    "num voie", "num_voie", "numero voie", "numero_voie",
+    "rue", "lieu", "localite", "quartier", "secteur", "territoire",
+    # Identifiants entreprises (souvent liés à une adresse commune)
+    "siret", "siren", "nic",
+    # Géométrie / coordonnées
+    "geo point", "geo_point", "geo point 2d", "geo_point_2d",
+    "geo shape", "geo_shape", "geometry", "geom", "wkt",
+    "coordonnees", "coordinates", "coord",
+    "lon", "lat", "longitude", "latitude",
+    "x l93", "y l93", "x_l93", "y_l93", "lambert", "lambert93",
+    "point gps", "point_gps", "gps",
+    # COG (Code Officiel Géographique)
+    "geocode commune", "geocode epci", "code officiel geographique",
+    "code officiel commune", "cog commune", "cog",
+    # Région / arrondissement (faux positifs assumés)
+    "region", "reg", "lib reg", "lib_reg", "libelle region", "libelle_region",
+    "arrondissement", "arr", "l ar", "l_ar",
+}
 
 PAGE_SIZE = 20  # résultats par page
 
 _DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
 
-DECOUVERTE_FILE = os.path.join(_DATA_DIR, "decouverte.json")
-LOG_FILE        = os.path.join(_DATA_DIR, "discover.log")
-CACHE_DIR       = os.path.join(_DATA_DIR, "cache")
+DECOUVERTE_FILE    = os.path.join(_DATA_DIR, "decouverte.json")
+LOG_FILE           = os.path.join(_DATA_DIR, "discover.log")
+CACHE_DIR          = os.path.join(_DATA_DIR, "cache")
+RESULTATS_API_FILE = os.path.join(_DATA_DIR, "derniere_recherche.json")
+PREFILTRES_FILE    = os.path.join(_DATA_DIR, "derniers_prefiltres.json")
+
+# ---------------------------------------------------------------------------
+# Pré-filtrage automatique (description + en-têtes CSV)
+# ---------------------------------------------------------------------------
+
+def _contient_marqueurs_geo(dataset: dict) -> bool:
+    """Vérifie titre et description sans télécharger quoi que ce soit."""
+    titre = normaliser(dataset.get("title", "") or "")
+    desc  = normaliser(dataset.get("description", "") or "")
+    if any(m in titre for m in MARQUEURS_TITRE):
+        return True
+    return any(m in desc for m in MARQUEURS_DESC)
+
+
+def _telecharger_entetes(url: str) -> list[str] | None:
+    """Télécharge les premiers octets d'une URL et retourne la 1ère ligne découpée."""
+    try:
+        resp = requests.get(url, stream=True, timeout=10)
+        if resp.status_code != 200:
+            return None
+        contenu = b""
+        for chunk in resp.iter_content(chunk_size=4096):
+            contenu += chunk
+            if b"\n" in contenu or len(contenu) > 16384:
+                break
+        resp.close()
+        # Détection binaire rapide
+        if contenu[:4] in (b"PK\x03\x04", b"\xd0\xcf\x11\xe0") or contenu[:2] == b"\x1f\x8b":
+            return None
+        texte = contenu.decode("utf-8", errors="replace")
+        if texte.count("�") >= 1:
+            texte = contenu.decode("latin-1")
+        premiere_ligne = texte.split("\n")[0].strip().strip("\r")
+        if not premiere_ligne:
+            return None
+        # Détecter le délimiteur
+        nb_cols, delimiteur = 0, ","
+        for sep in (";", "\t", "|", ","):
+            n = len(premiere_ligne.split(sep))
+            if n > nb_cols:
+                nb_cols, delimiteur = n, sep
+        return [e.strip().strip('"').strip("'") for e in premiere_ligne.split(delimiteur)]
+    except Exception:
+        return None
+
+
+def pre_filtrer(dataset: dict) -> tuple[str, dict | None]:
+    """
+    Pipeline automatique en 3 étapes :
+      1. Description/titre → marqueurs géo ?
+      2. Si non → en-têtes CSV (download léger) → géocode trouvé ?
+      3. Si oui (étape 1 ou 2) → analyse complète → RM trouvé ?
+
+    Retourne :
+      ("skip",      None)    pas de marqueurs → ignorer silencieusement
+      ("candidat",  result)  nb_rm > 0 → ajouter automatiquement
+      ("presenter", result)  géo trouvé mais 0 RM (ou échec) → montrer à l'humain
+    """
+    # Étape 1 : description/titre (instantané)
+    geo_en_description = _contient_marqueurs_geo(dataset)
+
+    # Étape 2 : si pas de marqueurs texte, vérifier les en-têtes CSV (léger)
+    if not geo_en_description:
+        geo_en_entetes = False
+        for res in dataset.get("resources", []):
+            if "csv" not in (res.get("format") or "").lower():
+                continue
+            entetes = _telecharger_entetes(res.get("url", ""))
+            if entetes:
+                noms_norm = {normaliser(e) for e in entetes}
+                if (noms_norm & MARQUEURS_ENTETES) or any(
+                    s in nom for nom in noms_norm for s in MARQUEURS_ENTETES_SUBSTR
+                ):
+                    geo_en_entetes = True
+                    break
+        if not geo_en_entetes:
+            return ("skip", None)
+
+    # Étape 3 : analyse complète — essaie toutes les ressources CSV
+    result = analyser_dataset(dataset, verbose=False)
+    if result is not None:
+        return ("candidat", result) if result["nb_rm"] > 0 else ("presenter", result)
+    return ("presenter", None)
+
 
 # ---------------------------------------------------------------------------
 # Recherche
 # ---------------------------------------------------------------------------
 
 def rechercher_datasets(keyword: str, nb_pages: int = NB_PAGES) -> tuple[list, int]:
-    """
-    Cherche des JDD sur data.gouv.fr par mot-clé sur plusieurs pages.
-    Retourne (liste de datasets, total de résultats sur data.gouv.fr).
-    """
-    url = f"https://www.data.gouv.fr/api/1/datasets/"
+    """Cherche par mot-clé (mode classique). Retourne (datasets, total)."""
+    return _paginer({"q": keyword}, nb_pages)
+
+
+def _paginer(params_base: dict, nb_pages: int = NB_PAGES) -> tuple[list, int]:
+    """Récupère toutes les pages d'une requête API. Retourne (datasets, total)."""
+    url = "https://www.data.gouv.fr/api/1/datasets/"
     tous = []
     total = 0
     for page in range(1, nb_pages + 1):
-        params = {"q": keyword, "page_size": PAGE_SIZE, "page": page}
+        params = {**params_base, "page_size": PAGE_SIZE, "page": page}
         try:
             response = requests.get(url, params=params, timeout=10)
+            if response.status_code == 404:
+                break  # page inexistante = fin de pagination
             response.raise_for_status()
             data = response.json()
             resultats = data.get("data", [])
             total = data.get("total", 0)
             tous.extend(resultats)
             if len(resultats) < PAGE_SIZE:
-                break  # dernière page atteinte
+                break
         except Exception as e:
             print(f"  (Erreur page {page} : {e})")
             break
@@ -186,9 +396,18 @@ def titre_hors_rm(dataset: dict) -> bool:
     pour filtrer les datasets sans zones spatiales mais géographiquement ciblés ailleurs.
     """
     titre = (dataset.get("title", "") or "").lower().strip()
-    # "COMMUNE DE X" → dataset sur une commune spécifique, non pertinent
-    if titre.startswith("commune de ") or titre.startswith("commune d'"):
-        return True
+    titre_norm = normaliser(titre)
+    # "commune de X" ou "commune d'X" n'importe où dans le titre →
+    # filtrer si X n'est pas une des 43 communes de RM
+    for pref in ("commune de ", "commune d'",
+                 "mairie de ", "mairie d'",
+                 "ville de ", "ville d'"):
+        idx = titre_norm.find(pref)
+        if idx >= 0:
+            reste = titre_norm[idx + len(pref):]
+            if not any(reste.startswith(c) for c in _COMMUNES_NORM_RM):
+                return True
+            break  # commune RM trouvée → ne pas filtrer via ce critère
     return any(region in titre for region in TITRES_HORS_RM)
 
 
@@ -206,6 +425,17 @@ def description_suggerant_commune(dataset: dict) -> bool:
     desc = (dataset.get("description", "") or "").lower()
     return any(mot in desc for mot in _MOTS_DESC_COMMUNE)
 
+
+def est_exclu_par_terme(dataset: dict, termes: list[str]) -> bool:
+    """Retourne True si un terme d'exclusion personnalisé apparaît dans le titre ou l'org."""
+    if not termes:
+        return False
+    titre = normaliser(dataset.get("title", "") or "")
+    org = normaliser((dataset.get("organization") or {}).get("name", ""))
+    return any(normaliser(t) in titre or normaliser(t) in org for t in termes)
+
+
+EPCI_SIREN_RM = "243500139"  # SIREN de Rennes Métropole
 
 ZONES_INCLUANT_RM = {
     "fr:region:53",       # Bretagne
@@ -240,33 +470,38 @@ def couvre_rennes(dataset: dict) -> bool:
     return False
 
 
-# Formats supportés pour l'analyse automatique (seront étendus progressivement)
-FORMATS_SUPPORTES = ("csv", "json")
-
-# Extensions/formats exclus de la détection CSV/JSON (pas encore supportés)
-# Ces datasets ne sont PAS stockés dans une liste permanente : quand on ajoutera
-# le support XLS, ZIP, geo, etc., ils réapparaîtront automatiquement.
-FORMATS_NON_SUPPORTES_FMT = (".gz", ".zip", "pdf", "excel", "shapefile",
-                              "xls", "xlsx", "ods", "geojson", "shapefile",
-                              "wms", "wfs", "ogc")
-FORMATS_NON_SUPPORTES_EXT = (".gz", ".zip", ".pdf", ".doc", ".docx",
-                              ".xls", ".xlsx", ".ods",
-                              ".shp", ".geojson", ".gpkg", ".kml",
-                              ".html", ".htm")
+_FORMATS_EXCLUS_FMT = ("pdf", "shapefile", "wms", "wfs", "ogc", "kml", "gpkg")
+_FORMATS_EXCLUS_EXT = (".pdf", ".shp", ".kml", ".gpkg", ".html", ".htm", ".doc", ".docx")
 
 
-def trouver_ressource_csv_json(dataset: dict) -> dict | None:
-    """Retourne la première ressource CSV ou JSON du dataset, ou None."""
-    for fmt in FORMATS_SUPPORTES:
-        for r in dataset.get("resources", []):
-            fmt_r = (r.get("format") or "").lower()
-            url_r = (r.get("url") or "").lower().split("?")[0]
-            if any(token in fmt_r for token in FORMATS_NON_SUPPORTES_FMT):
-                continue
-            if any(url_r.endswith(ext) for ext in FORMATS_NON_SUPPORTES_EXT):
-                continue
-            if fmt in fmt_r or url_r.endswith(f".{fmt}"):
-                return r
+def _format_analysable(res: dict) -> str | None:
+    """Retourne 'csv', 'xlsx', 'zip', 'gz' ou None selon la ressource."""
+    fmt = (res.get("format") or "").lower().strip()
+    url = (res.get("url") or "").lower().split("?")[0]
+    if any(token in fmt for token in _FORMATS_EXCLUS_FMT):
+        return None
+    if any(url.endswith(ext) for ext in _FORMATS_EXCLUS_EXT):
+        return None
+    if url.endswith(".csv.gz") or url.endswith(".tsv.gz") or fmt == "gz":
+        return "gz"
+    if "csv" in fmt or url.endswith(".csv"):
+        return "csv"
+    if fmt in ("xlsx", "excel") or url.endswith(".xlsx"):
+        return "xlsx"
+    if "zip" in fmt or url.endswith(".zip"):
+        return "zip"
+    return None
+
+
+def trouver_ressource_analysable(dataset: dict) -> dict | None:
+    """Retourne la première ressource analysable (CSV, ZIP, GZ, XLSX) ou JSON."""
+    for r in dataset.get("resources", []):
+        if _format_analysable(r):
+            return r
+    # Fallback JSON (extrait uniquement, pas d'analyse RM)
+    for r in dataset.get("resources", []):
+        if (r.get("format") or "").lower() == "json":
+            return r
     return None
 
 
@@ -284,18 +519,38 @@ def formats_disponibles(dataset: dict) -> list:
 # Extrait des données
 # ---------------------------------------------------------------------------
 
+_MAGIC_BINAIRE = [
+    b"PK\x03\x04",   # ZIP / XLSX / ODS / DOCX
+    b"\x1f\x8b",     # gzip
+    b"%PDF-",         # PDF
+    b"\xd0\xcf\x11\xe0",  # OLE2 (XLS, DOC ancien format)
+]
+
+
 def telecharger_extrait_csv(url: str, n_lignes: int = 5) -> str:
     """Télécharge les premières lignes d'un CSV (sans télécharger tout le fichier)."""
     try:
         response = requests.get(url, stream=True, timeout=15)
         response.raise_for_status()
-        lignes = []
-        for chunk in response.iter_lines():
-            if chunk:
-                lignes.append(chunk.decode("utf-8", errors="replace"))
-            if len(lignes) >= n_lignes + 1:  # +1 pour l'en-tête
+        # Collecte assez d'octets pour n_lignes+1 lignes (max 64 Ko)
+        contenu = b""
+        for chunk in response.iter_content(chunk_size=4096):
+            contenu += chunk
+            if contenu.count(b"\n") >= n_lignes + 1 or len(contenu) > 65536:
                 break
         response.close()
+        for magic in _MAGIC_BINAIRE:
+            if contenu.startswith(magic):
+                return "__BINAIRE__"
+        # Décodage avec fallback latin-1 (même logique que l'analyse complète)
+        texte = contenu.decode("utf-8", errors="replace")
+        if texte.count("�") >= 1:
+            texte = contenu.decode("latin-1")
+        lignes = [l for l in texte.split("\n") if l.strip()][:n_lignes + 1]
+        if lignes:
+            premiere_norm = normaliser(lignes[0].split(",")[0].split(";")[0])
+            if premiere_norm in ("colonne", "column", "champ", "field", "variable"):
+                return "__DICTIONNAIRE__"
         return "\n".join(lignes)
     except Exception as e:
         return f"(Impossible de télécharger l'extrait : {e})"
@@ -322,12 +577,18 @@ def telecharger_extrait_json(url: str, n_lignes: int = 5) -> str:
 
 
 def obtenir_extrait(ressource: dict) -> str:
-    fmt = ressource.get("format", "").lower()
+    fmt = _format_analysable(ressource) or (ressource.get("format") or "").lower()
     url = ressource.get("url", "")
     if fmt == "csv":
         return telecharger_extrait_csv(url)
     elif fmt == "json":
         return telecharger_extrait_json(url)
+    elif fmt == "zip":
+        return "(archive ZIP — voir résultat d'analyse)"
+    elif fmt in ("xlsx", "excel"):
+        return "(fichier Excel — voir résultat d'analyse)"
+    elif fmt == "gz":
+        return "(fichier compressé GZ — voir résultat d'analyse)"
     return "(format non supporté pour l'extrait)"
 
 
@@ -337,10 +598,11 @@ def obtenir_extrait(ressource: dict) -> str:
 
 SEP = "─" * 72
 
-def afficher_fiche(dataset: dict, extrait: str) -> None:
+def afficher_fiche(dataset: dict, extrait: str, resultat: dict | None = None) -> None:
     org = (dataset.get("organization") or {}).get("name", "?")
     description = dataset.get("description", "") or ""
-    description_courte = textwrap.fill(description[:300].replace("\n", " "), width=70)
+    description_courte = textwrap.fill(description[:300].replace("\n", " "), width=70,
+                                       break_long_words=True, break_on_hyphens=True)
     formats = list(set(
         r.get("format", "").upper()
         for r in dataset.get("resources", [])
@@ -354,8 +616,29 @@ def afficher_fiche(dataset: dict, extrait: str) -> None:
     print(f"FORMATS  : {', '.join(formats)}")
     print(f"MAJ      : {dataset.get('last_modified', '?')[:10]}")
     print(f"URL      : https://www.data.gouv.fr/datasets/{dataset['id']}")
+    if resultat is not None:
+        if resultat.get("champ_iris"):
+            methode, champ = "IRIS", resultat["champ_iris"]
+        elif resultat.get("champ_adresse"):
+            methode, champ = "adresse", resultat["champ_adresse"]
+        elif resultat.get("champ_siren"):
+            methode, champ = "SIREN", resultat["champ_siren"]
+        elif resultat.get("champ_lat"):
+            methode = "géo"
+            if resultat.get("champ_lon"):
+                champ = f"{resultat['champ_lat']} + {resultat['champ_lon']}"
+            else:
+                champ = resultat["champ_lat"]
+        elif resultat.get("champ_cp") or resultat.get("champ_ville"):
+            methode = "CP/ville"
+            champ = " + ".join(filter(None, [resultat.get("champ_cp"), resultat.get("champ_ville")]))
+        else:
+            methode, champ = "?", "?"
+        print(f"ANALYSE  : {resultat['nb_total']} lignes | {resultat['nb_rm']} RM | {methode}: {champ}")
     print(f"\nDESCRIPTION :\n{description_courte}")
-    print(f"\nEXTRAIT (5 premières lignes) :\n{extrait[:1000]}")
+    lignes_extrait = extrait.splitlines()[:6]
+    lignes_extrait = [l[:120] + ("…" if len(l) > 120 else "") for l in lignes_extrait]
+    print(f"\nEXTRAIT (5 premières lignes) :\n" + "\n".join(lignes_extrait))
     print(SEP)
 
 
@@ -401,13 +684,119 @@ def deviner_champ_iris(entetes: list[str]) -> str | None:
     for i, e in enumerate(entetes_norm):
         if "iris" in e and "libelle" not in e and "lib" not in e:
             return entetes[i]
+    # Fallback : "code insee" + suffixe (ex: "code insee 2024") sans mention région/dept
+    _SUFFIXES_GEO_EXCLUS = ("reg", "region", "dep", "departement", "arr", "arrondissement")
+    for i, e in enumerate(entetes_norm):
+        if "insee" in e and not any(s in e for s in _SUFFIXES_GEO_EXCLUS):
+            return entetes[i]
     return None
 
 
 def est_iris_rm(code: str) -> bool:
-    """Retourne True si un code IRIS appartient à une commune de RM."""
+    """Retourne True si un code IRIS, INSEE commune ou EPCI appartient à RM."""
     code = str(code).strip()
+    if code == EPCI_SIREN_RM:
+        return True
     return len(code) >= 5 and code[:5] in CODES_INSEE_RM
+
+
+def deviner_champ_dep(entetes: list[str]) -> str | None:
+    """Détecte une colonne contenant un code département (2 chiffres)."""
+    entetes_norm = [normaliser(e) for e in entetes]
+    for nom in CHAMPS_DEP:
+        if nom in entetes_norm:
+            return entetes[entetes_norm.index(nom)]
+    return None
+
+
+def deviner_champ_adresse(entetes: list[str]) -> str | None:
+    """Détecte une colonne contenant une adresse textuelle complète."""
+    entetes_norm = [normaliser(e) for e in entetes]
+    for nom in CHAMPS_ADRESSE:
+        if nom in entetes_norm:
+            return entetes[entetes_norm.index(nom)]
+    # Fallback : colonne dont le nom contient "adresse"
+    for i, e in enumerate(entetes_norm):
+        if "adresse" in e:
+            return entetes[i]
+    return None
+
+
+def deviner_champ_siren(entetes: list[str]) -> str | None:
+    """Détecte une colonne contenant des codes SIREN (9 chiffres) ou SIRET (14 chiffres)."""
+    entetes_norm = [normaliser(e) for e in entetes]
+    for nom in CHAMPS_SIREN:
+        if nom in entetes_norm:
+            return entetes[entetes_norm.index(nom)]
+    # Fallback : colonne dont le nom commence par "siren" ou "siret"
+    for i, e in enumerate(entetes_norm):
+        if e.startswith(("siren", "siret")):
+            return entetes[i]
+    return None
+
+
+def deviner_champs_geo(entetes: list[str]) -> tuple[str | None, str | None]:
+    """Détecte des colonnes de coordonnées géographiques WGS84.
+    Retourne (champ_lat, champ_lon) où :
+      - champ_lon is None → champ_lat est une colonne "lat,lon" combinée
+      - les deux non-None  → colonnes latitude et longitude séparées
+      - les deux None      → aucune colonne géo trouvée
+    """
+    entetes_norm = [normaliser(e) for e in entetes]
+    for nom in CHAMPS_GEO_POINT:
+        if nom in entetes_norm:
+            return entetes[entetes_norm.index(nom)], None
+    champ_lat, champ_lon = None, None
+    for nom in CHAMPS_LAT:
+        if nom in entetes_norm:
+            champ_lat = entetes[entetes_norm.index(nom)]
+            break
+    if champ_lat is None:
+        for i, e in enumerate(entetes_norm):
+            if e in ("lat", "latitude"):
+                champ_lat = entetes[i]
+                break
+    for nom in CHAMPS_LON:
+        if nom in entetes_norm:
+            champ_lon = entetes[entetes_norm.index(nom)]
+            break
+    if champ_lon is None:
+        for i, e in enumerate(entetes_norm):
+            if e in ("lon", "lng", "longitude"):
+                champ_lon = entetes[i]
+                break
+    if champ_lat and champ_lon:
+        return champ_lat, champ_lon
+    return None, None
+
+
+def est_point_rm(lat_val: str, lon_val: str | None) -> bool:
+    """Retourne True si le point WGS84 est dans la bounding box de RM.
+    Si lon_val is None, lat_val est au format "lat,lon" (OpenDataSoft).
+    """
+    try:
+        if lon_val is None:
+            parties = str(lat_val).replace(";", ",").split(",")
+            if len(parties) < 2:
+                return False
+            lat, lon = float(parties[0]), float(parties[1])
+        else:
+            lat, lon = float(lat_val), float(lon_val)
+    except (ValueError, TypeError):
+        return False
+    return _RM_LAT_MIN <= lat <= _RM_LAT_MAX and _RM_LON_MIN <= lon <= _RM_LON_MAX
+
+
+def est_adresse_rm(texte: str) -> bool:
+    """Retourne True si une adresse textuelle est dans Rennes Métropole.
+    Cherche d'abord un code postal 35xxx, puis un nom de commune RM."""
+    if not texte:
+        return False
+    for cp in _RE_CP_35.findall(texte):
+        if cp in CODES_POSTAUX_RM:
+            return True
+    texte_norm = normaliser(texte)
+    return any(commune in texte_norm for commune in _COMMUNES_NORM_RM)
 
 
 def log_analyse(entry: dict) -> None:
@@ -421,6 +810,21 @@ def log_analyse(entry: dict) -> None:
 def _chemin_cache(url: str) -> str:
     cle = hashlib.md5(url.encode()).hexdigest()
     return os.path.join(CACHE_DIR, cle)
+
+
+def _purger_cache(jours: int = 30) -> None:
+    """Supprime les entrées de cache plus vieilles que `jours` jours."""
+    if not os.path.isdir(CACHE_DIR):
+        return
+    limite = datetime.datetime.now().timestamp() - jours * 86400
+    supprimes = 0
+    for nom in os.listdir(CACHE_DIR):
+        chemin = os.path.join(CACHE_DIR, nom)
+        if os.path.isfile(chemin) and os.path.getmtime(chemin) < limite:
+            os.remove(chemin)
+            supprimes += 1
+    if supprimes:
+        print(f"  (Cache : {supprimes} fichier(s) supprimé(s), plus vieux que {jours} jours)\n")
 
 
 def _telecharger(url: str, verbose: bool) -> tuple:
@@ -445,6 +849,7 @@ def _telecharger(url: str, verbose: bool) -> tuple:
     except Exception as e:
         return None, 0, False, f"téléchargement : {e}"
 
+    MAX_MO = 50  # plafond : inutile de télécharger plus pour détecter des données RM
     contenu = b""
     total = 0
     interrompu = None
@@ -454,6 +859,11 @@ def _telecharger(url: str, verbose: bool) -> tuple:
             total += len(chunk)
             if verbose:
                 print(f"  {total / 1024 / 1024:.1f} Mo...", end="\r")
+            if total >= MAX_MO * 1024 * 1024:
+                response.close()
+                if verbose:
+                    print(f"\n  (Plafond {MAX_MO} Mo atteint — données partielles utilisées)")
+                break
     except Exception as e:
         interrompu = str(e)
     if verbose:
@@ -474,44 +884,109 @@ def _telecharger(url: str, verbose: bool) -> tuple:
     return contenu, total / 1024 / 1024, False, None
 
 
-def analyser_csv(url: str, verbose: bool = True,
-                 dataset_id: str = "", titre: str = "") -> dict | None:
-    """
-    Télécharge (ou récupère du cache) un CSV et cherche des données Rennes Métropole.
-    verbose=False supprime les prints (pour l'exécution en arrière-plan).
-    Retourne None si le téléchargement ou le parsing échoue (le JDD sera reproposé).
-    """
-    log = {"url": url, "dataset_id": dataset_id, "titre": titre}
+def _detecter_champs(entetes: list[str]) -> tuple:
+    """Retourne (champ_cp, champ_ville, champ_iris, champ_dep, champ_adresse, champ_siren)."""
+    champ_cp, champ_ville = deviner_champs(list(entetes))
+    champ_iris = deviner_champ_iris(list(entetes))
+    champ_dep = deviner_champ_dep(list(entetes)) if champ_iris else None
+    champ_adresse = (
+        None if (champ_cp or champ_ville or champ_iris)
+        else deviner_champ_adresse(list(entetes))
+    )
+    # SIREN en dernier recours : seulement si aucun champ géographique local n'est trouvé
+    champ_siren = (
+        None if (champ_cp or champ_ville or champ_iris or champ_adresse)
+        else deviner_champ_siren(list(entetes))
+    )
+    # Géolocalisation : fallback après tout le reste
+    champ_lat, champ_lon = (None, None) if (champ_cp or champ_ville or champ_iris
+                                             or champ_adresse or champ_siren) \
+        else deviner_champs_geo(list(entetes))
+    return champ_cp, champ_ville, champ_iris, champ_dep, champ_adresse, champ_siren, champ_lat, champ_lon
 
-    contenu, taille_mo, depuis_cache, erreur = _telecharger(url, verbose)
-    if erreur:
-        log["erreur"] = erreur
-        log_analyse(log)
-        if verbose:
-            print(f"  (Échec : {erreur})")
-        return None
 
-    log["taille_mo"] = round(taille_mo, 2)
-    log["cache"] = depuis_cache
+def _compter_lignes_rm(rows, champ_cp, champ_ville, champ_iris, champ_dep, champ_adresse,
+                        champ_siren=None, champ_lat=None, champ_lon=None) -> tuple:
+    """Itère rows (dicts) et compte ceux appartenant à Rennes Métropole."""
+    sirens_rm = obtenir_sirens_rm() if champ_siren else None
+    nb_total, nb_rm = 0, 0
+    exemples, premieres_lignes = [], []
+    for row in rows:
+        try:
+            nb_total += 1
+            if len(premieres_lignes) < 5:
+                premieres_lignes.append(dict(row))
+            if champ_iris:
+                code = str(row.get(champ_iris, "")).strip()
+                if len(code) < 5 and champ_dep:
+                    dept_raw = str(row.get(champ_dep, "")).strip()
+                    dept = (dept_raw.lstrip("0") or "0").zfill(2)
+                    code = dept + code.zfill(3)
+                in_rm = est_iris_rm(code)
+            elif champ_adresse:
+                in_rm = est_adresse_rm(str(row.get(champ_adresse, "")))
+            elif champ_siren:
+                val = str(row.get(champ_siren, "")).strip().replace(" ", "")
+                in_rm = val.isdigit() and len(val) in (9, 14) and val[:9] in sirens_rm
+            elif champ_lat:
+                lat_val = str(row.get(champ_lat, "")).strip()
+                lon_val = str(row.get(champ_lon, "")).strip() if champ_lon else None
+                in_rm = est_point_rm(lat_val, lon_val)
+            else:
+                cp = str(row.get(champ_cp, "")).strip() if champ_cp else ""
+                ville = str(row.get(champ_ville, "")).strip() if champ_ville else ""
+                if champ_cp and champ_ville:
+                    in_rm = est_dans_rm(ville, cp)
+                elif champ_ville:
+                    in_rm = est_commune_rm(ville)
+                elif champ_cp:
+                    in_rm = cp in CODES_POSTAUX_RM
+                else:
+                    in_rm = False
+            if in_rm:
+                nb_rm += 1
+                if len(exemples) < 3:
+                    exemples.append(dict(row))
+        except csv.Error:
+            break  # ligne tronquée (téléchargement partiel) — on garde ce qu'on a
+    return nb_total, nb_rm, exemples, premieres_lignes
 
-    # Détection précoce de fichiers binaires (PDF, ZIP…)
+
+def _construire_resultat(champ_cp, champ_ville, champ_iris, champ_adresse,
+                         nb_total, nb_rm, exemples, premieres_lignes,
+                         champ_siren=None, champ_lat=None, champ_lon=None) -> dict:
+    return {
+        "nb_total": nb_total, "nb_rm": nb_rm,
+        "champ_cp": champ_cp, "champ_ville": champ_ville,
+        "champ_iris": champ_iris, "champ_adresse": champ_adresse,
+        "champ_siren": champ_siren,
+        "champ_lat": champ_lat, "champ_lon": champ_lon,
+        "exemples": exemples, "premieres_lignes": premieres_lignes,
+    }
+
+
+def _analyser_contenu_csv(contenu: bytes, verbose: bool, dataset_id: str, titre: str,
+                           url: str = "", taille_mo: float = 0,
+                           depuis_cache: bool = False) -> dict | None:
+    """Parse des bytes CSV et cherche des données Rennes Métropole."""
+    log = {"url": url, "dataset_id": dataset_id, "titre": titre,
+           "taille_mo": round(taille_mo, 2), "cache": depuis_cache}
+
     if contenu[:5] in (b"%PDF-", b"PK\x03\x04", b"\x1f\x8b\x08"):
-        log["erreur"] = "fichier binaire détecté (PDF/ZIP/GZ), non supporté"
+        log["erreur"] = "fichier binaire"
         log_analyse(log)
         if verbose:
             print("  (Fichier binaire détecté, non supporté)")
         return None
 
-    # Détection de réponse HTML (redirection, page d'erreur, auth)
     debut = contenu[:100].lstrip().lower()
     if debut.startswith((b"<!doctype", b"<html")):
-        log["erreur"] = "réponse HTML reçue (redirection ou authentification requise)"
+        log["erreur"] = "réponse HTML"
         log_analyse(log)
         if verbose:
             print("  (Réponse HTML reçue — redirection ou authentification)")
         return None
 
-    # Décodage avec fallback latin-1 si trop d'erreurs UTF-8
     texte = contenu.decode("utf-8-sig", errors="replace")
     if texte.count("�") > 10:
         texte = contenu.decode("latin-1")
@@ -521,55 +996,48 @@ def analyser_csv(url: str, verbose: bool = True,
         delimiteur = dialect.delimiter
     except csv.Error:
         delimiteur = ","
+
+    premiere_ligne = texte.split("\n")[0]
+    premiere_norm = normaliser(premiere_ligne.split(",")[0].split(";")[0])
+    if premiere_norm in ("colonne", "column", "champ", "field", "variable"):
+        return None
+
+    nb_cols = len(premiere_ligne.split(delimiteur))
+    if nb_cols <= 2:
+        for sep in (";", "\t", "|", ","):
+            n = len(premiere_ligne.split(sep))
+            if n > nb_cols:
+                nb_cols, delimiteur = n, sep
     log["delimiteur"] = delimiteur
 
     reader = csv.DictReader(io.StringIO(texte), delimiter=delimiteur)
-    entetes = reader.fieldnames or []
-    log["entetes"] = list(entetes)[:15]
+    entetes = list(reader.fieldnames or [])
+    log["entetes"] = entetes[:15]
 
-    champ_cp, champ_ville = deviner_champs(list(entetes))
-    champ_iris = deviner_champ_iris(list(entetes))
-    log["champ_cp"] = champ_cp
-    log["champ_ville"] = champ_ville
-    log["champ_iris"] = champ_iris
+    champ_cp, champ_ville, champ_iris, champ_dep, champ_adresse, champ_siren, champ_lat, champ_lon = _detecter_champs(entetes)
+    log.update({"champ_cp": champ_cp, "champ_ville": champ_ville,
+                "champ_iris": champ_iris, "champ_adresse": champ_adresse,
+                "champ_siren": champ_siren, "champ_lat": champ_lat})
 
     if verbose:
-        print(f"  En-têtes détectés : {list(entetes)[:10]}")
+        print(f"  En-têtes détectés : {entetes[:10]}")
         if champ_iris:
             print(f"  Champ IRIS trouvé : {champ_iris}")
+        elif champ_adresse:
+            print(f"  Champ adresse trouvé : {champ_adresse}")
+        elif champ_siren:
+            print(f"  Champ SIREN trouvé : {champ_siren}")
+        elif champ_lat:
+            desc = champ_lat if champ_lon is None else f"{champ_lat} + {champ_lon}"
+            print(f"  Champ géo trouvé : {desc}")
         else:
             print(f"  Champ CP trouvé : {champ_cp} | Champ ville trouvé : {champ_ville}")
 
-    nb_total = 0
-    nb_rm = 0
-    exemples = []
-    premieres_lignes = []
-
     try:
-        for row in reader:
-            try:
-                nb_total += 1
-                if len(premieres_lignes) < 5:
-                    premieres_lignes.append(dict(row))
-                if champ_iris:
-                    in_rm = est_iris_rm(str(row.get(champ_iris, "")))
-                else:
-                    cp = str(row.get(champ_cp, "")).strip() if champ_cp else ""
-                    ville = str(row.get(champ_ville, "")).strip() if champ_ville else ""
-                    if champ_cp and champ_ville:
-                        in_rm = est_dans_rm(ville, cp)
-                    elif champ_ville:
-                        in_rm = est_commune_rm(ville)
-                    elif champ_cp:
-                        in_rm = cp in CODES_POSTAUX_RM
-                    else:
-                        in_rm = False
-                if in_rm:
-                    nb_rm += 1
-                    if len(exemples) < 3:
-                        exemples.append(dict(row))
-            except csv.Error:
-                break  # ligne tronquée (téléchargement partiel) — on garde ce qu'on a
+        nb_total, nb_rm, exemples, premieres_lignes = _compter_lignes_rm(
+            reader, champ_cp, champ_ville, champ_iris, champ_dep, champ_adresse,
+            champ_siren, champ_lat, champ_lon
+        )
     except csv.Error as e:
         log["erreur"] = f"parsing CSV : {e}"
         log_analyse(log)
@@ -577,24 +1045,208 @@ def analyser_csv(url: str, verbose: bool = True,
             print(f"  (Erreur de parsing CSV : {e})")
         return None
 
-    log["nb_total"] = nb_total
-    log["nb_rm"] = nb_rm
+    log.update({"nb_total": nb_total, "nb_rm": nb_rm})
     log_analyse(log)
+    return _construire_resultat(champ_cp, champ_ville, champ_iris, champ_adresse,
+                                nb_total, nb_rm, exemples, premieres_lignes,
+                                champ_siren=champ_siren, champ_lat=champ_lat, champ_lon=champ_lon)
 
-    return {
-        "nb_total": nb_total,
-        "nb_rm": nb_rm,
-        "champ_cp": champ_cp,
-        "champ_ville": champ_ville,
-        "champ_iris": champ_iris,
-        "exemples": exemples,
-        "premieres_lignes": premieres_lignes,
-    }
 
+def analyser_csv(url: str, verbose: bool = True,
+                 dataset_id: str = "", titre: str = "") -> dict | None:
+    """
+    Télécharge (ou récupère du cache) un CSV et cherche des données Rennes Métropole.
+    verbose=False supprime les prints (pour l'exécution en arrière-plan).
+    Retourne None si le téléchargement ou le parsing échoue (le JDD sera reproposé).
+    """
+    contenu, taille_mo, depuis_cache, erreur = _telecharger(url, verbose)
+    if erreur:
+        log_analyse({"url": url, "dataset_id": dataset_id, "titre": titre, "erreur": erreur})
+        if verbose:
+            print(f"  (Échec : {erreur})")
+        return None
+    return _analyser_contenu_csv(contenu, verbose, dataset_id, titre, url, taille_mo, depuis_cache)
+
+
+def analyser_zip(url: str, verbose: bool = False,
+                 dataset_id: str = "", titre: str = "") -> dict | None:
+    """Télécharge une archive ZIP et analyse les fichiers CSV qu'elle contient."""
+    contenu, taille_mo, depuis_cache, erreur = _telecharger(url, verbose)
+    if erreur:
+        log_analyse({"url": url, "dataset_id": dataset_id, "titre": titre, "erreur": erreur})
+        return None
+    try:
+        with zipfile.ZipFile(io.BytesIO(contenu)) as zf:
+            membres = [
+                n for n in zf.namelist()
+                if n.lower().endswith(".csv") and not n.startswith("__MACOSX")
+            ]
+            if not membres:
+                if verbose:
+                    print("  (ZIP : aucun fichier CSV trouvé)")
+                return None
+            meilleur = None
+            for membre in membres:
+                if verbose:
+                    print(f"  ZIP → {membre}")
+                with zf.open(membre) as f:
+                    contenu_membre = f.read()
+                result = _analyser_contenu_csv(
+                    contenu_membre, verbose, dataset_id, f"{titre} [{membre}]",
+                    url=f"{url}#{membre}", taille_mo=len(contenu_membre) / 1024 / 1024
+                )
+                if result is None:
+                    continue
+                if meilleur is None or result["nb_rm"] > meilleur["nb_rm"]:
+                    meilleur = result
+                if meilleur["nb_rm"] > 0:
+                    break
+            return meilleur
+    except zipfile.BadZipFile:
+        log_analyse({"url": url, "dataset_id": dataset_id, "titre": titre,
+                     "erreur": "archive ZIP invalide"})
+        return None
+
+
+def analyser_gz(url: str, verbose: bool = False,
+                dataset_id: str = "", titre: str = "") -> dict | None:
+    """Télécharge un fichier GZ et analyse le CSV décompressé."""
+    contenu, taille_mo, depuis_cache, erreur = _telecharger(url, verbose)
+    if erreur:
+        log_analyse({"url": url, "dataset_id": dataset_id, "titre": titre, "erreur": erreur})
+        return None
+    try:
+        contenu_csv = gzip.decompress(contenu)
+    except Exception as e:
+        log_analyse({"url": url, "dataset_id": dataset_id, "titre": titre,
+                     "erreur": f"décompression GZ : {e}"})
+        if verbose:
+            print(f"  (Erreur décompression GZ : {e})")
+        return None
+    return _analyser_contenu_csv(
+        contenu_csv, verbose, dataset_id, titre,
+        url=url, taille_mo=len(contenu_csv) / 1024 / 1024
+    )
+
+
+def analyser_xlsx(url: str, verbose: bool = False,
+                  dataset_id: str = "", titre: str = "") -> dict | None:
+    """Télécharge un fichier Excel XLSX et cherche des données Rennes Métropole."""
+    try:
+        import openpyxl
+    except ImportError:
+        if verbose:
+            print("  (openpyxl non installé — pip install openpyxl)")
+        return None
+
+    contenu, taille_mo, depuis_cache, erreur = _telecharger(url, verbose)
+    if erreur:
+        log_analyse({"url": url, "dataset_id": dataset_id, "titre": titre, "erreur": erreur})
+        return None
+
+    log = {"url": url, "dataset_id": dataset_id, "titre": titre,
+           "taille_mo": round(taille_mo, 2), "cache": depuis_cache}
+    try:
+        wb = openpyxl.load_workbook(io.BytesIO(contenu), read_only=True, data_only=True)
+        ws = wb.active
+        lignes = list(ws.iter_rows(values_only=True))
+        wb.close()
+    except Exception as e:
+        log["erreur"] = f"lecture XLSX : {e}"
+        log_analyse(log)
+        if verbose:
+            print(f"  (Erreur lecture XLSX : {e})")
+        return None
+
+    if not lignes:
+        return None
+
+    entetes = [str(c or "").strip() for c in lignes[0]]
+    log["entetes"] = entetes[:15]
+
+    champ_cp, champ_ville, champ_iris, champ_dep, champ_adresse, champ_siren = _detecter_champs(entetes)
+    log.update({"champ_cp": champ_cp, "champ_ville": champ_ville,
+                "champ_iris": champ_iris, "champ_adresse": champ_adresse,
+                "champ_siren": champ_siren})
+
+    if verbose:
+        print(f"  En-têtes XLSX : {entetes[:10]}")
+        if champ_iris:
+            print(f"  Champ IRIS trouvé : {champ_iris}")
+        elif champ_adresse:
+            print(f"  Champ adresse trouvé : {champ_adresse}")
+        elif champ_siren:
+            print(f"  Champ SIREN trouvé : {champ_siren}")
+        else:
+            print(f"  Champ CP : {champ_cp} | Champ ville : {champ_ville}")
+
+    def _lignes_en_dicts():
+        for row in lignes[1:]:
+            yield dict(zip(entetes, (str(v or "").strip() for v in row)))
+
+    nb_total, nb_rm, exemples, premieres_lignes = _compter_lignes_rm(
+        _lignes_en_dicts(), champ_cp, champ_ville, champ_iris, champ_dep, champ_adresse, champ_siren
+    )
+    log.update({"nb_total": nb_total, "nb_rm": nb_rm})
+    log_analyse(log)
+    return _construire_resultat(champ_cp, champ_ville, champ_iris, champ_adresse,
+                                nb_total, nb_rm, exemples, premieres_lignes,
+                                champ_siren=champ_siren)
+
+
+_ANALYSEURS = {
+    "csv":  analyser_csv,
+    "zip":  analyser_zip,
+    "gz":   analyser_gz,
+    "xlsx": analyser_xlsx,
+}
+
+
+def analyser_dataset(dataset: dict, verbose: bool = False) -> dict | None:
+    """
+    Essaie toutes les ressources analysables (CSV, ZIP, GZ, XLSX) et retourne
+    le meilleur résultat (le plus de lignes RM). S'arrête dès qu'une ressource
+    contient des données RM.
+    """
+    meilleur = None
+    for res in dataset.get("resources", []):
+        fmt = _format_analysable(res)
+        if not fmt:
+            continue
+        url = res.get("url", "")
+        if not url:
+            continue
+        result = _ANALYSEURS[fmt](url, verbose, dataset["id"], dataset["title"])
+        if result is None:
+            continue
+        if meilleur is None or result["nb_rm"] > meilleur["nb_rm"]:
+            meilleur = result
+        if meilleur["nb_rm"] > 0:
+            break
+    return meilleur
 
 # ---------------------------------------------------------------------------
 # Traitement des résultats d'analyse
 # ---------------------------------------------------------------------------
+
+def _resumer_ligne(ligne: dict, max_cols: int = 5, max_val: int = 18) -> str:
+    """Affiche les premières colonnes d'une ligne CSV sur une seule ligne de terminal."""
+    items = list(ligne.items())
+    parts = []
+    total = 2  # pour les accolades
+    for k, v in items[:max_cols]:
+        vs = str(v)[:max_val] + ("…" if len(str(v)) > max_val else "")
+        ks = str(k)[:18]
+        part = f"{ks}: {vs}"
+        total += len(part) + 2
+        if total > 76:
+            parts.append(f"+{len(items) - len(parts)} autres")
+            break
+        parts.append(part)
+    if len(parts) == max_cols and len(items) > max_cols:
+        parts.append(f"+{len(items) - max_cols} autres")
+    return "{" + ", ".join(parts) + "}"
+
 
 def traiter_resultat(ds: dict, resultat: dict | None, decouverte: dict) -> None:
     """
@@ -606,18 +1258,21 @@ def traiter_resultat(ds: dict, resultat: dict | None, decouverte: dict) -> None:
     print(f"Résultat analyse : {ds['title'][:60]}")
 
     if resultat is None:
+        # Ne pas toucher un dataset explicitement exclu (skip définitif)
+        if did in decouverte["exclus"]:
+            return
         # Incrémente le compteur d'échecs consécutifs
         n = decouverte["echecs_n"].get(did, 0) + 1
         decouverte["echecs_n"][did] = n
         # Retire de vus (rétrocompat)
-        decouverte["vus"] = [i for i in decouverte["vus"] if i != did]
+        decouverte["vus"] = [v for v in decouverte["vus"] if v != did]
         if did not in decouverte["echecs"]:
             decouverte["echecs"].append(did)
         if n >= 3:
             print(f"  Analyse échouée ({n} fois) — skip définitif recommandé.")
             choix = input("  (s)kip définitif  (r)éessayer plus tard  ? ").strip().lower()
             if choix == "s":
-                decouverte["echecs"] = [i for i in decouverte["echecs"] if i != did]
+                decouverte["echecs"] = [v for v in decouverte["echecs"] if v != did]
                 decouverte["echecs_n"].pop(did, None)
                 decouverte["exclus"].append(did)
                 decouverte["vus"].append(did)
@@ -630,7 +1285,7 @@ def traiter_resultat(ds: dict, resultat: dict | None, decouverte: dict) -> None:
         return
 
     # Succès : retire de echecs et remet le compteur à zéro
-    decouverte["echecs"] = [i for i in decouverte["echecs"] if i != did]
+    decouverte["echecs"] = [v for v in decouverte["echecs"] if v != did]
     decouverte["echecs_n"].pop(did, None)
 
     print(f"  Total enregistrements : {resultat['nb_total']}")
@@ -641,7 +1296,7 @@ def traiter_resultat(ds: dict, resultat: dict | None, decouverte: dict) -> None:
         if resultat["exemples"]:
             print("  Exemples RM :")
             for ex in resultat["exemples"]:
-                print(f"    {ex}")
+                print("    " + _resumer_ligne(ex))
         candidat = {
             "dataset_id": ds["id"],
             "titre": ds["title"],
@@ -649,6 +1304,7 @@ def traiter_resultat(ds: dict, resultat: dict | None, decouverte: dict) -> None:
             "champ_cp": resultat["champ_cp"],
             "champ_ville": resultat["champ_ville"],
             "champ_iris": resultat.get("champ_iris"),
+            "champ_adresse": resultat.get("champ_adresse"),
             "nb_rm": resultat["nb_rm"],
         }
         decouverte["candidats"].append(candidat)
@@ -658,7 +1314,7 @@ def traiter_resultat(ds: dict, resultat: dict | None, decouverte: dict) -> None:
         # Aucune donnée RM : montrer les premières lignes pour vérification manuelle
         print("  Premières lignes du fichier :")
         for ligne in resultat.get("premieres_lignes", []):
-            print(f"    {ligne}")
+            print("    " + _resumer_ligne(ligne))
         ajout = input("\n  Ajouter quand même aux candidats ? (o/n) ").strip().lower()
         if ajout == "o":
             candidat = {
@@ -668,6 +1324,7 @@ def traiter_resultat(ds: dict, resultat: dict | None, decouverte: dict) -> None:
                 "champ_cp": resultat["champ_cp"],
                 "champ_ville": resultat["champ_ville"],
                 "champ_iris": resultat.get("champ_iris"),
+                "champ_adresse": resultat.get("champ_adresse"),
                 "nb_rm": 0,
             }
             decouverte["candidats"].append(candidat)
@@ -690,9 +1347,11 @@ def charger_decouverte() -> dict:
         d.setdefault("echecs", [])
         d.setdefault("echecs_n", {})     # {dataset_id: nb_echecs consécutifs}
         d.setdefault("sans_ressource", [])
+        d.setdefault("exclusions_termes", [])
         return d
     return {"vus": [], "candidats": [], "exclus": [],
-            "echecs": [], "echecs_n": {}, "sans_ressource": []}
+            "echecs": [], "echecs_n": {}, "sans_ressource": [],
+            "exclusions_termes": []}
 
 
 def fetcher_datasets_par_ids(ids: list) -> list:
@@ -726,8 +1385,13 @@ def sauvegarder_decouverte(decouverte: dict) -> None:
 # ---------------------------------------------------------------------------
 
 def main():
+    _purger_cache(jours=30)
     print("=== Découverte interactive de JDD éligibles ===")
-    print(f"Mots-clés recherchés : {', '.join(KEYWORDS)}\n")
+    if RECHERCHE_STRUCTUREE:
+        labels = [r["label"] for r in REQUETES_STRUCTUREES]
+        print(f"Recherche structurée : {', '.join(labels)}\n")
+    else:
+        print(f"Mots-clés recherchés : {', '.join(KEYWORDS)}\n")
 
     decouverte = charger_decouverte()
     echecs_ids = set(decouverte["echecs"])
@@ -737,37 +1401,148 @@ def main():
 
     # Repropose les analyses échouées en priorité
     echecs_datasets = []
+    passer_echecs = False
     if decouverte["echecs"]:
         n = len(decouverte["echecs"])
-        print(f"{n} JDD dont l'analyse avait échoué (erreur téléchargement ou parsing) — reproposés en priorité...")
-        echecs_datasets = fetcher_datasets_par_ids(decouverte["echecs"])
-        print(f"  → {len(echecs_datasets)} JDD récupérés.\n")
+        print(f"{n} JDD dont l'analyse avait échoué (erreur téléchargement ou parsing).")
+        choix_echecs = input(f"  (r)eproposer interactivement  (p)asser jusqu'au prochain run ? ").strip().lower()
+        if choix_echecs == "p":
+            passer_echecs = True
+            print(f"  → {n} JDD passés — ils reviendront au prochain run.\n")
+        else:
+            echecs_datasets = fetcher_datasets_par_ids(decouverte["echecs"])
+            print(f"  → {len(echecs_datasets)} JDD récupérés.\n")
 
-    datasets_trouves = []
-    ids_trouves = set()
+    # --- Choix du point de départ ---
+    def _ts(path):
+        t = datetime.datetime.fromtimestamp(os.path.getmtime(path))
+        age = datetime.datetime.now() - t
+        age_str = f"{int(age.total_seconds()//3600)}h" if age.total_seconds() > 3600 else f"{int(age.total_seconds()//60)}min"
+        return t.strftime("%d/%m %H:%M"), age_str
 
-    for keyword in KEYWORDS:
-        print(f"Recherche : « {keyword} »...")
-        resultats, total = rechercher_datasets(keyword)
-        print(f"  {total} résultats au total, {len(resultats)} récupérés ({NB_PAGES} pages)")
-        for ds in resultats:
-            if ds["id"] not in ids_trouves:
-                datasets_trouves.append(ds)
-                ids_trouves.add(ds["id"])
+    has_api = os.path.exists(RESULTATS_API_FILE)
+    has_pf  = os.path.exists(PREFILTRES_FILE)
 
-    # Les échecs sont traités séparément : on les exclut des candidats normaux
+    print("Point de départ :")
+    print("  (n) Nouvelle recherche API + préfiltrage")
+    if has_api:
+        ts_a, age_a = _ts(RESULTATS_API_FILE)
+        print(f"  (a) Résultats API du {ts_a} (il y a {age_a}) + refaire le préfiltrage")
+    if has_pf:
+        ts_p, age_p = _ts(PREFILTRES_FILE)
+        print(f"  (p) Résultats pré-filtrés du {ts_p} (il y a {age_p}) → trier directement")
+    options_valides = "n" + ("a" if has_api else "") + ("p" if has_pf else "")
+    choix_depart = input(f"Choix [{'/'.join(options_valides)}] : ").strip().lower()
+    if choix_depart not in options_valides:
+        choix_depart = "n"
+
+    exclusions_termes = decouverte.get("exclusions_termes", [])
+    exclus_ids = set(decouverte["exclus"])
     echecs_ids_fetched = {ds["id"] for ds in echecs_datasets}
 
-    candidats_nouveaux = [
-        ds for ds in datasets_trouves
-        if not est_org_exclue(ds)
-        and not est_org_hors_rm(ds)
-        and couvre_rennes(ds)
-        and (not titre_hors_rm(ds) or description_suggerant_commune(ds))
-        and ds["id"] not in deja_vus
-        and ds["id"] not in echecs_ids_fetched
-        # sans_ressource : on garde pour re-vérifier inline (les datasets peuvent évoluer)
-    ]
+    def _filtrer_communs(datasets):
+        """Applique les filtres invariants (orgs, géo, termes, déjà vus)."""
+        return [
+            ds for ds in datasets
+            if not est_org_exclue(ds)
+            and not est_org_hors_rm(ds)
+            and couvre_rennes(ds)
+            and (not titre_hors_rm(ds) or description_suggerant_commune(ds))
+            and not est_exclu_par_terme(ds, exclusions_termes)
+            and ds["id"] not in deja_vus
+            and ds["id"] not in exclus_ids
+            and ds["id"] not in echecs_ids_fetched
+        ]
+
+    candidats_nouveaux = []
+
+    if choix_depart == "p":
+        # Charger directement les résultats pré-filtrés (analyse déjà faite)
+        with open(PREFILTRES_FILE, encoding="utf-8") as f:
+            prefiltres_bruts = json.load(f)
+        candidats_nouveaux = _filtrer_communs(prefiltres_bruts)
+        _resultats_auto = {}
+        print(f"  → {len(candidats_nouveaux)} JDD chargés (après filtres mis à jour).\n")
+
+    else:
+        # Recherche API (nouvelle ou depuis cache)
+        datasets_trouves = []
+        ids_trouves = set()
+
+        if choix_depart == "a":
+            with open(RESULTATS_API_FILE, encoding="utf-8") as f:
+                datasets_trouves = json.load(f)
+            ids_trouves = {ds["id"] for ds in datasets_trouves}
+            print(f"  → {len(datasets_trouves)} JDD chargés depuis le cache API.\n")
+        else:
+            if RECHERCHE_STRUCTUREE:
+                for requete in REQUETES_STRUCTUREES:
+                    print(f"Recherche : {requete['label']}...")
+                    resultats, total = _paginer(requete["params"])
+                    print(f"  {total} résultats au total, {len(resultats)} récupérés ({NB_PAGES} pages)")
+                    for ds in resultats:
+                        if ds["id"] not in ids_trouves:
+                            datasets_trouves.append(ds)
+                            ids_trouves.add(ds["id"])
+            else:
+                for keyword in KEYWORDS:
+                    print(f"Recherche : « {keyword} »...")
+                    resultats, total = rechercher_datasets(keyword)
+                    print(f"  {total} résultats au total, {len(resultats)} récupérés ({NB_PAGES} pages)")
+                    for ds in resultats:
+                        if ds["id"] not in ids_trouves:
+                            datasets_trouves.append(ds)
+                            ids_trouves.add(ds["id"])
+            with open(RESULTATS_API_FILE, "w", encoding="utf-8") as f:
+                json.dump(datasets_trouves, f, ensure_ascii=False)
+
+        candidats_nouveaux = _filtrer_communs(datasets_trouves)
+
+        # Analyse automatique : description → en-têtes → analyse RM en parallèle
+        if candidats_nouveaux:
+            print(f"\nAnalyse automatique de {len(candidats_nouveaux)} candidats...", flush=True)
+            with ThreadPoolExecutor(max_workers=10) as pf_exec:
+                futures_pf = [(ds, pf_exec.submit(pre_filtrer, ds)) for ds in candidats_nouveaux]
+            auto_ajoutes, a_presenter, ignores = [], [], 0
+            for ds, fut in futures_pf:
+                try:
+                    verdict, result = fut.result()
+                except Exception:
+                    verdict, result = "presenter", None
+                if verdict == "skip":
+                    decouverte["vus"].append(ds["id"])
+                    ignores += 1
+                elif verdict == "candidat":
+                    candidat = {
+                        "dataset_id": ds["id"],
+                        "titre": ds["title"],
+                        "dossier": ds["id"][:30].replace("-", "_"),
+                        "champ_cp":      result["champ_cp"],
+                        "champ_ville":   result["champ_ville"],
+                        "champ_iris":    result.get("champ_iris"),
+                        "champ_adresse": result.get("champ_adresse"),
+                        "nb_rm":         result["nb_rm"],
+                    }
+                    decouverte["candidats"].append(candidat)
+                    decouverte["vus"].append(ds["id"])
+                    auto_ajoutes.append((ds, result))
+                else:  # "presenter"
+                    a_presenter.append((ds, result))
+            sauvegarder_decouverte(decouverte)
+            print(f"  {ignores} sans marqueurs géo → ignorés")
+            print(f"  {len(auto_ajoutes)} avec données RM → ajoutés automatiquement")
+            for ds, result in auto_ajoutes:
+                print(f"    ✓ {ds['title'][:60]}  ({result['nb_rm']} lignes RM)")
+            print(f"  {len(a_presenter)} à examiner manuellement (0 RM ou échec)")
+            candidats_nouveaux = [ds for ds, _ in a_presenter]
+            # Garder le résultat d'analyse pour éviter de retélécharger lors de l'affichage
+            _resultats_auto = {ds["id"]: result for ds, result in a_presenter}
+        else:
+            _resultats_auto = {}
+
+        # Sauvegarder les candidats à présenter (pour reprise via option p)
+        with open(PREFILTRES_FILE, "w", encoding="utf-8") as f:
+            json.dump(candidats_nouveaux, f, ensure_ascii=False)
 
     # Les échecs passent en premier
     candidats = echecs_datasets + candidats_nouveaux
@@ -776,7 +1551,8 @@ def main():
         print(f" (dont {len(echecs_datasets)} ré-analyse(s) échouée(s))", end="")
     print("\n")
 
-    executor = ThreadPoolExecutor(max_workers=5)
+
+    executor = ThreadPoolExecutor(max_workers=10)
     en_cours = []  # liste de (ds, future)
 
     def traiter_finis():
@@ -806,7 +1582,7 @@ def main():
 
             is_echec = ds.get("_echec", False)
             did = ds["id"]
-            ressource = trouver_ressource_csv_json(ds)
+            ressource = trouver_ressource_analysable(ds)
 
             if ressource is None:
                 ressources = ds.get("resources", [])
@@ -844,14 +1620,62 @@ def main():
                 print("  (ressources détectées — analyse disponible)")
 
             extrait = obtenir_extrait(ressource)
-            afficher_fiche(ds, extrait)
+            # Dictionnaire de colonnes → essayer les autres ressources CSV du dataset
+            if extrait == "__DICTIONNAIRE__":
+                extrait = "(dictionnaire de colonnes)"
+                for r in ds.get("resources", []):
+                    if r is ressource or (r.get("format") or "").lower() != "csv":
+                        continue
+                    candidat_extrait = telecharger_extrait_csv(r.get("url", ""))
+                    if candidat_extrait and candidat_extrait not in ("__BINAIRE__", "__DICTIONNAIRE__") \
+                            and not candidat_extrait.startswith("("):
+                        extrait = candidat_extrait
+                        ressource = r
+                        break
+            if extrait == "__BINAIRE__":
+                nb_format_non_supporte += 1
+                fmt = ressource.get("format", "?").upper()
+                if is_echec:
+                    print(f"\n  (!) Echec {ds['title'][:50]!r} : "
+                          f"fichier binaire déclaré {fmt} — retiré des échecs.")
+                    decouverte["echecs"] = [j for j in decouverte["echecs"] if j != did]
+                    decouverte["echecs_n"].pop(did, None)
+                    sauvegarder_decouverte(decouverte)
+                continue
+            if extrait.startswith("(Impossible de télécharger"):
+                # Si déjà exclu définitivement, on ignore silencieusement
+                if did in decouverte["exclus"]:
+                    continue
+                # Erreur réseau : l'analyse en arrière-plan échouera aussi → enregistrer echec
+                afficher_fiche(ds, extrait)
+                n = decouverte["echecs_n"].get(did, 0) + 1
+                decouverte["echecs_n"][did] = n
+                if did not in decouverte["echecs"]:
+                    decouverte["echecs"].append(did)
+                decouverte["vus"] = [v for v in decouverte["vus"] if v != did]
+                if n >= 3:
+                    print(f"  URL inaccessible ({n} fois) — skip définitif recommandé.")
+                    choix = input("  (s)kip définitif  (p)asser ? ").strip().lower()
+                    if choix != "p":
+                        decouverte["echecs"] = [v for v in decouverte["echecs"] if v != did]
+                        decouverte["echecs_n"].pop(did, None)
+                        decouverte["exclus"].append(did)
+                        decouverte["vus"].append(did)
+                        print("  Skip définitif enregistré.")
+                    else:
+                        print("  Sera reproposé à la prochaine session.")
+                else:
+                    print(f"  URL inaccessible ({n}/3) — sera reproposé à la prochaine session.")
+                sauvegarder_decouverte(decouverte)
+                continue
+            afficher_fiche(ds, extrait, resultat=_resultats_auto.get(did))
 
             # Auto-analyse si le dataset est clairement IRIS
             titre_desc = (ds.get("title", "") + " " + (ds.get("description", "") or "")).lower()
             est_iris = bool(re.search(r'\biris\b', titre_desc))
             if est_iris and not is_echec:
                 print("  [IRIS] Analyse automatique lancée en arrière-plan.")
-                future = executor.submit(analyser_csv, ressource["url"], False, ds["id"], ds["title"])
+                future = executor.submit(analyser_dataset, ds, False)
                 en_cours.append((ds, future))
                 print(f"  ({len(en_cours)} analyse(s) en cours.)")
                 continue
@@ -860,11 +1684,11 @@ def main():
                 n_echecs = decouverte["echecs_n"].get(did, 0)
                 suffixe = f" — {n_echecs} échec(s) précédent(s)" if n_echecs else ""
                 choix = input(
-                    f"\n(s)kip définitif  (p)asser  (a)nalyse en arrière-plan  (q)uitter ?{suffixe} "
+                    f"\n(s)kip définitif  (p)asser  (a)nalyse  (x)exception  (q)uitter ?{suffixe} "
                 ).strip().lower()
             else:
                 choix = input(
-                    "\n(s)kip  (p)asser  (a)nalyse en arrière-plan  (q)uitter ? "
+                    "\n(s)kip  (p)asser  (a)nalyse  (x)exception  (q)uitter ? "
                 ).strip().lower()
 
             # Affiche immédiatement les analyses terminées pendant la lecture
@@ -875,10 +1699,17 @@ def main():
                 break
             elif choix == "p":
                 continue  # passe sans enregistrer — reviendra la prochaine session
+            elif choix == "x":
+                org_name = (ds.get("organization") or {}).get("name", "")
+                suggestion = f" [suggestion : {org_name}]" if org_name else ""
+                terme = input(f"  Terme à exclure{suggestion} : ").strip()
+                if terme:
+                    decouverte["exclusions_termes"].append(terme)
+                    sauvegarder_decouverte(decouverte)
+                    print(f"  Terme {terme!r} ajouté — les JDD contenant ce terme dans le titre ou l'org seront filtrés.")
+                continue  # passe le JDD courant, le terme filtrera les suivants
             elif choix == "a":
-                future = executor.submit(
-                    analyser_csv, ressource["url"], False, ds["id"], ds["title"]
-                )
+                future = executor.submit(analyser_dataset, ds, False)
                 en_cours.append((ds, future))
                 print(f"  Analyse lancée en arrière-plan ({len(en_cours)} en cours).")
                 continue  # pas ajouté à vus pour l'instant

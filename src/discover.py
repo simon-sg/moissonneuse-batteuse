@@ -16,6 +16,8 @@ import hashlib
 import zipfile
 import gzip
 import warnings
+import xml.etree.ElementTree as ET
+from urllib.parse import urlparse, urlunparse, urlencode, parse_qs
 from concurrent.futures import ThreadPoolExecutor, wait, FIRST_COMPLETED, as_completed
 
 import requests
@@ -272,10 +274,15 @@ def pre_filtrer(dataset: dict) -> tuple[str, dict | None]:
     geo_en_description = _contient_marqueurs_geo(dataset)
 
     # Étape 2 : si pas de marqueurs texte, vérifier les en-têtes CSV (léger)
+    # GeoJSON et WFS sont intrinsèquement géographiques → on passe directement à l'analyse
     if not geo_en_description:
         geo_en_entetes = False
         for res in dataset.get("resources", []):
-            if "csv" not in (res.get("format") or "").lower():
+            fmt = (res.get("format") or "").lower()
+            if fmt in ("geojson", "wfs"):
+                geo_en_entetes = True
+                break
+            if "csv" not in fmt:
                 continue
             entetes = _telecharger_entetes(res.get("url", ""))
             if entetes:
@@ -475,18 +482,20 @@ def couvre_rennes(dataset: dict) -> bool:
     return False
 
 
-_FORMATS_EXCLUS_FMT = ("pdf", "shapefile", "wms", "wfs", "ogc", "kml", "gpkg")
+_FORMATS_EXCLUS_FMT = ("pdf", "shapefile", "wms", "ogc", "kml", "gpkg")
 _FORMATS_EXCLUS_EXT = (".pdf", ".shp", ".kml", ".gpkg", ".html", ".htm", ".doc", ".docx")
 
 
 def _format_analysable(res: dict) -> str | None:
-    """Retourne 'csv', 'xlsx', 'zip', 'gz' ou None selon la ressource."""
+    """Retourne 'csv', 'xlsx', 'zip', 'gz', 'geojson', 'wfs' ou None selon la ressource."""
     fmt = (res.get("format") or "").lower().strip()
     url = (res.get("url") or "").lower().split("?")[0]
     if any(token in fmt for token in _FORMATS_EXCLUS_FMT):
         return None
     if any(url.endswith(ext) for ext in _FORMATS_EXCLUS_EXT):
         return None
+    if fmt == "wfs" or re.search(r"[/.]wfs(/|$)", url):
+        return "wfs"
     if url.endswith(".csv.gz") or url.endswith(".tsv.gz") or fmt == "gz":
         return "gz"
     if "csv" in fmt or url.endswith(".csv"):
@@ -495,6 +504,8 @@ def _format_analysable(res: dict) -> str | None:
         return "xlsx"
     if "zip" in fmt or url.endswith(".zip"):
         return "zip"
+    if fmt == "geojson" or url.endswith(".geojson"):
+        return "geojson"
     return None
 
 
@@ -581,6 +592,30 @@ def telecharger_extrait_json(url: str, n_lignes: int = 5) -> str:
         return f"(Impossible de télécharger l'extrait : {e})"
 
 
+def _obtenir_extrait_geojson(url: str) -> str:
+    """Retourne les premières features d'un GeoJSON pour affichage dans la fiche."""
+    try:
+        resp = requests.get(url, timeout=10, stream=True)
+        resp.raise_for_status()
+        contenu = b""
+        for chunk in resp.iter_content(chunk_size=65536):
+            contenu += chunk
+            if len(contenu) > 512 * 1024:
+                resp.close()
+                break
+        data = json.loads(contenu.decode("utf-8", errors="replace"))
+        features = data.get("features", [])[:3]
+        lignes = []
+        for i, f in enumerate(features):
+            props = f.get("properties") or {}
+            geom_type = (f.get("geometry") or {}).get("type", "?")
+            props_court = dict(list(props.items())[:5])
+            lignes.append(f"[{i+1}] {geom_type} | {props_court}")
+        return "\n".join(lignes) if lignes else "(aucune feature)"
+    except Exception as e:
+        return f"(erreur extrait GeoJSON : {e})"
+
+
 def obtenir_extrait(ressource: dict) -> str:
     fmt = _format_analysable(ressource) or (ressource.get("format") or "").lower()
     url = ressource.get("url", "")
@@ -588,6 +623,10 @@ def obtenir_extrait(ressource: dict) -> str:
         return telecharger_extrait_csv(url)
     elif fmt == "json":
         return telecharger_extrait_json(url)
+    elif fmt == "geojson":
+        return _obtenir_extrait_geojson(url)
+    elif fmt == "wfs":
+        return "(service WFS — voir résultat d'analyse)"
     elif fmt == "zip":
         return "(archive ZIP — voir résultat d'analyse)"
     elif fmt in ("xlsx", "excel"):
@@ -1076,23 +1115,22 @@ def analyser_csv(url: str, verbose: bool = True,
 
 def analyser_zip(url: str, verbose: bool = False,
                  dataset_id: str = "", titre: str = "") -> dict | None:
-    """Télécharge une archive ZIP et analyse les fichiers CSV qu'elle contient."""
+    """Télécharge une archive ZIP et analyse les fichiers CSV ou GeoJSON qu'elle contient."""
     contenu, taille_mo, depuis_cache, erreur = _telecharger(url, verbose)
     if erreur:
         log_analyse({"url": url, "dataset_id": dataset_id, "titre": titre, "erreur": erreur})
         return None
     try:
         with zipfile.ZipFile(io.BytesIO(contenu)) as zf:
-            membres = [
-                n for n in zf.namelist()
-                if n.lower().endswith(".csv") and not n.startswith("__MACOSX")
-            ]
-            if not membres:
+            noms = [n for n in zf.namelist() if not n.startswith("__MACOSX")]
+            membres_csv = [n for n in noms if n.lower().endswith(".csv")]
+            membres_geo = [n for n in noms if n.lower().endswith(".geojson")]
+            if not membres_csv and not membres_geo:
                 if verbose:
-                    print("  (ZIP : aucun fichier CSV trouvé)")
+                    print("  (ZIP : aucun fichier CSV ou GeoJSON trouvé)")
                 return None
             meilleur = None
-            for membre in membres:
+            for membre in membres_csv:
                 if verbose:
                     print(f"  ZIP → {membre}")
                 with zf.open(membre) as f:
@@ -1105,8 +1143,23 @@ def analyser_zip(url: str, verbose: bool = False,
                     continue
                 if meilleur is None or result["nb_rm"] > meilleur["nb_rm"]:
                     meilleur = result
-                if meilleur["nb_rm"] > 0:
+                if meilleur and meilleur["nb_rm"] > 0:
                     break
+            for membre in membres_geo:
+                if meilleur and meilleur["nb_rm"] > 0:
+                    break
+                if verbose:
+                    print(f"  ZIP → {membre}")
+                with zf.open(membre) as f:
+                    contenu_membre = f.read()
+                result = _analyser_contenu_geojson(
+                    contenu_membre, verbose, dataset_id, f"{titre} [{membre}]",
+                    url=f"{url}#{membre}", taille_mo=len(contenu_membre) / 1024 / 1024
+                )
+                if result is None:
+                    continue
+                if meilleur is None or result["nb_rm"] > meilleur["nb_rm"]:
+                    meilleur = result
             return meilleur
     except zipfile.BadZipFile:
         log_analyse({"url": url, "dataset_id": dataset_id, "titre": titre,
@@ -1202,11 +1255,233 @@ def analyser_xlsx(url: str, verbose: bool = False,
                                 champ_siren=champ_siren)
 
 
+# ---------------------------------------------------------------------------
+# Analyse GeoJSON
+# ---------------------------------------------------------------------------
+
+def _coords_centroide(geometry: dict) -> tuple[float, float] | None:
+    """Retourne un point représentatif de la géométrie GeoJSON (lon, lat)."""
+    gtype = geometry.get("type", "")
+    coords = geometry.get("coordinates")
+    if not coords:
+        return None
+    try:
+        if gtype == "Point":
+            return float(coords[0]), float(coords[1])
+        elif gtype in ("LineString", "MultiPoint"):
+            return float(coords[0][0]), float(coords[0][1])
+        elif gtype in ("Polygon", "MultiLineString"):
+            return float(coords[0][0][0]), float(coords[0][0][1])
+        elif gtype == "MultiPolygon":
+            return float(coords[0][0][0][0]), float(coords[0][0][0][1])
+    except (IndexError, TypeError, ValueError):
+        return None
+    return None
+
+
+def _analyser_features_geojson(features: list, verbose: bool,
+                                dataset_id: str, titre: str) -> dict | None:
+    """Analyse une liste de features GeoJSON et cherche des données Rennes Métropole."""
+    if not features:
+        return None
+
+    entetes = list((features[0].get("properties") or {}).keys())
+    champ_cp, champ_ville, champ_iris, champ_dep, champ_adresse, champ_siren, champ_lat, champ_lon = \
+        _detecter_champs(entetes)
+
+    if verbose:
+        print(f"  Propriétés GeoJSON : {entetes[:10]}")
+        if champ_iris:
+            print(f"  Champ IRIS : {champ_iris}")
+        elif champ_adresse:
+            print(f"  Champ adresse : {champ_adresse}")
+        elif champ_cp or champ_ville:
+            print(f"  Champ CP : {champ_cp} | Champ ville : {champ_ville}")
+        else:
+            print("  Aucun champ géographique textuel — fallback coordonnées géométrie")
+
+    if champ_cp or champ_ville or champ_iris or champ_adresse or champ_siren or champ_lat:
+        rows = (f.get("properties") or {} for f in features)
+        nb_total, nb_rm, exemples, premieres_lignes = _compter_lignes_rm(
+            rows, champ_cp, champ_ville, champ_iris, champ_dep, champ_adresse,
+            champ_siren, champ_lat, champ_lon
+        )
+    else:
+        # Fallback : vérifier les coordonnées des géométries dans la bbox RM
+        nb_total, nb_rm = 0, 0
+        exemples, premieres_lignes = [], []
+        for f in features:
+            props = f.get("properties") or {}
+            nb_total += 1
+            if len(premieres_lignes) < 5:
+                premieres_lignes.append(props)
+            pt = _coords_centroide(f.get("geometry") or {})
+            if pt is not None:
+                lon, lat = pt  # GeoJSON : [lon, lat]
+                if _RM_LAT_MIN <= lat <= _RM_LAT_MAX and _RM_LON_MIN <= lon <= _RM_LON_MAX:
+                    nb_rm += 1
+                    if len(exemples) < 3:
+                        exemples.append(props)
+        champ_lat = "geometry"  # marqueur : détection par coordonnées
+
+    return _construire_resultat(
+        champ_cp, champ_ville, champ_iris, champ_adresse,
+        nb_total, nb_rm, exemples, premieres_lignes,
+        champ_siren=champ_siren, champ_lat=champ_lat, champ_lon=champ_lon,
+    )
+
+
+def _analyser_contenu_geojson(contenu: bytes, verbose: bool,
+                               dataset_id: str, titre: str,
+                               url: str = "", taille_mo: float = 0) -> dict | None:
+    """Parse des bytes GeoJSON et cherche des données Rennes Métropole."""
+    log = {"url": url, "dataset_id": dataset_id, "titre": titre,
+           "taille_mo": round(taille_mo, 2)}
+    try:
+        data = json.loads(contenu.decode("utf-8", errors="replace"))
+    except Exception as e:
+        log["erreur"] = f"parsing JSON : {e}"
+        log_analyse(log)
+        if verbose:
+            print(f"  (Erreur parsing GeoJSON : {e})")
+        return None
+    features = data.get("features", [])
+    if not features:
+        log["erreur"] = "aucune feature"
+        log_analyse(log)
+        if verbose:
+            print("  (GeoJSON : aucune feature)")
+        return None
+    result = _analyser_features_geojson(features, verbose, dataset_id, titre)
+    if result:
+        log.update({"nb_total": result["nb_total"], "nb_rm": result["nb_rm"]})
+    log_analyse(log)
+    return result
+
+
+def analyser_geojson(url: str, verbose: bool = False,
+                     dataset_id: str = "", titre: str = "") -> dict | None:
+    """Télécharge (ou récupère du cache) un GeoJSON et cherche des données Rennes Métropole."""
+    contenu, taille_mo, depuis_cache, erreur = _telecharger(url, verbose)
+    if erreur:
+        log_analyse({"url": url, "dataset_id": dataset_id, "titre": titre, "erreur": erreur})
+        if verbose:
+            print(f"  (Échec : {erreur})")
+        return None
+    return _analyser_contenu_geojson(contenu, verbose, dataset_id, titre, url, taille_mo)
+
+
+# ---------------------------------------------------------------------------
+# Analyse WFS
+# ---------------------------------------------------------------------------
+
+_WFS_RM_BBOX = "-2.00,47.80,-1.30,48.35"  # minLon,minLat,maxLon,maxLat (EPSG:4326)
+
+
+def _wfs_base_url(url: str) -> str:
+    """Extrait l'URL de base d'un service WFS (retire les paramètres OGC)."""
+    parsed = urlparse(url)
+    qs = parse_qs(parsed.query, keep_blank_values=True)
+    ogc_keys = {"service", "request", "version", "typename", "typenames",
+                "outputformat", "bbox", "maxfeatures", "count", "srsname"}
+    qs_filtre = {k: v for k, v in qs.items() if k.lower() not in ogc_keys}
+    query = "&".join(f"{k}={v[0]}" for k, v in qs_filtre.items())
+    return urlunparse(parsed._replace(query=query))
+
+
+def _wfs_get_layers(base_url: str, verbose: bool) -> list[str]:
+    """Interroge GetCapabilities et retourne les noms de couches disponibles."""
+    sep = "&" if "?" in base_url else "?"
+    caps_url = f"{base_url}{sep}SERVICE=WFS&REQUEST=GetCapabilities"
+    try:
+        resp = requests.get(caps_url, timeout=20)
+        resp.raise_for_status()
+        root = ET.fromstring(resp.content)
+    except Exception as e:
+        if verbose:
+            print(f"  (WFS GetCapabilities échoué : {e})")
+        return []
+    layers = []
+    for el in root.iter():
+        if el.tag.endswith("}FeatureType"):
+            name_el = next((c for c in el if c.tag.endswith("}Name")), None)
+            if name_el is not None and name_el.text:
+                layers.append(name_el.text.strip())
+    return layers
+
+
+def _wfs_query_layer(base_url: str, layer: str, verbose: bool,
+                     dataset_id: str, titre: str) -> dict | None:
+    """Interroge un layer WFS avec filtre bbox RM et retourne le résultat d'analyse."""
+    tentatives = [
+        {"SERVICE": "WFS", "VERSION": "2.0.0", "REQUEST": "GetFeature",
+         "TYPENAMES": layer, "BBOX": f"{_WFS_RM_BBOX},EPSG:4326",
+         "outputFormat": "application/json", "count": "500"},
+        {"SERVICE": "WFS", "VERSION": "1.1.0", "REQUEST": "GetFeature",
+         "TYPENAME": layer, "BBOX": f"{_WFS_RM_BBOX},EPSG:4326",
+         "outputFormat": "application/json", "MAXFEATURES": "500"},
+        {"SERVICE": "WFS", "VERSION": "1.0.0", "REQUEST": "GetFeature",
+         "TYPENAME": layer, "BBOX": _WFS_RM_BBOX,
+         "outputFormat": "GeoJSON", "MAXFEATURES": "500"},
+    ]
+    sep = "&" if "?" in base_url else "?"
+    for params in tentatives:
+        try:
+            resp = requests.get(f"{base_url}{sep}{urlencode(params)}", timeout=30)
+            if resp.status_code != 200:
+                continue
+            ct = resp.headers.get("content-type", "")
+            body = resp.content.lstrip()
+            if "json" not in ct and not body.startswith(b"{"):
+                continue
+            data = resp.json()
+            features = data.get("features")
+            if features is None:
+                continue
+            if verbose:
+                print(f"  WFS {layer} (v{params['VERSION']}) : {len(features)} features dans bbox RM")
+            if not features:
+                return _construire_resultat(None, None, None, None, 0, 0, [], [])
+            return _analyser_features_geojson(features, verbose, dataset_id, titre)
+        except Exception:
+            continue
+    return None
+
+
+def analyser_wfs(url: str, verbose: bool = False,
+                 dataset_id: str = "", titre: str = "") -> dict | None:
+    """Interroge un service WFS et cherche des données dans la bbox de Rennes Métropole."""
+    base_url = _wfs_base_url(url)
+    if verbose:
+        print(f"  WFS base URL : {base_url}")
+    layers = _wfs_get_layers(base_url, verbose)
+    if not layers:
+        log_analyse({"url": url, "dataset_id": dataset_id, "titre": titre,
+                     "erreur": "WFS : aucune couche trouvée (GetCapabilities échoué ou vide)"})
+        return None
+    if verbose:
+        print(f"  WFS couches ({len(layers)}) : {layers[:10]}")
+    meilleur = None
+    for layer in layers[:10]:
+        result = _wfs_query_layer(base_url, layer, verbose, dataset_id, titre)
+        if result is None:
+            continue
+        if meilleur is None or result["nb_rm"] > meilleur["nb_rm"]:
+            meilleur = result
+        if meilleur["nb_rm"] > 0:
+            break
+    log_analyse({"url": url, "dataset_id": dataset_id, "titre": titre,
+                 "nb_rm": meilleur["nb_rm"] if meilleur else 0})
+    return meilleur
+
+
 _ANALYSEURS = {
-    "csv":  analyser_csv,
-    "zip":  analyser_zip,
-    "gz":   analyser_gz,
-    "xlsx": analyser_xlsx,
+    "csv":     analyser_csv,
+    "zip":     analyser_zip,
+    "gz":      analyser_gz,
+    "xlsx":    analyser_xlsx,
+    "geojson": analyser_geojson,
+    "wfs":     analyser_wfs,
 }
 
 
@@ -1224,7 +1499,7 @@ def _est_dict_titre(titre: str) -> bool:
 
 def analyser_dataset(dataset: dict, verbose: bool = False) -> dict | None:
     """
-    Analyse toutes les ressources CSV/ZIP/GZ/XLSX du dataset (sauf dictionnaires).
+    Analyse toutes les ressources CSV/ZIP/GZ/XLSX/GeoJSON/WFS du dataset (sauf dictionnaires).
     Accumule nb_rm sur toutes les ressources et retourne un résultat combiné
     avec les champs de la ressource la plus riche en données RM.
     """

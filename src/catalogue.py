@@ -341,12 +341,14 @@ h1{font-size:.9rem;font-weight:600;flex:1;min-width:150px;
 .wrap{flex:1;overflow:auto}
 table{border-collapse:collapse;font-size:.82rem;white-space:nowrap;min-width:100%}
 thead{position:sticky;top:0;z-index:2;background:#fff;box-shadow:0 1px 0 #e2e6ea}
-th{padding:8px 12px;text-align:left;cursor:pointer;user-select:none;color:#667;font-weight:600}
+th{padding:8px 12px;text-align:left;cursor:pointer;user-select:none;color:#667;font-weight:600;
+   white-space:nowrap}
 th:hover{background:#f5f6f8;color:#1c2733}
 th.asc::after{content:" ↑";color:#0b6e99}
 th.desc::after{content:" ↓";color:#0b6e99}
-td{padding:5px 12px;border-bottom:1px solid #f0f2f4;max-width:320px;
-   overflow:hidden;text-overflow:ellipsis}
+td{padding:0;border-bottom:1px solid #f0f2f4}
+td span{display:block;padding:5px 12px;max-width:280px;white-space:nowrap;
+        overflow:hidden;text-overflow:ellipsis}
 tr:nth-child(even) td{background:#fafbfc}
 tr:hover td{background:#eef6fb}
 </style>
@@ -375,7 +377,7 @@ function rendu(){
     return(!isNaN(na)&&!isNaN(nb))?(up?na-nb:nb-na):(up?String(va).localeCompare(String(vb),"fr"):String(vb).localeCompare(String(va),"fr"));
   });}
   const th=D.entetes.map((h,i)=>`<th class="${sc===i?(asc?"asc":"desc"):""}" onclick="tri(${i})">${esc(h)}</th>`).join("");
-  const td=rows.map(r=>`<tr>${r.map(v=>`<td title="${esc(v)}">${esc(v)}</td>`).join("")}</tr>`).join("");
+  const td=rows.map(r=>`<tr>${r.map(v=>`<td><span title="${esc(v)}">${esc(v)}</span></td>`).join("")}</tr>`).join("");
   document.getElementById("t").innerHTML=`<thead><tr>${th}</tr></thead><tbody>${td}</tbody>`;
   const n=rows.length,tot=D.lignes.length;
   document.getElementById("info").textContent=n<tot

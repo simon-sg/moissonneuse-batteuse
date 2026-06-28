@@ -25,11 +25,6 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from filters.geographic import est_dans_rm, est_commune_rm, normaliser
 from conf.communes_rm import CODES_POSTAUX_RM, CODES_INSEE_RM, COMMUNES_RM
 from connectors.sirene import obtenir_sirens_rm
-from connectors.ecospheres import (
-    chercher_datasets as _chercher_ecospheres,
-    recup_dataset as _recup_dataset_ecospheres,
-    ID_PREFIX as _ECOSPHERES_PREFIX,
-)
 
 # ---------------------------------------------------------------------------
 # Configuration
@@ -38,7 +33,6 @@ from connectors.ecospheres import (
 KEYWORDS = ["commune", "code postal", "code insee", "iris", "adresse"]
 
 NB_PAGES = 50  # pages récupérées par mot-clé (20 résultats/page → 1000 max par keyword)
-NB_PAGES_ECOSPHERES = 30  # pages par requête sur écosphères (100 résultats/page → 3000 max)
 
 # Recherche structurée : utilise les filtres API plutôt que les mots-clés texte
 # Mettre à False pour revenir à la recherche par mots-clés
@@ -57,6 +51,7 @@ REQUETES_STRUCTUREES = [
     {"params": {"q": "sirene",                               "sort": "-views"}, "label": "sirene"},
     {"params": {"organization": "534fff81a3a7292c64a77e5c", "sort": "-views"}, "label": "INSEE"},
     {"params": {"organization": "5c812a16634f416583ed1876", "sort": "-views"}, "label": "Cerema"},
+    {"params": {"organization": "534fff8da3a7292c64a77eee", "sort": "-views"}, "label": "MTECT (écologie)"},
     {"params": {"q": "transport",         "sort": "-views"}, "label": "transport"},
 ]
 
@@ -1387,17 +1382,9 @@ def charger_decouverte() -> dict:
 
 
 def fetcher_datasets_par_ids(ids: list) -> list:
-    """Récupère les métadonnées de datasets (data.gouv.fr ou écosphères)."""
+    """Récupère les métadonnées de datasets depuis l'API data.gouv.fr."""
     datasets = []
     for did in ids:
-        if did.startswith(_ECOSPHERES_PREFIX):
-            ds = _recup_dataset_ecospheres(did)
-            if ds:
-                ds["_echec"] = True
-                datasets.append(ds)
-            else:
-                print(f"  (impossible de récupérer {did} depuis écosphères)")
-            continue
         try:
             r = requests.get(
                 f"https://www.data.gouv.fr/api/1/datasets/{did}/",
@@ -1524,8 +1511,7 @@ def main():
     print("=== Découverte interactive de JDD éligibles ===")
     if RECHERCHE_STRUCTUREE:
         labels = [r["label"] for r in REQUETES_STRUCTUREES]
-        print(f"Sources data.gouv.fr : {', '.join(labels)}")
-        print(f"Sources supplémentaires : écosphères (CKAN, {NB_PAGES_ECOSPHERES}×100 résultats max)\n")
+        print(f"Requêtes : {', '.join(labels)}\n")
     else:
         print(f"Mots-clés recherchés : {', '.join(KEYWORDS)}\n")
 
@@ -1635,20 +1621,6 @@ def main():
                         if ds["id"] not in ids_trouves:
                             datasets_trouves.append(ds)
                             ids_trouves.add(ds["id"])
-            # Recherche écosphères (portail de données environnementales du MTECT)
-            print("\nRecherche écosphères...")
-            try:
-                eco_datasets = _chercher_ecospheres(NB_PAGES_ECOSPHERES)
-                nb_eco = 0
-                for ds in eco_datasets:
-                    if ds["id"] not in ids_trouves:
-                        datasets_trouves.append(ds)
-                        ids_trouves.add(ds["id"])
-                        nb_eco += 1
-                print(f"  → {nb_eco} nouveaux JDD écosphères ({len(ids_trouves)} au total)\n")
-            except Exception as e:
-                print(f"  (écosphères inaccessible : {e})\n")
-
             with open(RESULTATS_API_FILE, "w", encoding="utf-8") as f:
                 json.dump(datasets_trouves, f, ensure_ascii=False)
 

@@ -1,3 +1,4 @@
+import re
 import uuid
 
 # Correspondance licences data.gouv.fr → RUDI
@@ -30,14 +31,32 @@ def _local_id_depuis_dataset_id(dataset_id: str) -> str:
     return str(uuid.uuid5(uuid.NAMESPACE_URL, f"https://www.data.gouv.fr/datasets/{dataset_id}"))
 
 
-def traduire_metadonnees(metadata_source: dict, zone: str = "Rennes Métropole") -> dict:
+def _trouver_ressource_principale(metadata_source: dict) -> dict | None:
+    """Retourne la meilleure ressource téléchargeable : CSV d'abord, JSON ensuite."""
+    resources = metadata_source.get("resources", [])
+    for r in resources:
+        fmt = r.get("format", "").lower()
+        titre = r.get("title", "").lower()
+        if fmt == "csv" and ".zip" not in titre and ".gz" not in titre:
+            return r
+    for r in resources:
+        fmt = r.get("format", "").lower()
+        titre = r.get("title", "").lower()
+        if fmt == "json" and "geo" not in titre:
+            return r
+    return None
+
+
+def traduire_metadonnees(metadata_source: dict, zone: str = "Rennes Métropole",
+                          dossier_nom: str = "",
+                          fichiers_filtres: list | None = None,
+                          fichiers_dicts: list | None = None) -> dict:
     """
     Traduit les métadonnées data.gouv.fr au format RUDI.
-    Ajoute la mention que c'est une version localisée sur la zone spécifiée.
 
-    :param metadata_source: dict retourné par l'API data.gouv.fr
-    :param zone: nom de la zone géographique filtrée
-    :return: dict au format RUDI
+    fichiers_filtres : [(nom_fichier, nb_rm, ressource_originale), ...] ou None
+    fichiers_dicts   : [(nom_fichier, ressource_originale), ...] ou None
+    dossier_nom      : slug pour nommer le fichier filtré par défaut (ex: "prix-carburants")
     """
     dataset_id = metadata_source["id"]
     titre_original = metadata_source["title"]
@@ -46,12 +65,13 @@ def traduire_metadonnees(metadata_source: dict, zone: str = "Rennes Métropole")
     description_originale = metadata_source.get("description", "")
     description_localisee = (
         f"Version localisée sur {zone}. "
-        f"Seuls les points de vente situés dans les communes de {zone} sont inclus.\n\n"
+        f"Données filtrées pour ne conserver que les enregistrements des communes de {zone}.\n\n"
         f"Jeu de données source (France entière) : https://www.data.gouv.fr/datasets/{dataset_id}\n\n"
         + description_originale
     )
 
-    synopsis = f"Prix des carburants à la pompe pour les stations de {zone}. Mis à jour toutes les 10 minutes."
+    synopsis_base = titre_original[:120]
+    synopsis = f"{synopsis_base} — données filtrées sur {zone}."
     if len(synopsis) > 150:
         synopsis = synopsis[:149]
 
@@ -61,39 +81,64 @@ def traduire_metadonnees(metadata_source: dict, zone: str = "Rennes Métropole")
     }
 
     url_source = f"https://www.data.gouv.fr/datasets/{dataset_id}"
-    ressource_source = next(
-        (r for r in metadata_source.get("resources", []) if ".json" in r.get("title", "") and ".geojson" not in r.get("title", "")),
-        None
-    )
+    ressource_principale = _trouver_ressource_principale(metadata_source)
 
-    # Les media_id sont déterministes : même dataset + même zone = même ID à chaque run.
-    # Indispensable pour que les mises à jour sur le nœud RUDI écrasent le bon média.
-    media_id_filtre = str(uuid.uuid5(uuid.NAMESPACE_URL, f"{url_source}/filtered/{zone}"))
+    # media_id_source déterministe : même dataset = même ID à chaque run
     media_id_source = str(uuid.uuid5(uuid.NAMESPACE_URL, f"{url_source}/source"))
 
-    available_formats = [
-        {
-            "media_id": media_id_filtre,
+    # Entrées pour les fichiers filtrés (une par ressource sauvegardée)
+    if not fichiers_filtres:
+        slug = dossier_nom or dataset_id[:30]
+        fmt_filtre = "CSV" if (ressource_principale and ressource_principale.get("format", "").lower() == "csv") else "JSON"
+        zone_slug = re.sub(r"[^a-z0-9]", "", zone.lower())  # "rennesmetropole"
+        fichiers_filtres = [(f"{slug}-{zone_slug}.{fmt_filtre.lower()}", 0, None)]
+
+    medias_filtres = []
+    for nom_fichier, _, ressource_orig in fichiers_filtres:
+        media_id = str(uuid.uuid5(uuid.NAMESPACE_URL, f"{url_source}/filtered/{zone}/{nom_fichier}"))
+        caption_base = ressource_orig.get("title", nom_fichier) if ressource_orig else nom_fichier
+        fmt_label = "CSV" if nom_fichier.endswith(".csv") else "JSON"
+        medias_filtres.append({
+            "media_id": media_id,
             "media_type": "FILE",
-            "media_name": f"carburants-{zone.lower().replace(' ', '-')}.json",
-            "media_caption": f"Données filtrées sur {zone} au format JSON",
+            "media_name": nom_fichier,
+            "media_caption": f"{caption_base} — données filtrées sur {zone} ({fmt_label})",
             "connector": {
-                # L'URL réelle sera renseignée lors du dépôt sur le nœud RUDI
                 "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
                 "interface_contract": "dwnl",
             },
-        },
+        })
+
+    medias_dicts = []
+    for nom_fichier, ressource_orig in (fichiers_dicts or []):
+        media_id = str(uuid.uuid5(uuid.NAMESPACE_URL, f"{url_source}/dict/{nom_fichier}"))
+        caption = ressource_orig.get("title", nom_fichier) if ressource_orig else nom_fichier
+        medias_dicts.append({
+            "media_id": media_id,
+            "media_type": "FILE",
+            "media_name": nom_fichier,
+            "media_caption": f"Dictionnaire des variables — {caption}",
+            "connector": {
+                "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+                "interface_contract": "dwnl",
+            },
+        })
+
+    available_formats = medias_filtres + medias_dicts + [
         {
             "media_id": media_id_source,
             "media_type": "SERVICE",
             "media_name": "source-data-gouv",
-            "media_caption": f"Jeu de données complet (France entière) sur data.gouv.fr",
+            "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
             "connector": {
-                "url": ressource_source["url"] if ressource_source else url_source,
+                "url": ressource_principale["url"] if ressource_principale else url_source,
                 "interface_contract": "dwnl",
             },
         },
     ]
+
+    tags = [t.get("name", t) if isinstance(t, dict) else t for t in metadata_source.get("tags", [])]
+    keywords = tags[:8] + [zone.lower()]
 
     licence_datagouv = metadata_source.get("license", "")
     licence_rudi = LICENCES.get(licence_datagouv, {
@@ -113,8 +158,8 @@ def traduire_metadonnees(metadata_source: dict, zone: str = "Rennes Métropole")
         "resource_title": titre_localise,
         "synopsis": [{"lang": "fr", "text": synopsis}],
         "summary": [{"lang": "fr", "text": description_localisee}],
-        "theme": "environment",
-        "keywords": ["carburant", "prix", "station-service", zone.lower()],
+        "theme": "other",
+        "keywords": keywords,
         "producer": producer,
         "contacts": [],
         "available_formats": available_formats,

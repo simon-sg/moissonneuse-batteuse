@@ -1202,13 +1202,27 @@ _ANALYSEURS = {
 }
 
 
+_MOTS_DICT_TITRE = {
+    "dictionnaire", "dict", "codebook", "code book",
+    "description des colonnes", "description des champs",
+    "nomenclature", "metadonnee", "metadonnees",
+}
+
+
+def _est_dict_titre(titre: str) -> bool:
+    t = normaliser(titre)
+    return any(m in t for m in _MOTS_DICT_TITRE)
+
+
 def analyser_dataset(dataset: dict, verbose: bool = False) -> dict | None:
     """
-    Essaie toutes les ressources analysables (CSV, ZIP, GZ, XLSX) et retourne
-    le meilleur résultat (le plus de lignes RM). S'arrête dès qu'une ressource
-    contient des données RM.
+    Analyse toutes les ressources CSV/ZIP/GZ/XLSX du dataset (sauf dictionnaires).
+    Accumule nb_rm sur toutes les ressources et retourne un résultat combiné
+    avec les champs de la ressource la plus riche en données RM.
     """
-    meilleur = None
+    nb_rm_total = 0
+    meilleur = None  # résultat avec le plus de nb_rm (pour les champs)
+
     for res in dataset.get("resources", []):
         fmt = _format_analysable(res)
         if not fmt:
@@ -1216,14 +1230,19 @@ def analyser_dataset(dataset: dict, verbose: bool = False) -> dict | None:
         url = res.get("url", "")
         if not url:
             continue
+        if _est_dict_titre(res.get("title", "")):
+            continue
         result = _ANALYSEURS[fmt](url, verbose, dataset["id"], dataset["title"])
         if result is None:
             continue
+        nb_rm_total += result["nb_rm"]
         if meilleur is None or result["nb_rm"] > meilleur["nb_rm"]:
             meilleur = result
-        if meilleur["nb_rm"] > 0:
-            break
-    return meilleur
+
+    if meilleur is None:
+        return None
+    return {**meilleur, "nb_rm": nb_rm_total}
+
 
 # ---------------------------------------------------------------------------
 # Traitement des résultats d'analyse
@@ -1381,6 +1400,101 @@ def sauvegarder_decouverte(decouverte: dict) -> None:
 
 
 # ---------------------------------------------------------------------------
+# Évolution 4 : re-analyse des candidats sans champ géo
+# ---------------------------------------------------------------------------
+
+def _reanalyser_candidats_sans_champ(decouverte: dict) -> None:
+    """Re-analyse les candidats sans champ géo pour détecter SIREN, lat/lon ajoutés depuis."""
+    from connectors.datagouv import get_dataset_metadata
+
+    sans_champ = [
+        c for c in decouverte.get("candidats", [])
+        if not any(c.get(ch) for ch in ("champ_cp", "champ_ville", "champ_iris", "champ_adresse"))
+    ]
+    if not sans_champ:
+        return
+
+    print(f"\n{len(sans_champ)} candidat(s) sans champ géo — re-analyse (SIREN, lat/lon…)")
+
+    def _analyser_un(candidat):
+        try:
+            meta = get_dataset_metadata(candidat["dataset_id"])
+            return candidat, analyser_dataset(meta, verbose=False)
+        except Exception:
+            return candidat, None
+
+    with ThreadPoolExecutor(max_workers=5) as ex:
+        futs = [(c, ex.submit(_analyser_un, c)) for c in sans_champ]
+
+    modifies = 0
+    for candidat, fut in futs:
+        try:
+            _, result = fut.result()
+        except Exception:
+            result = None
+        if result and any(result.get(ch) for ch in ("champ_cp", "champ_ville", "champ_iris", "champ_adresse")):
+            candidat["champ_cp"] = result["champ_cp"]
+            candidat["champ_ville"] = result["champ_ville"]
+            candidat["champ_iris"] = result.get("champ_iris")
+            candidat["champ_adresse"] = result.get("champ_adresse")
+            candidat["nb_rm"] = result["nb_rm"]
+            print(f"  ✓ {candidat['titre'][:60]} — {result['nb_rm']} lignes RM")
+            modifies += 1
+        else:
+            print(f"  - {candidat['titre'][:60]} — champ toujours inconnu")
+
+    if modifies:
+        sauvegarder_decouverte(decouverte)
+        print(f"  {modifies} candidat(s) mis à jour — lancez harvest_batch.py pour les moissonner.\n")
+
+
+# ---------------------------------------------------------------------------
+# Évolution 3 : harvest automatique en fin de session
+# ---------------------------------------------------------------------------
+
+def _harvest_nouveaux_candidats(decouverte: dict, ids_avant_session: set) -> None:
+    """Moissonne les candidats confirmés pendant cette session (évite le re-téléchargement grâce au cache)."""
+    nouveaux = [
+        c for c in decouverte.get("candidats", [])
+        if c["dataset_id"] not in ids_avant_session
+        and any(c.get(ch) for ch in ("champ_cp", "champ_ville", "champ_iris", "champ_adresse"))
+    ]
+    if not nouveaux:
+        return
+
+    from harvest_batch import traiter_candidat as _harvest
+    from state import charger_state, sauvegarder_state
+
+    print(f"\n{len(nouveaux)} nouveau(x) candidat(s) avec données RM.")
+    choix = input("  Lancer le harvest maintenant ? (o/n) ").strip().lower()
+    if choix != "o":
+        print("  → Harvest ignoré. Lancez harvest_batch.py quand vous voulez.\n")
+        return
+
+    state = charger_state()
+    ok, vides, echecs = 0, 0, 0
+    for candidat in nouveaux:
+        print(f"  {candidat['titre'][:65]}")
+        try:
+            res = _harvest(candidat, state)
+            if res["statut"] in ("ok", "cache"):
+                nb = res.get("nb_rm", "?")
+                print(f"    → {nb} lignes RM" + (" (cache)" if res["statut"] == "cache" else f" ({res.get('format', '')})"))
+                sauvegarder_state(state)
+                ok += 1
+            elif res["statut"] == "vide":
+                print(f"    → 0 lignes RM ({res['raison']})")
+                vides += 1
+            else:
+                print(f"    → échec : {res.get('raison', '')}")
+                echecs += 1
+        except Exception as e:
+            print(f"    → erreur : {e}")
+            echecs += 1
+    print(f"  Harvest : {ok} OK, {vides} vides, {echecs} échecs.")
+
+
+# ---------------------------------------------------------------------------
 # Boucle interactive principale
 # ---------------------------------------------------------------------------
 
@@ -1394,6 +1508,11 @@ def main():
         print(f"Mots-clés recherchés : {', '.join(KEYWORDS)}\n")
 
     decouverte = charger_decouverte()
+    # Snapshot avant session pour identifier les nouveaux candidats (évolution 3)
+    ids_candidats_avant_session = {c["dataset_id"] for c in decouverte.get("candidats", [])}
+    # Évolution 4 : re-analyser les candidats sans champ géo identifié
+    _reanalyser_candidats_sans_champ(decouverte)
+
     echecs_ids = set(decouverte["echecs"])
     sans_ressource_ids = set(decouverte["sans_ressource"])
     # deja_vus exclut les échecs pour qu'ils ne soient pas filtrés dans les candidats
@@ -1770,6 +1889,9 @@ def main():
         print(f"\nJDD candidats retenus : {len(decouverte['candidats'])}")
         for c in decouverte["candidats"]:
             print(f"  - {c['titre'][:60]}")
+
+    # Évolution 3 : harvest automatique des nouveaux candidats
+    _harvest_nouveaux_candidats(decouverte, ids_candidats_avant_session)
 
 
 if __name__ == "__main__":

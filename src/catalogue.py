@@ -346,8 +346,8 @@ th{padding:8px 12px;text-align:left;cursor:pointer;user-select:none;color:#667;f
 th:hover{background:#f5f6f8;color:#1c2733}
 th.asc::after{content:" ↑";color:#0b6e99}
 th.desc::after{content:" ↓";color:#0b6e99}
-td{padding:5px 12px;border-bottom:1px solid #f0f2f4;white-space:nowrap;
-   overflow:hidden;text-overflow:ellipsis}
+td{padding:0;border-bottom:1px solid #f0f2f4}
+td div{padding:5px 12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 tr:nth-child(even) td{background:#fafbfc}
 tr:hover td{background:#eef6fb}
 </style>
@@ -376,7 +376,7 @@ function rendu(){
     return(!isNaN(na)&&!isNaN(nb))?(up?na-nb:nb-na):(up?String(va).localeCompare(String(vb),"fr"):String(vb).localeCompare(String(va),"fr"));
   });}
   const th=D.entetes.map((h,i)=>`<th class="${sc===i?(asc?"asc":"desc"):""}" onclick="tri(${i})">${esc(h)}</th>`).join("");
-  const td=rows.map(r=>`<tr>${r.map(v=>`<td title="${esc(v)}">${esc(v)}</td>`).join("")}</tr>`).join("");
+  const td=rows.map(r=>`<tr>${r.map(v=>`<td><div title="${esc(v)}">${esc(v)}</div></td>`).join("")}</tr>`).join("");
   document.getElementById("t").innerHTML=`<thead><tr>${th}</tr></thead><tbody>${td}</tbody>`;
   const n=rows.length,tot=D.lignes.length;
   document.getElementById("info").textContent=n<tot

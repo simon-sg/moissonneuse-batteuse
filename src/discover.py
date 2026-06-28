@@ -25,6 +25,11 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from filters.geographic import est_dans_rm, est_commune_rm, normaliser
 from conf.communes_rm import CODES_POSTAUX_RM, CODES_INSEE_RM, COMMUNES_RM
 from connectors.sirene import obtenir_sirens_rm
+from connectors.ecospheres import (
+    chercher_datasets as _chercher_ecospheres,
+    recup_dataset as _recup_dataset_ecospheres,
+    ID_PREFIX as _ECOSPHERES_PREFIX,
+)
 
 # ---------------------------------------------------------------------------
 # Configuration
@@ -33,6 +38,7 @@ from connectors.sirene import obtenir_sirens_rm
 KEYWORDS = ["commune", "code postal", "code insee", "iris", "adresse"]
 
 NB_PAGES = 50  # pages récupérées par mot-clé (20 résultats/page → 1000 max par keyword)
+NB_PAGES_ECOSPHERES = 30  # pages par requête sur écosphères (100 résultats/page → 3000 max)
 
 # Recherche structurée : utilise les filtres API plutôt que les mots-clés texte
 # Mettre à False pour revenir à la recherche par mots-clés
@@ -49,6 +55,9 @@ REQUETES_STRUCTUREES = [
     {"params": {"q": "siren",                                "sort": "-views"}, "label": "siren"},
     {"params": {"q": "siret",                                "sort": "-views"}, "label": "siret"},
     {"params": {"q": "sirene",                               "sort": "-views"}, "label": "sirene"},
+    {"params": {"organization": "insee",  "sort": "-views"}, "label": "INSEE (data.gouv)"},
+    {"params": {"organization": "cerema", "sort": "-views"}, "label": "Cerema"},
+    {"params": {"q": "transport",         "sort": "-views"}, "label": "transport"},
 ]
 
 # Mots dans le titre indiquant un territoire clairement hors RM
@@ -616,7 +625,8 @@ def afficher_fiche(dataset: dict, extrait: str, resultat: dict | None = None) ->
     print(f"LICENCE  : {dataset.get('license', '?')}")
     print(f"FORMATS  : {', '.join(formats)}")
     print(f"MAJ      : {dataset.get('last_modified', '?')[:10]}")
-    print(f"URL      : https://www.data.gouv.fr/datasets/{dataset['id']}")
+    url = dataset.get("_url") or f"https://www.data.gouv.fr/datasets/{dataset['id']}"
+    print(f"URL      : {url}")
     if resultat is not None:
         if resultat.get("champ_iris"):
             methode, champ = "IRIS", resultat["champ_iris"]
@@ -1377,9 +1387,17 @@ def charger_decouverte() -> dict:
 
 
 def fetcher_datasets_par_ids(ids: list) -> list:
-    """Récupère les métadonnées de datasets depuis l'API data.gouv.fr."""
+    """Récupère les métadonnées de datasets (data.gouv.fr ou écosphères)."""
     datasets = []
     for did in ids:
+        if did.startswith(_ECOSPHERES_PREFIX):
+            ds = _recup_dataset_ecospheres(did)
+            if ds:
+                ds["_echec"] = True
+                datasets.append(ds)
+            else:
+                print(f"  (impossible de récupérer {did} depuis écosphères)")
+            continue
         try:
             r = requests.get(
                 f"https://www.data.gouv.fr/api/1/datasets/{did}/",
@@ -1615,6 +1633,20 @@ def main():
                         if ds["id"] not in ids_trouves:
                             datasets_trouves.append(ds)
                             ids_trouves.add(ds["id"])
+            # Recherche écosphères (portail de données environnementales du MTECT)
+            print("\nRecherche écosphères...")
+            try:
+                eco_datasets = _chercher_ecospheres(NB_PAGES_ECOSPHERES)
+                nb_eco = 0
+                for ds in eco_datasets:
+                    if ds["id"] not in ids_trouves:
+                        datasets_trouves.append(ds)
+                        ids_trouves.add(ds["id"])
+                        nb_eco += 1
+                print(f"  → {nb_eco} nouveaux JDD écosphères ({len(ids_trouves)} au total)\n")
+            except Exception as e:
+                print(f"  (écosphères inaccessible : {e})\n")
+
             with open(RESULTATS_API_FILE, "w", encoding="utf-8") as f:
                 json.dump(datasets_trouves, f, ensure_ascii=False)
 

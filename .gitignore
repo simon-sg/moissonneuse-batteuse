@@ -3,6 +3,9 @@ data/*/source.json
 data/state.json
 data/cache/
 
+# Credentials nœud RUDI (ne pas committer)
+src/conf/rudi_node.json
+
 # Python
 __pycache__/
 *.pyc

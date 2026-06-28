@@ -1524,7 +1524,8 @@ def main():
     print("=== Découverte interactive de JDD éligibles ===")
     if RECHERCHE_STRUCTUREE:
         labels = [r["label"] for r in REQUETES_STRUCTUREES]
-        print(f"Recherche structurée : {', '.join(labels)}\n")
+        print(f"Sources data.gouv.fr : {', '.join(labels)}")
+        print(f"Sources supplémentaires : écosphères (CKAN, {NB_PAGES_ECOSPHERES}×100 résultats max)\n")
     else:
         print(f"Mots-clés recherchés : {', '.join(KEYWORDS)}\n")
 

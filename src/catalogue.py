@@ -15,6 +15,7 @@ Usage :
 import csv
 import json
 import os
+import re
 from datetime import datetime, timezone
 
 RACINE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -84,17 +85,91 @@ def _compter_lignes(chemin: str, fmt: str) -> int | None:
     return None
 
 
+_RE_LAT = re.compile(r"(^|[^a-z])(lat(itude)?)([^a-z]|$)", re.IGNORECASE)
+_RE_LON = re.compile(r"(^|[^a-z])(lon(gitude)?|lng|long)([^a-z]|$)", re.IGNORECASE)
+
+
+def _deviner_lat_lon(entetes: list[str]) -> tuple[str | None, str | None]:
+    """Détecte les colonnes latitude et longitude dans les en-têtes d'un CSV.
+    Prend la première colonne qui correspond pour chaque axe (évite les mélanges
+    départ/arrivée quand les deux sont présentes, ex: covoiturage)."""
+    champ_lat, champ_lon = None, None
+    for e in entetes:
+        if champ_lat is None and _RE_LAT.search(e):
+            champ_lat = e
+        if champ_lon is None and _RE_LON.search(e):
+            champ_lon = e
+        if champ_lat and champ_lon:
+            break
+    return champ_lat, champ_lon
+
+
+def _apercu_geo_csv(chemin: str, max_points: int = 5000) -> dict | None:
+    """Extrait les points géographiques d'un CSV (lat/lon) pour la carte Leaflet."""
+    try:
+        with open(chemin, "rb") as f:
+            raw = f.read()
+        texte = raw.decode("utf-8-sig", errors="replace")
+        if texte.count("�") > 10:
+            texte = raw.decode("latin-1")
+        try:
+            dialect = csv.Sniffer().sniff(texte[:4096], delimiters=";,\t|")
+            delim = dialect.delimiter
+        except csv.Error:
+            delim = ","
+        reader = csv.DictReader(texte.splitlines(), delimiter=delim)
+        entetes = list(reader.fieldnames or [])
+        champ_lat, champ_lon = _deviner_lat_lon(entetes)
+        if not champ_lat or not champ_lon:
+            return None
+        points, nb_total = [], 0
+        for row in reader:
+            nb_total += 1
+            lat_s = (row.get(champ_lat) or "").replace(",", ".").strip()
+            lon_s = (row.get(champ_lon) or "").replace(",", ".").strip()
+            try:
+                lat, lon = float(lat_s), float(lon_s)
+                if not (-90 <= lat <= 90 and -180 <= lon <= 180):
+                    continue
+            except (ValueError, TypeError):
+                continue
+            props = {k: v for k, v in row.items()
+                     if k not in (champ_lat, champ_lon) and v not in (None, "")}
+            if len(points) < max_points:
+                points.append([lat, lon, props])
+        return {"type": "points", "points": points,
+                "nb_total": nb_total, "tronque": nb_total > max_points} if points else None
+    except OSError:
+        return None
+
+
+def _apercu_geojson(chemin: str, max_features: int = 5000) -> dict | None:
+    """Charge un GeoJSON pour intégration dans la carte Leaflet."""
+    try:
+        with open(chemin, encoding="utf-8") as f:
+            data = json.load(f)
+        features = data.get("features", [])
+        nb_total = len(features)
+        if nb_total > max_features:
+            data = {**data, "features": features[:max_features]}
+        return {"type": "geojson", "geojson": data,
+                "nb_total": nb_total, "tronque": nb_total > max_features}
+    except (OSError, ValueError):
+        return None
+
+
 def _ressources_disque(dossier: str) -> list[dict]:
     """Liste les fichiers de données présents dans un dossier de JDD."""
     chemin_dossier = os.path.join(DATA, dossier)
     ressources = []
     for nom in sorted(os.listdir(chemin_dossier)):
-        if nom in NON_RESSOURCES or nom.endswith("_viewer.html"):
+        if nom in NON_RESSOURCES or nom.endswith("_viewer.html") or nom.endswith("_map.html"):
             continue
         chemin = os.path.join(chemin_dossier, nom)
         if not os.path.isfile(chemin):
             continue
         ext = nom.rsplit(".", 1)[-1].lower() if "." in nom else ""
+        nom_base = nom.rsplit(".", 1)[0] if "." in nom else nom
         entry = {
             "nom": nom,
             "format": ext,
@@ -103,8 +178,9 @@ def _ressources_disque(dossier: str) -> list[dict]:
             "chemin": f"{dossier}/{nom}",
         }
         if ext == "csv":
-            nom_base = nom.rsplit(".", 1)[0]
             entry["viewer"] = f"{dossier}/{nom_base}_viewer.html"
+        if ext == "geojson":
+            entry["map"] = f"{dossier}/{nom_base}_map.html"
         ressources.append(entry)
     return ressources
 
@@ -138,6 +214,20 @@ def construire_catalogue() -> dict:
             continue
 
         ressources = _ressources_disque(dossier)
+        # Détecte les CSVs avec colonnes lat/lon pour la carte
+        for res in ressources:
+            if res.get("map") or res.get("format") != "csv":
+                continue
+            chemin_res = os.path.join(DATA, res["chemin"])
+            try:
+                with open(chemin_res, "rb") as _f:
+                    _premiere = _f.readline().decode("utf-8-sig", errors="replace")
+                _entetes = next(csv.reader([_premiere]))
+                if all(_deviner_lat_lon(_entetes)):
+                    nom_base = res["nom"].rsplit(".", 1)[0]
+                    res["map"] = f"{dossier}/{nom_base}_map.html"
+            except OSError:
+                pass
         chemin_meta = os.path.join(chemin_dossier, "rudi_metadata.json")
         meta = {}
         if os.path.exists(chemin_meta):
@@ -275,11 +365,12 @@ function carte(j){
   const champs = Object.entries(j.champs_geo||{}).map(([k,v]) => `${k}=<code>${esc(v)}</code>`).join(", ");
   const res = (j.ressources||[]).map(r => {
     const voir = r.viewer ? ` <a href="${esc(r.viewer)}" target="_blank" rel="noopener">voir</a>` : "";
+    const carte = r.map ? ` <a href="${esc(r.map)}" target="_blank" rel="noopener">carte</a>` : "";
     return `
     <tr><td>${esc(r.nom)}</td><td>${esc(r.format||"")}</td>
         <td>${r.nb_lignes==null?"—":r.nb_lignes.toLocaleString("fr")}</td>
         <td>${octets(r.taille_octets)}</td>
-        <td><a href="${esc(r.chemin)}">ouvrir</a>${voir}</td></tr>`;
+        <td><a href="${esc(r.chemin)}">ouvrir</a>${voir}${carte}</td></tr>`;
   }).join("");
   return `
   <article class="jeu">
@@ -313,6 +404,88 @@ function rendu(q){
 
 document.getElementById("recherche").addEventListener("input", e => rendu(e.target.value));
 rendu("");
+</script>
+</body>
+</html>
+"""
+
+
+GABARIT_MAP = r"""<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title></title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+     background:#f5f6f8;color:#1c2733;display:flex;flex-direction:column;height:100vh}
+header{background:#fff;border-bottom:1px solid #e2e6ea;padding:8px 16px;
+       display:flex;flex-wrap:wrap;gap:8px;align-items:center;flex-shrink:0}
+h1{font-size:.9rem;font-weight:600;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#info{color:#667;font-size:.82rem;white-space:nowrap}
+.avert{background:#fff8e1;border-bottom:1px solid #ffe082;padding:5px 16px;
+       font-size:.8rem;color:#6d4c00;flex-shrink:0}
+#carte{flex:1}
+.leaflet-popup-content{min-width:160px;max-width:320px;font-size:.8rem}
+.leaflet-popup-content table{border-collapse:collapse;width:100%}
+.leaflet-popup-content td{padding:3px 6px;vertical-align:top;border-bottom:1px solid #eee;word-break:break-word}
+.leaflet-popup-content td:first-child{color:#667;font-weight:600;white-space:nowrap;padding-right:10px}
+</style>
+</head>
+<body>
+<header>
+  <h1 id="titre"></h1>
+  <span id="info"></span>
+</header>
+<div id="avert" class="avert" style="display:none"></div>
+<div id="carte"></div>
+<script id="d" type="application/json">/*__DATA__*/</script>
+<script>
+const D=JSON.parse(document.getElementById("d").textContent);
+document.title=D.nom;
+document.getElementById("titre").textContent=D.nom;
+if(D.tronque){
+  const a=document.getElementById("avert"),n=D.type==="points"?D.points.length:D.geojson.features.length;
+  a.style.display="";
+  a.textContent=`Carte : ${n.toLocaleString("fr")} premiers éléments affichés sur ${D.nb_total.toLocaleString("fr")} au total.`;
+}
+
+const map=L.map("carte");
+L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",{
+  attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+  subdomains:"abcd",maxZoom:19
+}).addTo(map);
+
+function mkPopup(props){
+  if(!props||!Object.keys(props).length)return"";
+  const rows=Object.entries(props).filter(([,v])=>v!=null&&v!=="").slice(0,30)
+    .map(([k,v])=>`<tr><td>${k}</td><td>${String(v).slice(0,300)}</td></tr>`).join("");
+  return`<table>${rows}</table>`;
+}
+
+const PT={radius:7,color:"#0b6e99",weight:1.5,fillColor:"#1a8bbf",fillOpacity:.75};
+let layer;
+
+if(D.type==="points"){
+  layer=L.featureGroup(D.points.map(([lat,lon,props])=>
+    L.circleMarker([lat,lon],PT).bindPopup(mkPopup(props))
+  )).addTo(map);
+  document.getElementById("info").textContent=D.points.length.toLocaleString("fr")+" point"+(D.points.length>1?"s":"");
+}else{
+  layer=L.geoJSON(D.geojson,{
+    style:{color:"#0b6e99",weight:2,fillColor:"#1a8bbf",fillOpacity:.35},
+    pointToLayer:(_,ll)=>L.circleMarker(ll,PT),
+    onEachFeature:(f,lyr)=>{if(f.properties)lyr.bindPopup(mkPopup(f.properties));}
+  }).addTo(map);
+  const n=D.geojson.features.length;
+  document.getElementById("info").textContent=n.toLocaleString("fr")+" feature"+(n>1?"s":"");
+}
+
+try{const b=layer.getBounds();if(b.isValid())map.fitBounds(b.pad(0.1));else map.setView([48.1,-1.68],11);}
+catch{map.setView([48.1,-1.68],11);}
 </script>
 </body>
 </html>
@@ -399,32 +572,51 @@ def _ecrire_viewer(chemin: str, nom: str, apercu: dict) -> None:
         f.write(html)
 
 
-def ecrire_viewers(catalogue: dict) -> int:
-    """Génère un fichier *_viewer.html pour chaque ressource CSV du catalogue."""
-    nb = 0
+def _ecrire_map(chemin: str, nom: str, apercu: dict) -> None:
+    data = json.dumps({"nom": nom, **apercu}, ensure_ascii=False).replace("</", r"<\/")
+    html = GABARIT_MAP.replace("/*__DATA__*/", data)
+    with open(chemin, "w", encoding="utf-8") as f:
+        f.write(html)
+
+
+def ecrire_viewers(catalogue: dict) -> tuple[int, int]:
+    """Génère les fichiers *_viewer.html (CSV) et *_map.html (CSV+GeoJSON) du catalogue."""
+    nb_v, nb_m = 0, 0
     for jeu in catalogue["jeux"]:
         for res in jeu["ressources"]:
-            if res.get("format") != "csv" or not res.get("viewer"):
-                continue
-            chemin_csv = os.path.join(DATA, res["chemin"])
-            chemin_viewer = os.path.join(DATA, res["viewer"])
-            apercu = _apercu_csv(chemin_csv)
-            if apercu:
-                _ecrire_viewer(chemin_viewer, res["nom"], apercu)
-                nb += 1
-    return nb
+            fmt = res.get("format")
+            if res.get("viewer") and fmt == "csv":
+                chemin_csv = os.path.join(DATA, res["chemin"])
+                chemin_viewer = os.path.join(DATA, res["viewer"])
+                apercu = _apercu_csv(chemin_csv)
+                if apercu:
+                    _ecrire_viewer(chemin_viewer, res["nom"], apercu)
+                    nb_v += 1
+            if res.get("map"):
+                chemin_src = os.path.join(DATA, res["chemin"])
+                chemin_map = os.path.join(DATA, res["map"])
+                if fmt == "geojson":
+                    apercu_geo = _apercu_geojson(chemin_src)
+                else:
+                    apercu_geo = _apercu_geo_csv(chemin_src)
+                if apercu_geo:
+                    _ecrire_map(chemin_map, res["nom"], apercu_geo)
+                    nb_m += 1
+    return nb_v, nb_m
 
 
 def main() -> None:
     catalogue = construire_catalogue()
     ecrire_json(catalogue)
     ecrire_html(catalogue)
-    nb_v = ecrire_viewers(catalogue)
+    nb_v, nb_m = ecrire_viewers(catalogue)
     print(f"{catalogue['nb_jeux']} jeux de données catalogués.")
     print(f"  → {os.path.relpath(SORTIE_JSON, RACINE)}")
     print(f"  → {os.path.relpath(SORTIE_HTML, RACINE)}")
     if nb_v:
         print(f"  → {nb_v} visionneuse(s) CSV générée(s)")
+    if nb_m:
+        print(f"  → {nb_m} carte(s) géographique(s) générée(s)")
 
 
 if __name__ == "__main__":

@@ -15,7 +15,8 @@ import datetime
 import hashlib
 import zipfile
 import gzip
-from concurrent.futures import ThreadPoolExecutor, wait, FIRST_COMPLETED
+import warnings
+from concurrent.futures import ThreadPoolExecutor, wait, FIRST_COMPLETED, as_completed
 
 import requests
 
@@ -1147,7 +1148,9 @@ def analyser_xlsx(url: str, verbose: bool = False,
     log = {"url": url, "dataset_id": dataset_id, "titre": titre,
            "taille_mo": round(taille_mo, 2), "cache": depuis_cache}
     try:
-        wb = openpyxl.load_workbook(io.BytesIO(contenu), read_only=True, data_only=True)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            wb = openpyxl.load_workbook(io.BytesIO(contenu), read_only=True, data_only=True)
         ws = wb.active
         lignes = list(ws.iter_rows(values_only=True))
         wb.close()
@@ -1619,34 +1622,40 @@ def main():
 
         # Analyse automatique : description → en-têtes → analyse RM en parallèle
         if candidats_nouveaux:
-            print(f"\nAnalyse automatique de {len(candidats_nouveaux)} candidats...", flush=True)
-            with ThreadPoolExecutor(max_workers=10) as pf_exec:
-                futures_pf = [(ds, pf_exec.submit(pre_filtrer, ds)) for ds in candidats_nouveaux]
+            total_pf = len(candidats_nouveaux)
+            print(f"\nAnalyse automatique de {total_pf} candidats...", flush=True)
             auto_ajoutes, a_presenter, ignores = [], [], 0
-            for ds, fut in futures_pf:
-                try:
-                    verdict, result = fut.result()
-                except Exception:
-                    verdict, result = "presenter", None
-                if verdict == "skip":
-                    decouverte["vus"].append(ds["id"])
-                    ignores += 1
-                elif verdict == "candidat":
-                    candidat = {
-                        "dataset_id": ds["id"],
-                        "titre": ds["title"],
-                        "dossier": ds["id"][:30].replace("-", "_"),
-                        "champ_cp":      result["champ_cp"],
-                        "champ_ville":   result["champ_ville"],
-                        "champ_iris":    result.get("champ_iris"),
-                        "champ_adresse": result.get("champ_adresse"),
-                        "nb_rm":         result["nb_rm"],
-                    }
-                    decouverte["candidats"].append(candidat)
-                    decouverte["vus"].append(ds["id"])
-                    auto_ajoutes.append((ds, result))
-                else:  # "presenter"
-                    a_presenter.append((ds, result))
+            done_pf = 0
+            with ThreadPoolExecutor(max_workers=10) as pf_exec:
+                future_to_ds = {pf_exec.submit(pre_filtrer, ds): ds for ds in candidats_nouveaux}
+                for fut in as_completed(future_to_ds):
+                    ds = future_to_ds[fut]
+                    done_pf += 1
+                    print(f"\r  {done_pf}/{total_pf} analysés...", end="", flush=True)
+                    try:
+                        verdict, result = fut.result()
+                    except Exception:
+                        verdict, result = "presenter", None
+                    if verdict == "skip":
+                        decouverte["vus"].append(ds["id"])
+                        ignores += 1
+                    elif verdict == "candidat":
+                        candidat = {
+                            "dataset_id": ds["id"],
+                            "titre": ds["title"],
+                            "dossier": ds["id"][:30].replace("-", "_"),
+                            "champ_cp":      result["champ_cp"],
+                            "champ_ville":   result["champ_ville"],
+                            "champ_iris":    result.get("champ_iris"),
+                            "champ_adresse": result.get("champ_adresse"),
+                            "nb_rm":         result["nb_rm"],
+                        }
+                        decouverte["candidats"].append(candidat)
+                        decouverte["vus"].append(ds["id"])
+                        auto_ajoutes.append((ds, result))
+                    else:  # "presenter"
+                        a_presenter.append((ds, result))
+            print()  # saut de ligne après le \r
             sauvegarder_decouverte(decouverte)
             print(f"  {ignores} sans marqueurs géo → ignorés")
             print(f"  {len(auto_ajoutes)} avec données RM → ajoutés automatiquement")

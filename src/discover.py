@@ -256,6 +256,17 @@ def _telecharger_entetes(url: str) -> list[str] | None:
         return None
 
 
+def _telecharger_schema_parquet(url: str) -> list[str] | None:
+    """Lit uniquement le footer Parquet (~140 Ko) et retourne les noms de colonnes."""
+    try:
+        import pyarrow.parquet as pq
+        import fsspec
+        with fsspec.open(url, "rb") as f:
+            return [field.name for field in pq.ParquetFile(f).schema_arrow]
+    except Exception:
+        return None
+
+
 def pre_filtrer(dataset: dict) -> tuple[str, dict | None]:
     """
     Pipeline automatique en 3 étapes :
@@ -271,13 +282,17 @@ def pre_filtrer(dataset: dict) -> tuple[str, dict | None]:
     # Étape 1 : description/titre (instantané)
     geo_en_description = _contient_marqueurs_geo(dataset)
 
-    # Étape 2 : si pas de marqueurs texte, vérifier les en-têtes CSV (léger)
+    # Étape 2 : si pas de marqueurs texte, vérifier colonnes CSV/Parquet (téléchargement léger)
     if not geo_en_description:
         geo_en_entetes = False
         for res in dataset.get("resources", []):
-            if "csv" not in (res.get("format") or "").lower():
+            fmt = (res.get("format") or "").lower()
+            if "csv" in fmt:
+                entetes = _telecharger_entetes(res.get("url", ""))
+            elif "parquet" in fmt:
+                entetes = _telecharger_schema_parquet(res.get("url", ""))
+            else:
                 continue
-            entetes = _telecharger_entetes(res.get("url", ""))
             if entetes:
                 noms_norm = {normaliser(e) for e in entetes}
                 if (noms_norm & MARQUEURS_ENTETES) or any(
@@ -495,6 +510,8 @@ def _format_analysable(res: dict) -> str | None:
         return "xlsx"
     if "zip" in fmt or url.endswith(".zip"):
         return "zip"
+    if "parquet" in fmt or url.endswith(".parquet"):
+        return "parquet"
     return None
 
 
@@ -1172,10 +1189,10 @@ def analyser_xlsx(url: str, verbose: bool = False,
     entetes = [str(c or "").strip() for c in lignes[0]]
     log["entetes"] = entetes[:15]
 
-    champ_cp, champ_ville, champ_iris, champ_dep, champ_adresse, champ_siren = _detecter_champs(entetes)
+    champ_cp, champ_ville, champ_iris, champ_dep, champ_adresse, champ_siren, champ_lat, champ_lon = _detecter_champs(entetes)
     log.update({"champ_cp": champ_cp, "champ_ville": champ_ville,
                 "champ_iris": champ_iris, "champ_adresse": champ_adresse,
-                "champ_siren": champ_siren})
+                "champ_siren": champ_siren, "champ_lat": champ_lat})
 
     if verbose:
         print(f"  En-têtes XLSX : {entetes[:10]}")
@@ -1185,6 +1202,8 @@ def analyser_xlsx(url: str, verbose: bool = False,
             print(f"  Champ adresse trouvé : {champ_adresse}")
         elif champ_siren:
             print(f"  Champ SIREN trouvé : {champ_siren}")
+        elif champ_lat:
+            print(f"  Champ géo : {champ_lat}" + (f" + {champ_lon}" if champ_lon else ""))
         else:
             print(f"  Champ CP : {champ_cp} | Champ ville : {champ_ville}")
 
@@ -1193,20 +1212,118 @@ def analyser_xlsx(url: str, verbose: bool = False,
             yield dict(zip(entetes, (str(v or "").strip() for v in row)))
 
     nb_total, nb_rm, exemples, premieres_lignes = _compter_lignes_rm(
-        _lignes_en_dicts(), champ_cp, champ_ville, champ_iris, champ_dep, champ_adresse, champ_siren
+        _lignes_en_dicts(), champ_cp, champ_ville, champ_iris, champ_dep, champ_adresse,
+        champ_siren, champ_lat, champ_lon
     )
     log.update({"nb_total": nb_total, "nb_rm": nb_rm})
     log_analyse(log)
     return _construire_resultat(champ_cp, champ_ville, champ_iris, champ_adresse,
                                 nb_total, nb_rm, exemples, premieres_lignes,
-                                champ_siren=champ_siren)
+                                champ_siren=champ_siren, champ_lat=champ_lat, champ_lon=champ_lon)
+
+
+def analyser_parquet(url: str, verbose: bool = False,
+                     dataset_id: str = "", titre: str = "") -> dict | None:
+    """
+    Analyse un fichier Parquet distant sans le télécharger intégralement.
+    Utilise pyarrow + fsspec : lit le footer (schéma) puis les colonnes utiles
+    avec filter pushdown sur COMMUNE ∈ CODES_INSEE_RM (range requests HTTP).
+    """
+    try:
+        import pyarrow as pa
+        import pyarrow.parquet as pq
+        import pyarrow.compute as pc
+        import fsspec
+    except ImportError:
+        if verbose:
+            print("  (pyarrow/fsspec non installé — pip install pyarrow fsspec)")
+        return None
+
+    log: dict = {"url": url, "dataset_id": dataset_id, "titre": titre}
+
+    try:
+        fs, fpath = fsspec.url_to_fs(url)
+
+        # 1. Schéma et métadonnées (range request footer, ~140 Ko)
+        with fs.open(fpath, "rb") as f:
+            pf = pq.ParquetFile(f)
+            cols = [field.name for field in pf.schema_arrow]
+            nb_total = pf.metadata.num_rows
+
+        log["entetes"] = cols[:15]
+
+        # 2. Détection des champs géographiques
+        champ_cp, champ_ville, champ_iris, champ_dep, champ_adresse, champ_siren, champ_lat, champ_lon = _detecter_champs(cols)
+
+        if verbose:
+            print(f"  Colonnes Parquet ({len(cols)}) : {cols[:10]}")
+            if champ_iris:
+                print(f"  Champ IRIS : {champ_iris}")
+            elif champ_ville:
+                print(f"  Champ commune : {champ_ville}")
+
+        if not any([champ_iris, champ_cp, champ_ville, champ_adresse, champ_siren, champ_lat]):
+            log["erreur"] = "aucun champ géo détecté"
+            log_analyse(log)
+            return None
+
+        # 3. Lecture filtrée : filter pushdown sur COMMUNE si disponible
+        # pyarrow exploite les statistiques de row groups pour ne lire que les blocs pertinents
+        cols_a_lire = [c for c in [champ_iris, champ_cp, champ_ville] if c][:3]
+        filtres = None
+        if "COMMUNE" in cols and champ_iris:
+            # COMMUNE ∈ RM → ne télécharge que les row groups concernés (~1-2 sur 25)
+            filtres = [("COMMUNE", "in", list(CODES_INSEE_RM))]
+            if "COMMUNE" not in cols_a_lire:
+                cols_a_lire = ["COMMUNE"] + cols_a_lire
+
+        table = pq.read_table(fpath, filesystem=fs, columns=cols_a_lire or None, filters=filtres)
+
+        # 4. Comptage RM
+        if champ_iris and champ_iris in table.schema.names:
+            iris_col = table.column(champ_iris)
+            commune_codes = pc.utf8_slice_codeunits(iris_col, 0, 5)
+            rm_mask = pc.is_in(commune_codes, value_set=pa.array(sorted(CODES_INSEE_RM)))
+            nb_rm = int(pc.sum(rm_mask.cast(pa.int64())).as_py() or 0)
+        elif filtres:
+            # Le filtre COMMUNE a déjà sélectionné les lignes RM
+            nb_rm = len(table)
+        elif champ_cp and champ_cp in table.schema.names:
+            cp_col = table.column(champ_cp).cast(pa.string())
+            rm_mask = pc.is_in(cp_col, value_set=pa.array(sorted(CODES_POSTAUX_RM)))
+            nb_rm = int(pc.sum(rm_mask.cast(pa.int64())).as_py() or 0)
+        else:
+            nb_rm = 0
+
+        # 5. Exemples et premières lignes (depuis la table déjà filtrée)
+        sample_size = min(5, len(table))
+        sample_rows = table.slice(0, sample_size).to_pylist()
+        premieres_lignes = sample_rows
+        exemples = sample_rows[:3] if nb_rm > 0 else []
+
+        log.update({"nb_total": nb_total, "nb_rm": nb_rm, "champ_iris": champ_iris})
+        log_analyse(log)
+
+        return _construire_resultat(
+            champ_cp, champ_ville, champ_iris, champ_adresse,
+            nb_total, nb_rm, exemples, premieres_lignes,
+            champ_siren=champ_siren, champ_lat=champ_lat, champ_lon=champ_lon,
+        )
+
+    except Exception as e:
+        log["erreur"] = str(e)
+        log_analyse(log)
+        if verbose:
+            print(f"  (Erreur Parquet : {e})")
+        return None
 
 
 _ANALYSEURS = {
-    "csv":  analyser_csv,
-    "zip":  analyser_zip,
-    "gz":   analyser_gz,
-    "xlsx": analyser_xlsx,
+    "csv":     analyser_csv,
+    "zip":     analyser_zip,
+    "gz":      analyser_gz,
+    "xlsx":    analyser_xlsx,
+    "parquet": analyser_parquet,
 }
 
 

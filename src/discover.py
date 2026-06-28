@@ -55,8 +55,8 @@ REQUETES_STRUCTUREES = [
     {"params": {"q": "siren",                                "sort": "-views"}, "label": "siren"},
     {"params": {"q": "siret",                                "sort": "-views"}, "label": "siret"},
     {"params": {"q": "sirene",                               "sort": "-views"}, "label": "sirene"},
-    {"params": {"organization": "insee",  "sort": "-views"}, "label": "INSEE (data.gouv)"},
-    {"params": {"organization": "cerema", "sort": "-views"}, "label": "Cerema"},
+    {"params": {"organization": "534fff81a3a7292c64a77e5c", "sort": "-views"}, "label": "INSEE"},
+    {"params": {"organization": "5c812a16634f416583ed1876", "sort": "-views"}, "label": "Cerema"},
     {"params": {"q": "transport",         "sort": "-views"}, "label": "transport"},
 ]
 

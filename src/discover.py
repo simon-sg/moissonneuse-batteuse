@@ -1562,7 +1562,7 @@ def main():
     exclus_ids = set(decouverte["exclus"])
     echecs_ids_fetched = {ds["id"] for ds in echecs_datasets}
 
-    def _filtrer_communs(datasets):
+    def _filtrer_communs(datasets, ignorer_deja_vus=False):
         """Applique les filtres invariants (orgs, géo, termes, déjà vus)."""
         return [
             ds for ds in datasets
@@ -1571,7 +1571,7 @@ def main():
             and couvre_rennes(ds)
             and (not titre_hors_rm(ds) or description_suggerant_commune(ds))
             and not est_exclu_par_terme(ds, exclusions_termes)
-            and ds["id"] not in deja_vus
+            and (ignorer_deja_vus or ds["id"] not in deja_vus)
             and ds["id"] not in exclus_ids
             and ds["id"] not in echecs_ids_fetched
         ]
@@ -1580,9 +1580,10 @@ def main():
 
     if choix_depart == "p":
         # Charger directement les résultats pré-filtrés (analyse déjà faite)
+        # ignorer_deja_vus=True car ces datasets ont été marqués vus au pré-filtrage
         with open(PREFILTRES_FILE, encoding="utf-8") as f:
             prefiltres_bruts = json.load(f)
-        candidats_nouveaux = _filtrer_communs(prefiltres_bruts)
+        candidats_nouveaux = _filtrer_communs(prefiltres_bruts, ignorer_deja_vus=True)
         _resultats_auto = {}
         print(f"  → {len(candidats_nouveaux)} JDD chargés (après filtres mis à jour).\n")
 
@@ -1665,6 +1666,11 @@ def main():
             candidats_nouveaux = [ds for ds, _ in a_presenter]
             # Garder le résultat d'analyse pour éviter de retélécharger lors de l'affichage
             _resultats_auto = {ds["id"]: result for ds, result in a_presenter}
+            # Marquer comme vus pour ne pas les re-analyser lors d'une future recherche API
+            for ds in candidats_nouveaux:
+                if ds["id"] not in decouverte["vus"]:
+                    decouverte["vus"].append(ds["id"])
+            sauvegarder_decouverte(decouverte)
         else:
             _resultats_auto = {}
 

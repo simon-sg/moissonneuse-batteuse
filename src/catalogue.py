@@ -519,6 +519,8 @@ th{padding:8px 12px;text-align:left;cursor:pointer;user-select:none;color:#667;f
 th:hover{background:#f5f6f8;color:#1c2733}
 th.asc::after{content:" ↑";color:#0b6e99}
 th.desc::after{content:" ↓";color:#0b6e99}
+th.geo{color:#0b6e99;background:#eaf4fb}
+th.geo:hover{background:#d4ecf7}
 td{padding:0;border-bottom:1px solid #f0f2f4}
 td div{padding:5px 12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 tr:nth-child(even) td{background:#fafbfc}
@@ -548,7 +550,8 @@ function rendu(){
     const va=a[col]??"",vb=b[col]??"",na=+va,nb=+vb;
     return(!isNaN(na)&&!isNaN(nb))?(up?na-nb:nb-na):(up?String(va).localeCompare(String(vb),"fr"):String(vb).localeCompare(String(va),"fr"));
   });}
-  const th=D.entetes.map((h,i)=>`<th class="${sc===i?(asc?"asc":"desc"):""}" onclick="tri(${i})">${esc(h)}</th>`).join("");
+  const geo=new Set(D.champs_geo||[]);
+  const th=D.entetes.map((h,i)=>{const cls=[sc===i?(asc?"asc":"desc"):"",geo.has(h)?"geo":""].filter(Boolean).join(" ");return`<th class="${cls}" onclick="tri(${i})">${esc(h)}</th>`;}).join("");
   const td=rows.map(r=>`<tr>${r.map(v=>`<td><div title="${esc(v)}">${esc(v)}</div></td>`).join("")}</tr>`).join("");
   document.getElementById("t").innerHTML=`<thead><tr>${th}</tr></thead><tbody>${td}</tbody>`;
   const n=rows.length,tot=D.lignes.length;
@@ -565,8 +568,8 @@ rendu();
 """
 
 
-def _ecrire_viewer(chemin: str, nom: str, apercu: dict) -> None:
-    data = json.dumps({"nom": nom, **apercu}, ensure_ascii=False).replace("</", r"<\/")
+def _ecrire_viewer(chemin: str, nom: str, apercu: dict, champs_geo: list | None = None) -> None:
+    data = json.dumps({"nom": nom, "champs_geo": champs_geo or [], **apercu}, ensure_ascii=False).replace("</", r"<\/")
     html = GABARIT_VIEWER.replace("/*__DATA__*/", data)
     with open(chemin, "w", encoding="utf-8") as f:
         f.write(html)
@@ -583,6 +586,7 @@ def ecrire_viewers(catalogue: dict) -> tuple[int, int]:
     """Génère les fichiers *_viewer.html (CSV) et *_map.html (CSV+GeoJSON) du catalogue."""
     nb_v, nb_m = 0, 0
     for jeu in catalogue["jeux"]:
+        champs_geo = list(jeu.get("champs_geo", {}).values())
         for res in jeu["ressources"]:
             fmt = res.get("format")
             if res.get("viewer") and fmt == "csv":
@@ -590,7 +594,7 @@ def ecrire_viewers(catalogue: dict) -> tuple[int, int]:
                 chemin_viewer = os.path.join(DATA, res["viewer"])
                 apercu = _apercu_csv(chemin_csv)
                 if apercu:
-                    _ecrire_viewer(chemin_viewer, res["nom"], apercu)
+                    _ecrire_viewer(chemin_viewer, res["nom"], apercu, champs_geo)
                     nb_v += 1
             if res.get("map"):
                 chemin_src = os.path.join(DATA, res["chemin"])

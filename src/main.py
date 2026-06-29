@@ -6,12 +6,21 @@ import datetime
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from connectors.datagouv import get_dataset_metadata, find_resource_by_format, download_resource
+from connectors.rudi_node import publier_dataset
 from filters.geographic import filter_json_by_postal_codes, load_json, save_json
 from translation.datagouv_to_rudi import traduire_metadonnees
 from state import charger_state, sauvegarder_state, dataset_a_change
 from conf.datasets import DATASETS
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
+CONF_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "conf")
+
+def _charger_conf_rudi() -> dict | None:
+    chemin = os.path.join(CONF_DIR, "rudi_node.json")
+    if not os.path.isfile(chemin):
+        return None
+    with open(chemin, encoding="utf-8") as f:
+        return json.load(f)
 
 
 def traiter_dataset(config: dict, state: dict) -> dict:
@@ -69,7 +78,21 @@ def traiter_dataset(config: dict, state: dict) -> dict:
     os.remove(source_file)
     print(f"  Fichier source supprimé.")
 
-    # Étape 7 : mise à jour de l'état
+    # Étape 7 : publication sur le nœud RUDI
+    conf_rudi = _charger_conf_rudi()
+    if conf_rudi:
+        try:
+            publier_dataset(
+                conf=conf_rudi,
+                rudi_metadata=rudi_metadata,
+                fichiers_filtres=[filtered_file],
+            )
+        except Exception as e:
+            print(f"  [RUDI] Erreur publication : {e}")
+    else:
+        print(f"  [RUDI] src/conf/rudi_node.json absent, publication ignorée.")
+
+    # Étape 8 : mise à jour de l'état
     state[dataset_id] = {
         "last_modified": last_modified,
         "last_harvested": datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),

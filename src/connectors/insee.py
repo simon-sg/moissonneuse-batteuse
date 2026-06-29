@@ -130,3 +130,18 @@ def extraire_membres(pub: dict, contenu_zip: bytes) -> list[tuple[str, bytes]]:
     except zipfile.BadZipFile as e:
         print(f"  [{pub['id']}] Archive ZIP invalide : {e}")
         return []
+
+
+# ---------------------------------------------------------------------------
+# Extraction du dictionnaire des variables
+# ---------------------------------------------------------------------------
+
+def extraire_dictionnaire(pub: dict, contenu_zip: bytes) -> list[tuple[str, bytes]]:
+    """Extrait le(s) fichier(s) dictionnaire des variables si dict_pattern est défini dans pub.
+
+    Retourne [] si dict_pattern absent (ex: BPE dont le ZIP ne contient pas de dict).
+    """
+    if not pub.get("dict_pattern"):
+        return []
+    pub_dict = {**pub, "membre_pattern": pub["dict_pattern"]}
+    return extraire_membres(pub_dict, contenu_zip)

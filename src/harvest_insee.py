@@ -21,7 +21,7 @@ import requests
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from conf.datasets import DATASETS_INSEE
-from connectors.insee import resoudre_url, extraire_membres
+from connectors.insee import resoudre_url, extraire_membres, extraire_dictionnaire
 from harvest_batch import filtrer_csv_bytes, sauvegarder_csv, _slugifier
 from discover import _detecter_champs
 
@@ -93,7 +93,8 @@ def _charger_conf_rudi() -> dict | None:
 
 
 def _generer_rudi_metadata(pub: dict, fichiers_data: list[tuple[str, int]],
-                            date_maj: str | None) -> dict:
+                            date_maj: str | None,
+                            fichiers_dict: list[str] | None = None) -> dict:
     """Génère le bloc rudi_metadata.json pour une publication INSEE directe.
 
     fichiers_data : [(nom_fichier, nb_rm), ...]
@@ -131,6 +132,20 @@ def _generer_rudi_metadata(pub: dict, fichiers_data: list[tuple[str, int]],
         },
     }
 
+
+    medias_dict = [
+        {
+            "media_id": str(uuid.uuid5(uuid.NAMESPACE_URL, f"{url_page}/dict/{nom}")),
+            "media_type": "FILE",
+            "media_name": nom,
+            "media_caption": f"Dictionnaire des variables — {nom} (CSV)",
+            "connector": {
+                "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+                "interface_contract": "dwnl",
+            },
+        }
+        for nom in (fichiers_dict or [])
+    ]
     dates = {}
     if date_maj:
         # Last-Modified HTTP ex: "Wed, 12 Feb 2025 09:41:37 GMT" → "2025-02-12T00:00:00Z"
@@ -150,9 +165,9 @@ def _generer_rudi_metadata(pub: dict, fichiers_data: list[tuple[str, int]],
         )}],
         "theme": pub.get("theme", "society"),
         "keywords": ["insee", zone.lower(), pub["id"]],
-        "producer": {"organization_name": "INSEE"},
+        "producer": {"organization_name": "Institut national de la statistique et des études économiques (Insee)"},
         "contacts": [],
-        "available_formats": medias_filtres + [media_source],
+        "available_formats": medias_filtres + medias_dict + [media_source],
         "dataset_dates": dates,
         "storage_status": "online",
         "access_condition": {
@@ -282,15 +297,27 @@ def traiter_publication(pub: dict, state: dict) -> dict:
         fichiers_data.append((nom_csv, len(lignes)))
         chemins_csv.append(chemin_csv)
 
-    # 7. Générer rudi_metadata.json (catalogue + nœud RUDI)
+    # 7. Dictionnaire des variables (si présent dans le ZIP)
+    noms_dict: list[str] = []
+    chemins_dict: list[str] = []
+    for nom_dict, contenu_dict in extraire_dictionnaire(pub, contenu_zip):
+        chemin_dict = os.path.join(dossier, os.path.basename(nom_dict))
+        with open(chemin_dict, "wb") as f:
+            f.write(contenu_dict)
+        noms_dict.append(os.path.basename(nom_dict))
+        chemins_dict.append(chemin_dict)
+        print(f"  → dictionnaire sauvegardé : {os.path.basename(nom_dict)}")
+
+    # 8. Générer rudi_metadata.json (catalogue + nœud RUDI)
     if fichiers_data:
-        rudi_meta = _generer_rudi_metadata(pub, fichiers_data, last_modified)
+        rudi_meta = _generer_rudi_metadata(pub, fichiers_data, last_modified,
+                                            fichiers_dict=noms_dict)
         chemin_rudi = os.path.join(dossier, "rudi_metadata.json")
         with open(chemin_rudi, "w", encoding="utf-8") as f:
             json.dump(rudi_meta, f, ensure_ascii=False, indent=2)
         print(f"  → rudi_metadata.json généré")
 
-        # 8. Publication optionnelle sur le nœud RUDI
+        # 9. Publication optionnelle sur le nœud RUDI
         conf_rudi = _charger_conf_rudi()
         if conf_rudi:
             try:
@@ -303,7 +330,7 @@ def traiter_publication(pub: dict, state: dict) -> dict:
         else:
             print(f"  [RUDI] rudi_node.json absent — publication ignorée.")
 
-    # 9. Mettre à jour le cache
+    # 10. Mettre à jour le cache
     state[pub_id] = {
         "url": url,
         "content_length": content_length,

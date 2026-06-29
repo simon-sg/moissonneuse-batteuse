@@ -1225,7 +1225,8 @@
     "62581fdf02e05e365ea227a1",
     "69b987f0c23eb0dd77b7ef87",
     "65af92d12d38ceffacb04812",
-    "5e5d61e88b4c410efe6a2f26"
+    "5e5d61e88b4c410efe6a2f26",
+    "6407d088d4e23dc662022e2c"
   ],
   "candidats": [
     {
@@ -3387,6 +3388,16 @@
       "champ_iris": "Code Insee commune",
       "champ_adresse": null,
       "nb_rm": 39
+    },
+    {
+      "dataset_id": "6407d088d4e23dc662022e2c",
+      "titre": "Prix des carburants en France - Flux instantané - v2 améliorée",
+      "dossier": "6407d088d4e23dc662022e2c",
+      "champ_cp": "cp",
+      "champ_ville": "ville",
+      "champ_iris": null,
+      "champ_adresse": null,
+      "nb_rm": 49
     }
   ],
   "exclus": [

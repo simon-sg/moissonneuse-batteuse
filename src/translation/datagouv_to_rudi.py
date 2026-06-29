@@ -1,6 +1,13 @@
 import re
 import uuid
 
+# Thèmes acceptés par le nœud RUDI (conformes aux catégories RUDI)
+THEMES_RUDI = {
+    "economy", "citizenship", "energyNetworks", "culture", "transportation",
+    "children", "environment", "townPlanning", "location", "education",
+    "publicSpace", "health", "housing", "society",
+}
+
 # Correspondance licences data.gouv.fr → RUDI
 LICENCES = {
     "lov2": {
@@ -50,14 +57,18 @@ def _trouver_ressource_principale(metadata_source: dict) -> dict | None:
 def traduire_metadonnees(metadata_source: dict, zone: str = "Rennes Métropole",
                           dossier_nom: str = "",
                           fichiers_filtres: list | None = None,
-                          fichiers_dicts: list | None = None) -> dict:
+                          fichiers_dicts: list | None = None,
+                          theme: str = "environment") -> dict:
     """
     Traduit les métadonnées data.gouv.fr au format RUDI.
 
     fichiers_filtres : [(nom_fichier, nb_rm, ressource_originale), ...] ou None
     fichiers_dicts   : [(nom_fichier, ressource_originale), ...] ou None
     dossier_nom      : slug pour nommer le fichier filtré par défaut (ex: "prix-carburants")
+    theme            : thème RUDI (voir THEMES_RUDI) ; à préciser dans datasets.py
     """
+    if theme not in THEMES_RUDI:
+        raise ValueError(f"Thème RUDI invalide : {theme!r}. Valeurs acceptées : {sorted(THEMES_RUDI)}")
     dataset_id = metadata_source["id"]
     titre_original = metadata_source["title"]
     titre_localise = f"{titre_original} - {zone}"
@@ -158,7 +169,7 @@ def traduire_metadonnees(metadata_source: dict, zone: str = "Rennes Métropole",
         "resource_title": titre_localise,
         "synopsis": [{"lang": "fr", "text": synopsis}],
         "summary": [{"lang": "fr", "text": description_localisee}],
-        "theme": "other",
+        "theme": theme,
         "keywords": keywords,
         "producer": producer,
         "contacts": [],

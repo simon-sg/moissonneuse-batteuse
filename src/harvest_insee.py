@@ -22,7 +22,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from conf.datasets import DATASETS_INSEE
 from connectors.insee import resoudre_url, extraire_membres
-from harvest_batch import filtrer_csv, sauvegarder_csv, _slugifier
+from harvest_batch import filtrer_csv_bytes, sauvegarder_csv, _slugifier
 from discover import _detecter_champs
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
@@ -249,7 +249,7 @@ def traiter_publication(pub: dict, state: dict) -> dict:
     for nom_membre, contenu_csv in membres:
         print(f"  Filtrage : {nom_membre}")
         try:
-            lignes, entetes = filtrer_csv(
+            lignes, entetes = filtrer_csv_bytes(
                 contenu_csv, champ_cp, champ_ville, champ_iris, champ_adresse
             )
         except Exception as e:
@@ -262,7 +262,7 @@ def traiter_publication(pub: dict, state: dict) -> dict:
             if auto and auto != champ_iris:
                 print(f"    Champ '{champ_iris}' absent — essai auto-détecté : '{auto}'")
                 try:
-                    lignes, entetes = filtrer_csv(contenu_csv, champ_cp, champ_ville, auto, champ_adresse)
+                    lignes, entetes = filtrer_csv_bytes(contenu_csv, champ_cp, champ_ville, auto, champ_adresse)
                 except Exception as e:
                     print(f"    → Erreur (auto) : {e}")
 

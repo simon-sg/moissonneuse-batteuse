@@ -132,7 +132,7 @@ def filtrer_csv(chemin: str, champ_cp, champ_ville, champ_iris, champ_adresse) -
     return lignes, entetes
 
 
-def _filtrer_csv_bytes(contenu: bytes, champ_cp, champ_ville, champ_iris, champ_adresse) -> tuple[list[dict], list[str]]:
+def filtrer_csv_bytes(contenu: bytes, champ_cp, champ_ville, champ_iris, champ_adresse) -> tuple[list[dict], list[str]]:
     """Filtre depuis bytes en mémoire — uniquement pour les membres extraits d'un ZIP."""
     texte = contenu.decode("utf-8-sig", errors="replace")
     if texte.count("�") > 10:
@@ -311,7 +311,7 @@ def filtrer_toutes_ressources(
                     print(f"    → ZIP sans CSV")
                 for nom_membre, contenu_csv in membres:
                     r_m = {**r, "title": os.path.basename(nom_membre)}
-                    lignes, entetes = _filtrer_csv_bytes(contenu_csv, champ_cp, champ_ville, champ_iris, champ_adresse)
+                    lignes, entetes = filtrer_csv_bytes(contenu_csv, champ_cp, champ_ville, champ_iris, champ_adresse)
                     if len(membres) > 1:
                         print(f"    ↳ {nom_membre}: {len(lignes)} lignes RM")
                     entrees.append((r_m, lignes, entetes))

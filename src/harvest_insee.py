@@ -7,12 +7,14 @@ Usage :
 
 Résultats :
   data/<dossier>/<slug>-rennesmetropole.csv   — lignes filtrées Rennes Métropole
+  data/<dossier>/rudi_metadata.json           — métadonnées RUDI (pour catalogue + nœud)
   data/state_insee.json                       — cache (évite re-téléchargements)
 """
 import datetime
 import json
 import os
 import sys
+import uuid
 
 import requests
 
@@ -62,6 +64,104 @@ def _inchange(pub_id: str, url: str, state: dict) -> bool:
     except Exception:
         pass
     return False
+
+
+# ---------------------------------------------------------------------------
+# Métadonnées RUDI
+# ---------------------------------------------------------------------------
+
+_BBOX_RM = {
+    "bounding_box": {
+        "west_longitude": -2.08, "east_longitude": -1.37,
+        "south_latitude": 47.89, "north_latitude": 48.27,
+    }
+}
+_LICENCE_ETALAB = {
+    "licence_type": "STANDARD",
+    "licence_label": "etalab-2.0",
+    "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+}
+_CONF_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "conf")
+
+
+def _charger_conf_rudi() -> dict | None:
+    chemin = os.path.join(_CONF_DIR, "rudi_node.json")
+    if not os.path.isfile(chemin):
+        return None
+    with open(chemin, encoding="utf-8") as f:
+        return json.load(f)
+
+
+def _generer_rudi_metadata(pub: dict, fichiers_data: list[tuple[str, int]],
+                            date_maj: str | None) -> dict:
+    """Génère le bloc rudi_metadata.json pour une publication INSEE directe.
+
+    fichiers_data : [(nom_fichier, nb_rm), ...]
+    date_maj      : Last-Modified HTTP (ou None)
+    """
+    url_page = pub["url_page"]
+    zone = "Rennes Métropole"
+    titre = f"{pub['titre']} — {zone}"
+    synopsis = f"{pub['titre'][:110]} — données filtrées sur {zone}."[:150]
+
+    # local_id déterministe : même publication = même ID à chaque run
+    local_id = str(uuid.uuid5(uuid.NAMESPACE_URL, url_page))
+
+    medias_filtres = [
+        {
+            "media_id": str(uuid.uuid5(uuid.NAMESPACE_URL, f"{url_page}/filtered/{nom}")),
+            "media_type": "FILE",
+            "media_name": nom,
+            "media_caption": f"{nom} — données filtrées sur {zone} (CSV)",
+            "connector": {
+                "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+                "interface_contract": "dwnl",
+            },
+        }
+        for nom, _ in fichiers_data
+    ]
+    media_source = {
+        "media_id": str(uuid.uuid5(uuid.NAMESPACE_URL, f"{url_page}/source")),
+        "media_type": "SERVICE",
+        "media_name": "source-insee",
+        "media_caption": "Publication complète (France entière) sur insee.fr",
+        "connector": {
+            "url": pub.get("url_direct", url_page),
+            "interface_contract": "dwnl",
+        },
+    }
+
+    dates = {}
+    if date_maj:
+        # Last-Modified HTTP ex: "Wed, 12 Feb 2025 09:41:37 GMT" → "2025-02-12T00:00:00Z"
+        try:
+            from email.utils import parsedate_to_datetime
+            dates["updated"] = parsedate_to_datetime(date_maj).strftime("%Y-%m-%dT00:00:00Z")
+        except Exception:
+            dates["updated"] = datetime.date.today().isoformat() + "T00:00:00Z"
+
+    return {
+        "local_id": local_id,
+        "resource_title": titre,
+        "synopsis": [{"lang": "fr", "text": synopsis}],
+        "summary": [{"lang": "fr", "text": (
+            f"Données INSEE filtrées sur {zone}.\n\n"
+            f"Source : {url_page}"
+        )}],
+        "theme": pub.get("theme", "society"),
+        "keywords": ["insee", zone.lower(), pub["id"]],
+        "producer": {"organization_name": "INSEE"},
+        "contacts": [],
+        "available_formats": medias_filtres + [media_source],
+        "dataset_dates": dates,
+        "storage_status": "online",
+        "access_condition": {
+            "licence": _LICENCE_ETALAB,
+            "confidentiality": {"restricted_access": False, "gdpr_sensitive": False},
+        },
+        "geography": _BBOX_RM,
+        "metadata_info": {"metadata_source": url_page},
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -143,6 +243,9 @@ def traiter_publication(pub: dict, state: dict) -> dict:
 
     # 6. Filtrage et sauvegarde
     nb_rm_total = 0
+    fichiers_data: list[tuple[str, int]] = []   # (nom_csv, nb_rm)
+    chemins_csv:   list[str]            = []    # chemins absolus (pour publier_dataset)
+
     for nom_membre, contenu_csv in membres:
         print(f"  Filtrage : {nom_membre}")
         try:
@@ -171,12 +274,36 @@ def traiter_publication(pub: dict, state: dict) -> dict:
 
         print(f"    → {len(lignes)} lignes RM")
         slug = _slugifier(os.path.splitext(os.path.basename(nom_membre))[0])
-        chemin_csv = os.path.join(dossier, f"{slug}-rennesmetropole.csv")
+        nom_csv = f"{slug}-rennesmetropole.csv"
+        chemin_csv = os.path.join(dossier, nom_csv)
         sauvegarder_csv(lignes, chemin_csv)
         print(f"    → {chemin_csv}")
         nb_rm_total += len(lignes)
+        fichiers_data.append((nom_csv, len(lignes)))
+        chemins_csv.append(chemin_csv)
 
-    # 7. Mettre à jour le cache
+    # 7. Générer rudi_metadata.json (catalogue + nœud RUDI)
+    if fichiers_data:
+        rudi_meta = _generer_rudi_metadata(pub, fichiers_data, last_modified)
+        chemin_rudi = os.path.join(dossier, "rudi_metadata.json")
+        with open(chemin_rudi, "w", encoding="utf-8") as f:
+            json.dump(rudi_meta, f, ensure_ascii=False, indent=2)
+        print(f"  → rudi_metadata.json généré")
+
+        # 8. Publication optionnelle sur le nœud RUDI
+        conf_rudi = _charger_conf_rudi()
+        if conf_rudi:
+            try:
+                from connectors.rudi_node import publier_dataset
+                publier_dataset(conf=conf_rudi, rudi_metadata=rudi_meta,
+                                fichiers_filtres=chemins_csv)
+                print(f"  [RUDI] Publié.")
+            except Exception as e:
+                print(f"  [RUDI] Erreur publication : {e}")
+        else:
+            print(f"  [RUDI] rudi_node.json absent — publication ignorée.")
+
+    # 9. Mettre à jour le cache
     state[pub_id] = {
         "url": url,
         "content_length": content_length,

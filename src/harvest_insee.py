@@ -323,7 +323,7 @@ def traiter_publication(pub: dict, state: dict) -> dict:
             try:
                 from connectors.rudi_node import publier_dataset
                 publier_dataset(conf=conf_rudi, rudi_metadata=rudi_meta,
-                                fichiers_filtres=chemins_csv)
+                                fichiers_filtres=chemins_csv + chemins_dict)
                 print(f"  [RUDI] Publié.")
             except Exception as e:
                 print(f"  [RUDI] Erreur publication : {e}")

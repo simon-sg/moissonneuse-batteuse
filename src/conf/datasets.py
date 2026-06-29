@@ -1,11 +1,10 @@
 # Liste des jeux de données à moissonner.
 # Pour ajouter un nouveau JDD, ajouter une entrée ici.
+#
+# Thèmes RUDI valides (champ "theme", obligatoire) :
+#   economy | citizenship | energyNetworks | culture | transportation | children
+#   environment | townPlanning | location | education | publicSpace | health
+#   housing | society
 
 DATASETS = [
-    {
-        "dataset_id": "prix-des-carburants-en-france-flux-instantane-v2-amelioree",
-        "dossier": "prix-carburants",   # nom du sous-dossier dans data/
-        "champ_cp": "cp",               # nom du champ code postal dans les données
-        "champ_ville": "ville",         # nom du champ ville dans les données
-    },
 ]

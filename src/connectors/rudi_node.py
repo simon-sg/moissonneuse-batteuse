@@ -70,7 +70,9 @@ def publier_dataset(
     # theme : vérifie que la valeur est dans les thèmes acceptés par ce nœud
     themes_valides = writer.themes or []
     if themes_valides and rudi_metadata.get("theme") not in themes_valides:
-        rudi_metadata["theme"] = "economy"
+        print(f"  [RUDI] AVERTISSEMENT : thème '{rudi_metadata.get('theme')}' non reconnu par le nœud. "
+              f"Thèmes valides : {themes_valides}. Précisez 'theme' dans datasets.py.")
+        raise ValueError(f"Thème RUDI invalide pour ce nœud : {rudi_metadata.get('theme')!r}")
 
     # contacts : le nœud exige au moins un contact
     # Crée ou réutilise un contact générique au nom de l'organisation productrice

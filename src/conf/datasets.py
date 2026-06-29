@@ -36,6 +36,7 @@ DATASETS_INSEE = [
         # Exclut le dictionnaire de variables (préfixé "meta_")
         "membre_pattern": r"^(?!meta_).+\.CSV$",
         "champ_iris": "IRIS",    # code IRIS 9 chiffres : 5 premiers = code commune INSEE
+        "dict_pattern": r"^meta_.+\.CSV$",  # dictionnaire des variables dans le même ZIP
         "dossier": "insee_bic_iris",
         "theme": "society",
     },
@@ -48,6 +49,7 @@ DATASETS_INSEE = [
         # On ne garde que la granularité commune (_COM), pattern survivant au changement de millésime
         "membre_pattern": r"^cc_filosofi_\d{4}_COM\.csv$",
         "champ_iris": "CODGEO",  # code commune INSEE 5 chiffres
+        "dict_pattern": r"^meta_cc_filosofi_\d{4}_COM\.csv$",  # dict variables (granularité commune)
         "dossier": "insee_filosofi_commune",
         "theme": "society",
     },

@@ -512,7 +512,7 @@ h1{font-size:.9rem;font-weight:600;flex:1;min-width:150px;
 .avert{background:#fff8e1;border-bottom:1px solid #ffe082;padding:5px 16px;
        font-size:.8rem;color:#6d4c00;flex-shrink:0}
 .wrap{flex:1;overflow:auto}
-table{border-collapse:collapse;font-size:.82rem;table-layout:fixed;width:100%}
+table{border-collapse:collapse;font-size:.82rem;table-layout:fixed}
 thead{position:sticky;top:0;z-index:2;background:#fff;box-shadow:0 1px 0 #e2e6ea}
 th{padding:8px 12px;text-align:left;cursor:pointer;user-select:none;color:#667;font-weight:600;
    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -538,6 +538,8 @@ tr:hover td{background:#eef6fb}
 <script id="d" type="application/json">/*__DATA__*/</script>
 <script>
 const D=JSON.parse(document.getElementById("d").textContent);
+const tbl=document.getElementById("t");
+tbl.style.width=Math.max(document.querySelector(".wrap").clientWidth||0,D.entetes.length*160)+"px";
 document.title=D.nom;document.getElementById("titre").textContent=D.nom;
 if(D.tronque){const a=document.getElementById("avert");a.style.display="";
   a.textContent=`Prévisualisation : ${D.lignes.length.toLocaleString("fr")} premières lignes sur ${D.nb_total.toLocaleString("fr")} au total.`;}

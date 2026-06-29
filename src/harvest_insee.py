@@ -10,6 +10,7 @@ Résultats :
   data/<dossier>/rudi_metadata.json           — métadonnées RUDI (pour catalogue + nœud)
   data/state_insee.json                       — cache (évite re-téléchargements)
 """
+import csv
 import datetime
 import json
 import os
@@ -179,6 +180,38 @@ def _generer_rudi_metadata(pub: dict, fichiers_data: list[tuple[str, int]],
     }
 
 
+
+def _filtrer_dict_variables(contenu: bytes) -> bytes:
+    """Retourne le dictionnaire filtré : uniquement les lignes de définition de variables
+    (COD_MOD vide). Élimine les milliers de lignes de modalités géographiques (codes IRIS,
+    communes) qui gonflent le fichier sans apporter d'information utile."""
+    import io
+    texte = contenu.decode("utf-8-sig", errors="replace")
+    if texte.count("\ufffd") > 10:
+        texte = contenu.decode("latin-1")
+    # Détection délimiteur
+    premiere = texte.split("\n")[0]
+    delim = max(";", "\t", ",", "|", key=lambda d: premiere.count(d))
+
+    reader = csv.DictReader(io.StringIO(texte), delimiter=delim)
+    if reader.fieldnames is None:
+        return contenu  # pas de header reconnu → on laisse intact
+
+    # Colonne COD_MOD (insensible à la casse et aux espaces)
+    col_mod = next((c for c in reader.fieldnames if c.strip().upper() == "COD_MOD"), None)
+    if col_mod is None:
+        return contenu  # pas de colonne COD_MOD → fichier d'autre format, on laisse intact
+
+    lignes = [row for row in reader if not row.get(col_mod, "").strip()]
+
+    out = io.StringIO()
+    writer = csv.DictWriter(out, fieldnames=reader.fieldnames, delimiter=delim,
+                            lineterminator="\n")
+    writer.writeheader()
+    writer.writerows(lignes)
+    return out.getvalue().encode("utf-8-sig")
+
+
 # ---------------------------------------------------------------------------
 # Téléchargement
 # ---------------------------------------------------------------------------
@@ -302,11 +335,13 @@ def traiter_publication(pub: dict, state: dict) -> dict:
     chemins_dict: list[str] = []
     for nom_dict, contenu_dict in extraire_dictionnaire(pub, contenu_zip):
         chemin_dict = os.path.join(dossier, os.path.basename(nom_dict))
+        contenu_filtre = _filtrer_dict_variables(contenu_dict)
         with open(chemin_dict, "wb") as f:
-            f.write(contenu_dict)
+            f.write(contenu_filtre)
+        nb_var = contenu_filtre.count(b"\n") - 1  # lignes hors header
         noms_dict.append(os.path.basename(nom_dict))
         chemins_dict.append(chemin_dict)
-        print(f"  → dictionnaire sauvegardé : {os.path.basename(nom_dict)}")
+        print(f"  → dictionnaire sauvegardé : {os.path.basename(nom_dict)} ({nb_var} variables)")
 
     # 8. Générer rudi_metadata.json (catalogue + nœud RUDI)
     if fichiers_data:

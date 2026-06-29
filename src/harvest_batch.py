@@ -12,6 +12,7 @@ import io
 import json
 import os
 import re
+import shutil
 import sys
 import unicodedata
 import zipfile
@@ -77,30 +78,22 @@ class _Passer(Exception):
     """Levée quand l'utilisateur choisit de passer un dataset pendant le téléchargement."""
 
 
-def telecharger(url: str) -> bytes:
-    # Réutilise le cache discover.py si disponible (évite le re-téléchargement post-découverte)
+def telecharger(url: str) -> str:
+    """Télécharge en streaming vers le cache disque. Retourne le chemin du fichier cache."""
     chemin = _chemin_cache(url)
     if os.path.exists(chemin):
-        print(f"  (depuis cache)", end="\r")
-        with open(chemin, "rb") as f:
-            return f.read()
+        return chemin
+    os.makedirs(CACHE_DIR, exist_ok=True)
     r = requests.get(url, timeout=120, stream=True)
     r.raise_for_status()
-    chunks = []
     total = 0
-    try:
+    chemin_tmp = chemin + ".tmp"
+    with open(chemin_tmp, "wb") as f:
         for chunk in r.iter_content(chunk_size=1024 * 1024):
-            chunks.append(chunk)
+            f.write(chunk)
             total += len(chunk)
-            print(f"  {total / 1024 / 1024:.1f} Mo...", end="\r")
-    except KeyboardInterrupt:
-        print(f"\n  Interrompu à {total / 1024 / 1024:.1f} Mo.")
-        choix = input("  (s) passer ce dataset  /  (q) arrêter tout : ").strip().lower()
-        if choix == "s":
-            raise _Passer()
-        sys.exit(0)
-    print(f"  {total / 1024 / 1024:.1f} Mo téléchargés")
-    return b"".join(chunks)
+    os.rename(chemin_tmp, chemin)
+    return chemin
 
 
 def _detecter_delimiteur(sample: str) -> str:
@@ -118,8 +111,29 @@ def _detecter_delimiteur(sample: str) -> str:
         return ","
 
 
-def filtrer_csv(contenu: bytes, champ_cp, champ_ville, champ_iris, champ_adresse) -> tuple[list[dict], list[str]]:
-    """Retourne (lignes_rm, entetes) — entetes utile pour diagnostiquer un résultat vide."""
+def _detecter_encodage(chemin: str) -> str:
+    """Détecte l'encodage d'un fichier texte (utf-8-sig ou latin-1)."""
+    with open(chemin, "rb") as f:
+        sample = f.read(8192)
+    decoded = sample.decode("utf-8-sig", errors="replace")
+    return "utf-8-sig" if decoded.count("�") <= 10 else "latin-1"
+
+
+def filtrer_csv(chemin: str, champ_cp, champ_ville, champ_iris, champ_adresse) -> tuple[list[dict], list[str]]:
+    """Filtre un CSV en streaming ligne par ligne — ne charge pas le fichier entier en mémoire."""
+    encoding = _detecter_encodage(chemin)
+    with open(chemin, encoding=encoding, errors="replace", newline="") as f:
+        sample = f.read(4096)
+        f.seek(0)
+        delimiteur = _detecter_delimiteur(sample)
+        reader = csv.DictReader(f, delimiter=delimiteur)
+        lignes = [dict(row) for row in reader if _ligne_est_rm(row, champ_cp, champ_ville, champ_iris, champ_adresse)]
+        entetes = list(reader.fieldnames or [])
+    return lignes, entetes
+
+
+def _filtrer_csv_bytes(contenu: bytes, champ_cp, champ_ville, champ_iris, champ_adresse) -> tuple[list[dict], list[str]]:
+    """Filtre depuis bytes en mémoire — uniquement pour les membres extraits d'un ZIP."""
     texte = contenu.decode("utf-8-sig", errors="replace")
     if texte.count("�") > 10:
         texte = contenu.decode("latin-1")
@@ -130,12 +144,12 @@ def filtrer_csv(contenu: bytes, champ_cp, champ_ville, champ_iris, champ_adresse
     return lignes, entetes
 
 
-def filtrer_json(contenu: bytes, champ_cp, champ_ville, champ_iris, champ_adresse) -> list[dict]:
-    data = json.loads(contenu.decode("utf-8"))
+def filtrer_json(chemin: str, champ_cp, champ_ville, champ_iris, champ_adresse) -> list[dict]:
+    with open(chemin, encoding="utf-8") as f:
+        data = json.load(f)
     if isinstance(data, list):
         rows = data
     elif isinstance(data, dict):
-        # Essaie les clés courantes des APIs
         for cle in ("results", "data", "records", "features"):
             if cle in data and isinstance(data[cle], list):
                 rows = data[cle]
@@ -147,9 +161,9 @@ def filtrer_json(contenu: bytes, champ_cp, champ_ville, champ_iris, champ_adress
     return [row for row in rows if _ligne_est_rm(row, champ_cp, champ_ville, champ_iris, champ_adresse)]
 
 
-def _extraire_csvs_zip(contenu: bytes) -> list[tuple[str, bytes]]:
+def _extraire_csvs_zip(chemin: str) -> list[tuple[str, bytes]]:
     """Extrait les fichiers CSV d'une archive ZIP. Retourne [(nom_membre, contenu_csv), ...]."""
-    with zipfile.ZipFile(io.BytesIO(contenu)) as zf:
+    with zipfile.ZipFile(chemin) as zf:
         return [
             (nom, zf.read(nom))
             for nom in zf.namelist()
@@ -157,19 +171,27 @@ def _extraire_csvs_zip(contenu: bytes) -> list[tuple[str, bytes]]:
         ]
 
 
-def filtrer_gz(contenu: bytes, champ_cp, champ_ville, champ_iris, champ_adresse
-               ) -> tuple[list[dict], list[str]]:
-    """Décompresse un GZ et filtre les lignes RM."""
-    return filtrer_csv(gzip.decompress(contenu), champ_cp, champ_ville, champ_iris, champ_adresse)
+def filtrer_gz(chemin: str, champ_cp, champ_ville, champ_iris, champ_adresse) -> tuple[list[dict], list[str]]:
+    """Décompresse un GZ en streaming et filtre les lignes RM sans tout charger en mémoire."""
+    with gzip.open(chemin, "rb") as gz:
+        sample_bytes = gz.read(8192)
+    decoded = sample_bytes.decode("utf-8-sig", errors="replace")
+    encoding = "utf-8-sig" if decoded.count("�") <= 10 else "latin-1"
+    delimiteur = _detecter_delimiteur(decoded[:4096])
+    with gzip.open(chemin, "rt", encoding=encoding, errors="replace", newline="") as gz:
+        reader = csv.DictReader(gz, delimiter=delimiteur)
+        lignes = [dict(row) for row in reader if _ligne_est_rm(row, champ_cp, champ_ville, champ_iris, champ_adresse)]
+        entetes = list(reader.fieldnames or [])
+    return lignes, entetes
 
 
-def filtrer_xlsx(contenu: bytes, champ_cp, champ_ville, champ_iris, champ_adresse) -> list[dict]:
+def filtrer_xlsx(chemin: str, champ_cp, champ_ville, champ_iris, champ_adresse) -> list[dict]:
     """Extrait et filtre les lignes Rennes Métropole d'un fichier XLSX."""
     try:
         import openpyxl
     except ImportError:
         raise RuntimeError("openpyxl non installé — pip install openpyxl")
-    wb = openpyxl.load_workbook(io.BytesIO(contenu), read_only=True, data_only=True)
+    wb = openpyxl.load_workbook(chemin, read_only=True, data_only=True)
     ws = wb.active
     lignes_brutes = list(ws.iter_rows(values_only=True))
     wb.close()
@@ -204,10 +226,12 @@ def _est_dictionnaire_titre(ressource: dict) -> bool:
     return any(mot in titre or mot in desc for mot in _MOTS_DICT)
 
 
-def _est_dictionnaire_contenu(contenu: bytes) -> bool:
+def _est_dictionnaire_contenu(chemin: str) -> bool:
     """Vérifie si la première colonne s'appelle 'Colonne', 'Champ', etc."""
     try:
-        texte = contenu[:2048].decode("utf-8-sig", errors="replace")
+        with open(chemin, "rb") as f:
+            echantillon = f.read(2048)
+        texte = echantillon.decode("utf-8-sig", errors="replace")
         premiere_ligne = texte.split("\n")[0]
         delim = _detecter_delimiteur(texte)
         premier_champ = normaliser(premiere_ligne.split(delim)[0])
@@ -258,7 +282,6 @@ def analyser_ressources(metadata: dict) -> dict:
 
 def _slugifier(titre: str) -> str:
     """Convertit un titre de ressource en slug de fichier (max 50 chars)."""
-    # Retirer l'extension si le titre ressemble à un nom de fichier (.csv, .json…)
     titre = re.sub(r"\.[a-zA-Z0-9]{2,5}$", "", titre.strip())
     s = normaliser(titre)
     s = re.sub(r"[^a-z0-9\s-]", "", s)
@@ -279,30 +302,30 @@ def filtrer_toutes_ressources(
         if multi:
             print(f"  ↳ {titre} [{fmt.upper()}]")
         try:
-            contenu = telecharger(r["url"])
+            chemin = telecharger(r["url"])
             entrees: list[tuple[dict, list[dict], list[str]]] = []
 
             if fmt == "zip":
-                membres = _extraire_csvs_zip(contenu)
+                membres = _extraire_csvs_zip(chemin)
                 if not membres:
                     print(f"    → ZIP sans CSV")
                 for nom_membre, contenu_csv in membres:
                     r_m = {**r, "title": os.path.basename(nom_membre)}
-                    lignes, entetes = filtrer_csv(contenu_csv, champ_cp, champ_ville, champ_iris, champ_adresse)
+                    lignes, entetes = _filtrer_csv_bytes(contenu_csv, champ_cp, champ_ville, champ_iris, champ_adresse)
                     if len(membres) > 1:
                         print(f"    ↳ {nom_membre}: {len(lignes)} lignes RM")
                     entrees.append((r_m, lignes, entetes))
             elif fmt == "gz":
-                lignes, entetes = filtrer_gz(contenu, champ_cp, champ_ville, champ_iris, champ_adresse)
+                lignes, entetes = filtrer_gz(chemin, champ_cp, champ_ville, champ_iris, champ_adresse)
                 entrees = [(r, lignes, entetes)]
             elif fmt == "xlsx":
-                lignes = filtrer_xlsx(contenu, champ_cp, champ_ville, champ_iris, champ_adresse)
+                lignes = filtrer_xlsx(chemin, champ_cp, champ_ville, champ_iris, champ_adresse)
                 entrees = [(r, lignes, [])]
             elif fmt == "json":
-                lignes = filtrer_json(contenu, champ_cp, champ_ville, champ_iris, champ_adresse)
+                lignes = filtrer_json(chemin, champ_cp, champ_ville, champ_iris, champ_adresse)
                 entrees = [(r, lignes, [])]
             else:  # csv
-                lignes, entetes = filtrer_csv(contenu, champ_cp, champ_ville, champ_iris, champ_adresse)
+                lignes, entetes = filtrer_csv(chemin, champ_cp, champ_ville, champ_iris, champ_adresse)
                 entrees = [(r, lignes, entetes)]
 
             resultats.extend(entrees)
@@ -397,14 +420,11 @@ def traiter_candidat(candidat: dict, state: dict) -> dict:
         nom = f"dict-{_slugifier(titre_r)}.{ext}"
         print(f"  Dictionnaire : {titre_r[:55]}")
         try:
-            contenu = telecharger(r["url"])
-            # Vérification contenu : si c'est en fait des données, on ignore
-            if ext == "csv" and not _est_dictionnaire_contenu(contenu):
+            chemin_cache = telecharger(r["url"])
+            if ext == "csv" and not _est_dictionnaire_contenu(chemin_cache):
                 print(f"    → ignoré (contenu détecté comme données, pas dictionnaire)")
                 continue
-            chemin = os.path.join(dossier, nom)
-            with open(chemin, "wb") as f:
-                f.write(contenu)
+            shutil.copy2(chemin_cache, os.path.join(dossier, nom))
             fichiers_dicts.append((nom, r))
         except Exception as e:
             print(f"    → ERREUR : {e}")

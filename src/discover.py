@@ -16,6 +16,7 @@ import hashlib
 import zipfile
 import gzip
 import warnings
+warnings.filterwarnings("ignore", module="requests")
 import xml.etree.ElementTree as ET
 from urllib.parse import urlparse, urlunparse, urlencode, parse_qs
 from concurrent.futures import ThreadPoolExecutor, wait, FIRST_COMPLETED, as_completed
@@ -1910,7 +1911,14 @@ def main():
     # Snapshot avant session pour identifier les nouveaux candidats (évolution 3)
     ids_candidats_avant_session = {c["dataset_id"] for c in decouverte.get("candidats", [])}
     # Évolution 4 : re-analyser les candidats sans champ géo identifié
-    _reanalyser_candidats_sans_champ(decouverte)
+    _n_sans_champ = sum(
+        1 for c in decouverte.get("candidats", [])
+        if not any(c.get(ch) for ch in ("champ_cp", "champ_ville", "champ_iris", "champ_adresse"))
+    )
+    if _n_sans_champ:
+        _rep = input(f"\n{_n_sans_champ} candidat(s) sans champ géo — re-analyser maintenant ? (o/N) ").strip().lower()
+        if _rep == "o":
+            _reanalyser_candidats_sans_champ(decouverte)
 
     echecs_ids = set(decouverte["echecs"])
     sans_ressource_ids = set(decouverte["sans_ressource"])

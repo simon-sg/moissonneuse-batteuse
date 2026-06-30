@@ -138,13 +138,15 @@ def _apercu_geo_csv(chemin: str, max_points: int = 5000) -> dict | None:
                 continue
             props = {k: v for k, v in row.items()
                      if k not in (champ_lat, champ_lon) and v not in (None, "")}
-            if len(points) < max_points:
+            if len(points) < _MAX_EMBED:  # embarque jusqu'à _MAX_EMBED, JS affiche par tranches
                 points.append([lat, lon, props])
-        return {"type": "points", "points": points, "champ_lat": champ_lat,
-                "champ_lon": champ_lon, "delim": delim,
+        return {"type": "points", "points": points,
                 "nb_total": nb_total, "tronque": nb_total > max_points} if points else None
     except OSError:
         return None
+
+
+_MAX_EMBED = 50_000  # limite d'embedding dans le HTML (rendu initial : 5 000)
 
 
 def _apercu_geojson(chemin: str, max_features: int = 5000) -> dict | None:
@@ -154,8 +156,9 @@ def _apercu_geojson(chemin: str, max_features: int = 5000) -> dict | None:
             data = json.load(f)
         features = data.get("features", [])
         nb_total = len(features)
-        if nb_total > max_features:
-            data = {**data, "features": features[:max_features]}
+        # On embarque jusqu'à _MAX_EMBED features ; le JS n'en affiche que max_features au départ
+        if nb_total > _MAX_EMBED:
+            data = {**data, "features": features[:_MAX_EMBED]}
         return {"type": "geojson", "geojson": data,
                 "nb_total": nb_total, "tronque": nb_total > max_features}
     except (OSError, ValueError):
@@ -552,14 +555,15 @@ function ajouterGeoJSON(features){
   }).addTo(map);
 }
 
-// Chargement initial
+// Chargement initial : premiers 5 000 seulement
+const BATCH=5000;
 let layer;
 if(D.type==="points"){
-  layer=L.featureGroup(D.points.map(([lat,lon,props])=>
+  layer=L.featureGroup(D.points.slice(0,BATCH).map(([lat,lon,props])=>
     L.circleMarker([lat,lon],PT).bindPopup(mkPopup(props))
   )).addTo(map);
 }else{
-  layer=L.geoJSON(D.geojson,{
+  layer=L.geoJSON({type:"FeatureCollection",features:D.geojson.features.slice(0,BATCH)},{
     style:{color:"#0b6e99",weight:2,fillColor:"#1a8bbf",fillOpacity:.35},
     pointToLayer:(_,ll)=>L.circleMarker(ll,PT),
     onEachFeature:(f,lyr)=>{if(f.properties)lyr.bindPopup(mkPopup(f.properties));}
@@ -568,70 +572,33 @@ if(D.type==="points"){
 try{const b=layer.getBounds();if(b.isValid())map.fitBounds(b.pad(0.1));else map.setView([48.1,-1.68],11);}
 catch{map.setView([48.1,-1.68],11);}
 
-// Compteur et bouton "Afficher plus"
-let offset=D.type==="points"?D.points.length:D.geojson.features.length;
-let fullData=null;
+// Toutes les données sont embarquées dans D — pas de fetch nécessaire
+const allItems = D.type==="geojson" ? D.geojson.features : D.points;
+let offset = Math.min(BATCH, allItems.length);  // rendu initial
 
 function majInfo(){
-  const n=offset,tot=D.nb_total;
+  const n=offset, tot=D.nb_total;
   document.getElementById("info").textContent=
-    n<tot?`${n.toLocaleString("fr")} / ${tot.toLocaleString("fr")} éléments`
-         :`${n.toLocaleString("fr")} élément${n>1?"s":""} (complet)`;
+    n<tot ? `${n.toLocaleString("fr")} / ${tot.toLocaleString("fr")} éléments`
+          : `${n.toLocaleString("fr")} élément${n>1?"s":""}`;
 }
 function majBouton(){
   const btn=document.getElementById("btn-plus");
-  const restant=D.nb_total-offset;
+  const restant=allItems.length-offset;
   if(restant<=0){btn.style.display="none";return;}
   btn.style.display="";
-  btn.disabled=false;
   btn.textContent=`Afficher 5 000 de plus (${restant.toLocaleString("fr")} restants)`;
 }
 
-function parseCSVPoints(text){
-  const delim=D.delim||",";
-  const lines=text.split(/\r?\n/);
-  const headers=lines[0].split(delim).map(h=>h.replace(/^"|"$/g,"").trim());
-  const iLat=headers.indexOf(D.champ_lat),iLon=headers.indexOf(D.champ_lon);
-  if(iLat<0||iLon<0)return[];
-  const pts=[];
-  for(let i=1;i<lines.length;i++){
-    const cols=lines[i].split(delim);
-    const lat=parseFloat((cols[iLat]||"").replace(",","."));
-    const lon=parseFloat((cols[iLon]||"").replace(",","."));
-    if(isNaN(lat)||isNaN(lon)||lat<-90||lat>90||lon<-180||lon>180)continue;
-    const props={};
-    headers.forEach((h,j)=>{if(j!==iLat&&j!==iLon&&cols[j])props[h]=cols[j];});
-    pts.push([lat,lon,props]);
-  }
-  return pts;
-}
-
-async function chargerPlus(){
-  const btn=document.getElementById("btn-plus");
-  btn.disabled=true;
-  btn.textContent="Chargement…";
-  try{
-    if(D.type==="geojson"){
-      if(!fullData){const r=await fetch("./"+D.nom);const j=await r.json();fullData=j.features||[];}
-      const batch=fullData.slice(offset,offset+5000);
-      ajouterGeoJSON(batch);
-      offset+=batch.length;
-    }else{
-      if(!fullData){const r=await fetch("./"+D.nom);fullData=parseCSVPoints(await r.text());}
-      const batch=fullData.slice(offset,offset+5000);
-      ajouterPoints(batch);
-      offset+=batch.length;
-    }
-    majInfo();majBouton();
-  }catch(e){
-    btn.disabled=false;
-    btn.textContent="Réessayer";
-    console.error("Chargement échoué",e);
-  }
+function chargerPlus(){
+  const batch=allItems.slice(offset, offset+BATCH);
+  if(D.type==="geojson") ajouterGeoJSON(batch); else ajouterPoints(batch);
+  offset+=batch.length;
+  majInfo(); majBouton();
 }
 
 majInfo();
-if(D.tronque)majBouton();
+if(D.tronque) majBouton();
 </script>
 </body>
 </html>

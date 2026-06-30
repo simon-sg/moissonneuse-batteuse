@@ -69,7 +69,7 @@ def traiter_dataset(config: dict, state: dict) -> dict:
     save_json(filtered, filtered_file)
 
     # Étape 5 : traduction des métadonnées au format RUDI
-    rudi_metadata = traduire_metadonnees(metadata, theme=config.get("theme", "environment"))
+    rudi_metadata = traduire_metadonnees(metadata, theme=config.get("theme"))
     with open(rudi_metadata_file, "w", encoding="utf-8") as f:
         json.dump(rudi_metadata, f, ensure_ascii=False, indent=2)
     print(f"  Métadonnées RUDI sauvegardées.")

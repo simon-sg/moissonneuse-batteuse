@@ -5,7 +5,7 @@ Utilisé par harvest_geo.py et discover.py.
 import xml.etree.ElementTree as ET
 from urllib.parse import urlencode, urlparse, urlunparse, parse_qs
 
-import requests
+from connectors.http import session
 
 _RM_BBOX = "-2.00,47.80,-1.30,48.35"   # minLon,minLat,maxLon,maxLat (WGS84)
 _RM_LON_MIN, _RM_LAT_MIN = -2.00, 47.80
@@ -38,7 +38,7 @@ def _sep(url: str) -> str:
 def wfs_lister_couches(url_base: str, timeout: int = 20) -> list[str]:
     """GetCapabilities WFS → liste des typename disponibles."""
     caps_url = f"{url_base}{_sep(url_base)}SERVICE=WFS&REQUEST=GetCapabilities"
-    resp = requests.get(caps_url, timeout=timeout)
+    resp = session.get(caps_url, timeout=timeout)
     resp.raise_for_status()
     root = ET.fromstring(resp.content)
     layers = []
@@ -70,7 +70,7 @@ def wfs_telecharger_rm(url_base: str, typename: str,
     ]
     for params in tentatives:
         try:
-            resp = requests.get(f"{url_base}{sep}{urlencode(params)}", timeout=timeout)
+            resp = session.get(f"{url_base}{sep}{urlencode(params)}", timeout=timeout)
             if resp.status_code != 200:
                 continue
             body = resp.content.lstrip()
@@ -79,7 +79,8 @@ def wfs_telecharger_rm(url_base: str, typename: str,
             data = resp.json()
             if "features" in data:
                 return data
-        except Exception:
+        except Exception as e:
+            print(f"    [WFS] tentative {params['VERSION']} échouée pour {typename} : {e}")
             continue
     return None
 
@@ -139,7 +140,7 @@ def wms_get_capabilities(url_base: str, timeout: int = 20) -> dict:
     """
     sep = _sep(url_base)
     caps_url = f"{url_base}{sep}SERVICE=WMS&REQUEST=GetCapabilities"
-    resp = requests.get(caps_url, timeout=timeout)
+    resp = session.get(caps_url, timeout=timeout)
     resp.raise_for_status()
     root = ET.fromstring(resp.content)
 
@@ -177,7 +178,7 @@ def ogcapi_lister_collections(url_base: str, timeout: int = 20) -> list[dict]:
     Retourne [{"id", "titre", "bbox_wgs84"}].
     """
     url = url_base.rstrip("/") + "/collections"
-    resp = requests.get(url, timeout=timeout, headers={"Accept": "application/json"})
+    resp = session.get(url, timeout=timeout, headers={"Accept": "application/json"})
     resp.raise_for_status()
     data = resp.json()
     collections = []
@@ -202,12 +203,12 @@ def ogcapi_telecharger_rm(url_base: str, collection_id: str,
     url = f"{url_base.rstrip('/')}/collections/{collection_id}/items"
     params = {"bbox": _RM_BBOX, "limit": limit, "f": "application/geo+json"}
     try:
-        resp = requests.get(url, params=params, timeout=timeout,
+        resp = session.get(url, params=params, timeout=timeout,
                             headers={"Accept": "application/geo+json,application/json"})
         resp.raise_for_status()
         data = resp.json()
         if "features" in data:
             return data
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"    [OGC API] téléchargement de {collection_id} échoué : {e}")
     return None

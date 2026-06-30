@@ -2156,6 +2156,7 @@ def main():
             total_pf = len(candidats_nouveaux)
             print(f"\nAnalyse automatique de {total_pf} candidats...", flush=True)
             auto_ajoutes, a_presenter, ignores = [], [], 0
+            echecs_pf = []
             done_pf = 0
             with ThreadPoolExecutor(max_workers=10) as pf_exec:
                 future_to_ds = {pf_exec.submit(pre_filtrer, ds): ds for ds in candidats_nouveaux}
@@ -2165,8 +2166,9 @@ def main():
                     print(f"\r  {done_pf}/{total_pf} analysés...", end="", flush=True)
                     try:
                         verdict, result = fut.result()
-                    except Exception:
+                    except Exception as e:
                         verdict, result = "presenter", None
+                        echecs_pf.append((ds["id"], str(e)))
                     if verdict == "skip":
                         decouverte["vus"].append(ds["id"])
                         ignores += 1
@@ -2193,6 +2195,10 @@ def main():
             print()  # saut de ligne après le \r
             sauvegarder_decouverte(decouverte)
             print(f"  {ignores} sans marqueurs géo → ignorés")
+            if echecs_pf:
+                print(f"  {len(echecs_pf)} analyse(s) en échec (exception) → à présenter manuellement :")
+                for ds_id, raison in echecs_pf:
+                    print(f"    ✗ {ds_id} : {raison}")
             print(f"  {len(auto_ajoutes)} avec données RM → ajoutés automatiquement")
             for ds, result in auto_ajoutes:
                 print(f"    ✓ {ds['title'][:60]}  ({result['nb_rm']} lignes RM)")

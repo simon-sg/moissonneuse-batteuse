@@ -15,8 +15,7 @@ import io
 import re
 import zipfile
 
-import requests
-
+from connectors.http import session
 from conf.datasets import DATASETS_INSEE
 
 BASE_INSEE = "https://www.insee.fr"
@@ -33,7 +32,7 @@ def _scraper_url_zip(url_page: str) -> str | None:
     """Scrape la page INSEE et retourne l'URL du ZIP CSV le plus approprié.
     Préfère les ZIPs '_csv.zip' aux autres, exclut les fichiers historiques."""
     try:
-        r = requests.get(url_page, headers=_HEADERS, timeout=_TIMEOUT_GET)
+        r = session.get(url_page, headers=_HEADERS, timeout=_TIMEOUT_GET)
         r.raise_for_status()
     except Exception as e:
         print(f"  [insee] Scraping de {url_page} impossible : {e}")
@@ -72,7 +71,7 @@ def resoudre_url(pub: dict) -> str | None:
 
     if url_direct:
         try:
-            r = requests.head(url_direct, headers=_HEADERS, timeout=_TIMEOUT_HEAD,
+            r = session.head(url_direct, headers=_HEADERS, timeout=_TIMEOUT_HEAD,
                               allow_redirects=True)
             if r.status_code == 200:
                 return url_direct

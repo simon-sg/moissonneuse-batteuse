@@ -6,21 +6,13 @@ import datetime
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from connectors.datagouv import get_dataset_metadata, find_resource_by_format, download_resource
-from connectors.rudi_node import publier_dataset
+from connectors.rudi_node import publier_dataset, charger_conf_rudi
 from filters.geographic import filter_json_by_postal_codes, load_json, save_json
 from translation.datagouv_to_rudi import traduire_metadonnees
 from state import charger_state, sauvegarder_state, dataset_a_change
 from conf.datasets import DATASETS
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
-CONF_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "conf")
-
-def _charger_conf_rudi() -> dict | None:
-    chemin = os.path.join(CONF_DIR, "rudi_node.json")
-    if not os.path.isfile(chemin):
-        return None
-    with open(chemin, encoding="utf-8") as f:
-        return json.load(f)
 
 
 def traiter_dataset(config: dict, state: dict) -> dict:
@@ -69,7 +61,9 @@ def traiter_dataset(config: dict, state: dict) -> dict:
     save_json(filtered, filtered_file)
 
     # Étape 5 : traduction des métadonnées au format RUDI
-    rudi_metadata = traduire_metadonnees(metadata, theme=config.get("theme"))
+    entetes_colonnes = list(filtered[0].keys()) if filtered else None
+    rudi_metadata = traduire_metadonnees(metadata, theme=config.get("theme"),
+                                          entetes_colonnes=entetes_colonnes)
     with open(rudi_metadata_file, "w", encoding="utf-8") as f:
         json.dump(rudi_metadata, f, ensure_ascii=False, indent=2)
     print(f"  Métadonnées RUDI sauvegardées.")
@@ -79,7 +73,8 @@ def traiter_dataset(config: dict, state: dict) -> dict:
     print(f"  Fichier source supprimé.")
 
     # Étape 7 : publication sur le nœud RUDI
-    conf_rudi = _charger_conf_rudi()
+    conf_rudi = charger_conf_rudi()
+    rudi_publie = False
     if conf_rudi:
         try:
             publier_dataset(
@@ -87,17 +82,23 @@ def traiter_dataset(config: dict, state: dict) -> dict:
                 rudi_metadata=rudi_metadata,
                 fichiers_filtres=[filtered_file],
             )
+            rudi_publie = True
         except Exception as e:
             print(f"  [RUDI] Erreur publication : {e}")
     else:
         print(f"  [RUDI] src/conf/rudi_node.json absent, publication ignorée.")
 
-    # Étape 8 : mise à jour de l'état
+    # Étape 8 : mise à jour de l'état. Le téléchargement/filtrage/traduction est
+    # acquis dès qu'on arrive ici (pas besoin de le refaire au prochain run) ;
+    # `rudi_publie` distingue séparément si la publication a réellement réussi.
+    # Si elle a échoué ou a été ignorée (pas de conf), `src/publish_rudi.py`
+    # republiera depuis les fichiers déjà sur disque, sans tout re-télécharger.
     state[dataset_id] = {
         "last_modified": last_modified,
         "last_harvested": datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
         "nb_enregistrements_rm": len(filtered),
         "dossier": config["dossier"],
+        "rudi_publie": rudi_publie,
     }
 
     return state
@@ -112,9 +113,9 @@ def main():
     for config in DATASETS:
         print(f"--- {config['dataset_id']} ---")
         state = traiter_dataset(config, state)
+        sauvegarder_state(state)
         print()
 
-    sauvegarder_state(state)
     print("=== State sauvegardé ===")
     print(json.dumps(state, ensure_ascii=False, indent=2))
 

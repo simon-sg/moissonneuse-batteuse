@@ -1,0 +1,110 @@
+"""
+Régénère la description (résumé RUDI) des JDD déjà moissonnés dont la source ne
+fournissait aucun texte exploitable (description data.gouv.fr vide, publication INSEE
+ou service géo — qui n'ont par construction jamais de description en entrée).
+
+Travaille uniquement à partir des fichiers déjà sur disque (rudi_metadata.json +
+fichier filtré du même dossier) : ne retélécharge ni ne refiltre rien, et ne republie
+pas sur le nœud RUDI (à faire ensuite via l'option "Publier sur le nœud RUDI" si
+souhaité). Idempotent : un JDD déjà enrichi ou qui a une vraie description n'est pas
+retouché.
+
+Les moissons futures (harvest_batch.py / harvest_insee.py / harvest_geo.py) appliquent
+déjà ce même traitement automatiquement — ce script ne sert qu'à rattraper les JDD
+moissonnés avant l'introduction de ce traitement.
+
+Usage : python3 src/enrichir_descriptions.py
+"""
+import json
+import os
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+from translation.description_secours import (
+    MARQUEUR, description_quasi_vide, entetes_depuis_csv, entetes_depuis_geojson,
+    generer_complement, partie_descriptive,
+)
+
+DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
+
+
+def _colonnes_disponibles(dossier: str, rudi_metadata: dict) -> list[str]:
+    """Cherche les colonnes du premier fichier FILE (CSV ou GeoJSON) listé dans available_formats."""
+    for media in rudi_metadata.get("available_formats", []):
+        if media.get("media_type") != "FILE":
+            continue
+        chemin = os.path.join(dossier, media.get("media_name", ""))
+        if not os.path.isfile(chemin):
+            continue
+        if chemin.endswith(".csv"):
+            with open(chemin, "rb") as f:
+                entetes = entetes_depuis_csv(f.read())
+        elif chemin.endswith(".geojson") or chemin.endswith(".json"):
+            entetes = entetes_depuis_geojson(chemin)
+        else:
+            continue
+        if entetes:
+            return entetes
+    return []
+
+
+def enrichir_un(dossier_nom: str) -> str | None:
+    """Régénère summary[0].text si quasi vide et pas déjà enrichi. None si rien à faire."""
+    dossier = os.path.join(DATA_DIR, dossier_nom)
+    chemin_meta = os.path.join(dossier, "rudi_metadata.json")
+    if not os.path.isfile(chemin_meta):
+        return None
+    with open(chemin_meta, encoding="utf-8") as f:
+        meta = json.load(f)
+
+    if not meta.get("summary"):
+        return None
+    texte_complet = meta["summary"][0].get("text", "")
+    reste = partie_descriptive(texte_complet)
+
+    if MARQUEUR in reste:
+        return None  # déjà enrichi par un run précédent de ce script
+    if not description_quasi_vide(reste):
+        return None  # a déjà une vraie description source
+
+    theme = meta.get("theme", "society")
+    producteur = (meta.get("producer") or {}).get("organization_name", "Producteur inconnu")
+    mots_cles = meta.get("keywords", [])
+    colonnes = _colonnes_disponibles(dossier, meta)
+
+    complement = generer_complement(theme=theme, producteur=producteur,
+                                     colonnes=colonnes, mots_cles=mots_cles)
+    meta["summary"][0]["text"] = texte_complet.rstrip() + "\n\n" + complement
+
+    with open(chemin_meta, "w", encoding="utf-8") as f:
+        json.dump(meta, f, ensure_ascii=False, indent=2)
+
+    base = "colonnes détectées" if colonnes else "thème/producteur/mots-clés (pas de fichier filtré lisible)"
+    return f"{dossier_nom} : description complétée ({base})"
+
+
+def main() -> None:
+    dossiers = sorted(
+        n for n in os.listdir(DATA_DIR)
+        if n != "cache" and os.path.isdir(os.path.join(DATA_DIR, n))
+    )
+    print(f"=== Enrichissement des descriptions — {len(dossiers)} dossier(s) à vérifier ===\n")
+    n_traites = 0
+    for nom in dossiers:
+        try:
+            resultat = enrichir_un(nom)
+        except Exception as e:
+            print(f"  {nom} : ERREUR — {e}")
+            continue
+        if resultat:
+            print(f"  {resultat}")
+            n_traites += 1
+    print(f"\n=== Terminé : {n_traites} description(s) complétée(s) sur {len(dossiers)} dossier(s) ===")
+    if n_traites:
+        print('Pensez à régénérer le catalogue (option 6) et, si besoin, à republier '
+              'sur le nœud RUDI (option 7).')
+
+
+if __name__ == "__main__":
+    main()

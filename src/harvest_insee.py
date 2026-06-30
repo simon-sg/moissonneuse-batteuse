@@ -23,6 +23,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from conf.datasets import DATASETS_INSEE
 from connectors.insee import resoudre_url, extraire_membres, extraire_dictionnaire
+from translation.description_secours import generer_complement
+from connectors.rudi_node import publier_dataset, charger_conf_rudi
 from harvest_batch import filtrer_csv_bytes, sauvegarder_csv, _slugifier
 from discover import _detecter_champs
 
@@ -38,8 +40,12 @@ _HEADERS = {"User-Agent": "moissonneuse-batteuse/1.0 (projet open-data Rennes M�
 
 def _charger_state() -> dict:
     if os.path.exists(STATE_FILE):
-        with open(STATE_FILE, encoding="utf-8") as f:
-            return json.load(f)
+        try:
+            with open(STATE_FILE, encoding="utf-8") as f:
+                return json.load(f)
+        except (json.JSONDecodeError, OSError) as e:
+            print(f"[state] {STATE_FILE} illisible ou corrompu ({e}), repart d'un état vide.")
+            return {}
     return {}
 
 
@@ -82,29 +88,23 @@ _LICENCE_ETALAB = {
     "licence_label": "etalab-2.0",
     "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
 }
-_CONF_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "conf")
-
-
-def _charger_conf_rudi() -> dict | None:
-    chemin = os.path.join(_CONF_DIR, "rudi_node.json")
-    if not os.path.isfile(chemin):
-        return None
-    with open(chemin, encoding="utf-8") as f:
-        return json.load(f)
-
-
 def _generer_rudi_metadata(pub: dict, fichiers_data: list[tuple[str, int]],
                             date_maj: str | None,
-                            fichiers_dict: list[str] | None = None) -> dict:
+                            fichiers_dict: list[str] | None = None,
+                            entetes_colonnes: list[str] | None = None) -> dict:
     """Génère le bloc rudi_metadata.json pour une publication INSEE directe.
 
-    fichiers_data : [(nom_fichier, nb_rm), ...]
-    date_maj      : Last-Modified HTTP (ou None)
+    fichiers_data    : [(nom_fichier, nb_rm), ...]
+    date_maj         : Last-Modified HTTP (ou None)
+    entetes_colonnes : colonnes du fichier filtré (si connues) — les publications INSEE
+                       n'ont jamais de description source, on la complète systématiquement
     """
     url_page = pub["url_page"]
     zone = "Rennes Métropole"
     titre = f"{pub['titre']} — {zone}"
     synopsis = f"{pub['titre'][:110]} — données filtrées sur {zone}."[:150]
+    producteur_nom = "Institut national de la statistique et des études économiques (Insee)"
+    theme = pub.get("theme", "society")
 
     # local_id déterministe : même publication = même ID à chaque run
     local_id = str(uuid.uuid5(uuid.NAMESPACE_URL, url_page))
@@ -156,17 +156,21 @@ def _generer_rudi_metadata(pub: dict, fichiers_data: list[tuple[str, int]],
         except Exception:
             dates["updated"] = datetime.date.today().isoformat() + "T00:00:00Z"
 
+    description = (
+        f"Données INSEE filtrées sur {zone}.\n\n"
+        f"Source : {url_page}\n\n"
+        + generer_complement(theme=theme, producteur=producteur_nom, zone=zone,
+                              colonnes=entetes_colonnes)
+    )
+
     return {
         "local_id": local_id,
         "resource_title": titre,
         "synopsis": [{"lang": "fr", "text": synopsis}],
-        "summary": [{"lang": "fr", "text": (
-            f"Données INSEE filtrées sur {zone}.\n\n"
-            f"Source : {url_page}"
-        )}],
-        "theme": pub.get("theme", "society"),
+        "summary": [{"lang": "fr", "text": description}],
+        "theme": theme,
         "keywords": ["insee", zone.lower(), pub["id"]],
-        "producer": {"organization_name": "Institut national de la statistique et des études économiques (Insee)"},
+        "producer": {"organization_name": producteur_nom},
         "contacts": [],
         "available_formats": medias_filtres + medias_dict + [media_source],
         "dataset_dates": dates,
@@ -294,6 +298,7 @@ def traiter_publication(pub: dict, state: dict) -> dict:
     nb_rm_total = 0
     fichiers_data: list[tuple[str, int]] = []   # (nom_csv, nb_rm)
     chemins_csv:   list[str]            = []    # chemins absolus (pour publier_dataset)
+    dernieres_entetes: list[str]        = []    # colonnes du dernier fichier filtré (pour la description de secours)
 
     for nom_membre, contenu_csv in membres:
         print(f"  Filtrage : {nom_membre}")
@@ -339,6 +344,8 @@ def traiter_publication(pub: dict, state: dict) -> dict:
             continue
 
         print(f"    → {len(lignes)} lignes RM")
+        if entetes:
+            dernieres_entetes = entetes
         slug = _slugifier(os.path.splitext(os.path.basename(nom_membre))[0])
         nom_csv = f"{slug}-rennesmetropole.csv"
         chemin_csv = os.path.join(dossier, nom_csv)
@@ -362,28 +369,34 @@ def traiter_publication(pub: dict, state: dict) -> dict:
         print(f"  → dictionnaire sauvegardé : {os.path.basename(nom_dict)} ({nb_var} variables)")
 
     # 8. Générer rudi_metadata.json (catalogue + nœud RUDI)
+    rudi_publie = True  # rien à publier (pas de fichiers_data) -> rien à retenter non plus
     if fichiers_data:
+        rudi_publie = False
         rudi_meta = _generer_rudi_metadata(pub, fichiers_data, last_modified,
-                                            fichiers_dict=noms_dict)
+                                            fichiers_dict=noms_dict,
+                                            entetes_colonnes=dernieres_entetes)
         chemin_rudi = os.path.join(dossier, "rudi_metadata.json")
         with open(chemin_rudi, "w", encoding="utf-8") as f:
             json.dump(rudi_meta, f, ensure_ascii=False, indent=2)
         print(f"  → rudi_metadata.json généré")
 
         # 9. Publication optionnelle sur le nœud RUDI
-        conf_rudi = _charger_conf_rudi()
+        conf_rudi = charger_conf_rudi()
         if conf_rudi:
             try:
-                from connectors.rudi_node import publier_dataset
                 publier_dataset(conf=conf_rudi, rudi_metadata=rudi_meta,
                                 fichiers_filtres=chemins_csv + chemins_dict)
                 print(f"  [RUDI] Publié.")
+                rudi_publie = True
             except Exception as e:
                 print(f"  [RUDI] Erreur publication : {e}")
         else:
             print(f"  [RUDI] rudi_node.json absent — publication ignorée.")
 
-    # 10. Mettre à jour le cache
+    # 10. Mettre à jour le cache. Le téléchargement/filtrage est acquis dès qu'on
+    # arrive ici ; `rudi_publie` distingue séparément si la publication a réussi.
+    # Si elle a échoué ou a été ignorée, `src/publish_rudi.py` republiera depuis
+    # rudi_metadata.json sans tout re-télécharger.
     state[pub_id] = {
         "url": url,
         "content_length": content_length,
@@ -391,6 +404,7 @@ def traiter_publication(pub: dict, state: dict) -> dict:
         "date_harvest":   datetime.date.today().isoformat(),
         "nb_rm": nb_rm_total,
         "dossier": pub["dossier"],
+        "rudi_publie": rudi_publie,
     }
 
     if nb_rm_total == 0:

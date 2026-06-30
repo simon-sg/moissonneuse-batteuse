@@ -2,19 +2,31 @@ import json
 import uuid
 import os
 
-import requests
-
 from rudi_node_write.rudi_node_writer import RudiNodeWriter
 from rudi_node_write.connectors.rudi_node_auth import RudiNodeAuth
 from rudi_node_write.rudi_types.rudi_media import RudiMediaFile
+
+from connectors.http import session
+
+_CONF_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "conf")
+
+
+def charger_conf_rudi() -> dict | None:
+    """Charge la config du nœud RUDI (src/conf/rudi_node.json), ou None si absente."""
+    chemin = os.path.join(_CONF_DIR, "rudi_node.json")
+    if not os.path.isfile(chemin):
+        return None
+    with open(chemin, encoding="utf-8") as f:
+        return json.load(f)
 
 
 def _api_version(base_url: str) -> str:
     """Récupère la version de l'API catalog du nœud RUDI."""
     catalog_url = base_url.rstrip("/").rsplit("/", 1)[0] + ":3030/catalog"
     try:
-        return requests.get(f"{catalog_url}/version", timeout=5).text.strip()
-    except Exception:
+        return session.get(f"{catalog_url}/version", timeout=5).text.strip()
+    except Exception as e:
+        print(f"  [RUDI] AVERTISSEMENT : impossible de récupérer la version de l'API ({e}), valeur par défaut 1.4.0 utilisée.")
         return "1.4.0"
 
 

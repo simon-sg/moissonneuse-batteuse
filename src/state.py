@@ -7,8 +7,12 @@ STATE_FILE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file
 def charger_state() -> dict:
     """Charge l'état sauvegardé des runs précédents."""
     if os.path.exists(STATE_FILE):
-        with open(STATE_FILE, "r", encoding="utf-8") as f:
-            return json.load(f)
+        try:
+            with open(STATE_FILE, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except (json.JSONDecodeError, OSError) as e:
+            print(f"[state] {STATE_FILE} illisible ou corrompu ({e}), repart d'un état vide.")
+            return {}
     return {}
 
 

@@ -20,18 +20,9 @@ from connectors.geo_services import (
     ogcapi_lister_collections, ogcapi_telecharger_rm,
 )
 from translation.datagouv_to_rudi import traduire_metadonnees_service
-from connectors.rudi_node import publier_dataset
+from connectors.rudi_node import publier_dataset, charger_conf_rudi
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
-CONF_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "conf")
-
-
-def _charger_conf_rudi() -> dict | None:
-    chemin = os.path.join(CONF_DIR, "rudi_node.json")
-    if not os.path.isfile(chemin):
-        return None
-    with open(chemin, encoding="utf-8") as f:
-        return json.load(f)
 
 
 def _slug_typename(typename: str) -> str:
@@ -165,7 +156,7 @@ def traiter_geo_dataset(config: dict) -> None:
     print("  Métadonnées RUDI sauvegardées.")
 
     # Publication sur le nœud RUDI
-    conf_rudi = _charger_conf_rudi()
+    conf_rudi = charger_conf_rudi()
     if conf_rudi:
         try:
             chemins = [ch for ch, _ in fichiers_geojson]

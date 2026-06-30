@@ -111,12 +111,17 @@ def _detecter_delimiteur(sample: str) -> str:
         return ","
 
 
+def _detecter_encodage_bytes(sample: bytes) -> str:
+    """Détecte l'encodage d'un échantillon de bytes (utf-8-sig ou latin-1)."""
+    decoded = sample.decode("utf-8-sig", errors="replace")
+    return "utf-8-sig" if decoded.count("�") <= 10 else "latin-1"
+
+
 def _detecter_encodage(chemin: str) -> str:
     """Détecte l'encodage d'un fichier texte (utf-8-sig ou latin-1)."""
     with open(chemin, "rb") as f:
         sample = f.read(8192)
-    decoded = sample.decode("utf-8-sig", errors="replace")
-    return "utf-8-sig" if decoded.count("�") <= 10 else "latin-1"
+    return _detecter_encodage_bytes(sample)
 
 
 def filtrer_csv(chemin: str, champ_cp, champ_ville, champ_iris, champ_adresse) -> tuple[list[dict], list[str]]:
@@ -134,9 +139,8 @@ def filtrer_csv(chemin: str, champ_cp, champ_ville, champ_iris, champ_adresse) -
 
 def filtrer_csv_bytes(contenu: bytes, champ_cp, champ_ville, champ_iris, champ_adresse) -> tuple[list[dict], list[str]]:
     """Filtre depuis bytes en mémoire — uniquement pour les membres extraits d'un ZIP."""
-    texte = contenu.decode("utf-8-sig", errors="replace")
-    if texte.count("�") > 10:
-        texte = contenu.decode("latin-1")
+    encoding = _detecter_encodage_bytes(contenu[:8192])
+    texte = contenu.decode(encoding, errors="replace")
     delimiteur = _detecter_delimiteur(texte[:4096])
     reader = csv.DictReader(io.StringIO(texte), delimiter=delimiteur)
     lignes = [dict(row) for row in reader if _ligne_est_rm(row, champ_cp, champ_ville, champ_iris, champ_adresse)]
@@ -175,9 +179,8 @@ def filtrer_gz(chemin: str, champ_cp, champ_ville, champ_iris, champ_adresse) ->
     """Décompresse un GZ en streaming et filtre les lignes RM sans tout charger en mémoire."""
     with gzip.open(chemin, "rb") as gz:
         sample_bytes = gz.read(8192)
-    decoded = sample_bytes.decode("utf-8-sig", errors="replace")
-    encoding = "utf-8-sig" if decoded.count("�") <= 10 else "latin-1"
-    delimiteur = _detecter_delimiteur(decoded[:4096])
+    encoding = _detecter_encodage_bytes(sample_bytes)
+    delimiteur = _detecter_delimiteur(sample_bytes.decode(encoding, errors="replace")[:4096])
     with gzip.open(chemin, "rt", encoding=encoding, errors="replace", newline="") as gz:
         reader = csv.DictReader(gz, delimiter=delimiteur)
         lignes = [dict(row) for row in reader if _ligne_est_rm(row, champ_cp, champ_ville, champ_iris, champ_adresse)]
@@ -309,6 +312,8 @@ def filtrer_toutes_ressources(
                 membres = _extraire_csvs_zip(chemin)
                 if not membres:
                     print(f"    → ZIP sans CSV")
+                    resultats.append((r, [], []))
+                    continue
                 for nom_membre, contenu_csv in membres:
                     r_m = {**r, "title": os.path.basename(nom_membre)}
                     lignes, entetes = filtrer_csv_bytes(contenu_csv, champ_cp, champ_ville, champ_iris, champ_adresse)
@@ -436,13 +441,16 @@ def traiter_candidat(candidat: dict, state: dict) -> dict:
     rudi_metadata = traduire_metadonnees(
         metadata, dossier_nom=dossier_nom,
         fichiers_filtres=fichiers_data, fichiers_dicts=fichiers_dicts,
+        entetes_colonnes=dernieres_entetes,
     )
     rudi_file = os.path.join(dossier, "rudi_metadata.json")
     with open(rudi_file, "w", encoding="utf-8") as f:
         json.dump(rudi_metadata, f, ensure_ascii=False, indent=2)
 
-    state[dataset_id] = {"last_modified": last_modified, "nb_rm": nb_rm_total, "dossier": dossier_nom}
-    return {"statut": "ok", "nb_rm": nb_rm_total, "format": fmt.upper(), "last_modified": last_modified}
+    # L'écriture dans `state` (dict partagé entre threads workers) est laissée au
+    # thread principal de main() pour qu'elle reste sous le même lock que sauvegarder_state().
+    entree = {"last_modified": last_modified, "nb_rm": nb_rm_total, "dossier": dossier_nom}
+    return {"statut": "ok", "nb_rm": nb_rm_total, "format": fmt.upper(), "last_modified": last_modified, "entree": entree}
 
 
 def main():
@@ -500,6 +508,7 @@ def main():
                     print(f"  → OK — {res['nb_rm']} lignes RM ({res['format']})")
                     resultats["ok"].append({"dataset_id": dataset_id, "titre": candidat["titre"], "nb_rm": res["nb_rm"]})
                     with lock:
+                        state[dataset_id] = res["entree"]
                         sauvegarder_state(state)
                 elif res["statut"] == "vide":
                     print(f"  → VIDE — {res['raison']}")

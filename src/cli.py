@@ -1,0 +1,475 @@
+"""
+Point d'entrée unique du pipeline moissonneuse-batteuse.
+
+Usage : python3 src/cli.py
+
+Menu interactif qui guide vers les différentes actions (découverte, moisson
+tabulaire/INSEE/géo, catalogue), permet de lancer le pipeline complet en une
+fois, et propose des options de purge des données existantes.
+"""
+import json
+import os
+import shutil
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+import discover
+import main as moisson_tabulaire
+import harvest_batch
+import harvest_insee
+import harvest_geo
+import catalogue
+import publish_rudi
+import enrichir_descriptions
+from conf.datasets import DATASETS, DATASETS_GEO, DATASETS_INSEE
+
+DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
+CONF_RUDI_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "conf", "rudi_node.json")
+
+
+# ---------------------------------------------------------------------------
+# Utilitaires
+# ---------------------------------------------------------------------------
+
+def _formater_taille(octets: float) -> str:
+    for unite in ("o", "Ko", "Mo", "Go", "To"):
+        if octets < 1024:
+            return f"{octets:.0f} {unite}" if unite == "o" else f"{octets:.1f} {unite}"
+        octets /= 1024
+    return f"{octets:.1f} Po"
+
+
+def _taille_chemin(chemin: str) -> int:
+    if os.path.isfile(chemin):
+        return os.path.getsize(chemin)
+    if not os.path.isdir(chemin):
+        return 0
+    total = 0
+    for racine, _dirs, fichiers in os.walk(chemin):
+        for f in fichiers:
+            try:
+                total += os.path.getsize(os.path.join(racine, f))
+            except OSError:
+                pass
+    return total
+
+
+def _confirmer(message: str, mot_cle: str | None = None) -> bool:
+    """Demande confirmation. Si mot_cle est fourni, exige sa saisie exacte (action très destructrice)."""
+    if mot_cle:
+        print(f"\n⚠️  {message}")
+        saisie = input(f"  Tapez {mot_cle!r} pour confirmer (ou Entrée pour annuler) : ").strip()
+        return saisie == mot_cle
+    rep = input(f"\n{message} (oui/N) ").strip().lower()
+    return rep == "oui"
+
+
+def _executer(label: str, fn, *args, **kwargs) -> bool:
+    """Exécute une étape avec gestion uniforme des erreurs/interruptions — ne tue jamais le menu."""
+    print(f"\n{'=' * 60}\n{label}\n{'=' * 60}")
+    try:
+        fn(*args, **kwargs)
+        return True
+    except KeyboardInterrupt:
+        print(f"\n[{label}] interrompu par l'utilisateur.")
+        return False
+    except SystemExit as e:
+        print(f"\n[{label}] arrêté (code {e.code}).")
+        return False
+    except Exception as e:
+        print(f"\n[{label}] ERREUR : {e}")
+        return False
+
+
+def _avec_argv(argv: list, fn, *args, **kwargs):
+    """Exécute fn() avec sys.argv temporairement remplacé (pour harvest_insee.py qui lit sys.argv[1:])."""
+    ancien = sys.argv
+    sys.argv = argv
+    try:
+        return fn(*args, **kwargs)
+    finally:
+        sys.argv = ancien
+
+
+# ---------------------------------------------------------------------------
+# Actions de moisson
+# ---------------------------------------------------------------------------
+
+def action_decouverte():
+    _executer("Découverte interactive", discover.main)
+
+
+def action_moisson_tabulaire():
+    _executer("Moisson tabulaire (data.gouv.fr)", _avec_argv, ["main.py"], moisson_tabulaire.main)
+
+
+def action_moisson_batch():
+    _executer("Moisson batch (candidats découverts)", _avec_argv, ["harvest_batch.py"], harvest_batch.main)
+
+
+def action_moisson_insee(ids: str | None = None):
+    """ids : IDs séparés par des espaces, ou "" pour toutes les publications.
+    Si None (appel depuis le menu terminal), demande interactivement."""
+    if ids is None:
+        ids = input("IDs INSEE à traiter, séparés par des espaces (Entrée = toutes les publications) : ").strip()
+    argv = ["harvest_insee.py"] + ids.split()
+    _executer("Moisson INSEE", _avec_argv, argv, harvest_insee.main)
+
+
+def action_moisson_geo():
+    _executer("Moisson géo (WFS/WMS/OGC API)", _avec_argv, ["harvest_geo.py"], harvest_geo.main)
+
+
+def action_catalogue():
+    _executer("Génération du catalogue", catalogue.main)
+
+
+def action_publier_rudi():
+    _executer("Publication sur le nœud RUDI", publish_rudi.main)
+
+
+def action_enrichir_descriptions():
+    _executer("Enrichissement des descriptions (JDD avec métadonnées vides/quasi vides)",
+               enrichir_descriptions.main)
+
+
+# Étapes déterministes du pipeline complet (sans découverte, jamais interactives) —
+# réutilisées telles quelles par dashboard.py pour le déclenchement web.
+ETAPES_PIPELINE = [
+    ("Moisson tabulaire (data.gouv.fr)", _avec_argv, [["main.py"], moisson_tabulaire.main], {}),
+    ("Moisson batch (candidats découverts)", _avec_argv, [["harvest_batch.py"], harvest_batch.main], {}),
+    ("Moisson INSEE (toutes les publications)", _avec_argv, [["harvest_insee.py"], harvest_insee.main], {}),
+    ("Moisson géo (WFS/WMS/OGC API)", _avec_argv, [["harvest_geo.py"], harvest_geo.main], {}),
+    ("Génération du catalogue", catalogue.main, [], {}),
+    ("Publication sur le nœud RUDI", publish_rudi.main, [], {}),
+]
+
+
+def executer_pipeline_complet(etapes_supplementaires: list | None = None) -> list[tuple[str, bool]]:
+    """Exécute ETAPES_PIPELINE (+ étapes optionnelles en tête, ex: découverte) et
+    retourne [(label, ok), ...]. Pas d'input() ici — utilisable depuis le web."""
+    etapes = (etapes_supplementaires or []) + ETAPES_PIPELINE
+    resultats = []
+    for label, fn, args, kwargs in etapes:
+        ok = _executer(label, fn, *args, **kwargs)
+        resultats.append((label, ok))
+    print(f"\n{'=' * 60}\nRésumé du pipeline complet\n{'=' * 60}")
+    for label, ok in resultats:
+        print(f"  {'✓' if ok else '✗'} {label}")
+    return resultats
+
+
+def action_pipeline_complet():
+    print("\n=== Pipeline complet ===")
+    print("Enchaîne automatiquement : moisson tabulaire → batch → INSEE → géo → catalogue → publication RUDI.")
+    print("La découverte n'est pas incluse par défaut (revue manuelle nécessaire).\n")
+
+    etapes_supp = []
+    if _confirmer("Inclure une session de découverte interactive avant la moisson ?"):
+        etapes_supp.append(("Découverte interactive", discover.main, [], {}))
+
+    executer_pipeline_complet(etapes_supp)
+
+
+# ---------------------------------------------------------------------------
+# État du projet
+# ---------------------------------------------------------------------------
+
+def etat_projet() -> dict:
+    """Collecte l'état du projet sous forme de données pures (pas d'affichage) —
+    utilisé par l'affichage terminal ci-dessous et par dashboard.py (API JSON)."""
+    donnees = {
+        "datasets_configures": {
+            "tabulaire": len(DATASETS), "geo": len(DATASETS_GEO), "insee": len(DATASETS_INSEE),
+        },
+        "decouverte": None,
+        "etat_moisson": {},
+        "rudi_configure": os.path.isfile(CONF_RUDI_FILE),
+    }
+
+    chemin_decouverte = os.path.join(DATA_DIR, "decouverte.json")
+    if os.path.isfile(chemin_decouverte):
+        with open(chemin_decouverte, encoding="utf-8") as f:
+            d = json.load(f)
+        donnees["decouverte"] = {
+            "candidats": len(d.get("candidats", [])),
+            "vus": len(d.get("vus", [])),
+            "exclus": len(d.get("exclus", [])),
+            "echecs": len(d.get("echecs", [])),
+        }
+
+    for nom_fichier, cle in (("state.json", "tabulaire_batch"), ("state_insee.json", "insee")):
+        chemin = os.path.join(DATA_DIR, nom_fichier)
+        if os.path.isfile(chemin):
+            with open(chemin, encoding="utf-8") as f:
+                s = json.load(f)
+            donnees["etat_moisson"][cle] = {
+                "total": len(s),
+                "rudi_publie": sum(1 for v in s.values() if v.get("rudi_publie")),
+            }
+        else:
+            donnees["etat_moisson"][cle] = None
+
+    n_dossiers = sum(
+        1 for n in os.listdir(DATA_DIR)
+        if n != "cache" and os.path.isdir(os.path.join(DATA_DIR, n))
+    )
+    taille_cache = _taille_chemin(os.path.join(DATA_DIR, "cache"))
+    donnees["donnees"] = {
+        "n_dossiers": n_dossiers,
+        "taille_data_octets": _taille_chemin(DATA_DIR) - taille_cache,
+        "taille_cache_octets": taille_cache,
+    }
+    return donnees
+
+
+def action_etat_projet():
+    d = etat_projet()
+    print(f"\n{'=' * 60}\nÉtat du projet\n{'=' * 60}")
+    cfg = d["datasets_configures"]
+    print(f"  Configurés : {cfg['tabulaire']} tabulaire(s), {cfg['geo']} géo, {cfg['insee']} INSEE")
+
+    if d["decouverte"]:
+        dd = d["decouverte"]
+        print(f"  Découverte : {dd['candidats']} candidat(s) en attente de moisson, "
+              f"{dd['vus']} JDD vus, {dd['exclus']} exclu(s), {dd['echecs']} échec(s)")
+    else:
+        print("  Découverte : aucun historique (data/decouverte.json absent)")
+
+    for cle, label in (("tabulaire_batch", "tabulaire/batch"), ("insee", "INSEE")):
+        em = d["etat_moisson"][cle]
+        if em:
+            print(f"  État moisson {label} : {em['total']} JDD suivi(s), {em['rudi_publie']} publié(s) sur RUDI")
+        else:
+            print(f"  État moisson {label} : aucun")
+
+    if d["rudi_configure"]:
+        print("  Nœud RUDI : configuré (src/conf/rudi_node.json présent)")
+    else:
+        print("  Nœud RUDI : NON configuré — les publications seront ignorées")
+
+    dn = d["donnees"]
+    print(f"  Données moissonnées : {dn['n_dossiers']} dossier(s), {_formater_taille(dn['taille_data_octets'])}")
+    print(f"  Cache de téléchargement : {_formater_taille(dn['taille_cache_octets'])}")
+
+    input("\n(Entrée pour revenir au menu)")
+
+
+# ---------------------------------------------------------------------------
+# Purge
+# ---------------------------------------------------------------------------
+
+def _purger_cache() -> str:
+    chemin = os.path.join(DATA_DIR, "cache")
+    if os.path.isdir(chemin):
+        shutil.rmtree(chemin)
+    return "Cache vidé."
+
+
+def _purger_etat() -> str:
+    n = 0
+    for nom in ("state.json", "state_insee.json"):
+        chemin = os.path.join(DATA_DIR, nom)
+        if os.path.isfile(chemin):
+            os.remove(chemin)
+            n += 1
+    return f"{n} fichier(s) d'état supprimé(s)."
+
+
+def _purger_sessions_decouverte() -> str:
+    n = 0
+    for nom in ("derniere_recherche.json", "derniers_prefiltres.json"):
+        chemin = os.path.join(DATA_DIR, nom)
+        if os.path.isfile(chemin):
+            os.remove(chemin)
+            n += 1
+    return f"{n} fichier(s) de session supprimé(s)."
+
+
+def _purger_geo_services() -> str:
+    chemin = os.path.join(DATA_DIR, "geo_services.json")
+    if os.path.isfile(chemin):
+        os.remove(chemin)
+        return "geo_services.json supprimé."
+    return "Rien à supprimer."
+
+
+def _purger_catalogue() -> str:
+    n = 0
+    for nom in ("catalogue.json", "catalogue.html"):
+        chemin = os.path.join(DATA_DIR, nom)
+        if os.path.isfile(chemin):
+            os.remove(chemin)
+            n += 1
+    for racine, _dirs, fichiers in os.walk(DATA_DIR):
+        for f in fichiers:
+            if f.endswith("_viewer.html") or f.endswith("_map.html") or f == "wms_map.html":
+                os.remove(os.path.join(racine, f))
+                n += 1
+    return f"{n} fichier(s) de catalogue supprimé(s) (régénérables via l'option catalogue)."
+
+
+def _purger_historique_decouverte() -> str:
+    chemin = os.path.join(DATA_DIR, "decouverte.json")
+    exclus, exclusions_termes = [], []
+    if os.path.isfile(chemin):
+        with open(chemin, encoding="utf-8") as f:
+            ancien = json.load(f)
+        exclus = ancien.get("exclus", [])
+        exclusions_termes = ancien.get("exclusions_termes", [])
+    nouveau = {
+        "vus": [], "candidats": [], "exclus": exclus,
+        "echecs": [], "echecs_n": {}, "sans_ressource": [],
+        "exclusions_termes": exclusions_termes,
+    }
+    with open(chemin, "w", encoding="utf-8") as f:
+        json.dump(nouveau, f, ensure_ascii=False, indent=2)
+    chemin_resultats = os.path.join(DATA_DIR, "batch_resultats.json")
+    if os.path.isfile(chemin_resultats):
+        os.remove(chemin_resultats)
+    return (f"decouverte.json réinitialisé — {len(exclus)} exclusion(s) et "
+            f"{len(exclusions_termes)} terme(s) d'exclusion conservés.")
+
+
+def _purger_donnees_moissonnees() -> str:
+    n = 0
+    for nom in sorted(os.listdir(DATA_DIR)):
+        if nom == "cache":
+            continue
+        chemin = os.path.join(DATA_DIR, nom)
+        if os.path.isdir(chemin):
+            shutil.rmtree(chemin)
+            n += 1
+    # Sans ça, le prochain run croirait que rien n'a changé (last_modified inchangé
+    # dans state.json) et ne re-moissonnerait rien malgré les dossiers supprimés.
+    for nom in ("state.json", "state_insee.json"):
+        chemin = os.path.join(DATA_DIR, nom)
+        if os.path.isfile(chemin):
+            os.remove(chemin)
+    return f"{n} dossier(s) de données moissonnées supprimé(s) (+ état de moisson réinitialisé)."
+
+
+PURGE_ITEMS = [
+    {"label": "Cache de téléchargement",
+     "taille": lambda: _taille_chemin(os.path.join(DATA_DIR, "cache")),
+     "purger": _purger_cache,
+     "impact": "Re-téléchargé automatiquement au prochain run. Aucune perte de données.",
+     "destructeur": False},
+    {"label": "État de moisson (state.json + state_insee.json)",
+     "taille": lambda: sum(_taille_chemin(os.path.join(DATA_DIR, n)) for n in ("state.json", "state_insee.json")),
+     "purger": _purger_etat,
+     "impact": "Force une re-vérification de TOUTES les sources au prochain run (re-téléchargements même si rien n'a changé).",
+     "destructeur": False},
+    {"label": "Sessions de découverte en attente",
+     "taille": lambda: sum(_taille_chemin(os.path.join(DATA_DIR, n))
+                            for n in ("derniere_recherche.json", "derniers_prefiltres.json")),
+     "purger": _purger_sessions_decouverte,
+     "impact": "Force une nouvelle recherche API au prochain lancement de la découverte.",
+     "destructeur": False},
+    {"label": "Services géo auto-découverts (geo_services.json)",
+     "taille": lambda: _taille_chemin(os.path.join(DATA_DIR, "geo_services.json")),
+     "purger": _purger_geo_services,
+     "impact": "DATASETS_GEO perd les services détectés automatiquement (les entrées manuelles dans datasets.py restent).",
+     "destructeur": False},
+    {"label": "Catalogue généré (catalogue.json/html + visionneuses/cartes)",
+     "taille": lambda: (_taille_chemin(os.path.join(DATA_DIR, "catalogue.json")) +
+                         _taille_chemin(os.path.join(DATA_DIR, "catalogue.html"))),
+     "purger": _purger_catalogue,
+     "impact": "Régénérable via l'option catalogue.",
+     "destructeur": False},
+    {"label": "Historique de découverte (decouverte.json)",
+     "taille": lambda: _taille_chemin(os.path.join(DATA_DIR, "decouverte.json")),
+     "purger": _purger_historique_decouverte,
+     "impact": "Réinitialise vus/candidats/echecs/sans_ressource. CONSERVE exclus et exclusions_termes (décisions manuelles).",
+     "destructeur": False},
+    {"label": "TOUTES les données moissonnées (dossiers data/<...>)",
+     "taille": lambda: sum(_taille_chemin(os.path.join(DATA_DIR, n)) for n in os.listdir(DATA_DIR)
+                            if n != "cache" and os.path.isdir(os.path.join(DATA_DIR, n))),
+     "purger": _purger_donnees_moissonnees,
+     "impact": "Supprime tous les fichiers téléchargés/filtrés/rudi_metadata.json et l'état associé. "
+               "Force un re-téléchargement complet de tout le pipeline (peut être long).",
+     "destructeur": True},
+]
+
+
+def menu_purge():
+    while True:
+        print(f"\n{'=' * 60}\nPurge de données existantes\n{'=' * 60}")
+        for i, item in enumerate(PURGE_ITEMS, 1):
+            marqueur = "  ⚠️ DESTRUCTEUR" if item["destructeur"] else ""
+            print(f"  {i}. {item['label']} ({_formater_taille(item['taille']())}){marqueur}")
+        print("  0. Retour au menu principal")
+
+        choix = input("\nChoix (un numéro, ou plusieurs séparés par des virgules) : ").strip()
+        if choix in ("0", ""):
+            return
+
+        indices = [int(c) - 1 for c in choix.split(",") if c.strip().isdigit()]
+        if not indices:
+            print("Choix invalide.")
+            continue
+
+        for idx in indices:
+            if not (0 <= idx < len(PURGE_ITEMS)):
+                print(f"  (ignoré : {idx + 1} hors plage)")
+                continue
+            item = PURGE_ITEMS[idx]
+            print(f"\n— {item['label']} —")
+            print(f"  Impact : {item['impact']}")
+            if item["destructeur"]:
+                confirme = _confirmer(f"Confirmer la suppression définitive : {item['label']} ?", mot_cle="SUPPRIMER")
+            else:
+                confirme = _confirmer(f"Supprimer : {item['label']} ?")
+            if confirme:
+                print(f"  → {item['purger']()}")
+            else:
+                print("  Annulé.")
+
+
+# ---------------------------------------------------------------------------
+# Menu principal
+# ---------------------------------------------------------------------------
+
+ACTIONS = [
+    ("1", "Découverte interactive (data.gouv.fr + WFS/WMS)", action_decouverte),
+    ("2", "Moisson tabulaire — data.gouv.fr configuré", action_moisson_tabulaire),
+    ("3", "Moisson batch — candidats découverts", action_moisson_batch),
+    ("4", "Moisson INSEE — publications directes", action_moisson_insee),
+    ("5", "Moisson géo — WFS/WMS/OGC API", action_moisson_geo),
+    ("6", "(Re)générer le catalogue", action_catalogue),
+    ("7", "Publier sur le nœud RUDI (rattrapage)", action_publier_rudi),
+    ("8", "Enrichir les descriptions vides/quasi vides (rattrapage)", action_enrichir_descriptions),
+    ("9", "Lancer le pipeline complet", action_pipeline_complet),
+    ("10", "Purger des données existantes", menu_purge),
+    ("11", "État du projet", action_etat_projet),
+]
+
+
+def menu_principal():
+    while True:
+        print(f"\n{'=' * 60}")
+        print("  Moissonneuse-batteuse — Rennes Métropole")
+        print(f"{'=' * 60}")
+        for cle, label, _fn in ACTIONS:
+            print(f"  {cle}. {label}")
+        print("  0. Quitter")
+
+        choix = input("\nChoix : ").strip()
+        if choix == "0":
+            print("Au revoir.")
+            return
+
+        for cle, _label, fn in ACTIONS:
+            if choix == cle:
+                fn()
+                break
+        else:
+            print("Choix invalide.")
+
+
+if __name__ == "__main__":
+    try:
+        menu_principal()
+    except KeyboardInterrupt:
+        print("\n\nInterrompu.")

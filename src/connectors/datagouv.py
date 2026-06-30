@@ -1,6 +1,7 @@
-import requests
 import os
 import json
+
+from connectors.http import session
 
 DATAGOUV_API = "https://www.data.gouv.fr/api/1"
 
@@ -12,7 +13,7 @@ def get_dataset_metadata(dataset_id: str) -> dict:
     :return: les métadonnées sous forme de dictionnaire
     """
     url = f"{DATAGOUV_API}/datasets/{dataset_id}/"
-    response = requests.get(url)
+    response = session.get(url, timeout=30)
     response.raise_for_status()
     return response.json()
 
@@ -41,7 +42,7 @@ def download_resource(url: str, local_path: str) -> str:
     :return: le chemin local du fichier téléchargé
     """
     print(f"Téléchargement depuis : {url}")
-    response = requests.get(url, stream=True)
+    response = session.get(url, stream=True, timeout=60)
     response.raise_for_status()
 
     os.makedirs(os.path.dirname(local_path), exist_ok=True)

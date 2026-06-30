@@ -18,6 +18,9 @@ import os
 import re
 from datetime import datetime, timezone
 
+from filters.geographic import normaliser
+from translation.description_secours import partie_descriptive
+
 RACINE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = os.path.join(RACINE, "data")
 DECOUVERTE = os.path.join(DATA, "decouverte.json")
@@ -28,6 +31,13 @@ SORTIE_HTML = os.path.join(DATA, "catalogue.html")
 IGNORER = {"cache"}
 # Fichiers de service présents dans les dossiers mais qui ne sont pas des ressources de données
 NON_RESSOURCES = {"rudi_metadata.json", "wms_service.json"}
+
+def _extraire_description(meta: dict) -> str:
+    """Extrait la partie descriptive du résumé RUDI (`summary`), après le préambule de
+    localisation standard ('Version localisée sur...', 'Source : URL', etc.)."""
+    if not meta.get("summary"):
+        return ""
+    return partie_descriptive(meta["summary"][0].get("text", ""))
 
 
 def _charger_candidats() -> dict:
@@ -86,6 +96,81 @@ def _compter_lignes(chemin: str, fmt: str) -> int | None:
     except (OSError, ValueError):
         return None
     return None
+
+
+# Dictionnaires de colonnes : formats reconnus —
+#  - "Colonne,Description" (Ecolab et variantes avec Type/Description_FR/Description_EN/Exemple)
+#  - "COD_VAR;LIB_VAR[;LIB_VAR_LONG];COD_MOD;LIB_MOD;..." (varmod INSEE)
+_COLS_CODE = {"colonne", "column", "champ", "field", "variable", "nom", "libelle"}
+
+
+def _entetes_rapides(chemin: str, taille: int = 8192) -> tuple[list[str], str]:
+    """Lit le début d'un CSV (sans tout charger) pour détecter délimiteur + en-têtes."""
+    with open(chemin, "rb") as f:
+        echantillon = f.read(taille)
+    texte = echantillon.decode("utf-8-sig", errors="replace")
+    try:
+        delim = csv.Sniffer().sniff(texte, delimiters=";,\t|").delimiter
+    except csv.Error:
+        delim = ","
+    premiere_ligne = texte.splitlines()[0] if texte else ""
+    entetes = next(csv.reader([premiere_ligne], delimiter=delim), [])
+    return entetes, delim
+
+
+def _format_dictionnaire(entetes: list[str]) -> str | None:
+    """Détecte si des en-têtes correspondent à un fichier dictionnaire connu."""
+    if not entetes:
+        return None
+    if normaliser(entetes[0]).strip() in _COLS_CODE:
+        return "colonne"
+    if any(normaliser(e).strip() == "cod var" for e in entetes):
+        return "cod_var"
+    return None
+
+
+def _charger_dictionnaire(chemin: str) -> dict[str, str]:
+    """Parse un fichier dictionnaire en correspondance {nom_colonne: description}.
+    Retourne {} si le fichier n'a pas un format de dictionnaire reconnu."""
+    try:
+        entetes, delim = _entetes_rapides(chemin)
+        fmt = _format_dictionnaire(entetes)
+        if fmt is None:
+            return {}
+        with open(chemin, "rb") as f:
+            raw = f.read()
+        texte = raw.decode("utf-8-sig", errors="replace")
+        if texte.count("�") > 10:
+            texte = raw.decode("latin-1")
+        reader = csv.DictReader(texte.splitlines(), delimiter=delim)
+        mapping: dict[str, str] = {}
+        if fmt == "colonne":
+            col_nom = entetes[0]
+            col_desc = (next((e for e in entetes if normaliser(e).strip() == "description fr"), None)
+                        or next((e for e in entetes if "description" in normaliser(e)), None)
+                        or (entetes[1] if len(entetes) > 1 else None))
+            if not col_desc:
+                return {}
+            for row in reader:
+                nom, desc = (row.get(col_nom) or "").strip(), (row.get(col_desc) or "").strip()
+                if nom and desc:
+                    mapping.setdefault(nom, desc)
+        else:
+            col_code = next(e for e in entetes if normaliser(e).strip() == "cod var")
+            col_mod = next((e for e in entetes if normaliser(e).strip() == "cod mod"), None)
+            col_lib = (next((e for e in entetes if normaliser(e).strip() == "lib var long"), None)
+                       or next((e for e in entetes if normaliser(e).strip() == "lib var"), None))
+            if not col_lib:
+                return {}
+            for row in reader:
+                if col_mod and (row.get(col_mod) or "").strip():
+                    continue  # ligne de modalité (valeur possible), pas de définition de variable
+                nom, desc = (row.get(col_code) or "").strip(), (row.get(col_lib) or "").strip()
+                if nom and desc:
+                    mapping.setdefault(nom, desc)
+        return mapping
+    except OSError:
+        return {}
 
 
 _RE_LAT = re.compile(r"(^|[^a-z])(lat(itude)?)([^a-z]|$)", re.IGNORECASE)
@@ -200,6 +285,23 @@ def _source_datagouv(meta: dict, dataset_id: str) -> str:
     return f"https://www.data.gouv.fr/datasets/{dataset_id}"
 
 
+def _connecteur(meta: dict, ressources: list[dict]) -> str:
+    """Déduit le connecteur de moisson (les 3 pipelines documentés dans CLAUDE.md) à
+    partir de l'URL source des métadonnées RUDI, avec repli sur le format des
+    ressources quand les métadonnées sont absentes/partielles."""
+    src = (meta.get("metadata_info") or {}).get("metadata_source", "")
+    if "data.gouv.fr" in src:
+        return "data.gouv.fr"
+    if "insee.fr" in src:
+        return "INSEE"
+    if src:
+        return "Géographique (WFS/WMS/OGC)"
+    formats = {r.get("format") for r in ressources}
+    if formats & {"wms", "geojson"}:
+        return "Géographique (WFS/WMS/OGC)"
+    return "data.gouv.fr"
+
+
 def _champs_geo(cand: dict) -> dict:
     """Champs géographiques utilisés pour le filtrage Rennes Métropole."""
     champs = {}
@@ -267,17 +369,23 @@ def construire_catalogue() -> dict:
         synopsis = ""
         if meta.get("synopsis"):
             synopsis = meta["synopsis"][0].get("text", "")
+        description = _extraire_description(meta)
 
         producteur = (meta.get("producer") or {}).get("organization_name", "")
         licence = ((meta.get("access_condition") or {}).get("licence") or {}).get("licence_label", "")
         date_maj = (meta.get("dataset_dates") or {}).get("updated", "")
+
+        formats = sorted({r.get("format") for r in ressources if r.get("format")})
 
         jeux.append({
             "dataset_id": dossier,
             "titre": titre,
             "producteur": producteur,
             "theme": meta.get("theme", ""),
+            "connecteur": _connecteur(meta, ressources),
+            "formats": formats,
             "synopsis": synopsis,
+            "description": description,
             "mots_cles": meta.get("keywords", []),
             "licence": licence,
             "date_maj": date_maj,
@@ -302,7 +410,7 @@ def ecrire_json(catalogue: dict) -> None:
 
 
 def ecrire_html(catalogue: dict) -> None:
-    data_json = json.dumps(catalogue, ensure_ascii=False)
+    data_json = json.dumps(catalogue, ensure_ascii=False).replace("</", r"<\/")
     html = GABARIT_HTML.replace("/*__DONNEES__*/", data_json)
     with open(SORTIE_HTML, "w", encoding="utf-8") as f:
         f.write(html)
@@ -324,8 +432,10 @@ GABARIT_HTML = r"""<!DOCTYPE html>
   h1 { margin:0 0 4px; font-size:1.3rem; }
   .meta { color:var(--muted); font-size:.85rem; }
   .barre { margin-top:12px; display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
-  #recherche { flex:1; min-width:240px; padding:10px 12px; font-size:1rem;
+  #recherche { flex:2; min-width:240px; padding:10px 12px; font-size:1rem;
                border:1px solid var(--bord); border-radius:8px; }
+  .barre select { padding:9px 10px; font-size:.88rem; border:1px solid var(--bord);
+               border-radius:8px; background:var(--card); color:var(--txt); }
   #compteur { color:var(--muted); font-size:.85rem; white-space:nowrap; }
   main { max-width:1000px; margin:0 auto; padding:20px 24px 60px; }
   .jeu { background:var(--card); border:1px solid var(--bord); border-radius:10px;
@@ -335,7 +445,8 @@ GABARIT_HTML = r"""<!DOCTYPE html>
   .jeu h2 a:hover { text-decoration:underline; }
   .infos { display:flex; flex-wrap:wrap; gap:6px 14px; font-size:.82rem; color:var(--muted); margin-bottom:8px; }
   .infos b { color:var(--txt); font-weight:600; }
-  .synopsis { font-size:.9rem; margin:8px 0; }
+  .synopsis { font-size:.9rem; margin:8px 0; font-weight:600; }
+  .description { font-size:.88rem; margin:4px 0 8px; color:var(--txt); }
   .tags { display:flex; flex-wrap:wrap; gap:6px; margin:8px 0; }
   .tag { background:#eef3f6; color:#345; border-radius:99px; padding:2px 10px; font-size:.75rem; }
   .badge { display:inline-block; background:#fdecea; color:#a3372c; border-radius:99px;
@@ -354,6 +465,9 @@ GABARIT_HTML = r"""<!DOCTYPE html>
   <div class="meta" id="entete"></div>
   <div class="barre">
     <input id="recherche" type="search" placeholder="Rechercher (titre, producteur, mot-clé, identifiant…)" autofocus>
+    <select id="filtre-connecteur"><option value="">Tous connecteurs</option></select>
+    <select id="filtre-format"><option value="">Tous formats</option></select>
+    <select id="filtre-theme"><option value="">Tous thèmes</option></select>
     <span id="compteur"></span>
   </div>
 </header>
@@ -368,6 +482,25 @@ document.getElementById("entete").textContent =
   CAT.nb_jeux + " jeux de données moissonnés · généré le " +
   (CAT.genere_le || "").replace("T", " ").replace("+00:00", " UTC");
 
+const THEMES = {economy:"Economie", citizenship:"Citoyenneté", energyNetworks:"Réseaux, Energie",
+  culture:"Culture, Sports, Loisirs", transportation:"Mobilité, Transport", children:"Enfance",
+  environment:"Environnement", townPlanning:"Urbanisme", location:"Référentiels géographiques",
+  education:"Education", publicSpace:"Espace public", health:"Santé, Sécurité",
+  housing:"Logement", society:"Social"};
+
+function peupler(id, valeurs, libelle){
+  const sel = document.getElementById(id);
+  valeurs.forEach(v => {
+    const o = document.createElement("option");
+    o.value = v; o.textContent = libelle ? (libelle(v)||v) : v;
+    sel.appendChild(o);
+  });
+}
+peupler("filtre-connecteur", [...new Set(CAT.jeux.map(j => j.connecteur).filter(Boolean))].sort());
+peupler("filtre-format", [...new Set(CAT.jeux.flatMap(j => j.formats||[]))].sort());
+peupler("filtre-theme", [...new Set(CAT.jeux.map(j => j.theme).filter(Boolean))].sort(),
+  t => THEMES[t]);
+
 function octets(n){
   if (n == null) return "—";
   const u = ["o","Ko","Mo","Go"]; let i=0;
@@ -379,7 +512,7 @@ function esc(s){ return (s??"").toString().replace(/[&<>"]/g, c =>
 
 function texteRecherche(j){
   return [j.titre, j.producteur, j.dataset_id, j.theme, (j.mots_cles||[]).join(" "),
-          j.synopsis].join(" ").toLowerCase();
+          j.synopsis, j.description].join(" ").toLowerCase();
 }
 CAT.jeux.forEach(j => j._t = texteRecherche(j));
 
@@ -400,6 +533,7 @@ function carte(j){
   <article class="jeu">
     <h2><a href="${esc(j.source_datagouv)}" target="_blank" rel="noopener">${esc(j.titre)}</a></h2>
     <div class="infos">
+      ${j.connecteur?`<span><b>Connecteur :</b> ${esc(j.connecteur)}</span>`:""}
       ${j.producteur?`<span><b>Producteur :</b> ${esc(j.producteur)}</span>`:""}
       ${j.licence?`<span><b>Licence :</b> ${esc(j.licence)}</span>`:""}
       ${j.date_maj?`<span><b>MàJ :</b> ${esc(j.date_maj.slice(0,10))}</span>`:""}
@@ -409,6 +543,7 @@ function carte(j){
       ${j.complet?"":'<span class="badge">métadonnées partielles</span>'}
     </div>
     ${j.synopsis?`<div class="synopsis">${esc(j.synopsis)}</div>`:""}
+    ${j.description?`<div class="description">${esc(j.description)}</div>`:""}
     ${tags?`<div class="tags">${tags}</div>`:""}
     ${res?`<details><summary>${j.ressources.length} ressource(s)</summary>
       <table class="res"><tr><th>Fichier</th><th>Format</th><th>Lignes</th><th>Taille</th><th></th></tr>
@@ -416,18 +551,31 @@ function carte(j){
   </article>`;
 }
 
-function rendu(q){
-  q = (q||"").trim().toLowerCase();
+const selConnecteur = document.getElementById("filtre-connecteur");
+const selFormat = document.getElementById("filtre-format");
+const selTheme = document.getElementById("filtre-theme");
+
+function rendu(){
+  const q = document.getElementById("recherche").value.trim().toLowerCase();
   const termes = q.split(/\s+/).filter(Boolean);
-  const filtres = CAT.jeux.filter(j => termes.every(t => j._t.includes(t)));
+  const connecteur = selConnecteur.value, format = selFormat.value, theme = selTheme.value;
+  const filtres = CAT.jeux.filter(j =>
+    termes.every(t => j._t.includes(t)) &&
+    (!connecteur || j.connecteur === connecteur) &&
+    (!format || (j.formats||[]).includes(format)) &&
+    (!theme || j.theme === theme)
+  );
   compteur.textContent = filtres.length + " / " + CAT.jeux.length;
   liste.innerHTML = filtres.length
     ? filtres.map(carte).join("")
     : '<div class="vide">Aucun résultat.</div>';
 }
 
-document.getElementById("recherche").addEventListener("input", e => rendu(e.target.value));
-rendu("");
+document.getElementById("recherche").addEventListener("input", rendu);
+selConnecteur.addEventListener("change", rendu);
+selFormat.addEventListener("change", rendu);
+selTheme.addEventListener("change", rendu);
+rendu();
 </script>
 </body>
 </html>
@@ -535,10 +683,12 @@ L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",{
   subdomains:"abcd",maxZoom:19
 }).addTo(map);
 
+function esc(s){return String(s??"").replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
 function mkPopup(props){
   if(!props||!Object.keys(props).length)return"";
   const rows=Object.entries(props).filter(([,v])=>v!=null&&v!=="").slice(0,30)
-    .map(([k,v])=>`<tr><td>${k}</td><td>${String(v).slice(0,300)}</td></tr>`).join("");
+    .map(([k,v])=>`<tr><td>${esc(k)}</td><td>${esc(String(v).slice(0,300))}</td></tr>`).join("");
   return`<table>${rows}</table>`;
 }
 
@@ -627,13 +777,16 @@ h1{font-size:.9rem;font-weight:600;flex:1;min-width:150px;
 .wrap{flex:1;overflow:auto}
 table{border-collapse:collapse;font-size:.82rem;table-layout:fixed}
 thead{position:sticky;top:0;z-index:2;background:#fff;box-shadow:0 1px 0 #e2e6ea}
-th{padding:8px 12px;text-align:left;cursor:pointer;user-select:none;color:#667;font-weight:600;
-   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative}
+th{padding:6px 12px;text-align:left;cursor:pointer;user-select:none;color:#667;font-weight:600;
+   overflow:hidden;position:relative;vertical-align:top}
 th:hover{background:#f5f6f8;color:#1c2733}
-th.asc::after{content:" ↑";color:#0b6e99}
-th.desc::after{content:" ↓";color:#0b6e99}
+th.asc .th-code::after{content:" ↑";color:#0b6e99}
+th.desc .th-code::after{content:" ↓";color:#0b6e99}
 th.geo{color:#0b6e99;background:#eaf4fb}
 th.geo:hover{background:#d4ecf7}
+.th-code{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.th-trad{font-weight:400;font-style:italic;color:#0b6e99;font-size:.74rem;
+         white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:help}
 td{padding:0;border-bottom:1px solid #f0f2f4}
 td div{padding:5px 12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 td div a{color:#0b6e99;text-decoration:none}
@@ -665,6 +818,7 @@ document.title=D.nom;document.getElementById("titre").textContent=D.nom;
 if(D.tronque){const a=document.getElementById("avert");a.style.display="";
   a.textContent=`Prévisualisation : ${D.lignes.length.toLocaleString("fr")} premières lignes sur ${D.nb_total.toLocaleString("fr")} au total.`;}
 const geo=new Set(D.champs_geo||[]);
+const DICO=D.dictionnaire||{};
 let sc=-1,asc=true,q="";
 function esc(s){return String(s??"").replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 function cell(v){const s=String(v??"").trim();return /^https?:\/\/\S+$/.test(s)?`<a href="${esc(s)}" target="_blank" rel="noopener">${esc(s)}</a>`:esc(v);}
@@ -675,7 +829,11 @@ function rendu(){
     const va=a[col]??"",vb=b[col]??"",na=+va,nb=+vb;
     return(!isNaN(na)&&!isNaN(nb))?(up?na-nb:nb-na):(up?String(va).localeCompare(String(vb),"fr"):String(vb).localeCompare(String(va),"fr"));
   });}
-  const th=D.entetes.map((h,i)=>{const cls=[sc===i?(asc?"asc":"desc"):"",geo.has(h)?"geo":""].filter(Boolean).join(" ");return`<th class="${cls}">${esc(h)}<div class="resizer"></div></th>`;}).join("");
+  const th=D.entetes.map((h,i)=>{
+    const cls=[sc===i?(asc?"asc":"desc"):"",geo.has(h)?"geo":""].filter(Boolean).join(" ");
+    const trad=DICO[h];
+    return`<th class="${cls}"><div class="th-code">${esc(h)}</div>${trad?`<div class="th-trad" title="${esc(trad)}">${esc(trad)}</div>`:""}<div class="resizer"></div></th>`;
+  }).join("");
   document.getElementById("thead").innerHTML=`<tr>${th}</tr>`;
   document.getElementById("tbody").innerHTML=rows.map(r=>`<tr>${r.map(v=>`<td><div title="${esc(v)}">${cell(v)}</div></td>`).join("")}</tr>`).join("");
   const n=rows.length,tot=D.lignes.length;
@@ -722,8 +880,10 @@ rendu();
 """
 
 
-def _ecrire_viewer(chemin: str, nom: str, apercu: dict, champs_geo: list | None = None) -> None:
-    data = json.dumps({"nom": nom, "champs_geo": champs_geo or [], **apercu}, ensure_ascii=False).replace("</", r"<\/")
+def _ecrire_viewer(chemin: str, nom: str, apercu: dict, champs_geo: list | None = None,
+                    dictionnaire: dict | None = None) -> None:
+    data = json.dumps({"nom": nom, "champs_geo": champs_geo or [], "dictionnaire": dictionnaire or {},
+                        **apercu}, ensure_ascii=False).replace("</", r"<\/")
     html = GABARIT_VIEWER.replace("/*__DATA__*/", data)
     with open(chemin, "w", encoding="utf-8") as f:
         f.write(html)
@@ -753,6 +913,13 @@ def ecrire_viewers(catalogue: dict) -> tuple[int, int]:
     nb_v, nb_m = 0, 0
     for jeu in catalogue["jeux"]:
         champs_geo = list(jeu.get("champs_geo", {}).values())
+        # Dictionnaire de colonnes fusionné à partir de toutes les ressources CSV du JDD
+        # (un JDD peut avoir plusieurs fichiers dictionnaire, ex. variantes par découpage)
+        dictionnaire: dict[str, str] = {}
+        for res in jeu["ressources"]:
+            if res.get("format") == "csv":
+                for nom, desc in _charger_dictionnaire(os.path.join(DATA, res["chemin"])).items():
+                    dictionnaire.setdefault(nom, desc)
         for res in jeu["ressources"]:
             fmt = res.get("format")
             if res.get("viewer") and fmt == "csv":
@@ -760,7 +927,7 @@ def ecrire_viewers(catalogue: dict) -> tuple[int, int]:
                 chemin_viewer = os.path.join(DATA, res["viewer"])
                 apercu = _apercu_csv(chemin_csv)
                 if apercu:
-                    _ecrire_viewer(chemin_viewer, res["nom"], apercu, champs_geo)
+                    _ecrire_viewer(chemin_viewer, res["nom"], apercu, champs_geo, dictionnaire)
                     nb_v += 1
             if res.get("map"):
                 chemin_map = os.path.join(DATA, res["map"])

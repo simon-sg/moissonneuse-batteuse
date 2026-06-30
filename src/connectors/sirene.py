@@ -14,7 +14,8 @@ import os
 import json
 import datetime
 import threading
-import requests
+
+from connectors.http import session
 
 _EXPORT_URL = (
     "https://data.rennesmetropole.fr/api/explore/v2.1/catalog/datasets"
@@ -90,18 +91,18 @@ def _ecrire_cache(sirens: set[str]) -> None:
 def _telecharger() -> set[str]:
     """Télécharge l'export CSV (colonne siren uniquement) depuis data.rennesmetropole.fr."""
     print("  [SIREN] Téléchargement depuis data.rennesmetropole.fr…")
-    resp = requests.get(_EXPORT_URL, timeout=60, stream=True)
+    resp = session.get(_EXPORT_URL, timeout=60, stream=True)
     resp.raise_for_status()
 
-    contenu = b""
+    morceaux = []
     total = 0
     for chunk in resp.iter_content(chunk_size=65536):
-        contenu += chunk
+        morceaux.append(chunk)
         total += len(chunk)
         print(f"  [SIREN] {total // 1024} Ko reçus…", end="\r")
     print()
 
-    texte = contenu.decode("utf-8-sig", errors="replace")
+    texte = b"".join(morceaux).decode("utf-8-sig", errors="replace")
     sirens: set[str] = set()
     for ligne in texte.splitlines()[1:]:  # ignore la ligne d'en-tête
         s = ligne.strip().strip('"').split(";")[0]

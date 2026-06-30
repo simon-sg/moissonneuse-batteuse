@@ -3,6 +3,8 @@ import os
 import re
 import uuid
 
+from translation.description_secours import description_quasi_vide, entetes_depuis_geojson, generer_complement
+
 # Thèmes acceptés par le nœud RUDI (conformes aux catégories RUDI)
 THEMES_RUDI = {
     "economy", "citizenship", "energyNetworks", "culture", "transportation",
@@ -123,7 +125,8 @@ def traduire_metadonnees(metadata_source: dict, zone: str = "Rennes Métropole",
                           dossier_nom: str = "",
                           fichiers_filtres: list | None = None,
                           fichiers_dicts: list | None = None,
-                          theme: str | None = None) -> dict:
+                          theme: str | None = None,
+                          entetes_colonnes: list[str] | None = None) -> dict:
     """
     Traduit les métadonnées data.gouv.fr au format RUDI.
 
@@ -131,6 +134,8 @@ def traduire_metadonnees(metadata_source: dict, zone: str = "Rennes Métropole",
     fichiers_dicts   : [(nom_fichier, ressource_originale), ...] ou None
     dossier_nom      : slug pour nommer le fichier filtré par défaut (ex: "prix-carburants")
     theme            : thème RUDI (voir THEMES_RUDI) ; auto-détecté si absent
+    entetes_colonnes : colonnes du fichier filtré (si connues) — utilisées pour compléter
+                       la description quand la source data.gouv.fr n'en fournit pas
     """
     if theme is None:
         theme = _detecter_theme(metadata_source)
@@ -140,6 +145,12 @@ def traduire_metadonnees(metadata_source: dict, zone: str = "Rennes Métropole",
     titre_original = metadata_source["title"]
     titre_localise = f"{titre_original} - {zone}"
 
+    org = metadata_source.get("organization", {})
+    producer = {
+        "organization_name": org.get("name", "Producteur inconnu"),
+    }
+    tags = [t.get("name", t) if isinstance(t, dict) else t for t in metadata_source.get("tags", [])]
+
     description_originale = metadata_source.get("description", "")
     description_localisee = (
         f"Version localisée sur {zone}. "
@@ -147,16 +158,16 @@ def traduire_metadonnees(metadata_source: dict, zone: str = "Rennes Métropole",
         f"Jeu de données source (France entière) : https://www.data.gouv.fr/datasets/{dataset_id}\n\n"
         + description_originale
     )
+    if description_quasi_vide(description_originale):
+        description_localisee += generer_complement(
+            theme=theme, producteur=producer["organization_name"], zone=zone,
+            colonnes=entetes_colonnes, mots_cles=tags,
+        )
 
     synopsis_base = titre_original[:120]
     synopsis = f"{synopsis_base} — données filtrées sur {zone}."
     if len(synopsis) > 150:
         synopsis = synopsis[:149]
-
-    org = metadata_source.get("organization", {})
-    producer = {
-        "organization_name": org.get("name", "Producteur inconnu"),
-    }
 
     url_source = f"https://www.data.gouv.fr/datasets/{dataset_id}"
     ressource_principale = _trouver_ressource_principale(metadata_source)
@@ -215,7 +226,6 @@ def traduire_metadonnees(metadata_source: dict, zone: str = "Rennes Métropole",
         },
     ]
 
-    tags = [t.get("name", t) if isinstance(t, dict) else t for t in metadata_source.get("tags", [])]
     keywords = tags[:8] + [zone.lower()]
 
     licence_datagouv = metadata_source.get("license", "")
@@ -281,10 +291,20 @@ def traduire_metadonnees_service(config: dict,
     producteur_nom = config.get("producteur", "Producteur inconnu")
     url_service = config["url"]
 
+    couches_rm = []
+    if wms_service:
+        couches_rm = [c.get("nom", "") for c in wms_service.get("couches", [])]
+
+    colonnes = []
+    if service_type in ("wfs", "ogcapi") and fichiers_geojson:
+        colonnes = entetes_depuis_geojson(fichiers_geojson[0][0])
+
     synopsis = f"{titre} — données géographiques pour Rennes Métropole ({service_type.upper()})"[:150]
     description = (
         f"Service {service_type.upper()} filtré sur Rennes Métropole (43 communes, EPCI 243500139).\n\n"
-        f"Source : {url_service}"
+        f"Source : {url_service}\n\n"
+        + generer_complement(theme=theme, producteur=producteur_nom,
+                              colonnes=colonnes, couches=couches_rm)
     )
 
     available_formats = []
@@ -327,10 +347,6 @@ def traduire_metadonnees_service(config: dict,
             "interface_contract": contract,
         },
     })
-
-    couches_rm = []
-    if wms_service:
-        couches_rm = [c.get("nom", "") for c in wms_service.get("couches", [])]
 
     keywords = ["rennes métropole", "géographique", service_type]
     if couches_rm:

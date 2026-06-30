@@ -140,7 +140,8 @@ def _apercu_geo_csv(chemin: str, max_points: int = 5000) -> dict | None:
                      if k not in (champ_lat, champ_lon) and v not in (None, "")}
             if len(points) < max_points:
                 points.append([lat, lon, props])
-        return {"type": "points", "points": points,
+        return {"type": "points", "points": points, "champ_lat": champ_lat,
+                "champ_lon": champ_lon, "delim": delim,
                 "nb_total": nb_total, "tronque": nb_total > max_points} if points else None
     except OSError:
         return None
@@ -501,8 +502,10 @@ header{background:#fff;border-bottom:1px solid #e2e6ea;padding:8px 16px;
        display:flex;flex-wrap:wrap;gap:8px;align-items:center;flex-shrink:0}
 h1{font-size:.9rem;font-weight:600;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #info{color:#667;font-size:.82rem;white-space:nowrap}
-.avert{background:#fff8e1;border-bottom:1px solid #ffe082;padding:5px 16px;
-       font-size:.8rem;color:#6d4c00;flex-shrink:0}
+#btn-plus{background:#eef3f6;border:1px solid #c8d6e0;border-radius:6px;padding:4px 12px;
+          font-size:.8rem;cursor:pointer;color:#0b6e99;white-space:nowrap;flex-shrink:0}
+#btn-plus:hover{background:#d4ecf7}
+#btn-plus:disabled{opacity:.5;cursor:wait}
 #carte{flex:1}
 .leaflet-popup-content{min-width:160px;max-width:320px;font-size:.8rem}
 .leaflet-popup-content table{border-collapse:collapse;width:100%}
@@ -514,19 +517,14 @@ h1{font-size:.9rem;font-weight:600;flex:1;white-space:nowrap;overflow:hidden;tex
 <header>
   <h1 id="titre"></h1>
   <span id="info"></span>
+  <button id="btn-plus" style="display:none" onclick="chargerPlus()"></button>
 </header>
-<div id="avert" class="avert" style="display:none"></div>
 <div id="carte"></div>
 <script id="d" type="application/json">/*__DATA__*/</script>
 <script>
 const D=JSON.parse(document.getElementById("d").textContent);
 document.title=D.nom;
 document.getElementById("titre").textContent=D.nom;
-if(D.tronque){
-  const a=document.getElementById("avert"),n=D.type==="points"?D.points.length:D.geojson.features.length;
-  a.style.display="";
-  a.textContent=`Carte : ${n.toLocaleString("fr")} premiers éléments affichés sur ${D.nb_total.toLocaleString("fr")} au total.`;
-}
 
 const map=L.map("carte");
 L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",{
@@ -542,25 +540,98 @@ function mkPopup(props){
 }
 
 const PT={radius:7,color:"#0b6e99",weight:1.5,fillColor:"#1a8bbf",fillOpacity:.75};
-let layer;
 
+function ajouterPoints(pts){
+  pts.forEach(([lat,lon,props])=>L.circleMarker([lat,lon],PT).bindPopup(mkPopup(props)).addTo(map));
+}
+function ajouterGeoJSON(features){
+  L.geoJSON({type:"FeatureCollection",features},{
+    style:{color:"#0b6e99",weight:2,fillColor:"#1a8bbf",fillOpacity:.35},
+    pointToLayer:(_,ll)=>L.circleMarker(ll,PT),
+    onEachFeature:(f,lyr)=>{if(f.properties)lyr.bindPopup(mkPopup(f.properties));}
+  }).addTo(map);
+}
+
+// Chargement initial
+let layer;
 if(D.type==="points"){
   layer=L.featureGroup(D.points.map(([lat,lon,props])=>
     L.circleMarker([lat,lon],PT).bindPopup(mkPopup(props))
   )).addTo(map);
-  document.getElementById("info").textContent=D.points.length.toLocaleString("fr")+" point"+(D.points.length>1?"s":"");
 }else{
   layer=L.geoJSON(D.geojson,{
     style:{color:"#0b6e99",weight:2,fillColor:"#1a8bbf",fillOpacity:.35},
     pointToLayer:(_,ll)=>L.circleMarker(ll,PT),
     onEachFeature:(f,lyr)=>{if(f.properties)lyr.bindPopup(mkPopup(f.properties));}
   }).addTo(map);
-  const n=D.geojson.features.length;
-  document.getElementById("info").textContent=n.toLocaleString("fr")+" feature"+(n>1?"s":"");
 }
-
 try{const b=layer.getBounds();if(b.isValid())map.fitBounds(b.pad(0.1));else map.setView([48.1,-1.68],11);}
 catch{map.setView([48.1,-1.68],11);}
+
+// Compteur et bouton "Afficher plus"
+let offset=D.type==="points"?D.points.length:D.geojson.features.length;
+let fullData=null;
+
+function majInfo(){
+  const n=offset,tot=D.nb_total;
+  document.getElementById("info").textContent=
+    n<tot?`${n.toLocaleString("fr")} / ${tot.toLocaleString("fr")} éléments`
+         :`${n.toLocaleString("fr")} élément${n>1?"s":""} (complet)`;
+}
+function majBouton(){
+  const btn=document.getElementById("btn-plus");
+  const restant=D.nb_total-offset;
+  if(restant<=0){btn.style.display="none";return;}
+  btn.style.display="";
+  btn.disabled=false;
+  btn.textContent=`Afficher 5 000 de plus (${restant.toLocaleString("fr")} restants)`;
+}
+
+function parseCSVPoints(text){
+  const delim=D.delim||",";
+  const lines=text.split(/\r?\n/);
+  const headers=lines[0].split(delim).map(h=>h.replace(/^"|"$/g,"").trim());
+  const iLat=headers.indexOf(D.champ_lat),iLon=headers.indexOf(D.champ_lon);
+  if(iLat<0||iLon<0)return[];
+  const pts=[];
+  for(let i=1;i<lines.length;i++){
+    const cols=lines[i].split(delim);
+    const lat=parseFloat((cols[iLat]||"").replace(",","."));
+    const lon=parseFloat((cols[iLon]||"").replace(",","."));
+    if(isNaN(lat)||isNaN(lon)||lat<-90||lat>90||lon<-180||lon>180)continue;
+    const props={};
+    headers.forEach((h,j)=>{if(j!==iLat&&j!==iLon&&cols[j])props[h]=cols[j];});
+    pts.push([lat,lon,props]);
+  }
+  return pts;
+}
+
+async function chargerPlus(){
+  const btn=document.getElementById("btn-plus");
+  btn.disabled=true;
+  btn.textContent="Chargement…";
+  try{
+    if(D.type==="geojson"){
+      if(!fullData){const r=await fetch("./"+D.nom);const j=await r.json();fullData=j.features||[];}
+      const batch=fullData.slice(offset,offset+5000);
+      ajouterGeoJSON(batch);
+      offset+=batch.length;
+    }else{
+      if(!fullData){const r=await fetch("./"+D.nom);fullData=parseCSVPoints(await r.text());}
+      const batch=fullData.slice(offset,offset+5000);
+      ajouterPoints(batch);
+      offset+=batch.length;
+    }
+    majInfo();majBouton();
+  }catch(e){
+    btn.disabled=false;
+    btn.textContent="Réessayer";
+    console.error("Chargement échoué",e);
+  }
+}
+
+majInfo();
+if(D.tronque)majBouton();
 </script>
 </body>
 </html>

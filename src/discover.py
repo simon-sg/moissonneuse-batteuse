@@ -28,6 +28,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from filters.geographic import est_dans_rm, est_commune_rm, normaliser
 from conf.communes_rm import CODES_POSTAUX_RM, CODES_INSEE_RM, COMMUNES_RM
 from connectors.sirene import obtenir_sirens_rm
+from connectors.geo_services import wms_get_capabilities, wms_couches_dans_rm, nettoyer_url_ogc
 
 # ---------------------------------------------------------------------------
 # Configuration
@@ -56,6 +57,9 @@ REQUETES_STRUCTUREES = [
     {"params": {"organization": "5c812a16634f416583ed1876", "sort": "-views"}, "label": "Cerema"},
     {"params": {"organization": "534fff8da3a7292c64a77eee", "sort": "-views"}, "label": "MTECT (écologie)"},
     {"params": {"q": "transport",         "sort": "-views"}, "label": "transport"},
+    {"params": {"q": "wms",               "sort": "-views"}, "label": "WMS"},
+    {"params": {"q": "wfs",               "sort": "-views"}, "label": "WFS"},
+    {"params": {"q": "geojson",           "sort": "-views"}, "label": "GeoJSON"},
 ]
 
 # Mots dans le titre indiquant un territoire clairement hors RM
@@ -291,7 +295,7 @@ def pre_filtrer(dataset: dict) -> tuple[str, dict | None]:
         geo_en_entetes = False
         for res in dataset.get("resources", []):
             fmt = (res.get("format") or "").lower()
-            if fmt in ("geojson", "wfs"):
+            if fmt in ("geojson", "wfs", "wms"):
                 geo_en_entetes = True
                 break
             if "csv" in fmt:
@@ -497,18 +501,21 @@ def couvre_rennes(dataset: dict) -> bool:
     return False
 
 
-_FORMATS_EXCLUS_FMT = ("pdf", "shapefile", "wms", "ogc", "kml", "gpkg")
+_FORMATS_EXCLUS_FMT = ("pdf", "shapefile", "ogc", "kml", "gpkg")
 _FORMATS_EXCLUS_EXT = (".pdf", ".shp", ".kml", ".gpkg", ".html", ".htm", ".doc", ".docx")
 
 
 def _format_analysable(res: dict) -> str | None:
-    """Retourne 'csv', 'xlsx', 'zip', 'gz', 'geojson', 'wfs' ou None selon la ressource."""
+    """Retourne 'csv', 'xlsx', 'zip', 'gz', 'geojson', 'wfs', 'wms' ou None selon la ressource."""
     fmt = (res.get("format") or "").lower().strip()
     url = (res.get("url") or "").lower().split("?")[0]
+    url_full = (res.get("url") or "").lower()
     if any(token in fmt for token in _FORMATS_EXCLUS_FMT):
         return None
     if any(url.endswith(ext) for ext in _FORMATS_EXCLUS_EXT):
         return None
+    if fmt == "wms" or "service=wms" in url_full:
+        return "wms"
     if fmt == "wfs" or re.search(r"[/.]wfs(/|$)", url):
         return "wfs"
     if url.endswith(".csv.gz") or url.endswith(".tsv.gz") or fmt == "gz":
@@ -1588,7 +1595,51 @@ def analyser_wfs(url: str, verbose: bool = False,
             break
     log_analyse({"url": url, "dataset_id": dataset_id, "titre": titre,
                  "nb_rm": meilleur["nb_rm"] if meilleur else 0})
+    if meilleur is not None:
+        meilleur["type"] = "wfs"
+        meilleur["url"] = base_url
+        meilleur["wfs_layers"] = layers[:10]
     return meilleur
+
+
+def analyser_wms(url: str, verbose: bool = False,
+                 dataset_id: str = "", titre: str = "") -> dict | None:
+    """
+    Sonde un service WMS via GetCapabilities et cherche des couches dans la bbox RM.
+    Retourne un résultat spécial type='wms' (nb_rm=0 → toujours présenté à l'humain).
+    """
+    base_url = nettoyer_url_ogc(url)
+    if verbose:
+        print(f"  WMS base URL : {base_url}")
+    try:
+        caps = wms_get_capabilities(base_url, timeout=20)
+    except Exception as e:
+        if verbose:
+            print(f"  WMS GetCapabilities échoué : {e}")
+        log_analyse({"url": url, "dataset_id": dataset_id, "titre": titre,
+                     "erreur": f"WMS GetCapabilities échoué : {e}"})
+        return None
+    couches_rm = wms_couches_dans_rm(caps)
+    nb_couches = len(couches_rm)
+    if verbose:
+        print(f"  WMS : {nb_couches} couche(s) dans bbox RM")
+    log_analyse({"url": url, "dataset_id": dataset_id, "titre": titre,
+                 "wms_couches_rm": nb_couches})
+    return {
+        "type": "wms",
+        "url": base_url,
+        "titre_service": caps.get("titre", titre),
+        "couches": couches_rm,
+        "nb_couches_rm": nb_couches,
+        "champ_cp": None,
+        "champ_ville": None,
+        "champ_iris": None,
+        "champ_adresse": None,
+        "nb_total": nb_couches,
+        "nb_rm": 0,  # WMS n'est pas filtrable → toujours présenté à l'humain
+        "exemples": [],
+        "premieres_lignes": [],
+    }
 
 
 _ANALYSEURS = {
@@ -1598,6 +1649,7 @@ _ANALYSEURS = {
     "xlsx":    analyser_xlsx,
     "geojson": analyser_geojson,
     "wfs":     analyser_wfs,
+    "wms":     analyser_wms,
     "parquet": analyser_parquet,
 }
 
@@ -1707,6 +1759,63 @@ def traiter_resultat(ds: dict, resultat: dict | None, decouverte: dict) -> None:
     decouverte["echecs"] = [v for v in decouverte["echecs"] if v != did]
     decouverte["echecs_n"].pop(did, None)
 
+    # Cas spécial WFS : données géographiques → DATASETS_GEO (pas harvest_batch)
+    if resultat.get("type") == "wfs":
+        nb_rm = resultat.get("nb_rm", 0)
+        layers = resultat.get("wfs_layers", [])
+        print(f"  Service WFS — {nb_rm} feature(s) RM trouvé(s)")
+        print(f"  Couches : {layers[:5]}" + (f" +{len(layers)-5} autres" if len(layers) > 5 else ""))
+        if resultat.get("exemples"):
+            print("  Exemples RM :")
+            for ex in resultat["exemples"][:2]:
+                print("    " + _resumer_ligne(ex))
+        ajout = input("\n  Ajouter aux services géo (harvest_geo.py) ? (o/n) ").strip().lower()
+        if ajout == "o":
+            geo_entry = {
+                "id": did[:30].replace("-", "_"),
+                "type": "wfs",
+                "url": resultat.get("url", ""),
+                "couches": layers[:10],
+                "titre": ds["title"],
+                "producteur": (ds.get("organization") or {}).get("name", ""),
+                "dossier": did[:30].replace("-", "_"),
+                "theme": "environment",
+            }
+            _sauver_service_geo(geo_entry)
+        decouverte["vus"].append(did)
+        sauvegarder_decouverte(decouverte)
+        return
+
+    # Cas spécial WMS : pas de données filtrables, présentation interactive
+    if resultat.get("type") == "wms":
+        nb_couches = resultat.get("nb_couches_rm", 0)
+        print(f"  Service WMS — {nb_couches} couche(s) dans la bbox Rennes Métropole")
+        print(f"  Titre service : {resultat.get('titre_service', '')}")
+        couches = resultat.get("couches", [])
+        if couches:
+            print("  Couches RM :")
+            for c in couches[:6]:
+                print(f"    - {c['nom']} : {c.get('titre', '')}")
+            if len(couches) > 6:
+                print(f"    … +{len(couches) - 6} autres")
+        ajout = input("\n  Ajouter aux services géo (harvest_geo.py) ? (o/n) ").strip().lower()
+        if ajout == "o":
+            couches_noms = [c["nom"] for c in couches]
+            geo_entry = {
+                "id": did[:30].replace("-", "_"),
+                "type": "wms",
+                "url": resultat["url"],
+                "couches": couches_noms[:10],
+                "titre": ds["title"],
+                "producteur": (ds.get("organization") or {}).get("name", ""),
+                "dossier": did[:30].replace("-", "_"),
+                "theme": "environment",
+            }
+            _sauver_service_geo(geo_entry)
+        decouverte["vus"].append(did)
+        sauvegarder_decouverte(decouverte)
+        return
+
     print(f"  Total enregistrements : {resultat['nb_total']}")
     print(f"  Dont Rennes Métropole  : {resultat['nb_rm']}")
 
@@ -1797,6 +1906,23 @@ def sauvegarder_decouverte(decouverte: dict) -> None:
     os.makedirs(os.path.dirname(DECOUVERTE_FILE), exist_ok=True)
     with open(DECOUVERTE_FILE, "w", encoding="utf-8") as f:
         json.dump(decouverte, f, ensure_ascii=False, indent=2)
+
+
+GEO_FILE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data", "geo_services.json")
+
+
+def _sauver_service_geo(entry: dict) -> None:
+    """Ajoute ou met à jour un service géo dans data/geo_services.json."""
+    existing = []
+    if os.path.exists(GEO_FILE):
+        with open(GEO_FILE, encoding="utf-8") as f:
+            existing = json.load(f)
+    existing = [e for e in existing if e.get("id") != entry["id"]]
+    existing.append(entry)
+    with open(GEO_FILE, "w", encoding="utf-8") as f:
+        json.dump(existing, f, ensure_ascii=False, indent=2)
+    print(f"  Sauvegardé dans data/geo_services.json ({len(existing)} service(s))")
+    print("  Lancez : python3 src/harvest_geo.py")
 
 
 # ---------------------------------------------------------------------------
@@ -2045,19 +2171,23 @@ def main():
                         decouverte["vus"].append(ds["id"])
                         ignores += 1
                     elif verdict == "candidat":
-                        candidat = {
-                            "dataset_id": ds["id"],
-                            "titre": ds["title"],
-                            "dossier": ds["id"][:30].replace("-", "_"),
-                            "champ_cp":      result["champ_cp"],
-                            "champ_ville":   result["champ_ville"],
-                            "champ_iris":    result.get("champ_iris"),
-                            "champ_adresse": result.get("champ_adresse"),
-                            "nb_rm":         result["nb_rm"],
-                        }
-                        decouverte["candidats"].append(candidat)
-                        decouverte["vus"].append(ds["id"])
-                        auto_ajoutes.append((ds, result))
+                        if result.get("type") in ("wfs", "wms"):
+                            # Services géo : pas de colonnes tabulaires, redirect vers DATASETS_GEO
+                            a_presenter.append((ds, result))
+                        else:
+                            candidat = {
+                                "dataset_id": ds["id"],
+                                "titre": ds["title"],
+                                "dossier": ds["id"][:30].replace("-", "_"),
+                                "champ_cp":      result["champ_cp"],
+                                "champ_ville":   result["champ_ville"],
+                                "champ_iris":    result.get("champ_iris"),
+                                "champ_adresse": result.get("champ_adresse"),
+                                "nb_rm":         result["nb_rm"],
+                            }
+                            decouverte["candidats"].append(candidat)
+                            decouverte["vus"].append(ds["id"])
+                            auto_ajoutes.append((ds, result))
                     else:  # "presenter"
                         a_presenter.append((ds, result))
             print()  # saut de ligne après le \r

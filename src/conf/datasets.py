@@ -28,7 +28,13 @@ DATASETS = [
 #   titre      : titre lisible (utilisé si absent du service)
 #   producteur : nom du producteur
 
-DATASETS_GEO = [
+import json as _json
+import os as _os
+_GEO_FILE = _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__)))), "data", "geo_services.json")
+_geo_json = _json.load(open(_GEO_FILE, encoding="utf-8")) if _os.path.exists(_GEO_FILE) else []
+
+DATASETS_GEO = _geo_json + [
+    # Entrées manuelles (optionnel — la plupart viennent de data/geo_services.json via discover.py)
 ]
 
 # ---------------------------------------------------------------------------

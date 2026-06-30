@@ -27,7 +27,7 @@ SORTIE_HTML = os.path.join(DATA, "catalogue.html")
 # Fichiers/dossiers à ignorer lors du parcours
 IGNORER = {"cache"}
 # Fichiers de service présents dans les dossiers mais qui ne sont pas des ressources de données
-NON_RESSOURCES = {"rudi_metadata.json"}
+NON_RESSOURCES = {"rudi_metadata.json", "wms_service.json"}
 
 
 def _charger_candidats() -> dict:
@@ -73,12 +73,15 @@ def _compter_lignes(chemin: str, fmt: str) -> int | None:
             with open(chemin, encoding="utf-8", errors="replace") as f:
                 n = sum(1 for _ in f)
             return max(n - 1, 0)  # on retire la ligne d'en-tête
-        if fmt == "json":
+        if fmt in ("json", "geojson"):
             with open(chemin, encoding="utf-8") as f:
                 data = json.load(f)
             if isinstance(data, list):
                 return len(data)
             if isinstance(data, dict):
+                features = data.get("features")
+                if features is not None:
+                    return len(features)
                 return len(data)
     except (OSError, ValueError):
         return None
@@ -214,6 +217,22 @@ def construire_catalogue() -> dict:
             continue
 
         ressources = _ressources_disque(dossier)
+        # Détecte wms_service.json → ajoute une ressource virtuelle WMS
+        chemin_wms = os.path.join(chemin_dossier, "wms_service.json")
+        if os.path.exists(chemin_wms):
+            try:
+                with open(chemin_wms, encoding="utf-8") as f:
+                    wms_data = json.load(f)
+                ressources.append({
+                    "nom": wms_data.get("titre_service", "Service WMS"),
+                    "format": "wms",
+                    "taille_octets": None,
+                    "nb_lignes": None,
+                    "chemin": None,
+                    "map": f"{dossier}/wms_map.html",
+                })
+            except (OSError, ValueError):
+                pass
         # Détecte les CSVs avec colonnes lat/lon pour la carte
         for res in ressources:
             if res.get("map") or res.get("format") != "csv":
@@ -366,11 +385,12 @@ function carte(j){
   const res = (j.ressources||[]).map(r => {
     const voir = r.viewer ? ` <a href="${esc(r.viewer)}" target="_blank" rel="noopener">voir</a>` : "";
     const carte = r.map ? ` <a href="${esc(r.map)}" target="_blank" rel="noopener">carte</a>` : "";
+    const ouvrir = r.chemin ? `<a href="${esc(r.chemin)}">${r.format==="wms"?"service":"ouvrir"}</a>` : "";
     return `
     <tr><td>${esc(r.nom)}</td><td>${esc(r.format||"")}</td>
         <td>${r.nb_lignes==null?"—":r.nb_lignes.toLocaleString("fr")}</td>
         <td>${octets(r.taille_octets)}</td>
-        <td><a href="${esc(r.chemin)}">ouvrir</a>${voir}${carte}</td></tr>`;
+        <td>${ouvrir}${voir}${carte}</td></tr>`;
   }).join("");
   return `
   <article class="jeu">
@@ -404,6 +424,61 @@ function rendu(q){
 
 document.getElementById("recherche").addEventListener("input", e => rendu(e.target.value));
 rendu("");
+</script>
+</body>
+</html>
+"""
+
+
+GABARIT_WMS_MAP = r"""<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title></title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+     background:#f5f6f8;color:#1c2733;display:flex;flex-direction:column;height:100vh}
+header{background:#fff;border-bottom:1px solid #e2e6ea;padding:8px 16px;
+       display:flex;flex-wrap:wrap;gap:8px;align-items:center;flex-shrink:0}
+h1{font-size:.9rem;font-weight:600;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#info{color:#667;font-size:.82rem;white-space:nowrap}
+#carte{flex:1}
+</style>
+</head>
+<body>
+<header>
+  <h1 id="titre"></h1>
+  <span id="info"></span>
+</header>
+<div id="carte"></div>
+<script id="d" type="application/json">/*__DATA__*/</script>
+<script>
+const D=JSON.parse(document.getElementById("d").textContent);
+document.title=D.nom;
+document.getElementById("titre").textContent=D.nom;
+document.getElementById("info").textContent=D.couches.length+" couche(s) WMS";
+
+const map=L.map("carte");
+L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",{
+  attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+  subdomains:"abcd",maxZoom:19
+}).addTo(map);
+
+D.couches.forEach(c=>{
+  L.tileLayer.wms(D.url,{
+    layers:c.nom,
+    format:"image/png",
+    transparent:true,
+    opacity:0.75,
+    attribution:D.producteur||c.titre||"Source WMS"
+  }).addTo(map);
+});
+
+map.setView([48.1,-1.68],11);
 </script>
 </body>
 </html>
@@ -515,7 +590,7 @@ h1{font-size:.9rem;font-weight:600;flex:1;min-width:150px;
 table{border-collapse:collapse;font-size:.82rem;table-layout:fixed}
 thead{position:sticky;top:0;z-index:2;background:#fff;box-shadow:0 1px 0 #e2e6ea}
 th{padding:8px 12px;text-align:left;cursor:pointer;user-select:none;color:#667;font-weight:600;
-   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative}
 th:hover{background:#f5f6f8;color:#1c2733}
 th.asc::after{content:" ↑";color:#0b6e99}
 th.desc::after{content:" ↓";color:#0b6e99}
@@ -523,8 +598,12 @@ th.geo{color:#0b6e99;background:#eaf4fb}
 th.geo:hover{background:#d4ecf7}
 td{padding:0;border-bottom:1px solid #f0f2f4}
 td div{padding:5px 12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+td div a{color:#0b6e99;text-decoration:none}
+td div a:hover{text-decoration:underline}
 tr:nth-child(even) td{background:#fafbfc}
 tr:hover td{background:#eef6fb}
+.resizer{position:absolute;right:0;top:0;width:5px;height:100%;cursor:col-resize;z-index:1}
+.resizer:hover,.resizer.active{background:rgba(11,110,153,.35)}
 </style>
 </head>
 <body>
@@ -534,17 +613,23 @@ tr:hover td{background:#eef6fb}
   <span id="info"></span>
 </header>
 <div id="avert" class="avert" style="display:none"></div>
-<div class="wrap"><table id="t"></table></div>
+<div class="wrap"><table id="t"><colgroup id="cols"></colgroup><thead id="thead"></thead><tbody id="tbody"></tbody></table></div>
 <script id="d" type="application/json">/*__DATA__*/</script>
 <script>
 const D=JSON.parse(document.getElementById("d").textContent);
-const tbl=document.getElementById("t");
-tbl.style.width=Math.max(document.querySelector(".wrap").clientWidth||0,D.entetes.length*160)+"px";
+const tbl=document.getElementById("t"),wrap=document.querySelector(".wrap");
+const nCols=D.entetes.length;
+const wrapW=wrap.clientWidth||800;
+const colW=Math.max(80,Math.floor(Math.max(wrapW,nCols*160)/nCols));
+tbl.style.width=Math.max(wrapW,nCols*160)+"px";
+document.getElementById("cols").innerHTML=D.entetes.map(()=>`<col style="width:${colW}px">`).join("");
 document.title=D.nom;document.getElementById("titre").textContent=D.nom;
 if(D.tronque){const a=document.getElementById("avert");a.style.display="";
   a.textContent=`Prévisualisation : ${D.lignes.length.toLocaleString("fr")} premières lignes sur ${D.nb_total.toLocaleString("fr")} au total.`;}
+const geo=new Set(D.champs_geo||[]);
 let sc=-1,asc=true,q="";
 function esc(s){return String(s??"").replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function cell(v){const s=String(v??"").trim();return /^https?:\/\/\S+$/.test(s)?`<a href="${esc(s)}" target="_blank" rel="noopener">${esc(s)}</a>`:esc(v);}
 function rendu(){
   let rows=D.lignes;
   if(q){const f=q.toLowerCase();rows=rows.filter(r=>r.some(v=>String(v??"").toLowerCase().includes(f)));}
@@ -552,16 +637,45 @@ function rendu(){
     const va=a[col]??"",vb=b[col]??"",na=+va,nb=+vb;
     return(!isNaN(na)&&!isNaN(nb))?(up?na-nb:nb-na):(up?String(va).localeCompare(String(vb),"fr"):String(vb).localeCompare(String(va),"fr"));
   });}
-  const geo=new Set(D.champs_geo||[]);
-  const th=D.entetes.map((h,i)=>{const cls=[sc===i?(asc?"asc":"desc"):"",geo.has(h)?"geo":""].filter(Boolean).join(" ");return`<th class="${cls}" onclick="tri(${i})">${esc(h)}</th>`;}).join("");
-  const td=rows.map(r=>`<tr>${r.map(v=>`<td><div title="${esc(v)}">${esc(v)}</div></td>`).join("")}</tr>`).join("");
-  document.getElementById("t").innerHTML=`<thead><tr>${th}</tr></thead><tbody>${td}</tbody>`;
+  const th=D.entetes.map((h,i)=>{const cls=[sc===i?(asc?"asc":"desc"):"",geo.has(h)?"geo":""].filter(Boolean).join(" ");return`<th class="${cls}">${esc(h)}<div class="resizer"></div></th>`;}).join("");
+  document.getElementById("thead").innerHTML=`<tr>${th}</tr>`;
+  document.getElementById("tbody").innerHTML=rows.map(r=>`<tr>${r.map(v=>`<td><div title="${esc(v)}">${cell(v)}</div></td>`).join("")}</tr>`).join("");
   const n=rows.length,tot=D.lignes.length;
   document.getElementById("info").textContent=n<tot
     ?`${n.toLocaleString("fr")} / ${tot.toLocaleString("fr")} lignes`
     :`${n.toLocaleString("fr")} ligne${n>1?"s":""}`;
 }
-function tri(i){sc===i?asc=!asc:(sc=i,asc=true);rendu();}
+// Sort via delegation — ignore clicks that start on the resizer handle
+tbl.addEventListener("click",e=>{
+  if(e.target.closest(".resizer"))return;
+  const th=e.target.closest("th");
+  if(!th)return;
+  const i=th.cellIndex;sc===i?asc=!asc:(sc=i,asc=true);rendu();
+});
+// Column resize
+tbl.addEventListener("mousedown",e=>{
+  const rz=e.target.closest(".resizer");
+  if(!rz)return;
+  e.preventDefault();
+  const th=rz.parentElement,idx=th.cellIndex;
+  const cols=document.querySelectorAll("#cols col");
+  const startX=e.clientX,startW=th.offsetWidth;
+  rz.classList.add("active");
+  document.body.style.cursor="col-resize";
+  function onMove(e){
+    const w=Math.max(40,startW+(e.clientX-startX));
+    cols[idx].style.width=w+"px";
+    tbl.style.width=Array.from(cols).reduce((s,c)=>s+(parseInt(c.style.width)||colW),0)+"px";
+  }
+  function onUp(){
+    rz.classList.remove("active");
+    document.body.style.cursor="";
+    document.removeEventListener("mousemove",onMove);
+    document.removeEventListener("mouseup",onUp);
+  }
+  document.addEventListener("mousemove",onMove);
+  document.addEventListener("mouseup",onUp);
+});
 document.getElementById("filtre").addEventListener("input",e=>{q=e.target.value;rendu();});
 rendu();
 </script>
@@ -573,6 +687,18 @@ rendu();
 def _ecrire_viewer(chemin: str, nom: str, apercu: dict, champs_geo: list | None = None) -> None:
     data = json.dumps({"nom": nom, "champs_geo": champs_geo or [], **apercu}, ensure_ascii=False).replace("</", r"<\/")
     html = GABARIT_VIEWER.replace("/*__DATA__*/", data)
+    with open(chemin, "w", encoding="utf-8") as f:
+        f.write(html)
+
+
+def _ecrire_wms_map(chemin: str, nom: str, wms_data: dict, producteur: str = "") -> None:
+    data = json.dumps({
+        "nom": nom,
+        "url": wms_data.get("url", ""),
+        "couches": wms_data.get("couches", []),
+        "producteur": producteur or wms_data.get("producteur", ""),
+    }, ensure_ascii=False).replace("</", r"<\/")
+    html = GABARIT_WMS_MAP.replace("/*__DATA__*/", data)
     with open(chemin, "w", encoding="utf-8") as f:
         f.write(html)
 
@@ -599,15 +725,26 @@ def ecrire_viewers(catalogue: dict) -> tuple[int, int]:
                     _ecrire_viewer(chemin_viewer, res["nom"], apercu, champs_geo)
                     nb_v += 1
             if res.get("map"):
-                chemin_src = os.path.join(DATA, res["chemin"])
                 chemin_map = os.path.join(DATA, res["map"])
-                if fmt == "geojson":
-                    apercu_geo = _apercu_geojson(chemin_src)
-                else:
-                    apercu_geo = _apercu_geo_csv(chemin_src)
-                if apercu_geo:
-                    _ecrire_map(chemin_map, res["nom"], apercu_geo)
-                    nb_m += 1
+                if fmt == "wms":
+                    chemin_wms_json = os.path.join(DATA, jeu["dataset_id"], "wms_service.json")
+                    try:
+                        with open(chemin_wms_json, encoding="utf-8") as f:
+                            wms_data = json.load(f)
+                        _ecrire_wms_map(chemin_map, res["nom"], wms_data,
+                                        jeu.get("producteur", ""))
+                        nb_m += 1
+                    except (OSError, ValueError):
+                        pass
+                elif res.get("chemin"):
+                    chemin_src = os.path.join(DATA, res["chemin"])
+                    if fmt == "geojson":
+                        apercu_geo = _apercu_geojson(chemin_src)
+                    else:
+                        apercu_geo = _apercu_geo_csv(chemin_src)
+                    if apercu_geo:
+                        _ecrire_map(chemin_map, res["nom"], apercu_geo)
+                        nb_m += 1
     return nb_v, nb_m
 
 

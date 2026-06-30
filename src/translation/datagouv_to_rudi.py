@@ -1,3 +1,5 @@
+import datetime
+import os
 import re
 import uuid
 
@@ -7,6 +9,69 @@ THEMES_RUDI = {
     "children", "environment", "townPlanning", "location", "education",
     "publicSpace", "health", "housing", "society",
 }
+
+# Mots-clés pour détecter le thème RUDI depuis titre/description/tags (scoring)
+_MOTS_CLES_THEME: list[tuple[str, list[str]]] = [
+    ("children",       ["enfance", "enfant", "creche", "jeunesse", "petite enfance", "mineur", "periscolaire"]),
+    ("education",      ["education", "scolaire", "ecole", "college", "lycee", "universite", "etudiant",
+                        "parcoursup", "enseignement", "bts", "but", "scolarite", "etablissement scolaire",
+                        "apprentissage", "formation professionnelle", "ips"]),
+    ("health",         ["sante", "medecin", "hopital", "pharmacie", "accident", "mortalite", "handicap",
+                        "soins", "maladie", "deces", "natalite", "medecine", "sanitaire"]),
+    ("housing",        ["logement", "loyer", "habitat", "immobilier", "hlm", "residence", "hebergement",
+                        "foncier", "copropriete", "locatif"]),
+    ("transportation", ["transport", "mobilite", "trafic", "velo", "bus", "metro", "gare", "train",
+                        "covoiturage", "carburant", "stationnement", "parking", "route", "voie",
+                        "circulation", "autoroute", "navette"]),
+    ("environment",    ["environnement", "energie", "eau", "pollution", "dechet", "climat", "nature",
+                        "biodiversite", "nappe", "phytosanitaire", "pesticide", "sol", "air", "emission",
+                        "carbone", "nucleaire", "dechets", "consommation energetique", "gaz a effet",
+                        "contaminant", "qualite de l eau", "qualite de l air"]),
+    ("energyNetworks", ["reseau electrique", "reseau de gaz", "reseau d eau", "fibre optique",
+                        "telecommunication", "infrastructure reseau", "distribution d energie",
+                        "raccordement", "electrique", "gazier"]),
+    ("townPlanning",   ["urbanisme", "cadastre", "permis de construire", "construction", "batiment",
+                        "plan local", "plu", "amenagement", "zone d activite", "zone urbaine", "foncier"]),
+    ("economy",        ["economie", "emploi", "entreprise", "commerce", "prix", "fiscal", "impot",
+                        "budget", "siren", "siret", "etablissement", "marche", "salaire", "revenu fiscal",
+                        "inflation", "chiffre d affaires", "taxe"]),
+    ("citizenship",    ["election", "vote", "citoyen", "democratie", "collectivite", "acces public",
+                        "information publique", "service public", "droit", "participation"]),
+    ("culture",        ["culture", "sport", "loisir", "patrimoine", "musee", "bibliotheque", "festival",
+                        "art", "oeuvre", "archives", "spectacle", "cinema", "theatre"]),
+    ("publicSpace",    ["espace public", "trottoir", "eclairage", "mobilier urbain", "proprete",
+                        "equipement public", "voirie", "amenagement urbain"]),
+    ("society",        ["social", "pauvrete", "insertion", "famille", "population", "demographie",
+                        "revenu", "precarite", "aide sociale", "minima sociaux", "allocataire"]),
+    ("location",       ["referentiel geographique", "adresse postale", "coordonnee", "cadastral",
+                        "limite administrative", "decoupage", "zonage"]),
+]
+
+
+def _detecter_theme(metadata_source: dict) -> str:
+    """Devine le thème RUDI par scoring sur titre, description et tags."""
+    import unicodedata
+
+    def normaliser(s: str) -> str:
+        s = unicodedata.normalize("NFD", s.lower())
+        s = "".join(c for c in s if unicodedata.category(c) != "Mn")
+        return re.sub(r"[-_]", " ", s)
+
+    tags = [t.get("name", t) if isinstance(t, dict) else t for t in metadata_source.get("tags", [])]
+    corpus = normaliser(" ".join([
+        metadata_source.get("title", ""),
+        metadata_source.get("description", "") or "",
+        metadata_source.get("description_short", "") or "",
+        " ".join(tags),
+    ]))
+
+    scores: dict[str, int] = {}
+    for theme, mots in _MOTS_CLES_THEME:
+        score = sum(corpus.count(mot) for mot in mots if mot in corpus)
+        if score:
+            scores[theme] = score
+
+    return max(scores, key=scores.__getitem__) if scores else "society"
 
 # Correspondance licences data.gouv.fr → RUDI
 LICENCES = {
@@ -58,16 +123,18 @@ def traduire_metadonnees(metadata_source: dict, zone: str = "Rennes Métropole",
                           dossier_nom: str = "",
                           fichiers_filtres: list | None = None,
                           fichiers_dicts: list | None = None,
-                          theme: str = "environment") -> dict:
+                          theme: str | None = None) -> dict:
     """
     Traduit les métadonnées data.gouv.fr au format RUDI.
 
     fichiers_filtres : [(nom_fichier, nb_rm, ressource_originale), ...] ou None
     fichiers_dicts   : [(nom_fichier, ressource_originale), ...] ou None
     dossier_nom      : slug pour nommer le fichier filtré par défaut (ex: "prix-carburants")
-    theme            : thème RUDI (voir THEMES_RUDI) ; à préciser dans datasets.py
+    theme            : thème RUDI (voir THEMES_RUDI) ; auto-détecté si absent
     """
-    if theme not in THEMES_RUDI:
+    if theme is None:
+        theme = _detecter_theme(metadata_source)
+    elif theme not in THEMES_RUDI:
         raise ValueError(f"Thème RUDI invalide : {theme!r}. Valeurs acceptées : {sorted(THEMES_RUDI)}")
     dataset_id = metadata_source["id"]
     titre_original = metadata_source["title"]
@@ -191,3 +258,109 @@ def traduire_metadonnees(metadata_source: dict, zone: str = "Rennes Métropole",
     }
 
     return rudi_metadata
+
+
+def traduire_metadonnees_service(config: dict,
+                                  fichiers_geojson: list | None = None,
+                                  wms_service: dict | None = None) -> dict:
+    """
+    Traduit un service géographique (WFS, WMS, OGC API) au format RUDI.
+
+    config          : entrée de DATASETS_GEO (id, type, url, titre, producteur, theme, ...)
+    fichiers_geojson: [(chemin_fichier, typename), ...] pour WFS/OGC
+    wms_service     : dict lu depuis wms_service.json, pour WMS
+    """
+    service_id = config["id"]
+    service_type = config.get("type", "wfs")
+    theme = config.get("theme", "environment")
+    if theme not in THEMES_RUDI:
+        raise ValueError(f"Thème RUDI invalide : {theme!r}. Valeurs acceptées : {sorted(THEMES_RUDI)}")
+
+    local_id = str(uuid.uuid5(uuid.NAMESPACE_URL, f"geo:{service_id}"))
+    titre = config.get("titre") or service_id
+    producteur_nom = config.get("producteur", "Producteur inconnu")
+    url_service = config["url"]
+
+    synopsis = f"{titre} — données géographiques pour Rennes Métropole ({service_type.upper()})"[:150]
+    description = (
+        f"Service {service_type.upper()} filtré sur Rennes Métropole (43 communes, EPCI 243500139).\n\n"
+        f"Source : {url_service}"
+    )
+
+    available_formats = []
+
+    if service_type in ("wfs", "ogcapi") and fichiers_geojson:
+        for chemin, typename in fichiers_geojson:
+            nom_fichier = os.path.basename(chemin)
+            media_id = str(uuid.uuid5(uuid.NAMESPACE_URL, f"geo:{service_id}:file:{nom_fichier}"))
+            available_formats.append({
+                "media_id": media_id,
+                "media_type": "FILE",
+                "media_name": nom_fichier,
+                "media_caption": f"{typename} — GeoJSON filtré Rennes Métropole",
+                "connector": {
+                    "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+                    "interface_contract": "dwnl",
+                },
+            })
+
+    # Entrée SERVICE vers le endpoint OGC source
+    sep = "&" if "?" in url_service else "?"
+    if service_type == "wms":
+        caps_url = f"{url_service}{sep}SERVICE=WMS&REQUEST=GetCapabilities"
+        contract = "wms"
+    elif service_type == "ogcapi":
+        caps_url = url_service.rstrip("/") + "/collections"
+        contract = "wfs"
+    else:
+        caps_url = f"{url_service}{sep}SERVICE=WFS&REQUEST=GetCapabilities"
+        contract = "wfs"
+
+    media_id_service = str(uuid.uuid5(uuid.NAMESPACE_URL, f"geo:{service_id}:service"))
+    available_formats.append({
+        "media_id": media_id_service,
+        "media_type": "SERVICE",
+        "media_name": f"service-{service_type}",
+        "media_caption": f"Service {service_type.upper()} source",
+        "connector": {
+            "url": caps_url,
+            "interface_contract": contract,
+        },
+    })
+
+    couches_rm = []
+    if wms_service:
+        couches_rm = [c.get("nom", "") for c in wms_service.get("couches", [])]
+
+    keywords = ["rennes métropole", "géographique", service_type]
+    if couches_rm:
+        keywords += couches_rm[:5]
+
+    now = datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    return {
+        "local_id": local_id,
+        "resource_title": f"{titre} — Rennes Métropole",
+        "synopsis": [{"lang": "fr", "text": synopsis}],
+        "summary": [{"lang": "fr", "text": description}],
+        "theme": theme,
+        "keywords": keywords,
+        "producer": {"organization_name": producteur_nom},
+        "contacts": [],
+        "available_formats": available_formats,
+        "dataset_dates": {"created": now, "updated": now},
+        "storage_status": "online",
+        "access_condition": {
+            "licence": {
+                "licence_type": "STANDARD",
+                "licence_label": "etalab-2.0",
+                "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
+            },
+            "confidentiality": {"restricted_access": False, "gdpr_sensitive": False},
+        },
+        "geography": BBOX_RENNES_METROPOLE,
+        "metadata_info": {
+            "metadata_dates": {"created": now, "updated": now},
+            "metadata_source": url_service,
+        },
+    }

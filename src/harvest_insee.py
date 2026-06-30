@@ -285,6 +285,7 @@ def traiter_publication(pub: dict, state: dict) -> dict:
         return {"statut": "echec", "raison": "aucun membre CSV correspondant dans le ZIP"}
 
     champ_iris    = pub.get("champ_iris")
+    champ_iris_ou = pub.get("champ_iris_ou")   # 2e colonne géo : garde si l'UNE OU L'AUTRE est RM
     champ_cp      = pub.get("champ_cp")
     champ_ville   = pub.get("champ_ville")
     champ_adresse = pub.get("champ_adresse")
@@ -313,6 +314,23 @@ def traiter_publication(pub: dict, state: dict) -> dict:
                     lignes, entetes = filtrer_csv_bytes(contenu_csv, champ_cp, champ_ville, auto, champ_adresse)
                 except Exception as e:
                     print(f"    → Erreur (auto) : {e}")
+
+        # OR-filtre : ajouter les lignes où le 2e champ géo est en RM (ex: commune de travail)
+        if champ_iris_ou and entetes and champ_iris_ou in entetes:
+            try:
+                lignes_ou, _ = filtrer_csv_bytes(contenu_csv, None, None, champ_iris_ou, None)
+                cles = {tuple(r.values()) for r in lignes}
+                ajouts = 0
+                for r in lignes_ou:
+                    k = tuple(r.values())
+                    if k not in cles:
+                        lignes.append(r)
+                        cles.add(k)
+                        ajouts += 1
+                if ajouts:
+                    print(f"    + {ajouts} lignes via {champ_iris_ou} (travail en RM)")
+            except Exception as e:
+                print(f"    → Erreur OR-filtre ({champ_iris_ou}) : {e}")
 
         if not lignes:
             print(f"    → 0 lignes RM")

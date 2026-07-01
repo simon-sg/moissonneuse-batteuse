@@ -13,6 +13,12 @@ Les moissons futures (harvest_batch.py / harvest_insee.py / harvest_geo.py) appl
 déjà ce même traitement automatiquement — ce script ne sert qu'à rattraper les JDD
 moissonnés avant l'introduction de ce traitement.
 
+Si un JDD enrichi ici était déjà marqué `rudi_publie: true` (publié avant l'enrichissement),
+son flag est remis à `false` dans le fichier d'état correspondant (state.json /
+state_insee.json / state_oeb.json / state_bdnb.json) afin que "Publier sur le nœud RUDI"
+le reprenne réellement au run suivant — sinon publish_rudi.py le considère comme déjà
+publié et ne republie jamais la description mise à jour.
+
 Usage : python3 src/enrichir_descriptions.py
 """
 import json
@@ -25,6 +31,10 @@ from translation.description_secours import (
     MARQUEUR, description_quasi_vide, entetes_depuis_csv, entetes_depuis_geojson,
     generer_complement, partie_descriptive,
 )
+from state import charger_state, sauvegarder_state
+from harvest_insee import _charger_state as charger_state_insee, _sauvegarder_state as sauvegarder_state_insee
+from harvest_oeb import _charger_state as charger_state_oeb, _sauvegarder_state as sauvegarder_state_oeb
+from harvest_bdnb import _charger_state as charger_state_bdnb, _sauvegarder_state as sauvegarder_state_bdnb
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
 
@@ -85,12 +95,24 @@ def enrichir_un(dossier_nom: str) -> str | None:
 
 
 def main() -> None:
+    etats = {
+        "tabulaire": charger_state(),
+        "insee": charger_state_insee(),
+        "oeb": charger_state_oeb(),
+        "bdnb": charger_state_bdnb(),
+    }
+    index = {}  # dossier -> (source, clé dans etats[source])
+    for source, etat in etats.items():
+        for cle, entree in etat.items():
+            index[entree.get("dossier")] = (source, cle)
+
     dossiers = sorted(
         n for n in os.listdir(DATA_DIR)
         if n != "cache" and os.path.isdir(os.path.join(DATA_DIR, n))
     )
     print(f"=== Enrichissement des descriptions — {len(dossiers)} dossier(s) à vérifier ===\n")
     n_traites = 0
+    n_republier = 0
     for nom in dossiers:
         try:
             resultat = enrichir_un(nom)
@@ -100,7 +122,22 @@ def main() -> None:
         if resultat:
             print(f"  {resultat}")
             n_traites += 1
+            if nom in index:
+                source, cle = index[nom]
+                if etats[source][cle].get("rudi_publie"):
+                    etats[source][cle]["rudi_publie"] = False
+                    n_republier += 1
+
+    sauvegarder_state(etats["tabulaire"])
+    sauvegarder_state_insee(etats["insee"])
+    sauvegarder_state_oeb(etats["oeb"])
+    sauvegarder_state_bdnb(etats["bdnb"])
+
     print(f"\n=== Terminé : {n_traites} description(s) complétée(s) sur {len(dossiers)} dossier(s) ===")
+    if n_republier:
+        print(f'{n_republier} JDD déjà publié(s) sur le nœud RUDI ont été démarqués '
+              f'(rudi_publie remis à false) — leur description enrichie ne sera envoyée '
+              f'au nœud qu\'après un nouveau passage de "Publier sur le nœud RUDI".')
     if n_traites:
         print('Pensez à régénérer le catalogue (option 6) et, si besoin, à republier '
               'sur le nœud RUDI (option 7).')

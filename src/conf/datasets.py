@@ -54,6 +54,47 @@ DATASETS_GEO = _geo_json + [
 #   dossier        : sous-dossier de sortie sous data/
 #   theme          : thème RUDI
 
+# ---------------------------------------------------------------------------
+# Jeux de données OEB (Observatoire de l'Environnement en Bretagne)
+# Portail data-fair : https://data.bretagne-environnement.fr
+# Harvested via : python3 src/harvest_oeb.py
+# Pour découvrir les JDD disponibles : python3 src/harvest_oeb.py --decouvrir
+# ---------------------------------------------------------------------------
+# Champs obligatoires :
+#   id      : slug du JDD sur le portail OEB (identifiant API data-fair)
+#   dossier : sous-dossier de sortie sous data/
+#   theme   : thème RUDI (voir ci-dessus)
+#
+# Champs optionnels :
+#   titre        : titre lisible (lu depuis l'API si absent)
+#   champ_code   : colonne contenant le code territoire (défaut : "code_territoire")
+#   champ_echelle: colonne contenant l'échelle (défaut : "echelle_territoire")
+#                  Mettre None pour télécharger toutes les lignes sans filtre d'échelle
+
+DATASETS_OEB = [
+    # ------------------------------------------------------------------
+    # Indicateurs d'hydrologie future TRACC
+    # Projections hydrologiques par commune à l'horizon 2100 (débit, étiage).
+    # Filtre : echelle_territoire=Communes + code_territoire ∈ codes_INSEE_RM
+    #          + echelle_territoire=EPCI + code_territoire=243500139
+    # ------------------------------------------------------------------
+    {
+        "id": "indicateurs-dhydrologie-future-tracc",
+        "titre": "Indicateurs d'hydrologie future TRACC",
+        "dossier": "oeb_hydrologie_tracc",
+        "theme": "environment",
+    },
+    # ------------------------------------------------------------------
+    # Ajouter d'autres JDD OEB ici.
+    # Lancez : python3 src/harvest_oeb.py --decouvrir
+    # pour voir tous les JDD disponibles sur le portail.
+    # ------------------------------------------------------------------
+]
+
+# ---------------------------------------------------------------------------
+# Publications INSEE directes (hors data.gouv.fr)
+# Harvested via : python3 src/harvest_insee.py
+# ---------------------------------------------------------------------------
 DATASETS_INSEE = [
     # ------------------------------------------------------------------
     # BIC IRIS — Évolution et structure de la population (millésime 2020)

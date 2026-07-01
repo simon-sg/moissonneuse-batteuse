@@ -18,11 +18,12 @@ import discover
 import main as moisson_tabulaire
 import harvest_batch
 import harvest_insee
+import harvest_oeb
 import harvest_geo
 import catalogue
 import publish_rudi
 import enrichir_descriptions
-from conf.datasets import DATASETS, DATASETS_GEO, DATASETS_INSEE
+from conf.datasets import DATASETS, DATASETS_GEO, DATASETS_INSEE, DATASETS_OEB
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
 CONF_RUDI_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "conf", "rudi_node.json")
@@ -117,6 +118,14 @@ def action_moisson_insee(ids: str | None = None):
     _executer("Moisson INSEE", _avec_argv, argv, harvest_insee.main)
 
 
+def action_moisson_oeb(ids: str | None = None):
+    """ids : IDs OEB séparés par des espaces, ou "" pour tous les JDD configurés."""
+    if ids is None:
+        ids = input("IDs OEB à traiter, séparés par des espaces (Entrée = tous) : ").strip()
+    argv = ["harvest_oeb.py"] + ids.split()
+    _executer("Moisson OEB", _avec_argv, argv, harvest_oeb.main)
+
+
 def action_moisson_geo():
     _executer("Moisson géo (WFS/WMS/OGC API)", _avec_argv, ["harvest_geo.py"], harvest_geo.main)
 
@@ -140,6 +149,7 @@ ETAPES_PIPELINE = [
     ("Moisson tabulaire (data.gouv.fr)", _avec_argv, [["main.py"], moisson_tabulaire.main], {}),
     ("Moisson batch (candidats découverts)", _avec_argv, [["harvest_batch.py"], harvest_batch.main], {}),
     ("Moisson INSEE (toutes les publications)", _avec_argv, [["harvest_insee.py"], harvest_insee.main], {}),
+    ("Moisson OEB (toutes les publications)", _avec_argv, [["harvest_oeb.py"], harvest_oeb.main], {}),
     ("Moisson géo (WFS/WMS/OGC API)", _avec_argv, [["harvest_geo.py"], harvest_geo.main], {}),
     ("Génération du catalogue", catalogue.main, [], {}),
     ("Publication sur le nœud RUDI", publish_rudi.main, [], {}),
@@ -181,7 +191,8 @@ def etat_projet() -> dict:
     utilisé par l'affichage terminal ci-dessous et par dashboard.py (API JSON)."""
     donnees = {
         "datasets_configures": {
-            "tabulaire": len(DATASETS), "geo": len(DATASETS_GEO), "insee": len(DATASETS_INSEE),
+            "tabulaire": len(DATASETS), "geo": len(DATASETS_GEO),
+            "insee": len(DATASETS_INSEE), "oeb": len(DATASETS_OEB),
         },
         "decouverte": None,
         "etat_moisson": {},
@@ -199,7 +210,8 @@ def etat_projet() -> dict:
             "echecs": len(d.get("echecs", [])),
         }
 
-    for nom_fichier, cle in (("state.json", "tabulaire_batch"), ("state_insee.json", "insee")):
+    for nom_fichier, cle in (("state.json", "tabulaire_batch"), ("state_insee.json", "insee"),
+                              ("state_oeb.json", "oeb")):
         chemin = os.path.join(DATA_DIR, nom_fichier)
         if os.path.isfile(chemin):
             with open(chemin, encoding="utf-8") as f:
@@ -228,7 +240,8 @@ def action_etat_projet():
     d = etat_projet()
     print(f"\n{'=' * 60}\nÉtat du projet\n{'=' * 60}")
     cfg = d["datasets_configures"]
-    print(f"  Configurés : {cfg['tabulaire']} tabulaire(s), {cfg['geo']} géo, {cfg['insee']} INSEE")
+    print(f"  Configurés : {cfg['tabulaire']} tabulaire(s), {cfg['geo']} géo, "
+          f"{cfg['insee']} INSEE, {cfg['oeb']} OEB")
 
     if d["decouverte"]:
         dd = d["decouverte"]
@@ -237,8 +250,8 @@ def action_etat_projet():
     else:
         print("  Découverte : aucun historique (data/decouverte.json absent)")
 
-    for cle, label in (("tabulaire_batch", "tabulaire/batch"), ("insee", "INSEE")):
-        em = d["etat_moisson"][cle]
+    for cle, label in (("tabulaire_batch", "tabulaire/batch"), ("insee", "INSEE"), ("oeb", "OEB")):
+        em = d["etat_moisson"].get(cle)
         if em:
             print(f"  État moisson {label} : {em['total']} JDD suivi(s), {em['rudi_publie']} publié(s) sur RUDI")
         else:
@@ -269,7 +282,7 @@ def _purger_cache() -> str:
 
 def _purger_etat() -> str:
     n = 0
-    for nom in ("state.json", "state_insee.json"):
+    for nom in ("state.json", "state_insee.json", "state_oeb.json"):
         chemin = os.path.join(DATA_DIR, nom)
         if os.path.isfile(chemin):
             os.remove(chemin)
@@ -343,7 +356,7 @@ def _purger_donnees_moissonnees() -> str:
             n += 1
     # Sans ça, le prochain run croirait que rien n'a changé (last_modified inchangé
     # dans state.json) et ne re-moissonnerait rien malgré les dossiers supprimés.
-    for nom in ("state.json", "state_insee.json"):
+    for nom in ("state.json", "state_insee.json", "state_oeb.json"):
         chemin = os.path.join(DATA_DIR, nom)
         if os.path.isfile(chemin):
             os.remove(chemin)
@@ -436,13 +449,14 @@ ACTIONS = [
     ("2", "Moisson tabulaire — data.gouv.fr configuré", action_moisson_tabulaire),
     ("3", "Moisson batch — candidats découverts", action_moisson_batch),
     ("4", "Moisson INSEE — publications directes", action_moisson_insee),
-    ("5", "Moisson géo — WFS/WMS/OGC API", action_moisson_geo),
-    ("6", "(Re)générer le catalogue", action_catalogue),
-    ("7", "Publier sur le nœud RUDI (rattrapage)", action_publier_rudi),
-    ("8", "Enrichir les descriptions vides/quasi vides (rattrapage)", action_enrichir_descriptions),
-    ("9", "Lancer le pipeline complet", action_pipeline_complet),
-    ("10", "Purger des données existantes", menu_purge),
-    ("11", "État du projet", action_etat_projet),
+    ("5", "Moisson OEB — portail environnement Bretagne", action_moisson_oeb),
+    ("6", "Moisson géo — WFS/WMS/OGC API", action_moisson_geo),
+    ("7", "(Re)générer le catalogue", action_catalogue),
+    ("8", "Publier sur le nœud RUDI (rattrapage)", action_publier_rudi),
+    ("9", "Enrichir les descriptions vides/quasi vides (rattrapage)", action_enrichir_descriptions),
+    ("10", "Lancer le pipeline complet", action_pipeline_complet),
+    ("11", "Purger des données existantes", menu_purge),
+    ("12", "État du projet", action_etat_projet),
 ]
 
 

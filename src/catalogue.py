@@ -447,6 +447,10 @@ GABARIT_HTML = r"""<!DOCTYPE html>
   .infos b { color:var(--txt); font-weight:600; }
   .synopsis { font-size:.9rem; margin:8px 0; font-weight:600; }
   .description { font-size:.88rem; margin:4px 0 8px; color:var(--txt); }
+  .description p { margin:0 0 8px; }
+  .description p:last-child { margin-bottom:0; }
+  .description ul, .description ol { margin:4px 0 8px 20px; }
+  .description a { color:var(--accent); }
   .tags { display:flex; flex-wrap:wrap; gap:6px; margin:8px 0; }
   .tag { background:#eef3f6; color:#345; border-radius:99px; padding:2px 10px; font-size:.75rem; }
   .badge { display:inline-block; background:#fdecea; color:#a3372c; border-radius:99px;
@@ -510,6 +514,31 @@ function octets(n){
 function esc(s){ return (s??"").toString().replace(/[&<>"]/g, c =>
   ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c])); }
 
+// Rendu Markdown minimal (gras/italique/liens/listes) pour les descriptions sources
+// (data.gouv.fr fournit ses descriptions en Markdown). Échappe d'abord tout le texte,
+// puis n'introduit que les balises qu'on construit nous-mêmes : aucune injection possible.
+function inlineMd(s){
+  return esc(s)
+    .replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>")
+    .replace(/(^|[^*])\*([^*\s][^*]*)\*(?!\*)/g, "$1<i>$2</i>")
+    .replace(/(^|[^_])_([^_\s][^_]*)_(?!_)/g, "$1<i>$2</i>")
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+}
+function markdown(texte){
+  const blocs = [];
+  let para = [], liste = [];
+  const flushPara = () => { if (para.length) { blocs.push("<p>" + para.map(inlineMd).join("<br>") + "</p>"); para = []; } };
+  const flushListe = () => { if (liste.length) { blocs.push("<ul>" + liste.map(l => "<li>" + inlineMd(l) + "</li>").join("") + "</ul>"); liste = []; } };
+  for (const ligne of (texte || "").split(/\r?\n/)) {
+    const m = ligne.match(/^\s*[-*]\s+(.*)/);
+    if (m) { flushPara(); liste.push(m[1]); continue; }
+    if (!ligne.trim()) { flushPara(); flushListe(); continue; }
+    flushListe(); para.push(ligne);
+  }
+  flushPara(); flushListe();
+  return blocs.join("");
+}
+
 function texteRecherche(j){
   return [j.titre, j.producteur, j.dataset_id, j.theme, (j.mots_cles||[]).join(" "),
           j.synopsis, j.description].join(" ").toLowerCase();
@@ -543,7 +572,7 @@ function carte(j){
       ${j.complet?"":'<span class="badge">métadonnées partielles</span>'}
     </div>
     ${j.synopsis?`<div class="synopsis">${esc(j.synopsis)}</div>`:""}
-    ${j.description?`<div class="description">${esc(j.description)}</div>`:""}
+    ${j.description?`<div class="description">${markdown(j.description)}</div>`:""}
     ${tags?`<div class="tags">${tags}</div>`:""}
     ${res?`<details><summary>${j.ressources.length} ressource(s)</summary>
       <table class="res"><tr><th>Fichier</th><th>Format</th><th>Lignes</th><th>Taille</th><th></th></tr>
@@ -777,16 +806,14 @@ h1{font-size:.9rem;font-weight:600;flex:1;min-width:150px;
 .wrap{flex:1;overflow:auto}
 table{border-collapse:collapse;font-size:.82rem;table-layout:fixed}
 thead{position:sticky;top:0;z-index:2;background:#fff;box-shadow:0 1px 0 #e2e6ea}
-th{padding:6px 12px;text-align:left;cursor:pointer;user-select:none;color:#667;font-weight:600;
-   overflow:hidden;position:relative;vertical-align:top}
+th{padding:8px 12px;text-align:left;cursor:pointer;user-select:none;color:#667;font-weight:600;
+   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative}
 th:hover{background:#f5f6f8;color:#1c2733}
-th.asc .th-code::after{content:" ↑";color:#0b6e99}
-th.desc .th-code::after{content:" ↓";color:#0b6e99}
+th.asc::after{content:" ↑";color:#0b6e99}
+th.desc::after{content:" ↓";color:#0b6e99}
 th.geo{color:#0b6e99;background:#eaf4fb}
 th.geo:hover{background:#d4ecf7}
-.th-code{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.th-trad{font-weight:400;font-style:italic;color:#0b6e99;font-size:.74rem;
-         white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:help}
+th.trad{text-decoration:underline dotted;text-decoration-color:#0b6e99;text-underline-offset:3px}
 td{padding:0;border-bottom:1px solid #f0f2f4}
 td div{padding:5px 12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 td div a{color:#0b6e99;text-decoration:none}
@@ -830,9 +857,10 @@ function rendu(){
     return(!isNaN(na)&&!isNaN(nb))?(up?na-nb:nb-na):(up?String(va).localeCompare(String(vb),"fr"):String(vb).localeCompare(String(va),"fr"));
   });}
   const th=D.entetes.map((h,i)=>{
-    const cls=[sc===i?(asc?"asc":"desc"):"",geo.has(h)?"geo":""].filter(Boolean).join(" ");
     const trad=DICO[h];
-    return`<th class="${cls}"><div class="th-code">${esc(h)}</div>${trad?`<div class="th-trad" title="${esc(trad)}">${esc(trad)}</div>`:""}<div class="resizer"></div></th>`;
+    const cls=[sc===i?(asc?"asc":"desc"):"",geo.has(h)?"geo":"",trad?"trad":""].filter(Boolean).join(" ");
+    const tip=trad?` title="${esc(h)}"`:"";
+    return`<th class="${cls}"${tip}>${esc(trad||h)}<div class="resizer"></div></th>`;
   }).join("");
   document.getElementById("thead").innerHTML=`<tr>${th}</tr>`;
   document.getElementById("tbody").innerHTML=rows.map(r=>`<tr>${r.map(v=>`<td><div title="${esc(v)}">${cell(v)}</div></td>`).join("")}</tr>`).join("");

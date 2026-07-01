@@ -1,4 +1,5 @@
 import json
+import subprocess
 import uuid
 import os
 
@@ -10,6 +11,9 @@ from connectors.http import session
 
 _CONF_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "conf")
 
+# Nom du conteneur Podman du nœud RUDI local (voir moissonneur-master/run_rudi_node.sh).
+CONTENEUR_RUDI = "rudinode"
+
 
 def charger_conf_rudi() -> dict | None:
     """Charge la config du nœud RUDI (src/conf/rudi_node.json), ou None si absente."""
@@ -18,6 +22,66 @@ def charger_conf_rudi() -> dict | None:
         return None
     with open(chemin, encoding="utf-8") as f:
         return json.load(f)
+
+
+# ---------------------------------------------------------------------------
+# Cycle de vie du conteneur Podman (statut / démarrage / arrêt)
+# ---------------------------------------------------------------------------
+
+def statut_conteneur() -> dict:
+    """Interroge Podman sur l'état du conteneur du nœud RUDI local.
+
+    Retourne {"podman_installe": bool, "existe": bool, "etat": str|None}.
+    Ne lève jamais — podman absent, conteneur inexistant ou délai dépassé
+    sont tous des résultats normaux à afficher, pas des erreurs à propager.
+    """
+    try:
+        r = subprocess.run(
+            ["podman", "inspect", "--format", "{{.State.Status}}", CONTENEUR_RUDI],
+            capture_output=True, text=True, timeout=10,
+        )
+    except FileNotFoundError:
+        return {"podman_installe": False, "existe": False, "etat": None}
+    except subprocess.TimeoutExpired:
+        return {"podman_installe": True, "existe": None, "etat": None}
+
+    if r.returncode != 0:
+        return {"podman_installe": True, "existe": False, "etat": None}
+    return {"podman_installe": True, "existe": True, "etat": r.stdout.strip()}
+
+
+def demarrer_conteneur() -> tuple[bool, str]:
+    """Démarre le conteneur du nœud RUDI local (podman start)."""
+    try:
+        r = subprocess.run(
+            ["podman", "start", CONTENEUR_RUDI],
+            capture_output=True, text=True, timeout=30,
+        )
+    except FileNotFoundError:
+        return False, "podman n'est pas installé ou introuvable dans le PATH."
+    except subprocess.TimeoutExpired:
+        return False, "podman start : délai dépassé."
+
+    if r.returncode == 0:
+        return True, f"Conteneur « {CONTENEUR_RUDI} » démarré."
+    return False, (r.stderr or r.stdout).strip() or "Échec du démarrage du conteneur."
+
+
+def arreter_conteneur() -> tuple[bool, str]:
+    """Arrête le conteneur du nœud RUDI local (podman stop)."""
+    try:
+        r = subprocess.run(
+            ["podman", "stop", CONTENEUR_RUDI],
+            capture_output=True, text=True, timeout=30,
+        )
+    except FileNotFoundError:
+        return False, "podman n'est pas installé ou introuvable dans le PATH."
+    except subprocess.TimeoutExpired:
+        return False, "podman stop : délai dépassé."
+
+    if r.returncode == 0:
+        return True, f"Conteneur « {CONTENEUR_RUDI} » arrêté."
+    return False, (r.stderr or r.stdout).strip() or "Échec de l'arrêt du conteneur."
 
 
 def _api_version(base_url: str) -> str:

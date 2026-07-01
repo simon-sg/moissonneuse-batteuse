@@ -28,6 +28,7 @@ import webbrowser
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import cli
+from connectors import rudi_node
 
 HOST = "127.0.0.1"
 PORT_DEFAUT = 8765
@@ -65,6 +66,7 @@ ACTIONS = {
     "moisson_tabulaire": ("Moisson tabulaire (data.gouv.fr)", lambda p: cli.action_moisson_tabulaire()),
     "moisson_batch": ("Moisson batch (candidats découverts)", lambda p: cli.action_moisson_batch()),
     "moisson_insee": ("Moisson INSEE", lambda p: cli.action_moisson_insee(ids=p.get("ids", ""))),
+    "moisson_oeb": ("Moisson OEB", lambda p: cli.action_moisson_oeb(ids=p.get("ids", ""))),
     "moisson_geo": ("Moisson géo (WFS/WMS/OGC API)", lambda p: cli.action_moisson_geo()),
     "catalogue": ("Génération du catalogue", lambda p: cli.action_catalogue()),
     "publier_rudi": ("Publication sur le nœud RUDI", lambda p: cli.action_publier_rudi()),
@@ -154,6 +156,31 @@ def _traiter_purge(idx_str: str, params: dict) -> tuple[int, dict]:
 
 
 # ---------------------------------------------------------------------------
+# Nœud RUDI (statut/démarrage/arrêt du conteneur Podman + liens rapides)
+# ---------------------------------------------------------------------------
+
+def _etat_noeud() -> dict:
+    etat = rudi_node.statut_conteneur()
+
+    conf = rudi_node.charger_conf_rudi()
+    etat["url_manager"] = (conf["url"].rstrip("/") + "/manager/") if conf else None
+
+    chemin_catalogue = os.path.join(cli.DATA_DIR, "catalogue.html")
+    etat["catalogue_disponible"] = os.path.isfile(chemin_catalogue)
+    etat["catalogue_url"] = f"file://{chemin_catalogue}" if etat["catalogue_disponible"] else None
+
+    return etat
+
+
+def _traiter_noeud_action(nom: str) -> tuple[int, dict]:
+    fn = {"demarrer": rudi_node.demarrer_conteneur, "arreter": rudi_node.arreter_conteneur}.get(nom)
+    if fn is None:
+        return 404, {"ok": False, "message": "Action de nœud inconnue."}
+    ok, message = fn()
+    return (200 if ok else 500), {"ok": ok, "message": message}
+
+
+# ---------------------------------------------------------------------------
 # Serveur HTTP
 # ---------------------------------------------------------------------------
 
@@ -188,6 +215,8 @@ class Handler(http.server.BaseHTTPRequestHandler):
             self._repondre_json(200, _etat_job())
         elif self.path == "/api/purge":
             self._repondre_json(200, _purge_items_json())
+        elif self.path == "/api/noeud":
+            self._repondre_json(200, _etat_noeud())
         else:
             self._repondre_json(404, {"erreur": "introuvable"})
 
@@ -206,6 +235,10 @@ class Handler(http.server.BaseHTTPRequestHandler):
         elif self.path.startswith("/api/purge/"):
             idx_str = self.path[len("/api/purge/"):]
             code, payload = _traiter_purge(idx_str, params)
+            self._repondre_json(code, payload)
+        elif self.path.startswith("/api/noeud/"):
+            nom = self.path[len("/api/noeud/"):]
+            code, payload = _traiter_noeud_action(nom)
             self._repondre_json(code, payload)
         else:
             self._repondre_json(404, {"erreur": "introuvable"})
@@ -249,13 +282,17 @@ PAGE_HTML = r"""<!DOCTYPE html>
   button:hover:not(:disabled) { filter:brightness(1.08); }
   button:disabled { background:#aab4bb; cursor:not-allowed; }
   button.danger { background:var(--warn); }
-  button.discret { background:transparent; color:var(--accent); border:1px solid var(--bord); }
+  .discret { background:transparent; color:var(--accent); border:1px solid var(--bord);
+             padding:8px 14px; border-radius:6px; font-size:.85rem; display:inline-block;
+             text-decoration:none; cursor:pointer; }
+  .discret.desactive { opacity:.5; pointer-events:none; }
   .action.pipeline { background:#eef6f1; border-color:#bfe0cc; }
   .action.disabled { opacity:.55; }
   .badge { display:inline-block; border-radius:99px; padding:2px 10px; font-size:.72rem; font-weight:600; }
   .badge.idle { background:#eef3f6; color:#345; }
   .badge.running { background:#fff4e0; color:#9a6a00; }
   .badge.termine { background:#e8f5ec; color:var(--ok); }
+  .badge.warn { background:#fbe9e7; color:var(--warn); }
   #journal { background:#10161c; color:#d7dee4; border-radius:8px; padding:12px 14px; font-size:.8rem;
              font-family: ui-monospace, "SF Mono", Consolas, monospace; white-space:pre-wrap;
              max-height:380px; overflow-y:auto; min-height:60px; }
@@ -284,6 +321,15 @@ PAGE_HTML = r"""<!DOCTYPE html>
 <section>
   <h2>État du projet</h2>
   <div class="grille-etat" id="etat">Chargement…</div>
+</section>
+
+<section>
+  <h2>Nœud RUDI <span id="badge-noeud" class="badge idle">…</span></h2>
+  <div class="ligne-job">
+    <button id="btn-noeud" onclick="basculerNoeud()" disabled>…</button>
+    <a id="lien-noeud" href="#" target="_blank" class="discret desactive">Ouvrir le nœud</a>
+    <a id="lien-catalogue" href="#" target="_blank" class="discret desactive">Ouvrir le catalogue</a>
+  </div>
 </section>
 
 <section>
@@ -319,11 +365,12 @@ const ACTIONS = [
   {id:"moisson_tabulaire", titre:"Moisson tabulaire", desc:"data.gouv.fr configuré (DATASETS)"},
   {id:"moisson_batch", titre:"Moisson batch", desc:"Candidats découverts (decouverte.json)"},
   {id:"moisson_insee", titre:"Moisson INSEE", desc:"Publications directes insee.fr", champIds:true},
+  {id:"moisson_oeb", titre:"Moisson OEB", desc:"Portail environnement Bretagne (data-fair)", champIds:true},
   {id:"moisson_geo", titre:"Moisson géo", desc:"WFS / WMS / OGC API Features"},
   {id:"catalogue", titre:"(Re)générer le catalogue", desc:"data/catalogue.json + .html"},
   {id:"publier_rudi", titre:"Publier sur le nœud RUDI", desc:"Rattrapage — depuis les fichiers déjà sur disque"},
   {id:"enrichir_descriptions", titre:"Enrichir les descriptions", desc:"Rattrapage — JDD avec description vide/quasi vide"},
-  {id:"pipeline_complet", titre:"Pipeline complet", desc:"Tabulaire → batch → INSEE → géo → catalogue → RUDI", pipeline:true},
+  {id:"pipeline_complet", titre:"Pipeline complet", desc:"Tabulaire → batch → INSEE → OEB → géo → catalogue → RUDI", pipeline:true},
 ];
 
 let jobEnCours = false;
@@ -358,8 +405,8 @@ function appliquerEtatBoutons(){
 
 async function lancerAction(id){
   let params = {};
-  if (id === "moisson_insee"){
-    const champ = document.getElementById("champ-moisson_insee");
+  if (id === "moisson_insee" || id === "moisson_oeb"){
+    const champ = document.getElementById(`champ-${id}`);
     params.ids = champ ? champ.value.trim() : "";
   }
   const resp = await fetch(`/api/job/${id}`, {method:"POST", body: JSON.stringify(params)});
@@ -374,21 +421,80 @@ async function actualiserEtat(){
   const d = await resp.json();
   const cfg = d.datasets_configures;
   const stats = [];
-  stats.push(["Datasets configurés", `${cfg.tabulaire} tab. / ${cfg.geo} géo / ${cfg.insee} INSEE`]);
+  stats.push(["Datasets configurés", `${cfg.tabulaire} tab. / ${cfg.geo} géo / ${cfg.insee} INSEE / ${cfg.oeb} OEB`]);
   if (d.decouverte){
     stats.push(["Candidats en attente", d.decouverte.candidats]);
     stats.push(["JDD vus / exclus", `${d.decouverte.vus} / ${d.decouverte.exclus}`]);
   } else {
     stats.push(["Découverte", "aucun historique"]);
   }
-  const tb = d.etat_moisson.tabulaire_batch, ins = d.etat_moisson.insee;
+  const tb = d.etat_moisson.tabulaire_batch, ins = d.etat_moisson.insee, oeb = d.etat_moisson.oeb;
   stats.push(["État tabulaire/batch", tb ? `${tb.total} suivi(s), ${tb.rudi_publie} publié(s)` : "aucun"]);
   stats.push(["État INSEE", ins ? `${ins.total} suivi(s), ${ins.rudi_publie} publié(s)` : "aucun"]);
+  stats.push(["État OEB", oeb ? `${oeb.total} suivi(s), ${oeb.rudi_publie} publié(s)` : "aucun"]);
   stats.push(["Nœud RUDI", d.rudi_configure ? "configuré" : "NON configuré"]);
   stats.push(["Données moissonnées", `${d.donnees.n_dossiers} dossier(s)`]);
   document.getElementById("etat").innerHTML = stats.map(([lbl,val]) => `
     <div class="stat"><div class="val">${esc(val)}</div><div class="lbl">${esc(lbl)}</div></div>
   `).join("");
+}
+
+let noeudActionEnCours = false;
+
+const LABELS_ETAT_NOEUD = {
+  running: "en cours", exited: "arrêté", paused: "en pause",
+};
+
+async function actualiserNoeud(){
+  const resp = await fetch("/api/noeud");
+  const n = await resp.json();
+
+  const badge = document.getElementById("badge-noeud");
+  const bouton = document.getElementById("btn-noeud");
+
+  if (!n.podman_installe){
+    badge.className = "badge warn";
+    badge.textContent = "podman introuvable";
+    bouton.className = "";
+    bouton.textContent = "Démarrer";
+    bouton.disabled = true;
+  } else if (!n.existe){
+    badge.className = "badge idle";
+    badge.textContent = "absent";
+    bouton.className = "";
+    bouton.textContent = "Démarrer";
+    bouton.disabled = true;
+  } else {
+    const enCours = n.etat === "running";
+    badge.className = "badge " + (enCours ? "termine" : "idle");
+    badge.textContent = LABELS_ETAT_NOEUD[n.etat] || n.etat || "inconnu";
+    bouton.textContent = enCours ? "Arrêter" : "Démarrer";
+    bouton.className = enCours ? "danger" : "";
+    bouton.disabled = noeudActionEnCours;
+  }
+
+  const lienNoeud = document.getElementById("lien-noeud");
+  lienNoeud.href = n.url_manager || "#";
+  lienNoeud.classList.toggle("desactive", !n.url_manager);
+
+  const lienCatalogue = document.getElementById("lien-catalogue");
+  lienCatalogue.href = n.catalogue_url || "#";
+  lienCatalogue.classList.toggle("desactive", !n.catalogue_disponible);
+}
+
+async function basculerNoeud(){
+  const bouton = document.getElementById("btn-noeud");
+  const action = bouton.textContent === "Arrêter" ? "arreter" : "demarrer";
+  noeudActionEnCours = true;
+  bouton.disabled = true;
+  try {
+    const resp = await fetch(`/api/noeud/${action}`, {method:"POST"});
+    const data = await resp.json();
+    notifier(data.message, !data.ok);
+  } finally {
+    noeudActionEnCours = false;
+    actualiserNoeud();
+  }
 }
 
 let dernierStatut = null;
@@ -462,8 +568,10 @@ rendreActions();
 actualiserEtat();
 actualiserJob();
 chargerPurge();
+actualiserNoeud();
 setInterval(actualiserEtat, 15000);
 setInterval(chargerPurge, 15000);
+setInterval(actualiserNoeud, 15000);
 </script>
 </body>
 </html>

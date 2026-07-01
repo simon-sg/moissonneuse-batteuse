@@ -220,30 +220,30 @@ def _filtrer_dict_variables(contenu: bytes) -> bytes:
 # Téléchargement
 # ---------------------------------------------------------------------------
 
-def telecharger_zip(pub_id: str, url: str) -> bytes:
-    """Télécharge un ZIP sans plafond de taille, avec barre de progression."""
+def telecharger_zip(pub_id: str, url: str) -> str:
+    """Télécharge un ZIP en streaming vers un fichier temporaire. Retourne le chemin."""
+    chemin_tmp = os.path.join(DATA_DIR, f"_tmp_{pub_id}.zip")
     r = requests.get(url, headers=_HEADERS, timeout=120, stream=True)
     r.raise_for_status()
-
     total_attendu = int(r.headers.get("Content-Length", 0))
-    chunks = []
     total = 0
     try:
-        for chunk in r.iter_content(chunk_size=1024 * 1024):
-            chunks.append(chunk)
-            total += len(chunk)
-            if total_attendu:
-                pct = total * 100 // total_attendu
-                print(f"  [{pub_id}] {total / 1024 / 1024:.0f}/{total_attendu / 1024 / 1024:.0f} Mo ({pct}%)",
-                      end="\r")
-            else:
-                print(f"  [{pub_id}] {total / 1024 / 1024:.1f} Mo...", end="\r")
-    except KeyboardInterrupt:
-        mo = total / 1024 / 1024
-        print(f"\n  [{pub_id}] Interrompu à {mo:.1f} Mo.")
+        with open(chemin_tmp, "wb") as f:
+            for chunk in r.iter_content(chunk_size=1024 * 1024):
+                f.write(chunk)
+                total += len(chunk)
+                if total_attendu:
+                    pct = total * 100 // total_attendu
+                    print(f"  [{pub_id}] {total / 1024 / 1024:.0f}/{total_attendu / 1024 / 1024:.0f} Mo ({pct}%)",
+                          end="\r")
+                else:
+                    print(f"  [{pub_id}] {total / 1024 / 1024:.1f} Mo...", end="\r")
+    except BaseException:
+        if os.path.exists(chemin_tmp):
+            os.remove(chemin_tmp)
         raise
     print()
-    return b"".join(chunks)
+    return chemin_tmp
 
 
 # ---------------------------------------------------------------------------
@@ -279,13 +279,18 @@ def traiter_publication(pub: dict, state: dict) -> dict:
     # 4. Téléchargement
     print(f"  Téléchargement : {url}")
     try:
-        contenu_zip = telecharger_zip(pub_id, url)
+        chemin_zip = telecharger_zip(pub_id, url)
     except Exception as e:
         return {"statut": "echec", "raison": f"téléchargement : {e}"}
 
     # 5. Extraction des membres CSV
-    membres = extraire_membres(pub, contenu_zip)
+    try:
+        membres = extraire_membres(pub, chemin_zip)
+    except Exception as e:
+        os.remove(chemin_zip)
+        return {"statut": "echec", "raison": f"extraction ZIP : {e}"}
     if not membres:
+        os.remove(chemin_zip)
         return {"statut": "echec", "raison": "aucun membre CSV correspondant dans le ZIP"}
 
     champ_iris    = pub.get("champ_iris")
@@ -358,7 +363,7 @@ def traiter_publication(pub: dict, state: dict) -> dict:
     # 7. Dictionnaire des variables (si présent dans le ZIP)
     noms_dict: list[str] = []
     chemins_dict: list[str] = []
-    for nom_dict, contenu_dict in extraire_dictionnaire(pub, contenu_zip):
+    for nom_dict, contenu_dict in extraire_dictionnaire(pub, chemin_zip):
         chemin_dict = os.path.join(dossier, os.path.basename(nom_dict))
         contenu_filtre = _filtrer_dict_variables(contenu_dict)
         with open(chemin_dict, "wb") as f:
@@ -367,6 +372,9 @@ def traiter_publication(pub: dict, state: dict) -> dict:
         noms_dict.append(os.path.basename(nom_dict))
         chemins_dict.append(chemin_dict)
         print(f"  → dictionnaire sauvegardé : {os.path.basename(nom_dict)} ({nb_var} variables)")
+
+    # ZIP temporaire libéré dès que l'extraction est terminée
+    os.remove(chemin_zip)
 
     # 8. Générer rudi_metadata.json (catalogue + nœud RUDI)
     rudi_publie = True  # rien à publier (pas de fichiers_data) -> rien à retenter non plus

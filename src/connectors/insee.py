@@ -11,7 +11,6 @@ Stratégie failsafe :
 
 La configuration des publications est dans conf/datasets.py (DATASETS_INSEE).
 """
-import io
 import re
 import zipfile
 
@@ -94,8 +93,8 @@ def resoudre_url(pub: dict) -> str | None:
 # Extraction ZIP
 # ---------------------------------------------------------------------------
 
-def extraire_membres(pub: dict, contenu_zip: bytes) -> list[tuple[str, bytes]]:
-    """Extrait les membres CSV correspondant à membre_pattern du ZIP.
+def extraire_membres(pub: dict, chemin_zip: str) -> list[tuple[str, bytes]]:
+    """Extrait les membres CSV correspondant à membre_pattern du ZIP (lu depuis le disque).
 
     Retourne [(nom_membre, contenu_csv)].
     En cas d'absence de correspondance, affiche un diagnostic et retourne [].
@@ -104,7 +103,7 @@ def extraire_membres(pub: dict, contenu_zip: bytes) -> list[tuple[str, bytes]]:
     pattern = re.compile(pattern_str, re.IGNORECASE)
 
     try:
-        with zipfile.ZipFile(io.BytesIO(contenu_zip)) as zf:
+        with zipfile.ZipFile(chemin_zip) as zf:
             tous = zf.namelist()
             correspondances = [
                 n for n in tous
@@ -135,7 +134,7 @@ def extraire_membres(pub: dict, contenu_zip: bytes) -> list[tuple[str, bytes]]:
 # Extraction du dictionnaire des variables
 # ---------------------------------------------------------------------------
 
-def extraire_dictionnaire(pub: dict, contenu_zip: bytes) -> list[tuple[str, bytes]]:
+def extraire_dictionnaire(pub: dict, chemin_zip: str) -> list[tuple[str, bytes]]:
     """Extrait le(s) fichier(s) dictionnaire des variables si dict_pattern est défini dans pub.
 
     Retourne [] si dict_pattern absent (ex: BPE dont le ZIP ne contient pas de dict).
@@ -143,4 +142,4 @@ def extraire_dictionnaire(pub: dict, contenu_zip: bytes) -> list[tuple[str, byte
     if not pub.get("dict_pattern"):
         return []
     pub_dict = {**pub, "membre_pattern": pub["dict_pattern"]}
-    return extraire_membres(pub_dict, contenu_zip)
+    return extraire_membres(pub_dict, chemin_zip)

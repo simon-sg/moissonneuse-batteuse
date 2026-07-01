@@ -106,12 +106,16 @@ def _generer_rudi_metadata(pub: dict, fichiers_data: list[tuple[str, int]],
     producteur_nom = "Institut national de la statistique et des études économiques (Insee)"
     theme = pub.get("theme", "society")
 
-    # local_id déterministe : même publication = même ID à chaque run
-    local_id = str(uuid.uuid5(uuid.NAMESPACE_URL, url_page))
+    # local_id déterministe basé sur pub["id"] (clé stable dans DATASETS_INSEE/state_insee.json),
+    # pas sur url_page : insee.fr renumérote parfois une publication (nouveau millésime), ce qui
+    # changerait url_page et créerait une fiche en double orpheline sur le nœud plutôt que de
+    # mettre à jour l'existante.
+    cle_stable = pub["id"]
+    local_id = str(uuid.uuid5(uuid.NAMESPACE_URL, f"insee:{cle_stable}"))
 
     medias_filtres = [
         {
-            "media_id": str(uuid.uuid5(uuid.NAMESPACE_URL, f"{url_page}/filtered/{nom}")),
+            "media_id": str(uuid.uuid5(uuid.NAMESPACE_URL, f"insee:{cle_stable}/filtered/{nom}")),
             "media_type": "FILE",
             "media_name": nom,
             "media_caption": f"{nom} — données filtrées sur {zone} (CSV)",
@@ -123,7 +127,7 @@ def _generer_rudi_metadata(pub: dict, fichiers_data: list[tuple[str, int]],
         for nom, _ in fichiers_data
     ]
     media_source = {
-        "media_id": str(uuid.uuid5(uuid.NAMESPACE_URL, f"{url_page}/source")),
+        "media_id": str(uuid.uuid5(uuid.NAMESPACE_URL, f"insee:{cle_stable}/source")),
         "media_type": "SERVICE",
         "media_name": "source-insee",
         "media_caption": "Publication complète (France entière) sur insee.fr",
@@ -136,7 +140,7 @@ def _generer_rudi_metadata(pub: dict, fichiers_data: list[tuple[str, int]],
 
     medias_dict = [
         {
-            "media_id": str(uuid.uuid5(uuid.NAMESPACE_URL, f"{url_page}/dict/{nom}")),
+            "media_id": str(uuid.uuid5(uuid.NAMESPACE_URL, f"insee:{cle_stable}/dict/{nom}")),
             "media_type": "FILE",
             "media_name": nom,
             "media_caption": f"Dictionnaire des variables — {nom} (CSV)",

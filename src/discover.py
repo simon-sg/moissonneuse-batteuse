@@ -34,6 +34,8 @@ from connectors.geo_services import wms_get_capabilities, wms_couches_dans_rm, n
 # Configuration
 # ---------------------------------------------------------------------------
 
+csv.field_size_limit(10_000_000)  # défaut 131072 trop bas pour certains champs (WKT, texte long)
+
 KEYWORDS = ["commune", "code postal", "code insee", "iris", "adresse"]
 
 NB_PAGES = 50  # pages récupérées par mot-clé (20 résultats/page → 1000 max par keyword)
@@ -896,10 +898,15 @@ def _purger_cache(jours: int = 30) -> None:
         print(f"  (Cache : {supprimes} fichier(s) supprimé(s), plus vieux que {jours} jours)\n")
 
 
-def _telecharger(url: str, verbose: bool) -> tuple:
+def _telecharger(url: str, verbose: bool, plafond_mo: float | None = 50) -> tuple:
     """
     Retourne (contenu_bytes, taille_mo, depuis_cache, erreur).
     Utilise le cache si le fichier a déjà été téléchargé.
+
+    plafond_mo : tronque le téléchargement au-delà de ce plafond (suffisant pour
+    échantillonner un CSV/GZ). None = pas de plafond — nécessaire pour un ZIP, dont
+    le sommaire est à la fin du fichier : un ZIP tronqué est structurellement invalide,
+    pas juste partiel.
     """
     chemin = _chemin_cache(url)
     if os.path.exists(chemin):
@@ -918,7 +925,6 @@ def _telecharger(url: str, verbose: bool) -> tuple:
     except Exception as e:
         return None, 0, False, f"téléchargement : {e}"
 
-    MAX_MO = 50  # plafond : inutile de télécharger plus pour détecter des données RM
     contenu = b""
     total = 0
     interrompu = None
@@ -928,10 +934,10 @@ def _telecharger(url: str, verbose: bool) -> tuple:
             total += len(chunk)
             if verbose:
                 print(f"  {total / 1024 / 1024:.1f} Mo...", end="\r")
-            if total >= MAX_MO * 1024 * 1024:
+            if plafond_mo is not None and total >= plafond_mo * 1024 * 1024:
                 response.close()
                 if verbose:
-                    print(f"\n  (Plafond {MAX_MO} Mo atteint — données partielles utilisées)")
+                    print(f"\n  (Plafond {plafond_mo} Mo atteint — données partielles utilisées)")
                 break
     except Exception as e:
         interrompu = str(e)
@@ -1079,7 +1085,9 @@ def _analyser_contenu_csv(contenu: bytes, verbose: bool, dataset_id: str, titre:
                 nb_cols, delimiteur = n, sep
     log["delimiteur"] = delimiteur
 
-    reader = csv.DictReader(io.StringIO(texte), delimiter=delimiteur)
+    # newline='' : évite que la traduction universal-newlines de StringIO ne casse
+    # les retours à la ligne à l'intérieur d'un champ quoté (cf. doc du module csv)
+    reader = csv.DictReader(io.StringIO(texte, newline=""), delimiter=delimiteur)
     entetes = list(reader.fieldnames or [])
     log["entetes"] = entetes[:15]
 
@@ -1140,7 +1148,7 @@ def analyser_csv(url: str, verbose: bool = True,
 def analyser_zip(url: str, verbose: bool = False,
                  dataset_id: str = "", titre: str = "") -> dict | None:
     """Télécharge une archive ZIP et analyse les fichiers CSV ou GeoJSON qu'elle contient."""
-    contenu, taille_mo, depuis_cache, erreur = _telecharger(url, verbose)
+    contenu, taille_mo, depuis_cache, erreur = _telecharger(url, verbose, plafond_mo=None)
     if erreur:
         log_analyse({"url": url, "dataset_id": dataset_id, "titre": titre, "erreur": erreur})
         return None

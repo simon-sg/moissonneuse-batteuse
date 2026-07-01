@@ -3,7 +3,9 @@
     "id": "geobretagne_communes",
     "type": "wfs",
     "url": "https://geobretagne.fr/geoserver/ign/wfs",
-    "couches": ["ign:commune_metro"],
+    "couches": [
+      "ign:commune_metro"
+    ],
     "titre": "Communes — Rennes Métropole (IGN via Géobretagne)",
     "producteur": "IGN / Géobretagne",
     "dossier": "geobretagne_communes_test",
@@ -13,10 +15,26 @@
     "id": "geobretagne_cyclable",
     "type": "wfs",
     "url": "https://geobretagne.fr/geoserver/osm/wfs",
-    "couches": ["osm:amenagement_cyclable"],
+    "couches": [
+      "osm:amenagement_cyclable"
+    ],
     "titre": "Aménagements cyclables (OSM via Géobretagne)",
     "producteur": "OpenStreetMap / Géobretagne",
     "dossier": "geobretagne_cyclable_test",
     "theme": "transportation"
+  },
+  {
+    "id": "6149984aaa16348605e10d85",
+    "type": "wfs",
+    "url": "https://data.atmo-france.org/geoserver/alrt/ows",
+    "couches": [
+      "alrt:alrt",
+      "alrt:alrt3j",
+      "alrt:national_alrt3j"
+    ],
+    "titre": "Episodes de pollution prévus ou constatés (WFS)",
+    "producteur": "Atmo France",
+    "dossier": "6149984aaa16348605e10d85",
+    "theme": "environment"
   }
 ]

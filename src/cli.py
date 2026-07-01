@@ -11,6 +11,7 @@ import json
 import os
 import shutil
 import sys
+import traceback
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -19,11 +20,12 @@ import main as moisson_tabulaire
 import harvest_batch
 import harvest_insee
 import harvest_oeb
+import harvest_bdnb
 import harvest_geo
 import catalogue
 import publish_rudi
 import enrichir_descriptions
-from conf.datasets import DATASETS, DATASETS_GEO, DATASETS_INSEE, DATASETS_OEB
+from conf.datasets import DATASETS, DATASETS_GEO, DATASETS_INSEE, DATASETS_OEB, DATASETS_BDNB
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
 CONF_RUDI_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "conf", "rudi_node.json")
@@ -80,6 +82,7 @@ def _executer(label: str, fn, *args, **kwargs) -> bool:
         return False
     except Exception as e:
         print(f"\n[{label}] ERREUR : {e}")
+        traceback.print_exc()  # trace complète — indispensable pour diagnostiquer un run cron a posteriori
         return False
 
 
@@ -101,6 +104,10 @@ def action_decouverte():
     _executer("Découverte interactive", discover.main)
 
 
+def action_revue_manuelle():
+    _executer("Revue manuelle du backlog (a_examiner)", discover.revue_manuelle_a_examiner)
+
+
 def action_moisson_tabulaire():
     _executer("Moisson tabulaire (data.gouv.fr)", _avec_argv, ["main.py"], moisson_tabulaire.main)
 
@@ -116,6 +123,10 @@ def action_moisson_insee(ids: str | None = None):
         ids = input("IDs INSEE à traiter, séparés par des espaces (Entrée = toutes les publications) : ").strip()
     argv = ["harvest_insee.py"] + ids.split()
     _executer("Moisson INSEE", _avec_argv, argv, harvest_insee.main)
+
+
+def action_moisson_bdnb():
+    _executer("Moisson BDNB (bâtiments)", _avec_argv, ["harvest_bdnb.py"], harvest_bdnb.main)
 
 
 def action_moisson_oeb(ids: str | None = None):
@@ -150,6 +161,7 @@ ETAPES_PIPELINE = [
     ("Moisson batch (candidats découverts)", _avec_argv, [["harvest_batch.py"], harvest_batch.main], {}),
     ("Moisson INSEE (toutes les publications)", _avec_argv, [["harvest_insee.py"], harvest_insee.main], {}),
     ("Moisson OEB (toutes les publications)", _avec_argv, [["harvest_oeb.py"], harvest_oeb.main], {}),
+    ("Moisson BDNB (bâtiments)", _avec_argv, [["harvest_bdnb.py"], harvest_bdnb.main], {}),
     ("Moisson géo (WFS/WMS/OGC API)", _avec_argv, [["harvest_geo.py"], harvest_geo.main], {}),
     ("Génération du catalogue", catalogue.main, [], {}),
     ("Publication sur le nœud RUDI", publish_rudi.main, [], {}),
@@ -193,6 +205,7 @@ def etat_projet() -> dict:
         "datasets_configures": {
             "tabulaire": len(DATASETS), "geo": len(DATASETS_GEO),
             "insee": len(DATASETS_INSEE), "oeb": len(DATASETS_OEB),
+            "bdnb": len(DATASETS_BDNB),
         },
         "decouverte": None,
         "etat_moisson": {},
@@ -211,7 +224,7 @@ def etat_projet() -> dict:
         }
 
     for nom_fichier, cle in (("state.json", "tabulaire_batch"), ("state_insee.json", "insee"),
-                              ("state_oeb.json", "oeb")):
+                              ("state_oeb.json", "oeb"), ("state_bdnb.json", "bdnb")):
         chemin = os.path.join(DATA_DIR, nom_fichier)
         if os.path.isfile(chemin):
             with open(chemin, encoding="utf-8") as f:
@@ -241,7 +254,7 @@ def action_etat_projet():
     print(f"\n{'=' * 60}\nÉtat du projet\n{'=' * 60}")
     cfg = d["datasets_configures"]
     print(f"  Configurés : {cfg['tabulaire']} tabulaire(s), {cfg['geo']} géo, "
-          f"{cfg['insee']} INSEE, {cfg['oeb']} OEB")
+          f"{cfg['insee']} INSEE, {cfg['oeb']} OEB, {cfg['bdnb']} BDNB")
 
     if d["decouverte"]:
         dd = d["decouverte"]
@@ -250,7 +263,8 @@ def action_etat_projet():
     else:
         print("  Découverte : aucun historique (data/decouverte.json absent)")
 
-    for cle, label in (("tabulaire_batch", "tabulaire/batch"), ("insee", "INSEE"), ("oeb", "OEB")):
+    for cle, label in (("tabulaire_batch", "tabulaire/batch"), ("insee", "INSEE"),
+                        ("oeb", "OEB"), ("bdnb", "BDNB")):
         em = d["etat_moisson"].get(cle)
         if em:
             print(f"  État moisson {label} : {em['total']} JDD suivi(s), {em['rudi_publie']} publié(s) sur RUDI")
@@ -282,7 +296,7 @@ def _purger_cache() -> str:
 
 def _purger_etat() -> str:
     n = 0
-    for nom in ("state.json", "state_insee.json", "state_oeb.json"):
+    for nom in ("state.json", "state_insee.json", "state_oeb.json", "state_bdnb.json", "state_geo.json"):
         chemin = os.path.join(DATA_DIR, nom)
         if os.path.isfile(chemin):
             os.remove(chemin)
@@ -334,7 +348,7 @@ def _purger_historique_decouverte() -> str:
     nouveau = {
         "vus": [], "candidats": [], "exclus": exclus,
         "echecs": [], "echecs_n": {}, "sans_ressource": [],
-        "exclusions_termes": exclusions_termes,
+        "exclusions_termes": exclusions_termes, "a_examiner": [],
     }
     with open(chemin, "w", encoding="utf-8") as f:
         json.dump(nouveau, f, ensure_ascii=False, indent=2)
@@ -356,7 +370,7 @@ def _purger_donnees_moissonnees() -> str:
             n += 1
     # Sans ça, le prochain run croirait que rien n'a changé (last_modified inchangé
     # dans state.json) et ne re-moissonnerait rien malgré les dossiers supprimés.
-    for nom in ("state.json", "state_insee.json", "state_oeb.json"):
+    for nom in ("state.json", "state_insee.json", "state_oeb.json", "state_bdnb.json", "state_geo.json"):
         chemin = os.path.join(DATA_DIR, nom)
         if os.path.isfile(chemin):
             os.remove(chemin)
@@ -369,8 +383,9 @@ PURGE_ITEMS = [
      "purger": _purger_cache,
      "impact": "Re-téléchargé automatiquement au prochain run. Aucune perte de données.",
      "destructeur": False},
-    {"label": "État de moisson (state.json + state_insee.json)",
-     "taille": lambda: sum(_taille_chemin(os.path.join(DATA_DIR, n)) for n in ("state.json", "state_insee.json")),
+    {"label": "État de moisson (state.json, state_insee.json, state_oeb.json, state_bdnb.json, state_geo.json)",
+     "taille": lambda: sum(_taille_chemin(os.path.join(DATA_DIR, n)) for n in
+                            ("state.json", "state_insee.json", "state_oeb.json", "state_bdnb.json", "state_geo.json")),
      "purger": _purger_etat,
      "impact": "Force une re-vérification de TOUTES les sources au prochain run (re-téléchargements même si rien n'a changé).",
      "destructeur": False},
@@ -394,7 +409,7 @@ PURGE_ITEMS = [
     {"label": "Historique de découverte (decouverte.json)",
      "taille": lambda: _taille_chemin(os.path.join(DATA_DIR, "decouverte.json")),
      "purger": _purger_historique_decouverte,
-     "impact": "Réinitialise vus/candidats/echecs/sans_ressource. CONSERVE exclus et exclusions_termes (décisions manuelles).",
+     "impact": "Réinitialise vus/candidats/echecs/sans_ressource/a_examiner. CONSERVE exclus et exclusions_termes (décisions manuelles).",
      "destructeur": False},
     {"label": "TOUTES les données moissonnées (dossiers data/<...>)",
      "taille": lambda: sum(_taille_chemin(os.path.join(DATA_DIR, n)) for n in os.listdir(DATA_DIR)
@@ -446,17 +461,19 @@ def menu_purge():
 
 ACTIONS = [
     ("1", "Découverte interactive (data.gouv.fr + WFS/WMS)", action_decouverte),
-    ("2", "Moisson tabulaire — data.gouv.fr configuré", action_moisson_tabulaire),
-    ("3", "Moisson batch — candidats découverts", action_moisson_batch),
-    ("4", "Moisson INSEE — publications directes", action_moisson_insee),
-    ("5", "Moisson OEB — portail environnement Bretagne", action_moisson_oeb),
-    ("6", "Moisson géo — WFS/WMS/OGC API", action_moisson_geo),
-    ("7", "(Re)générer le catalogue", action_catalogue),
-    ("8", "Publier sur le nœud RUDI (rattrapage)", action_publier_rudi),
-    ("9", "Enrichir les descriptions vides/quasi vides (rattrapage)", action_enrichir_descriptions),
-    ("10", "Lancer le pipeline complet", action_pipeline_complet),
-    ("11", "Purger des données existantes", menu_purge),
-    ("12", "État du projet", action_etat_projet),
+    ("2", "Revue manuelle du backlog (a_examiner) — tagging manuel des colonnes", action_revue_manuelle),
+    ("3", "Moisson tabulaire — data.gouv.fr configuré", action_moisson_tabulaire),
+    ("4", "Moisson batch — candidats découverts", action_moisson_batch),
+    ("5", "Moisson INSEE — publications directes", action_moisson_insee),
+    ("6", "Moisson OEB — portail environnement Bretagne", action_moisson_oeb),
+    ("7", "Moisson BDNB — bâtiments (DPE, énergie)", action_moisson_bdnb),
+    ("8", "Moisson géo — WFS/WMS/OGC API", action_moisson_geo),
+    ("9", "(Re)générer le catalogue", action_catalogue),
+    ("10", "Publier sur le nœud RUDI (rattrapage)", action_publier_rudi),
+    ("11", "Enrichir les descriptions vides/quasi vides (rattrapage)", action_enrichir_descriptions),
+    ("12", "Lancer le pipeline complet", action_pipeline_complet),
+    ("13", "Purger des données existantes", menu_purge),
+    ("14", "État du projet", action_etat_projet),
 ]
 
 

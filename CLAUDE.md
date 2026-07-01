@@ -29,6 +29,7 @@ python3 src/harvest_geo.py # harvest geographic services (WFS/WMS/OGC API)
 python3 src/catalogue.py   # (re)generate data/catalogue.json + data/catalogue.html
 python3 src/publish_rudi.py # catch-up publish to the RUDI node for anything not yet marked rudi_publie
 python3 src/enrichir_descriptions.py # catch-up: fill in empty/near-empty summaries for already-harvested JDD
+python3 src/harvest_auto.py # unattended daily entry point for cron/Jenkins — see "Découverte automatique" below
 ```
 
 No dependencies beyond `requests` (stdlib otherwise).
@@ -57,7 +58,8 @@ No dependencies beyond `requests` (stdlib otherwise).
 | `src/enrichir_descriptions.py` | Catch-up: regenerates `summary` for already-harvested JDD whose description was empty/near-empty, from files already on disk (no re-download) — see "Fallback descriptions" below |
 | `src/state.py` | Run-to-run state (last_modified per dataset) in `data/state.json`, used by `main.py`/`harvest_batch.py`. `harvest_insee.py` keeps its own separate `data/state_insee.json` (not unified — see "Known limitations") |
 | `src/catalogue.py` | Builds `data/catalogue.json` + `data/catalogue.html` + WMS map viewers |
-| `data/decouverte.json` | Discovery state: vus, candidats, exclus, echecs, exclusions_termes |
+| `src/harvest_auto.py` | **Entry point (cron/Jenkins)** — unattended daily run: non-interactive discovery → RUDI node warm-up → `cli.executer_pipeline_complet()`; see "Découverte automatique" below |
+| `data/decouverte.json` | Discovery state: vus, candidats, exclus, echecs, exclusions_termes, a_examiner |
 
 ## Discovery state (`data/decouverte.json`)
 
@@ -69,7 +71,8 @@ No dependencies beyond `requests` (stdlib otherwise).
   "echecs":            ["dataset-id", ...],   // analysis failed, will be retried
   "echecs_n":          {"dataset-id": 2},     // consecutive failure count
   "sans_ressource":    ["dataset-id", ...],   // no CSV/JSON resource available
-  "exclusions_termes": ["Landes", ...]        // term-based exclusions (org/title)
+  "exclusions_termes": ["Landes", ...],       // term-based exclusions (org/title)
+  "a_examiner":        [{...}, ...]           // ambiguous cases from automated discovery — see below
 }
 ```
 
@@ -226,7 +229,7 @@ The CLI's "Purger des données existantes" menu offers 7 independent, individual
 3. **Sessions de découverte en attente** (`derniere_recherche.json`, `derniers_prefiltres.json`) — discovery's own resume cache.
 4. **Services géo auto-découverts** (`geo_services.json`) — feeds `DATASETS_GEO`; deleting loses auto-detected services (manual entries in `datasets.py` are unaffected).
 5. **Catalogue généré** — `catalogue.json`/`.html` + every `*_viewer.html`/`*_map.html`/`wms_map.html`; fully regenerable.
-6. **Historique de découverte** (`decouverte.json`) — resets `vus`/`candidats`/`echecs`/`echecs_n`/`sans_ressource` but **preserves** `exclus` and `exclusions_termes` (deliberate manual decisions, per the "Discovery state" section above).
+6. **Historique de découverte** (`decouverte.json`) — resets `vus`/`candidats`/`echecs`/`echecs_n`/`sans_ressource`/`a_examiner` but **preserves** `exclus` and `exclusions_termes` (deliberate manual decisions, per the "Discovery state" section above).
 7. **Toutes les données moissonnées** (every `data/<dossier>/` except `cache`) — the only item requiring the typed confirmation `SUPPRIMER` rather than `oui`. Also clears `state.json`/`state_insee.json` as part of the same action — otherwise the next run would see unchanged `last_modified` timestamps and skip re-harvesting despite the local files being gone.
 
 If you add a new top-level file/dir under `data/` that should survive a "données moissonnées" purge (item 7), it must be a **file**, not a directory — item 7 only `rmtree`s directories (besides `cache`, which has its own item).
@@ -244,6 +247,88 @@ Stdlib-only HTTP server (`http.server.ThreadingHTTPServer`, no framework) exposi
 - **Nœud RUDI card is the one exception to "go through `cli.py`"**: it calls `connectors/rudi_node.py`'s `statut_conteneur()`/`demarrer_conteneur()`/`arreter_conteneur()`/`noeud_pret()` directly (`GET /api/noeud`, `POST /api/noeud/<demarrer|arreter>`), because there's no terminal equivalent in `cli.py` to reuse — Podman container control has no CLI menu entry today. The container name is `CONTENEUR_RUDI` in `rudi_node.py` (currently `"rudinode"`) — update it there if the local node container is ever renamed. `statut_conteneur()` alone only reflects the Podman process state (`running` right after `podman start`), not whether the app inside has finished booting — `noeud_pret()` does a real HTTP probe of the manager URL, and `_etat_noeud()`'s `pret` field gates both the "Ouvrir le nœud" link and the badge (shows "démarrage…" with faster 2s polling until ready, see `actualiserNoeud()`'s `intervalleRapideNoeud`) — don't collapse this back to relying on Podman status alone, that's what made the button look broken.
 - **Catalogue link is served by the dashboard itself, not `file://`**: `GET /data/<chemin>` (`Handler._servir_fichier_donnees()`) serves any file under `data/` (path-traversal-guarded, `mimetypes`-guessed content type) so that `catalogue.html` and the sibling `*_viewer.html`/`*_map.html`/resource files it links to (relative paths from `catalogue.json`, e.g. `"<dossier>/<fichier>"`) resolve correctly under `/data/...`. A direct `file://` link was tried first and doesn't work — modern browsers block top-level navigation from an `http://` page to a `file://` URL.
 
+## Découverte automatique (`src/harvest_auto.py`)
+
+Unattended daily entry point, meant to be scheduled on cron/Jenkins — e.g.
+`0 5 * * * cd <repo> && python3 src/harvest_auto.py >> logs/harvest_auto.log 2>&1`, or an
+equivalent Jenkins job calling the same script. Runs three steps, none of them ever calling
+`input()`:
+
+1. **Non-interactive discovery** — `discover.rechercher_et_filtrer_auto(decouverte)` runs the
+   same search + pre-filter pipeline as the interactive `discover.py` session (`_paginer()`
+   over `REQUETES_STRUCTUREES`, `_filtrer_communs()`, `pre_filtrer()` in parallel — no logic
+   duplicated), but never blocks on a decision:
+   - Tabular datasets with RM data detected (`nb_rm > 0`) are added to `decouverte["candidats"]`
+     automatically, exactly like the interactive session already does today.
+   - WFS/WMS services, and tabular datasets that are ambiguous (0 RM detected, or the analysis
+     itself failed) are upserted (deduped by `dataset_id`) into a new persistent list,
+     `decouverte["a_examiner"]`, instead of being shown interactively — see schema in
+     "Discovery state" above.
+2. **RUDI node warm-up** — if `src/conf/rudi_node.json` exists, starts the Podman container
+   (`rudi_node.demarrer_conteneur()`) if it isn't already running, then polls
+   `rudi_node.noeud_pret()` for up to ~60s. Never fails the run: if the node stays unreachable,
+   publication for this run is simply deferred (`rudi_publie: false`), and gets retried by
+   `publish_rudi.py` on the next scheduled run — the same tolerance the pipeline already has.
+3. **Existing pipeline** — calls `cli.executer_pipeline_complet()` unchanged (moisson
+   tabulaire/batch/INSEE/OEB/BDNB/géo → catalogue → publication RUDI).
+
+Exits `0` only if discovery ran without raising *and* every pipeline step succeeded — `1`
+otherwise, so a Jenkins job can flag a failed build. Running the interactive `discover.py` by
+hand in between scheduled runs is safe: both write to the same `decouverte.json`, and
+`candidats`/`vus` are pure accumulations (no conflict), so nothing gets duplicated or lost.
+
+**Logs**: every run writes its full console output to `logs/harvest_auto_<horodatage>.log`
+(one file per run — easier to pull up a specific failed run than to grep one ever-growing
+file; `*.log` is gitignored). `cli._executer()` — used by every pipeline step, and by
+`harvest_auto.py` itself for the discovery step — prints the full traceback (not just
+`str(e)`) on any step failure, so the log file alone is normally enough to diagnose a failure
+without reproducing it interactively.
+
+**Reviewing the `a_examiner` backlog**: `src/dashboard.py` exposes it under the "JDD à
+examiner" card (`GET`/`POST /api/a_examiner`, backed by `discover.resoudre_a_examiner()`).
+Three actions per entry: **Ajouter aux candidats** (tabular only, requires a detected field —
+false negative, the data was actually usable), **Faux positif** (adds to `decouverte["exclus"]`,
+permanent), **Ignorer** (just removes the entry — e.g. once a WFS/WMS JSON snippet has been
+copied by hand into `DATASETS_GEO` in `src/conf/datasets.py`, still a deliberate manual step,
+not automated). This is the same curation gate the interactive tool already applies to geo
+services — the dashboard view only makes the backlog visible across days instead of requiring
+a live terminal session.
+
+**Manual column tagging for the `a_examiner` backlog** (menu item 2, `src/cli.py` →
+`discover.revue_manuelle_a_examiner()`): for the harder cases the dashboard's "Ajouter aux
+candidats" can't handle — auto-detection found *no* usable column at all, or the wrong one —
+this walks each tabular `a_examiner` entry, downloads its CSV resource, and shows a
+column-by-column preview (header + up to 3 example values) instead of raw preview lines. The
+user then tells it directly which column is the INSEE/IRIS code, the postal code, the city,
+the address, or a SIREN/SIRET — one prompt per field type, defaulting to whatever
+auto-detection already guessed (`champs_detectes`) when there is one. It recomputes `nb_rm` on
+the full downloaded file with the tagged columns (reusing `_compter_lignes_rm()`, the same
+counting function the auto-detection path uses) before asking to confirm. Confirming or
+excluding both go through `resoudre_a_examiner()` (now accepting an optional
+`champs_manuels` override) so there's still a single place that mutates
+`a_examiner`/`candidats` — the dashboard's API keeps working unchanged.
+
+Scoped to **tabular entries only** (WFS/WMS stay on the existing dashboard/interactive-review
+paths) and **CSV resources only** — XLSX/ZIP/GZ/Parquet candidates are reported and left in the
+backlog rather than supported end-to-end. `champ_dep` (INSEE code reconstructed from a 3-digit
+code + a separate département column, a narrow DGFiP pattern) isn't taggable here either. Like
+`discover.main()`'s interactive loop, this is `input()`-heavy end to end, so — same reasoning
+as the "Découverte automatique" exclusion above — it is **not** wired into `dashboard.py`; a
+web equivalent is a deliberate future step, not an oversight.
+
+Tagging a column as **SIREN/SIRET** is a first-class filter field now, not just an analysis
+signal: `champ_siren` is persisted on the candidat dict alongside `champ_cp/champ_ville/
+champ_iris/champ_adresse`, and `harvest_batch.py`'s `_ligne_est_rm()` (and every `filtrer_*`
+function feeding it) knows how to filter by it — matches rows whose value, truncated to 9
+digits, is in `connectors/sirene.py::obtenir_sirens_rm()` (the RM establishment SIREN set,
+already itself scoped to RM addresses at the source — this *is* the "cross-reference with
+addresses" the SIREN case needs). Before this, `champ_siren` was computed during auto-analysis
+(`discover.py::_compter_lignes_rm()`) but silently dropped everywhere a candidat got persisted
+— confirming a SIREN-detected candidate would harvest 0 rows. That auto-detection persistence
+gap (`traiter_resultat()`, `rechercher_et_filtrer_auto()`, `_reanalyser_candidats_sans_champ()`
+still don't carry `champ_siren`/`champ_lat`/`champ_lon` into the candidat dict) is unchanged —
+only the manual-tagging path and the harvest-time filter were fixed.
+
 ## Known limitations / not addressed
 
 These were identified during a full pipeline audit but deliberately left as-is rather than changed silently — they need a product/architecture decision rather than a mechanical fix:
@@ -251,3 +336,5 @@ These were identified during a full pipeline audit but deliberately left as-is r
 - **Two separate state files**: `data/state.json` (main.py, harvest_batch.py) and `data/state_insee.json` (harvest_insee.py) are not unified into one schema. Unifying them has migration implications and wasn't done as part of the audit cleanup.
 - **`discover.py` heuristic-level matching nuances** are unchanged: CSV delimiter tie-breaking (`_detecter_delimiteur()` picks the max-count candidate, arbitrary on ties), Parquet column-name coverage for filter pushdown (only recognizes a `COMMUNE`-named column), and the `nb_rm` aggregation semantics when a candidate matches on multiple geo fields across different resources (the returned `nb_rm` is the total across all matched resources, not scoped to the specific field reported). These affect *candidate selection quality* in an interactive tool the user calibrates by hand — changing matching behavior without their input risks silent drift, so they're documented here rather than changed.
 - **`DATASETS` is empty** (see "Project overview" above) — `src/main.py`'s tabular data.gouv.fr pipeline is currently inactive, not broken.
+- **RUDI theme for auto-discovered candidates stays heuristic**: `rechercher_et_filtrer_auto()` never passes a `theme` to `traduire_metadonnees()`, so it falls back to `_detecter_theme()` (keyword scoring against title/description) exactly like the interactive session already does — occasionally wrong, worth an occasional glance at the catalogue rather than a blocker.
+- **`harvest_auto.py` still re-runs the full `REQUETES_STRUCTUREES` sweep every day** (up to 50 pages each); `deja_vus` avoids re-downloading/re-analysing already-known datasets, but the API listing itself isn't incremental. Not addressed here — revisit only if run duration becomes an actual problem.

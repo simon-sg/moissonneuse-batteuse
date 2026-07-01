@@ -21,6 +21,7 @@ from conf.datasets import DATASETS_GEO
 from state import charger_state, sauvegarder_state
 from harvest_insee import _charger_state as charger_state_insee, _sauvegarder_state as sauvegarder_state_insee
 from harvest_oeb import _charger_state as charger_state_oeb, _sauvegarder_state as sauvegarder_state_oeb
+from harvest_bdnb import _charger_state as charger_state_bdnb, _sauvegarder_state as sauvegarder_state_bdnb
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
 
@@ -45,6 +46,7 @@ def main() -> None:
     state_tab = charger_state()
     state_insee = charger_state_insee()
     state_oeb = charger_state_oeb()
+    state_bdnb = charger_state_bdnb()
     dossiers_geo = {c["dossier"] for c in DATASETS_GEO}
 
     # dossier -> ("tabulaire"|"insee"|"oeb", clé dans l'état correspondant)
@@ -55,6 +57,8 @@ def main() -> None:
         index[entree.get("dossier")] = ("insee", cle)
     for cle, entree in state_oeb.items():
         index[entree.get("dossier")] = ("oeb", cle)
+    for cle, entree in state_bdnb.items():
+        index[entree.get("dossier")] = ("bdnb", cle)
 
     a_publier = []   # [(dossier, source, cle_etat_ou_None)]
     inconnus = []
@@ -70,8 +74,10 @@ def main() -> None:
                 etat = state_tab
             elif source == "insee":
                 etat = state_insee
-            else:
+            elif source == "oeb":
                 etat = state_oeb
+            else:
+                etat = state_bdnb
             if not etat[cle].get("rudi_publie"):
                 a_publier.append((nom, source, cle))
         else:
@@ -105,6 +111,8 @@ def main() -> None:
                 state_insee[cle]["rudi_publie"] = True
             elif source == "oeb":
                 state_oeb[cle]["rudi_publie"] = True
+            elif source == "bdnb":
+                state_bdnb[cle]["rudi_publie"] = True
         except Exception as e:
             print(f"  [RUDI] ERREUR : {e}")
             echecs += 1
@@ -113,6 +121,7 @@ def main() -> None:
     sauvegarder_state(state_tab)
     sauvegarder_state_insee(state_insee)
     sauvegarder_state_oeb(state_oeb)
+    sauvegarder_state_bdnb(state_bdnb)
     print(f"=== Terminé : {ok} publié(s), {echecs} échec(s) sur {len(a_publier)} ===")
 
 

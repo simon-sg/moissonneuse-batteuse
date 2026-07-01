@@ -21,6 +21,7 @@ import requests
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from connectors.datagouv import get_dataset_metadata
+from connectors.sirene import obtenir_sirens_rm
 from filters.geographic import est_dans_rm, est_commune_rm, normaliser
 from conf.communes_rm import CODES_POSTAUX_RM, CODES_INSEE_RM, COMMUNES_RM
 from translation.datagouv_to_rudi import traduire_metadonnees
@@ -58,11 +59,15 @@ def est_adresse_rm(texte: str) -> bool:
     return any(commune in texte_norm for commune in _COMMUNES_NORM_RM)
 
 
-def _ligne_est_rm(row: dict, champ_cp, champ_ville, champ_iris, champ_adresse) -> bool:
+def _ligne_est_rm(row: dict, champ_cp, champ_ville, champ_iris, champ_adresse,
+                   champ_siren=None, sirens_rm=None) -> bool:
     if champ_iris:
         return est_iris_rm(str(row.get(champ_iris, "")))
     if champ_adresse:
         return est_adresse_rm(str(row.get(champ_adresse, "")))
+    if champ_siren:
+        val = str(row.get(champ_siren, "")).strip().replace(" ", "")
+        return val.isdigit() and len(val) in (9, 14) and val[:9] in sirens_rm
     cp = str(row.get(champ_cp, "")).strip() if champ_cp else ""
     ville = str(row.get(champ_ville, "")).strip() if champ_ville else ""
     if champ_cp and champ_ville:
@@ -124,31 +129,39 @@ def _detecter_encodage(chemin: str) -> str:
     return _detecter_encodage_bytes(sample)
 
 
-def filtrer_csv(chemin: str, champ_cp, champ_ville, champ_iris, champ_adresse) -> tuple[list[dict], list[str]]:
+def filtrer_csv(chemin: str, champ_cp, champ_ville, champ_iris, champ_adresse,
+                 champ_siren=None) -> tuple[list[dict], list[str]]:
     """Filtre un CSV en streaming ligne par ligne — ne charge pas le fichier entier en mémoire."""
+    sirens_rm = obtenir_sirens_rm() if champ_siren else None
     encoding = _detecter_encodage(chemin)
     with open(chemin, encoding=encoding, errors="replace", newline="") as f:
         sample = f.read(4096)
         f.seek(0)
         delimiteur = _detecter_delimiteur(sample)
         reader = csv.DictReader(f, delimiter=delimiteur)
-        lignes = [dict(row) for row in reader if _ligne_est_rm(row, champ_cp, champ_ville, champ_iris, champ_adresse)]
+        lignes = [dict(row) for row in reader
+                  if _ligne_est_rm(row, champ_cp, champ_ville, champ_iris, champ_adresse, champ_siren, sirens_rm)]
         entetes = list(reader.fieldnames or [])
     return lignes, entetes
 
 
-def filtrer_csv_bytes(contenu: bytes, champ_cp, champ_ville, champ_iris, champ_adresse) -> tuple[list[dict], list[str]]:
+def filtrer_csv_bytes(contenu: bytes, champ_cp, champ_ville, champ_iris, champ_adresse,
+                       champ_siren=None) -> tuple[list[dict], list[str]]:
     """Filtre depuis bytes en mémoire — uniquement pour les membres extraits d'un ZIP."""
+    sirens_rm = obtenir_sirens_rm() if champ_siren else None
     encoding = _detecter_encodage_bytes(contenu[:8192])
     texte = contenu.decode(encoding, errors="replace")
     delimiteur = _detecter_delimiteur(texte[:4096])
     reader = csv.DictReader(io.StringIO(texte), delimiter=delimiteur)
-    lignes = [dict(row) for row in reader if _ligne_est_rm(row, champ_cp, champ_ville, champ_iris, champ_adresse)]
+    lignes = [dict(row) for row in reader
+              if _ligne_est_rm(row, champ_cp, champ_ville, champ_iris, champ_adresse, champ_siren, sirens_rm)]
     entetes = list(reader.fieldnames or [])
     return lignes, entetes
 
 
-def filtrer_json(chemin: str, champ_cp, champ_ville, champ_iris, champ_adresse) -> list[dict]:
+def filtrer_json(chemin: str, champ_cp, champ_ville, champ_iris, champ_adresse,
+                  champ_siren=None) -> list[dict]:
+    sirens_rm = obtenir_sirens_rm() if champ_siren else None
     with open(chemin, encoding="utf-8") as f:
         data = json.load(f)
     if isinstance(data, list):
@@ -162,7 +175,8 @@ def filtrer_json(chemin: str, champ_cp, champ_ville, champ_iris, champ_adresse) 
             raise ValueError("Structure JSON non reconnue (pas de liste de lignes)")
     else:
         raise ValueError("Contenu JSON non reconnu (ni liste ni dict)")
-    return [row for row in rows if _ligne_est_rm(row, champ_cp, champ_ville, champ_iris, champ_adresse)]
+    return [row for row in rows
+            if _ligne_est_rm(row, champ_cp, champ_ville, champ_iris, champ_adresse, champ_siren, sirens_rm)]
 
 
 def _extraire_csvs_zip(chemin: str) -> list[tuple[str, bytes]]:
@@ -175,25 +189,30 @@ def _extraire_csvs_zip(chemin: str) -> list[tuple[str, bytes]]:
         ]
 
 
-def filtrer_gz(chemin: str, champ_cp, champ_ville, champ_iris, champ_adresse) -> tuple[list[dict], list[str]]:
+def filtrer_gz(chemin: str, champ_cp, champ_ville, champ_iris, champ_adresse,
+               champ_siren=None) -> tuple[list[dict], list[str]]:
     """Décompresse un GZ en streaming et filtre les lignes RM sans tout charger en mémoire."""
+    sirens_rm = obtenir_sirens_rm() if champ_siren else None
     with gzip.open(chemin, "rb") as gz:
         sample_bytes = gz.read(8192)
     encoding = _detecter_encodage_bytes(sample_bytes)
     delimiteur = _detecter_delimiteur(sample_bytes.decode(encoding, errors="replace")[:4096])
     with gzip.open(chemin, "rt", encoding=encoding, errors="replace", newline="") as gz:
         reader = csv.DictReader(gz, delimiter=delimiteur)
-        lignes = [dict(row) for row in reader if _ligne_est_rm(row, champ_cp, champ_ville, champ_iris, champ_adresse)]
+        lignes = [dict(row) for row in reader
+                  if _ligne_est_rm(row, champ_cp, champ_ville, champ_iris, champ_adresse, champ_siren, sirens_rm)]
         entetes = list(reader.fieldnames or [])
     return lignes, entetes
 
 
-def filtrer_xlsx(chemin: str, champ_cp, champ_ville, champ_iris, champ_adresse) -> list[dict]:
+def filtrer_xlsx(chemin: str, champ_cp, champ_ville, champ_iris, champ_adresse,
+                  champ_siren=None) -> list[dict]:
     """Extrait et filtre les lignes Rennes Métropole d'un fichier XLSX."""
     try:
         import openpyxl
     except ImportError:
         raise RuntimeError("openpyxl non installé — pip install openpyxl")
+    sirens_rm = obtenir_sirens_rm() if champ_siren else None
     wb = openpyxl.load_workbook(chemin, read_only=True, data_only=True)
     ws = wb.active
     lignes_brutes = list(ws.iter_rows(values_only=True))
@@ -205,7 +224,8 @@ def filtrer_xlsx(chemin: str, champ_cp, champ_ville, champ_iris, champ_adresse) 
         dict(zip(entetes, [str(v or "").strip() for v in row]))
         for row in lignes_brutes[1:]
     ]
-    return [r for r in rows if _ligne_est_rm(r, champ_cp, champ_ville, champ_iris, champ_adresse)]
+    return [r for r in rows
+            if _ligne_est_rm(r, champ_cp, champ_ville, champ_iris, champ_adresse, champ_siren, sirens_rm)]
 
 
 def sauvegarder_csv(lignes: list[dict], chemin: str) -> None:
@@ -294,7 +314,7 @@ def _slugifier(titre: str) -> str:
 
 def filtrer_toutes_ressources(
     ressources_fmt: list[tuple[dict, str]],
-    champ_cp, champ_ville, champ_iris, champ_adresse,
+    champ_cp, champ_ville, champ_iris, champ_adresse, champ_siren=None,
 ) -> list[tuple[dict, list[dict], list[str]]]:
     """Télécharge et filtre chaque ressource (CSV, ZIP, GZ, XLSX, JSON).
     Retourne [(ressource, lignes_rm, entetes)] — un ZIP peut produire plusieurs entrées."""
@@ -317,21 +337,22 @@ def filtrer_toutes_ressources(
                     continue
                 for nom_membre, contenu_csv in membres:
                     r_m = {**r, "title": os.path.basename(nom_membre)}
-                    lignes, entetes = filtrer_csv_bytes(contenu_csv, champ_cp, champ_ville, champ_iris, champ_adresse)
+                    lignes, entetes = filtrer_csv_bytes(contenu_csv, champ_cp, champ_ville, champ_iris,
+                                                         champ_adresse, champ_siren)
                     if len(membres) > 1:
                         print(f"    ↳ {nom_membre}: {len(lignes)} lignes RM")
                     entrees.append((r_m, lignes, entetes))
             elif fmt == "gz":
-                lignes, entetes = filtrer_gz(chemin, champ_cp, champ_ville, champ_iris, champ_adresse)
+                lignes, entetes = filtrer_gz(chemin, champ_cp, champ_ville, champ_iris, champ_adresse, champ_siren)
                 entrees = [(r, lignes, entetes)]
             elif fmt == "xlsx":
-                lignes = filtrer_xlsx(chemin, champ_cp, champ_ville, champ_iris, champ_adresse)
+                lignes = filtrer_xlsx(chemin, champ_cp, champ_ville, champ_iris, champ_adresse, champ_siren)
                 entrees = [(r, lignes, [])]
             elif fmt == "json":
-                lignes = filtrer_json(chemin, champ_cp, champ_ville, champ_iris, champ_adresse)
+                lignes = filtrer_json(chemin, champ_cp, champ_ville, champ_iris, champ_adresse, champ_siren)
                 entrees = [(r, lignes, [])]
             else:  # csv
-                lignes, entetes = filtrer_csv(chemin, champ_cp, champ_ville, champ_iris, champ_adresse)
+                lignes, entetes = filtrer_csv(chemin, champ_cp, champ_ville, champ_iris, champ_adresse, champ_siren)
                 entrees = [(r, lignes, entetes)]
 
             resultats.extend(entrees)
@@ -357,6 +378,7 @@ def traiter_candidat(candidat: dict, state: dict) -> dict:
     champ_ville = candidat.get("champ_ville")
     champ_iris = candidat.get("champ_iris")
     champ_adresse = candidat.get("champ_adresse")
+    champ_siren = candidat.get("champ_siren")
 
     metadata = get_dataset_metadata(dataset_id)
     last_modified = metadata.get("last_modified", "")
@@ -381,7 +403,8 @@ def traiter_candidat(candidat: dict, state: dict) -> dict:
         fmts = "/".join(sorted({f.upper() for _, f in analyse["csvs"]}))
         print(f"  {len(analyse['csvs'])} ressources [{fmts}] — téléchargées séparément")
 
-    resultats = filtrer_toutes_ressources(analyse["csvs"], champ_cp, champ_ville, champ_iris, champ_adresse)
+    resultats = filtrer_toutes_ressources(analyse["csvs"], champ_cp, champ_ville, champ_iris, champ_adresse,
+                                           champ_siren)
 
     # Sauvegarder un fichier filtré par ressource (+ JSON régénéré si la source en avait)
     fichiers_data = []   # [(nom, nb_rm, ressource)]
@@ -414,7 +437,7 @@ def traiter_candidat(candidat: dict, state: dict) -> dict:
                 fichiers_data.append((nom_json, len(lignes), ressource))
 
     if not fichiers_data:
-        champ_cherche = champ_iris or champ_ville or champ_cp or champ_adresse
+        champ_cherche = champ_iris or champ_ville or champ_cp or champ_adresse or champ_siren
         present = champ_cherche in dernieres_entetes if (champ_cherche and dernieres_entetes) else False
         raison = (
             f"colonne '{champ_cherche}' absente du fichier (colonnes : {', '.join(dernieres_entetes[:8])}...)"
@@ -477,7 +500,7 @@ def main():
     # Pré-tri immédiat des candidats sans champ géo (pas de thread pour eux)
     a_traiter = []
     for candidat in candidats:
-        if not any(candidat.get(c) for c in ("champ_cp", "champ_ville", "champ_iris", "champ_adresse")):
+        if not any(candidat.get(c) for c in ("champ_cp", "champ_ville", "champ_iris", "champ_adresse", "champ_siren")):
             resultats["sautes"].append({"dataset_id": candidat["dataset_id"], "titre": candidat["titre"]})
         else:
             a_traiter.append(candidat)

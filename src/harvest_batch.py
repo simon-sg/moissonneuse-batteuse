@@ -304,6 +304,7 @@ def filtrer_toutes_ressources(
         titre = r.get("title", r.get("url", ""))[:55]
         if multi:
             print(f"  ↳ {titre} [{fmt.upper()}]")
+        chemin = None
         try:
             chemin = telecharger(r["url"])
             entrees: list[tuple[dict, list[dict], list[str]]] = []
@@ -339,6 +340,10 @@ def filtrer_toutes_ressources(
         except Exception as e:
             print(f"    → ERREUR : {e}")
             resultats.append((r, [], []))
+        finally:
+            # Le brut n'est plus utile une fois filtré : évite d'accumuler le cache indéfiniment.
+            if chemin and os.path.exists(chemin):
+                os.remove(chemin)
     return resultats
 
 
@@ -424,6 +429,7 @@ def traiter_candidat(candidat: dict, state: dict) -> dict:
         ext = r.get("format", "csv").lower()
         nom = f"dict-{_slugifier(titre_r)}.{ext}"
         print(f"  Dictionnaire : {titre_r[:55]}")
+        chemin_cache = None
         try:
             chemin_cache = telecharger(r["url"])
             if ext == "csv" and not _est_dictionnaire_contenu(chemin_cache):
@@ -433,6 +439,9 @@ def traiter_candidat(candidat: dict, state: dict) -> dict:
             fichiers_dicts.append((nom, r))
         except Exception as e:
             print(f"    → ERREUR : {e}")
+        finally:
+            if chemin_cache and os.path.exists(chemin_cache):
+                os.remove(chemin_cache)
 
     # Sommer les CSV uniquement (les JSON régénérés ont le même nb_rm, on évite le double-compte)
     nb_rm_total = sum(nb for nom, nb, _ in fichiers_data if nom.endswith(".csv")) \

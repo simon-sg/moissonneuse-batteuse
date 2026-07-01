@@ -20,6 +20,7 @@ from connectors.rudi_node import publier_dataset, charger_conf_rudi
 from conf.datasets import DATASETS_GEO
 from state import charger_state, sauvegarder_state
 from harvest_insee import _charger_state as charger_state_insee, _sauvegarder_state as sauvegarder_state_insee
+from harvest_oeb import _charger_state as charger_state_oeb, _sauvegarder_state as sauvegarder_state_oeb
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
 
@@ -43,14 +44,17 @@ def main() -> None:
 
     state_tab = charger_state()
     state_insee = charger_state_insee()
+    state_oeb = charger_state_oeb()
     dossiers_geo = {c["dossier"] for c in DATASETS_GEO}
 
-    # dossier -> ("tabulaire"|"insee", clé dans l'état correspondant)
+    # dossier -> ("tabulaire"|"insee"|"oeb", clé dans l'état correspondant)
     index = {}
     for cle, entree in state_tab.items():
         index[entree.get("dossier")] = ("tabulaire", cle)
     for cle, entree in state_insee.items():
         index[entree.get("dossier")] = ("insee", cle)
+    for cle, entree in state_oeb.items():
+        index[entree.get("dossier")] = ("oeb", cle)
 
     a_publier = []   # [(dossier, source, cle_etat_ou_None)]
     inconnus = []
@@ -62,7 +66,12 @@ def main() -> None:
             a_publier.append((nom, "geo", None))
         elif nom in index:
             source, cle = index[nom]
-            etat = state_tab if source == "tabulaire" else state_insee
+            if source == "tabulaire":
+                etat = state_tab
+            elif source == "insee":
+                etat = state_insee
+            else:
+                etat = state_oeb
             if not etat[cle].get("rudi_publie"):
                 a_publier.append((nom, source, cle))
         else:
@@ -94,6 +103,8 @@ def main() -> None:
                 state_tab[cle]["rudi_publie"] = True
             elif source == "insee":
                 state_insee[cle]["rudi_publie"] = True
+            elif source == "oeb":
+                state_oeb[cle]["rudi_publie"] = True
         except Exception as e:
             print(f"  [RUDI] ERREUR : {e}")
             echecs += 1
@@ -101,6 +112,7 @@ def main() -> None:
 
     sauvegarder_state(state_tab)
     sauvegarder_state_insee(state_insee)
+    sauvegarder_state_oeb(state_oeb)
     print(f"=== Terminé : {ok} publié(s), {echecs} échec(s) sur {len(a_publier)} ===")
 
 

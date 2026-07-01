@@ -19,11 +19,14 @@ repose sur des prompts terminal) — utiliser `python3 src/cli.py` pour celle-ci
 import http.server
 import io
 import json
+import mimetypes
 import os
+import shutil
 import sys
 import threading
 import time
 import webbrowser
+from urllib.parse import unquote
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -67,6 +70,7 @@ ACTIONS = {
     "moisson_batch": ("Moisson batch (candidats découverts)", lambda p: cli.action_moisson_batch()),
     "moisson_insee": ("Moisson INSEE", lambda p: cli.action_moisson_insee(ids=p.get("ids", ""))),
     "moisson_oeb": ("Moisson OEB", lambda p: cli.action_moisson_oeb(ids=p.get("ids", ""))),
+    "moisson_bdnb": ("Moisson BDNB (bâtiments)", lambda p: cli.action_moisson_bdnb()),
     "moisson_geo": ("Moisson géo (WFS/WMS/OGC API)", lambda p: cli.action_moisson_geo()),
     "catalogue": ("Génération du catalogue", lambda p: cli.action_catalogue()),
     "publier_rudi": ("Publication sur le nœud RUDI", lambda p: cli.action_publier_rudi()),
@@ -164,10 +168,13 @@ def _etat_noeud() -> dict:
 
     conf = rudi_node.charger_conf_rudi()
     etat["url_manager"] = (conf["url"].rstrip("/") + "/manager/") if conf else None
+    etat["pret"] = bool(conf and etat.get("etat") == "running" and rudi_node.noeud_pret(conf))
 
     chemin_catalogue = os.path.join(cli.DATA_DIR, "catalogue.html")
     etat["catalogue_disponible"] = os.path.isfile(chemin_catalogue)
-    etat["catalogue_url"] = f"file://{chemin_catalogue}" if etat["catalogue_disponible"] else None
+    # Servi par le dashboard lui-même (voir /data/<chemin>) plutôt qu'un lien file:// —
+    # les navigateurs modernes bloquent la navigation depuis une page http:// vers file://.
+    etat["catalogue_url"] = "/data/catalogue.html" if etat["catalogue_disponible"] else None
 
     return etat
 
@@ -206,6 +213,26 @@ class Handler(http.server.BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(corps)
 
+    def _servir_fichier_donnees(self, chemin_relatif: str) -> None:
+        """Sert un fichier sous data/ (catalogue, viewers, cartes…) — seul moyen fiable
+        d'ouvrir le catalogue depuis le navigateur, un lien file:// direct étant bloqué
+        par les navigateurs modernes depuis une page http://."""
+        chemin_abs = os.path.normpath(os.path.join(cli.DATA_DIR, unquote(chemin_relatif)))
+        if (chemin_abs != cli.DATA_DIR.rstrip(os.sep)
+                and not chemin_abs.startswith(cli.DATA_DIR.rstrip(os.sep) + os.sep)):
+            self._repondre_json(404, {"erreur": "introuvable"})
+            return
+        if not os.path.isfile(chemin_abs):
+            self._repondre_json(404, {"erreur": "introuvable"})
+            return
+        type_mime = mimetypes.guess_type(chemin_abs)[0] or "application/octet-stream"
+        self.send_response(200)
+        self.send_header("Content-Type", type_mime)
+        self.send_header("Content-Length", str(os.path.getsize(chemin_abs)))
+        self.end_headers()
+        with open(chemin_abs, "rb") as f:
+            shutil.copyfileobj(f, self.wfile)
+
     def do_GET(self):
         if self.path == "/":
             self._repondre_html(200, PAGE_HTML)
@@ -217,6 +244,8 @@ class Handler(http.server.BaseHTTPRequestHandler):
             self._repondre_json(200, _purge_items_json())
         elif self.path == "/api/noeud":
             self._repondre_json(200, _etat_noeud())
+        elif self.path.startswith("/data/"):
+            self._servir_fichier_donnees(self.path[len("/data/"):])
         else:
             self._repondre_json(404, {"erreur": "introuvable"})
 
@@ -276,6 +305,7 @@ PAGE_HTML = r"""<!DOCTYPE html>
             flex-direction:column; gap:8px; }
   .action .titre { font-weight:600; font-size:.92rem; }
   .action .desc { font-size:.78rem; color:var(--muted); }
+  .action > button { margin-top:auto; }
   .action input[type=text] { padding:7px 9px; border:1px solid var(--bord); border-radius:6px; font-size:.85rem; }
   button { background:var(--accent); color:#fff; border:none; border-radius:6px; padding:8px 14px;
            font-size:.85rem; cursor:pointer; }
@@ -366,11 +396,12 @@ const ACTIONS = [
   {id:"moisson_batch", titre:"Moisson batch", desc:"Candidats découverts (decouverte.json)"},
   {id:"moisson_insee", titre:"Moisson INSEE", desc:"Publications directes insee.fr", champIds:true},
   {id:"moisson_oeb", titre:"Moisson OEB", desc:"Portail environnement Bretagne (data-fair)", champIds:true},
+  {id:"moisson_bdnb", titre:"Moisson BDNB", desc:"Bâtiments dep. 35 — DPE, énergie, FFO (~620 Mo)"},
   {id:"moisson_geo", titre:"Moisson géo", desc:"WFS / WMS / OGC API Features"},
   {id:"catalogue", titre:"(Re)générer le catalogue", desc:"data/catalogue.json + .html"},
   {id:"publier_rudi", titre:"Publier sur le nœud RUDI", desc:"Rattrapage — depuis les fichiers déjà sur disque"},
   {id:"enrichir_descriptions", titre:"Enrichir les descriptions", desc:"Rattrapage — JDD avec description vide/quasi vide"},
-  {id:"pipeline_complet", titre:"Pipeline complet", desc:"Tabulaire → batch → INSEE → OEB → géo → catalogue → RUDI", pipeline:true},
+  {id:"pipeline_complet", titre:"Pipeline complet", desc:"Tabulaire → batch → INSEE → OEB → BDNB → géo → catalogue → RUDI", pipeline:true},
 ];
 
 let jobEnCours = false;
@@ -440,6 +471,7 @@ async function actualiserEtat(){
 }
 
 let noeudActionEnCours = false;
+let intervalleRapideNoeud = null;
 
 const LABELS_ETAT_NOEUD = {
   running: "en cours", exited: "arrêté", paused: "en pause",
@@ -451,6 +483,7 @@ async function actualiserNoeud(){
 
   const badge = document.getElementById("badge-noeud");
   const bouton = document.getElementById("btn-noeud");
+  let enDemarrage = false;
 
   if (!n.podman_installe){
     badge.className = "badge warn";
@@ -466,20 +499,32 @@ async function actualiserNoeud(){
     bouton.disabled = true;
   } else {
     const enCours = n.etat === "running";
-    badge.className = "badge " + (enCours ? "termine" : "idle");
-    badge.textContent = LABELS_ETAT_NOEUD[n.etat] || n.etat || "inconnu";
+    enDemarrage = enCours && !n.pret;
+    badge.className = "badge " + (enDemarrage ? "running" : (enCours ? "termine" : "idle"));
+    badge.textContent = enDemarrage ? "démarrage…" : (LABELS_ETAT_NOEUD[n.etat] || n.etat || "inconnu");
     bouton.textContent = enCours ? "Arrêter" : "Démarrer";
     bouton.className = enCours ? "danger" : "";
     bouton.disabled = noeudActionEnCours;
   }
 
+  // Le lien vers le nœud n'est activé qu'une fois qu'il répond vraiment (pas seulement
+  // que le conteneur tourne — l'appli interne met plusieurs secondes à démarrer).
   const lienNoeud = document.getElementById("lien-noeud");
   lienNoeud.href = n.url_manager || "#";
-  lienNoeud.classList.toggle("desactive", !n.url_manager);
+  lienNoeud.classList.toggle("desactive", !n.url_manager || !n.pret);
 
   const lienCatalogue = document.getElementById("lien-catalogue");
   lienCatalogue.href = n.catalogue_url || "#";
   lienCatalogue.classList.toggle("desactive", !n.catalogue_disponible);
+
+  // Pendant le démarrage, on vérifie plus souvent pour refléter la disponibilité réelle
+  // dès qu'elle survient, plutôt que d'attendre le prochain rafraîchissement (15s).
+  if (enDemarrage && !intervalleRapideNoeud){
+    intervalleRapideNoeud = setInterval(actualiserNoeud, 2000);
+  } else if (!enDemarrage && intervalleRapideNoeud){
+    clearInterval(intervalleRapideNoeud);
+    intervalleRapideNoeud = null;
+  }
 }
 
 async function basculerNoeud(){

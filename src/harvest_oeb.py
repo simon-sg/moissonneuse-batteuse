@@ -190,11 +190,8 @@ def traiter_dataset(config: dict, state: dict) -> dict:
         return {"statut": "cache", "nb_rm": nb_rm}
 
     # 3. Téléchargement filtré
-    champ_code   = config.get("champ_code", "code_territoire")
+    champ_code    = config.get("champ_code", "code_territoire")
     champ_echelle = config.get("champ_echelle", "echelle_territoire")
-    # champ_echelle=None désactive le filtre par échelle (télécharge tout)
-    if "champ_echelle" not in config:
-        champ_echelle = "echelle_territoire"
 
     print(f"  Téléchargement lignes RM ({champ_echelle}/{champ_code})...")
     try:
@@ -269,7 +266,7 @@ def afficher_datasets_disponibles() -> None:
                 print(f"    {desc}...")
             print(f"    Mis à jour : {updated}\n")
         total_vu += len(resultats)
-        total = data.get("count", total_vu)
+        total = data.get("total", total_vu)
         if total_vu >= total:
             break
         page += 1

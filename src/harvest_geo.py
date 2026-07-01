@@ -4,6 +4,12 @@ Pipeline de moisson pour les services géographiques (WFS, WMS, OGC API Features
 Usage : python3 src/harvest_geo.py
 
 Configure les services dans src/conf/datasets.py → DATASETS_GEO.
+
+data/state_geo.json — signature (Content-Length/ETag/Last-Modified) par couche WFS/OGC,
+pour éviter un re-téléchargement si la couche n'a pas changé. Best-effort : si le serveur
+ne répond pas à un HEAD ou ne fournit aucun de ces en-têtes, la couche est retéléchargée
+à chaque run (comportement d'avant cette fonctionnalité, pas de régression). WMS n'a pas
+d'équivalent : il n'y a rien à télécharger, seulement GetCapabilities (déjà léger).
 """
 import json
 import os
@@ -15,14 +21,32 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from conf.datasets import DATASETS_GEO
 from connectors.geo_services import (
     nettoyer_url_ogc,
-    wfs_lister_couches, wfs_telecharger_rm,
+    wfs_lister_couches, wfs_telecharger_rm, wfs_signature,
     wms_get_capabilities, wms_couches_dans_rm,
-    ogcapi_lister_collections, ogcapi_telecharger_rm,
+    ogcapi_lister_collections, ogcapi_telecharger_rm, ogcapi_signature,
 )
 from translation.datagouv_to_rudi import traduire_metadonnees_service
 from connectors.rudi_node import publier_dataset, charger_conf_rudi
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
+STATE_FILE = os.path.join(DATA_DIR, "state_geo.json")
+
+
+def _charger_state() -> dict:
+    if os.path.exists(STATE_FILE):
+        try:
+            with open(STATE_FILE, encoding="utf-8") as f:
+                return json.load(f)
+        except (json.JSONDecodeError, OSError) as e:
+            print(f"[state_geo] {STATE_FILE} illisible ({e}), repart d'un état vide.")
+            return {}
+    return {}
+
+
+def _sauvegarder_state(state: dict) -> None:
+    os.makedirs(os.path.dirname(STATE_FILE), exist_ok=True)
+    with open(STATE_FILE, "w", encoding="utf-8") as f:
+        json.dump(state, f, ensure_ascii=False, indent=2)
 
 
 def _slug_typename(typename: str) -> str:
@@ -37,9 +61,10 @@ def _sauver_geojson(chemin: str, data: dict) -> None:
     print(f"  Sauvegardé : {os.path.basename(chemin)} ({nb} features)")
 
 
-def traiter_wfs(config: dict, dossier: str) -> list[tuple[str, str]]:
+def traiter_wfs(config: dict, dossier: str, state: dict) -> list[tuple[str, str]]:
     """
-    Télécharge les couches WFS dans la bbox RM.
+    Télécharge les couches WFS dans la bbox RM (sautées si signature inchangée
+    et fichier déjà présent — voir _charger_state en tête de fichier).
     Retourne [(chemin_fichier, typename), ...].
     """
     url = nettoyer_url_ogc(config["url"])
@@ -51,21 +76,30 @@ def traiter_wfs(config: dict, dossier: str) -> list[tuple[str, str]]:
 
     resultats = []
     for typename in couches:
+        nom_fichier = f"{_slug_typename(typename)}.geojson"
+        chemin = os.path.join(dossier, nom_fichier)
+        cle = f"{config['id']}::wfs::{typename}"
+        signature = wfs_signature(url, typename)
+        if signature and os.path.exists(chemin) and signature == state.get(cle, {}).get("signature"):
+            print(f"  WFS inchangé (cache) : {typename}")
+            resultats.append((chemin, typename))
+            continue
+
         print(f"  Téléchargement WFS : {typename}")
         data = wfs_telecharger_rm(url, typename)
         if data is None:
             print(f"  (échec pour {typename})")
             continue
-        nom_fichier = f"{_slug_typename(typename)}.geojson"
-        chemin = os.path.join(dossier, nom_fichier)
         _sauver_geojson(chemin, data)
         resultats.append((chemin, typename))
+        state[cle] = {"signature": signature} if signature else {}
     return resultats
 
 
-def traiter_ogcapi(config: dict, dossier: str) -> list[tuple[str, str]]:
+def traiter_ogcapi(config: dict, dossier: str, state: dict) -> list[tuple[str, str]]:
     """
-    Télécharge les collections OGC API Features dans la bbox RM.
+    Télécharge les collections OGC API Features dans la bbox RM (sautées si signature
+    inchangée et fichier déjà présent — voir _charger_state en tête de fichier).
     Retourne [(chemin_fichier, collection_id), ...].
     """
     url = config["url"].rstrip("/")
@@ -78,15 +112,23 @@ def traiter_ogcapi(config: dict, dossier: str) -> list[tuple[str, str]]:
 
     resultats = []
     for col_id in couches:
+        nom_fichier = f"{_slug_typename(col_id)}.geojson"
+        chemin = os.path.join(dossier, nom_fichier)
+        cle = f"{config['id']}::ogcapi::{col_id}"
+        signature = ogcapi_signature(url, col_id)
+        if signature and os.path.exists(chemin) and signature == state.get(cle, {}).get("signature"):
+            print(f"  OGC API inchangé (cache) : {col_id}")
+            resultats.append((chemin, col_id))
+            continue
+
         print(f"  Téléchargement OGC API : {col_id}")
         data = ogcapi_telecharger_rm(url, col_id)
         if data is None:
             print(f"  (échec pour {col_id})")
             continue
-        nom_fichier = f"{_slug_typename(col_id)}.geojson"
-        chemin = os.path.join(dossier, nom_fichier)
         _sauver_geojson(chemin, data)
         resultats.append((chemin, col_id))
+        state[cle] = {"signature": signature} if signature else {}
     return resultats
 
 
@@ -124,7 +166,7 @@ def traiter_wms(config: dict, dossier: str) -> dict:
     return wms_service
 
 
-def traiter_geo_dataset(config: dict) -> None:
+def traiter_geo_dataset(config: dict, state: dict) -> None:
     service_type = config.get("type", "wfs")
     dossier = os.path.join(DATA_DIR, config["dossier"])
     os.makedirs(dossier, exist_ok=True)
@@ -135,9 +177,9 @@ def traiter_geo_dataset(config: dict) -> None:
     wms_service: dict | None = None
 
     if service_type == "wfs":
-        fichiers_geojson = traiter_wfs(config, dossier)
+        fichiers_geojson = traiter_wfs(config, dossier, state)
     elif service_type == "ogcapi":
-        fichiers_geojson = traiter_ogcapi(config, dossier)
+        fichiers_geojson = traiter_ogcapi(config, dossier, state)
     elif service_type == "wms":
         wms_service = traiter_wms(config, dossier)
     else:
@@ -171,12 +213,14 @@ def traiter_geo_dataset(config: dict) -> None:
 def main():
     print("=== Moisson services géographiques ===")
     print(f"{len(DATASETS_GEO)} service(s) configuré(s)\n")
+    state = _charger_state()
     for config in DATASETS_GEO:
         print(f"--- {config['id']} ---")
         try:
-            traiter_geo_dataset(config)
+            traiter_geo_dataset(config, state)
         except Exception as e:
             print(f"  ERREUR : {e}")
+        _sauvegarder_state(state)  # incrémental : un service planté ne perd pas les précédents
         print()
     print("=== Fin ===")
 

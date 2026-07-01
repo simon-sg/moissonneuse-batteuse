@@ -7,14 +7,18 @@ API data-fair v1 :
   GET /data-fair/api/v1/datasets/{slug}             → métadonnées d'un JDD
   GET /data-fair/api/v1/datasets/{slug}/lines       → lignes (paginé, filtrable)
 
-Filtrage géographique :
-  Les JDD OEB exposent généralement deux colonnes de territoire :
+Filtrage géographique via qs (Elasticsearch) :
+  Le filtrage direct field=value ne fonctionne pas sur les champs numériques — on utilise
+  le paramètre qs (Elasticsearch query string) :
+    - Communes : qs=code_territoire:(35001 OR 35022 OR ...)  → 1 requête pour les 43 codes
+    - EPCI RM  : qs=echelle_territoire:"EPCI" AND code_territoire:243500139
+  Les JDD OEB exposent généralement :
     - echelle_territoire : "Communes" | "EPCI" | "Département" | "Région" | "SAGE"
-    - code_territoire    : code INSEE 5c (communes) ou EPCI 9c (243500139 pour RM)
-  On télécharge les lignes Communes (filtrées localement) + EPCI Rennes Métropole.
+    - code_territoire    : code INSEE (entier, communes) ou code EPCI (entier)
 """
 import csv
 import io
+import urllib.parse
 
 from connectors.http import session
 from conf.communes_rm import CODES_INSEE_RM
@@ -22,6 +26,7 @@ from conf.communes_rm import CODES_INSEE_RM
 BASE_URL = "https://data.bretagne-environnement.fr"
 _API = f"{BASE_URL}/data-fair/api/v1/datasets"
 EPCI_CODE_RM = "243500139"
+_ECHELLE_EPCI = "EPCI"
 
 _HEADERS = {"User-Agent": "moissonneuse-batteuse/1.0 (projet open-data Rennes Métropole)"}
 _TIMEOUT_META = 20
@@ -41,7 +46,6 @@ def lister_datasets(taille: int = 100, page: int = 0) -> dict:
             "size": taille,
             "page": page,
             "select": "id,title,description,updatedAt,license",
-            "status": "finalized",
         },
         headers=_HEADERS,
         timeout=_TIMEOUT_META,
@@ -61,19 +65,39 @@ def get_dataset_info(slug: str) -> dict:
 # Téléchargement paginé
 # ---------------------------------------------------------------------------
 
+def _construire_url(slug: str, params: dict) -> str:
+    """Construit l'URL de pagination en encodant qs avec %20 (pas +).
+
+    requests utilise quote_plus (espaces → +) pour les params, mais l'Elasticsearch
+    data-fair exige RFC 3986 (%20 pour les espaces). On construit l'URL à la main
+    pour le paramètre qs seulement ; les autres params restent en quote_plus standard.
+    """
+    qs_value = params.get("qs")
+    other = {k: v for k, v in params.items() if k != "qs"}
+    base = f"{_API}/{slug}/lines?" + urllib.parse.urlencode(other)
+    if qs_value:
+        # safe=':()\"' — garde la syntaxe ES lisible, encode les espaces en %20 (pas +)
+        base += "&qs=" + urllib.parse.quote(qs_value, safe=':()\"')
+    return base
+
+
 def _telecharger_pages(slug: str, params: dict) -> list[dict]:
-    """Télécharge toutes les pages de résultats pour des paramètres de filtre donnés."""
-    p = {**params, "size": _PAGE_SIZE, "page": 0}
-    r = session.get(f"{_API}/{slug}/lines", params=p, headers=_HEADERS, timeout=_TIMEOUT_DATA)
+    """Télécharge toutes les pages de résultats pour des paramètres de filtre donnés.
+
+    Ce portail data-fair utilise une pagination 1-indexée : page=1 est la première page,
+    page=0 déclenche une erreur Elasticsearch ("numHits must be > 0").
+    """
+    p = {**params, "size": _PAGE_SIZE, "page": 1}
+    r = session.get(_construire_url(slug, p), headers=_HEADERS, timeout=_TIMEOUT_DATA)
     r.raise_for_status()
     data = r.json()
     total = data.get("total", 0)
     resultats: list[dict] = list(data.get("results", []))
 
-    page = 1
+    page = 2
     while len(resultats) < total:
         p["page"] = page
-        r = session.get(f"{_API}/{slug}/lines", params=p, headers=_HEADERS, timeout=_TIMEOUT_DATA)
+        r = session.get(_construire_url(slug, p), headers=_HEADERS, timeout=_TIMEOUT_DATA)
         r.raise_for_status()
         batch = r.json().get("results", [])
         if not batch:
@@ -92,43 +116,34 @@ def telecharger_lignes_rm(
     champ_code: str = "code_territoire",
     champ_echelle: str | None = "echelle_territoire",
 ) -> list[dict]:
-    """Télécharge les lignes pour Rennes Métropole.
+    """Télécharge les lignes pour Rennes Métropole via Elasticsearch (qs), code par code.
 
-    Stratégie :
-    1. Télécharge toutes les lignes à l'échelle Communes (ou toutes si pas d'echelle),
-       puis filtre localement les 43 codes INSEE RM.
-    2. Télécharge les lignes EPCI pour le code EPCI RM (243500139), si champ_echelle défini.
-    Retourne la liste combinée (communes + EPCI).
+    La requête OR groupée (35001 OR 35022 OR ...) avec size>1 déclenche un bug
+    Elasticsearch dans data-fair ("numHits must be > 0 on all shards") — on contourne
+    en faisant 43 requêtes individuelles (une par code INSEE RM) + 1 pour l'EPCI.
+    Chaque commune ayant ≤ 1000 lignes, chaque requête tient en une seule page.
     """
-    codes_rm = set(CODES_INSEE_RM)
     lignes_rm: list[dict] = []
+    codes = sorted(CODES_INSEE_RM)
+    n = len(codes)
 
-    # --- Données à l'échelle Communes ---
-    filtres: dict = {}
+    for i, code in enumerate(codes, 1):
+        qs = f"{champ_code}:{int(code)}"
+        print(f"    Communes RM {i}/{n}...", end="\r")
+        lignes_rm.extend(_telecharger_pages(slug, {"qs": qs}))
+
+    print(f"    {len(lignes_rm)} lignes communes RM ({n} communes)")
+
+    # Données EPCI Rennes Métropole
     if champ_echelle:
-        filtres[champ_echelle] = "Communes"
-
-    print(f"    Communes ({champ_echelle or 'sans filtre échelle'})...", end="\r")
-    toutes = _telecharger_pages(slug, filtres)
-    avant = len(lignes_rm)
-    for ligne in toutes:
-        raw = ligne.get(champ_code, "")
-        # Le portail OEB stocke les codes INSEE comme entiers ou chaînes
-        code = str(raw).strip().zfill(5) if raw != "" else ""
-        if code in codes_rm:
-            lignes_rm.append(ligne)
-    print(f"    {len(lignes_rm) - avant}/{len(toutes)} lignes Communes RM retenues")
-
-    # --- Données à l'échelle EPCI ---
-    if champ_echelle:
-        filtres_epci = {champ_echelle: "EPCI", champ_code: EPCI_CODE_RM}
-        print(f"    EPCI RM ({EPCI_CODE_RM})...", end="\r")
-        epci = _telecharger_pages(slug, filtres_epci)
+        qs_epci = f'{champ_echelle}:"{_ECHELLE_EPCI}" AND {champ_code}:{EPCI_CODE_RM}'
+        print(f"    Lignes EPCI RM...", end="\r")
+        epci = _telecharger_pages(slug, {"qs": qs_epci})
         if epci:
             lignes_rm.extend(epci)
             print(f"    + {len(epci)} ligne(s) EPCI")
         else:
-            print(f"    0 ligne EPCI                    ")
+            print(f"    0 ligne EPCI         ")
 
     return lignes_rm
 
@@ -138,12 +153,21 @@ def telecharger_lignes_rm(
 # ---------------------------------------------------------------------------
 
 def lignes_vers_csv(lignes: list[dict], chemin: str) -> list[str]:
-    """Écrit les lignes (liste de dicts) en CSV UTF-8-sig. Retourne les noms de colonnes."""
+    """Écrit les lignes (liste de dicts) en CSV UTF-8-sig. Retourne les noms de colonnes.
+
+    Prend l'union de toutes les colonnes (communes et EPCI peuvent avoir des schémas
+    légèrement différents). Les champs internes data-fair (_i, _rand, _score, _id)
+    sont exclus du CSV.
+    """
     if not lignes:
         return []
-    colonnes = list(lignes[0].keys())
+    _CHAMPS_INTERNES = {"_i", "_rand", "_score", "_id"}
+    colonnes = list(dict.fromkeys(
+        k for ligne in lignes for k in ligne.keys() if k not in _CHAMPS_INTERNES
+    ))
     with open(chemin, "w", encoding="utf-8-sig", newline="") as f:
-        w = csv.DictWriter(f, fieldnames=colonnes, delimiter=";")
+        w = csv.DictWriter(f, fieldnames=colonnes, delimiter=";",
+                           extrasaction="ignore", restval="")
         w.writeheader()
         w.writerows(lignes)
     return colonnes

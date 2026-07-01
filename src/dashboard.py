@@ -31,6 +31,7 @@ from urllib.parse import unquote
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import cli
+import discover
 from connectors import rudi_node
 
 HOST = "127.0.0.1"
@@ -188,6 +189,30 @@ def _traiter_noeud_action(nom: str) -> tuple[int, dict]:
 
 
 # ---------------------------------------------------------------------------
+# Backlog "à examiner" (candidats ambigus / services géo issus de la découverte
+# automatique — src/harvest_auto.py) — voir discover.rechercher_et_filtrer_auto()
+# et discover.resoudre_a_examiner().
+# ---------------------------------------------------------------------------
+
+def _a_examiner_json() -> list[dict]:
+    return discover.charger_decouverte().get("a_examiner", [])
+
+
+def _traiter_a_examiner(params: dict) -> tuple[int, dict]:
+    dataset_id = str(params.get("dataset_id") or "").strip()
+    decision = str(params.get("decision") or "").strip()
+    if not dataset_id or decision not in ("exclure", "candidat", "ignorer"):
+        return 400, {"ok": False, "message": "Paramètres invalides."}
+    decouverte = discover.charger_decouverte()
+    ok = discover.resoudre_a_examiner(decouverte, dataset_id, decision)
+    if not ok:
+        return 404, {"ok": False, "message": "Entrée introuvable, ou décision inapplicable "
+                                              "(ex : « candidat » sans champ géo détecté)."}
+    return 200, {"ok": True, "message": "Décision enregistrée.",
+                 "restants": len(decouverte.get("a_examiner", []))}
+
+
+# ---------------------------------------------------------------------------
 # Serveur HTTP
 # ---------------------------------------------------------------------------
 
@@ -244,6 +269,8 @@ class Handler(http.server.BaseHTTPRequestHandler):
             self._repondre_json(200, _purge_items_json())
         elif self.path == "/api/noeud":
             self._repondre_json(200, _etat_noeud())
+        elif self.path == "/api/a_examiner":
+            self._repondre_json(200, _a_examiner_json())
         elif self.path.startswith("/data/"):
             self._servir_fichier_donnees(self.path[len("/data/"):])
         else:
@@ -268,6 +295,9 @@ class Handler(http.server.BaseHTTPRequestHandler):
         elif self.path.startswith("/api/noeud/"):
             nom = self.path[len("/api/noeud/"):]
             code, payload = _traiter_noeud_action(nom)
+            self._repondre_json(code, payload)
+        elif self.path == "/api/a_examiner":
+            code, payload = _traiter_a_examiner(params)
             self._repondre_json(code, payload)
         else:
             self._repondre_json(404, {"erreur": "introuvable"})
@@ -325,6 +355,7 @@ PAGE_HTML = r"""<!DOCTYPE html>
   .badge.warn { background:#fbe9e7; color:var(--warn); }
   #journal { background:#10161c; color:#d7dee4; border-radius:8px; padding:12px 14px; font-size:.8rem;
              font-family: ui-monospace, "SF Mono", Consolas, monospace; white-space:pre-wrap;
+             overflow-wrap:anywhere;
              max-height:380px; overflow-y:auto; min-height:60px; }
   #journal:empty::before { content:"Aucun job lancé."; color:#677; }
   .ligne-job { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px; }
@@ -369,6 +400,16 @@ PAGE_HTML = r"""<!DOCTYPE html>
     <div class="titre">Découverte interactive</div>
     <div class="desc">Non pilotable depuis ce tableau de bord (prompts terminal). Lancer : <code>python3 src/cli.py</code></div>
   </div>
+</section>
+
+<section>
+  <h2>JDD à examiner <span id="badge-examen" class="badge idle">…</span></h2>
+  <p class="meta" style="margin:0 0 10px">Découverte automatique quotidienne (<code>harvest_auto.py</code>) : candidats
+  ambigus (0 ligne RM détectée, analyse en échec) et services WFS/WMS en attente de confirmation manuelle.</p>
+  <table class="purge" id="table-examen">
+    <thead><tr><th>JDD</th><th>Type</th><th>Raison</th><th></th></tr></thead>
+    <tbody id="examen-corps"></tbody>
+  </table>
 </section>
 
 <section>
@@ -452,7 +493,7 @@ async function actualiserEtat(){
   const d = await resp.json();
   const cfg = d.datasets_configures;
   const stats = [];
-  stats.push(["Datasets configurés", `${cfg.tabulaire} tab. / ${cfg.geo} géo / ${cfg.insee} INSEE / ${cfg.oeb} OEB`]);
+  stats.push(["Datasets configurés", `${cfg.tabulaire} tab. / ${cfg.geo} géo / ${cfg.insee} INSEE / ${cfg.oeb} OEB / ${cfg.bdnb} BDNB`]);
   if (d.decouverte){
     stats.push(["Candidats en attente", d.decouverte.candidats]);
     stats.push(["JDD vus / exclus", `${d.decouverte.vus} / ${d.decouverte.exclus}`]);
@@ -589,6 +630,61 @@ async function chargerPurge(){
   appliquerEtatBoutons();
 }
 
+let itemsExamen = [];
+
+async function chargerExamen(){
+  const resp = await fetch("/api/a_examiner");
+  itemsExamen = await resp.json();
+  const badge = document.getElementById("badge-examen");
+  badge.textContent = itemsExamen.length;
+  badge.className = "badge " + (itemsExamen.length ? "warn" : "idle");
+  document.getElementById("examen-corps").innerHTML = itemsExamen.length ? itemsExamen.map(it => `
+    <tr>
+      <td>
+        <div style="font-weight:600">${esc(it.titre)}</div>
+        <div class="meta">${esc(it.organisation)} · <a href="${esc(it.url)}" target="_blank">data.gouv.fr</a></div>
+      </td>
+      <td>${esc(it.type)}</td>
+      <td class="impact">${esc(it.raison)}${it.nb_rm ? ` (${it.nb_rm} RM)` : ""}</td>
+      <td>
+        <div class="purge-action">
+          ${it.type === "tabulaire"
+            ? `<button onclick="resoudreExamen('${it.dataset_id}','candidat')">Ajouter aux candidats</button>`
+            : `<button onclick="copierJsonGeo('${it.dataset_id}')">Copier JSON DATASETS_GEO</button>`}
+          <button onclick="resoudreExamen('${it.dataset_id}','exclure')">Faux positif</button>
+          <button onclick="resoudreExamen('${it.dataset_id}','ignorer')">Ignorer</button>
+        </div>
+      </td>
+    </tr>
+  `).join("") : `<tr><td colspan="4" class="meta">Aucun JDD en attente d'examen.</td></tr>`;
+}
+
+async function resoudreExamen(datasetId, decision){
+  const resp = await fetch("/api/a_examiner", {method:"POST", body: JSON.stringify({dataset_id: datasetId, decision})});
+  const data = await resp.json();
+  notifier(data.message, !data.ok);
+  if (data.ok) chargerExamen();
+}
+
+function copierJsonGeo(datasetId){
+  const it = itemsExamen.find(e => e.dataset_id === datasetId);
+  if (!it) return;
+  const slug = datasetId.slice(0, 30).replace(/-/g, "_");
+  const entree = {
+    id: slug, type: it.type, url: it.service_url || "", couches: it.couches || [],
+    titre: it.titre, producteur: it.organisation, dossier: slug, theme: "environment",
+  };
+  const texte = JSON.stringify(entree, null, 2);
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(texte).then(
+      () => notifier("JSON copié — collez-le dans DATASETS_GEO (src/conf/datasets.py), puis « Ignorer » cette ligne."),
+      () => notifier(texte, true)
+    );
+  } else {
+    notifier(texte, true);
+  }
+}
+
 function majBoutonPurge(id){
   const champ = document.getElementById(`conf-${id}`);
   const bouton = document.getElementById(`btn-purge-${id}`);
@@ -613,9 +709,11 @@ rendreActions();
 actualiserEtat();
 actualiserJob();
 chargerPurge();
+chargerExamen();
 actualiserNoeud();
 setInterval(actualiserEtat, 15000);
 setInterval(chargerPurge, 15000);
+setInterval(chargerExamen, 15000);
 setInterval(actualiserNoeud, 15000);
 </script>
 </body>

@@ -61,7 +61,9 @@ DATASETS_GEO = _geo_json + [
 # Pour découvrir les JDD disponibles : python3 src/harvest_oeb.py --decouvrir
 # ---------------------------------------------------------------------------
 # Champs obligatoires :
-#   id      : slug du JDD sur le portail OEB (identifiant API data-fair)
+#   id      : identifiant haché du JDD sur le portail OEB (ex: "g30t4k3xfdnqstyybrwmq-to")
+#             NE PAS utiliser le slug lisible — l'API data-fair attend l'ID haché.
+#             Pour trouver les IDs : python3 src/harvest_oeb.py --decouvrir
 #   dossier : sous-dossier de sortie sous data/
 #   theme   : thème RUDI (voir ci-dessus)
 #
@@ -71,6 +73,41 @@ DATASETS_GEO = _geo_json + [
 #   champ_echelle: colonne contenant l'échelle (défaut : "echelle_territoire")
 #                  Mettre None pour télécharger toutes les lignes sans filtre d'échelle
 
+# ---------------------------------------------------------------------------
+# BDNB — Base de Données Nationale des Bâtiments (CSTB)
+# Données par département, téléchargées depuis bdnb.io
+# Harvested via : python3 src/harvest_bdnb.py
+# ---------------------------------------------------------------------------
+# Champs obligatoires :
+#   id      : identifiant local unique
+#   url_zip : URL directe du ZIP CSV pour le département 35
+#   dossier : sous-dossier de sortie sous data/
+#   theme   : thème RUDI
+#
+# Champs optionnels :
+#   millesime   : ex. "2026-02-a" (pour l'affichage dans les métadonnées RUDI)
+#   tables      : liste de (nom_table_dans_zip, methode) ; voir TABLES_DEFAUT dans bdnb.py
+#   exclure_geom: bool (défaut True) — exclut la colonne WKT geom_groupe
+
+DATASETS_BDNB = [
+    # ------------------------------------------------------------------
+    # BDNB millésime 2026-02-a — département 35 (Ille-et-Vilaine)
+    # Tables extraites : batiment_groupe + DPE + consommations énergie + FFO
+    # URL à mettre à jour à chaque nouveau millésime.
+    # Vérifier la dernière version sur : https://bdnb.io/download/
+    # ------------------------------------------------------------------
+    {
+        "id": "bdnb-dep35-2026-02-a",
+        "millesime": "2026-02-a",
+        "url_zip": (
+            "https://open-data.s3.fr-par.scw.cloud/bdnb_millesime_2026-02-a/"
+            "millesime_2026-02-a_dep35/open_data_millesime_2026-02-a_dep35_csv.zip"
+        ),
+        "dossier": "bdnb_dep35",
+        "theme": "housing",
+    },
+]
+
 DATASETS_OEB = [
     # ------------------------------------------------------------------
     # Indicateurs d'hydrologie future TRACC
@@ -79,7 +116,7 @@ DATASETS_OEB = [
     #          + echelle_territoire=EPCI + code_territoire=243500139
     # ------------------------------------------------------------------
     {
-        "id": "indicateurs-dhydrologie-future-tracc",
+        "id": "g30t4k3xfdnqstyybrwmq-to",
         "titre": "Indicateurs d'hydrologie future TRACC",
         "dossier": "oeb_hydrologie_tracc",
         "theme": "environment",

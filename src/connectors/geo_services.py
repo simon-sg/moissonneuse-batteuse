@@ -31,6 +31,24 @@ def _sep(url: str) -> str:
     return "&" if "?" in url else "?"
 
 
+def _signature_head(url: str, timeout: int = 15) -> dict | None:
+    """
+    Sonde une URL en HEAD et retourne un identifiant de contenu (Content-Length/ETag/
+    Last-Modified) si le serveur les fournit. Retourne None si le serveur ne supporte
+    pas HEAD sur cet endpoint ou ne renvoie aucun de ces en-têtes — dans ce cas
+    impossible de détecter un changement sans télécharger, l'appelant doit alors
+    retélécharger sans condition (comportement inchangé, pas de régression).
+    """
+    try:
+        resp = session.head(url, timeout=timeout, allow_redirects=True)
+        if resp.status_code != 200:
+            return None
+    except Exception:
+        return None
+    sig = {k: resp.headers.get(k) for k in ("Content-Length", "ETag", "Last-Modified")}
+    return sig if any(sig.values()) else None
+
+
 # ---------------------------------------------------------------------------
 # WFS
 # ---------------------------------------------------------------------------
@@ -83,6 +101,16 @@ def wfs_telecharger_rm(url_base: str, typename: str,
             print(f"    [WFS] tentative {params['VERSION']} échouée pour {typename} : {e}")
             continue
     return None
+
+
+def wfs_signature(url_base: str, typename: str, max_features: int = 10000,
+                   timeout: int = 15) -> dict | None:
+    """Signature best-effort (HEAD) de la requête GetFeature WFS 2.0.0 — voir _signature_head."""
+    sep = _sep(url_base)
+    params = {"SERVICE": "WFS", "VERSION": "2.0.0", "REQUEST": "GetFeature",
+              "TYPENAMES": typename, "BBOX": f"{_RM_BBOX},EPSG:4326",
+              "outputFormat": "application/json", "count": str(max_features)}
+    return _signature_head(f"{url_base}{sep}{urlencode(params)}", timeout=timeout)
 
 
 # ---------------------------------------------------------------------------
@@ -212,3 +240,11 @@ def ogcapi_telecharger_rm(url_base: str, collection_id: str,
     except Exception as e:
         print(f"    [OGC API] téléchargement de {collection_id} échoué : {e}")
     return None
+
+
+def ogcapi_signature(url_base: str, collection_id: str, limit: int = 10000,
+                      timeout: int = 15) -> dict | None:
+    """Signature best-effort (HEAD) de la requête items OGC API — voir _signature_head."""
+    url = f"{url_base.rstrip('/')}/collections/{collection_id}/items"
+    params = {"bbox": _RM_BBOX, "limit": limit, "f": "application/geo+json"}
+    return _signature_head(f"{url}{_sep(url)}{urlencode(params)}", timeout=timeout)

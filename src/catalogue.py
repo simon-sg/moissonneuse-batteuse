@@ -286,14 +286,16 @@ def _source_datagouv(meta: dict, dataset_id: str) -> str:
 
 
 def _connecteur(meta: dict, ressources: list[dict]) -> str:
-    """Déduit le connecteur de moisson (les 3 pipelines documentés dans CLAUDE.md) à
-    partir de l'URL source des métadonnées RUDI, avec repli sur le format des
-    ressources quand les métadonnées sont absentes/partielles."""
+    """Déduit le connecteur de moisson à partir de l'URL source des métadonnées RUDI."""
     src = (meta.get("metadata_info") or {}).get("metadata_source", "")
     if "data.gouv.fr" in src:
         return "data.gouv.fr"
     if "insee.fr" in src:
         return "INSEE"
+    if "bretagne-environnement.fr" in src:
+        return "OEB"
+    if "bdnb.io" in src or "s3.fr-par.scw.cloud" in src:
+        return "BDNB"
     if src:
         return "Géographique (WFS/WMS/OGC)"
     formats = {r.get("format") for r in ressources}
@@ -451,6 +453,10 @@ GABARIT_HTML = r"""<!DOCTYPE html>
   .description p:last-child { margin-bottom:0; }
   .description ul, .description ol { margin:4px 0 8px 20px; }
   .description a { color:var(--accent); }
+  .description code { background:#f0f2f4; padding:1px 5px; border-radius:4px; font-size:.85em; }
+  .description h4, .description h5, .description h6 { margin:10px 0 4px; color:var(--txt); }
+  .description h4 { font-size:1rem; } .description h5 { font-size:.95rem; } .description h6 { font-size:.9rem; }
+  .description h4:first-child, .description h5:first-child, .description h6:first-child { margin-top:0; }
   .tags { display:flex; flex-wrap:wrap; gap:6px; margin:8px 0; }
   .tag { background:#eef3f6; color:#345; border-radius:99px; padding:2px 10px; font-size:.75rem; }
   .badge { display:inline-block; background:#fdecea; color:#a3372c; border-radius:99px;
@@ -514,25 +520,85 @@ function octets(n){
 function esc(s){ return (s??"").toString().replace(/[&<>"]/g, c =>
   ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c])); }
 
-// Rendu Markdown minimal (gras/italique/liens/listes) pour les descriptions sources
-// (data.gouv.fr fournit ses descriptions en Markdown). Échappe d'abord tout le texte,
+// Rendu Markdown minimal (titres/gras/italique/code/liens/listes) pour les descriptions
+// sources (data.gouv.fr fournit ses descriptions en Markdown). Échappe d'abord tout le texte,
 // puis n'introduit que les balises qu'on construit nous-mêmes : aucune injection possible.
+// Séquences \*, \_, \` : protégées via des points de code de contrôle (jamais présents dans
+// du texte source réel) le temps du traitement, pour rendre leur échappement Markdown effectif.
+const PH_ETOILE = "", PH_SOUL = "", PH_BTICK = "";
 function inlineMd(s){
   return esc(s)
+    .replace(/\\([*_`])/g, (_, c) => c === "*" ? PH_ETOILE : c === "_" ? PH_SOUL : PH_BTICK)
+    .replace(/```([^`]+)```|`([^`]+)`/g, (_, t3, t1) => `<code>${t3 ?? t1}</code>`)
+    // Liens en premier, avant gras/italique : une URL (data.gouv.fr en regorge) contient
+    // souvent des tirets bas isolés (ex: .../france_6233361_4355770.html) qui, si le motif
+    // d'italique passait avant, s'apparient à tort avec un tiret bas sans rapport ailleurs
+    // dans le texte — ouvrant un <i> qui ne se referme jamais avant la fin du bloc suivant.
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)|&lt;(https?:\/\/[^\s&]+)&gt;|(?<=^|[\s(])(https?:\/\/[^\s<>()]+)/g,
+      (m, texteMd, urlMd, urlAuto, urlNu) => {
+        if (urlMd) return `<a href="${urlMd}" target="_blank" rel="noopener">${texteMd}</a>`;
+        if (urlAuto) return `<a href="${urlAuto}" target="_blank" rel="noopener">${urlAuto}</a>`;
+        if (urlNu) {
+          const fin = urlNu.match(/[.,;:!?]+$/);
+          const propre = fin ? urlNu.slice(0, -fin[0].length) : urlNu;
+          const reste = fin ? fin[0] : "";
+          return propre ? `<a href="${propre}" target="_blank" rel="noopener">${propre}</a>${reste}` : m;
+        }
+        return m;
+      })
     .replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>")
-    .replace(/(^|[^*])\*([^*\s][^*]*)\*(?!\*)/g, "$1<i>$2</i>")
-    .replace(/(^|[^_])_([^_\s][^_]*)_(?!_)/g, "$1<i>$2</i>")
-    .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+    .replace(/(^|[^*])\*([^*\s][^*\n]*)\*(?!\*)/g, "$1<i>$2</i>")
+    // Tiret bas : jamais d'emphase à l'intérieur d'un mot (garde `\w` de part et d'autre),
+    // pour ne pas interpréter un identifiant type `dataset_carte` comme un début d'italique.
+    .replace(/(^|[^_\w])_([^_\s][^_\n]*)_(?!_)(?!\w)/g, "$1<i>$2</i>")
+    .replace(new RegExp(PH_ETOILE, "g"), "*")
+    .replace(new RegExp(PH_SOUL, "g"), "_")
+    .replace(new RegExp(PH_BTICK, "g"), "`")
+    .replace(/\n/g, "<br>");
 }
 function markdown(texte){
   const blocs = [];
-  let para = [], liste = [];
-  const flushPara = () => { if (para.length) { blocs.push("<p>" + para.map(inlineMd).join("<br>") + "</p>"); para = []; } };
-  const flushListe = () => { if (liste.length) { blocs.push("<ul>" + liste.map(l => "<li>" + inlineMd(l) + "</li>").join("") + "</ul>"); liste = []; } };
-  for (const ligne of (texte || "").split(/\r?\n/)) {
-    const m = ligne.match(/^\s*[-*]\s+(.*)/);
-    if (m) { flushPara(); liste.push(m[1]); continue; }
-    if (!ligne.trim()) { flushPara(); flushListe(); continue; }
+  let para = [], liste = [], typeListe = null;
+  const flushPara = () => { if (para.length) { blocs.push("<p>" + inlineMd(para.join("\n")) + "</p>"); para = []; } };
+  const flushListe = () => {
+    if (liste.length) {
+      const tag = typeListe === "ol" ? "ol" : "ul";
+      blocs.push(`<${tag}>` + liste.map(l => "<li>" + inlineMd(l) + "</li>").join("") + `</${tag}>`);
+      liste = []; typeListe = null;
+    }
+  };
+  const lignes = (texte || "").split(/\r?\n/);
+  for (let i = 0; i < lignes.length; i++) {
+    const ligne = lignes[i];
+    const mTitre = ligne.match(/^\s{0,3}(#{1,6})\s+(.*)/);
+    if (mTitre) {
+      flushPara(); flushListe();
+      const n = Math.min(mTitre[1].length + 3, 6);
+      blocs.push(`<h${n}>${inlineMd(mTitre[2])}</h${n}>`);
+      continue;
+    }
+    const mNum = ligne.match(/^\s*\d+[.)]\s+(.*)/);
+    const mPuce = !mNum && ligne.match(/^\s*[-*]\s+(.*)/);
+    if (mNum || mPuce) {
+      const type = mNum ? "ol" : "ul";
+      if (typeListe && typeListe !== type) flushListe();
+      flushPara();
+      typeListe = type;
+      liste.push((mNum || mPuce)[1]);
+      continue;
+    }
+    if (!ligne.trim()) {
+      flushPara();
+      // Une ligne vide ne referme la liste en cours que si l'item suivant (au-delà
+      // d'éventuelles autres lignes vides) n'en est plus un — cas des listes "aérées".
+      if (liste.length) {
+        let j = i + 1;
+        while (j < lignes.length && !lignes[j].trim()) j++;
+        const suite = j < lignes.length && (/^\s*\d+[.)]\s+/.test(lignes[j]) || /^\s*[-*]\s+/.test(lignes[j]));
+        if (!suite) flushListe();
+      }
+      continue;
+    }
     flushListe(); para.push(ligne);
   }
   flushPara(); flushListe();

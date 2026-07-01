@@ -475,6 +475,28 @@ def est_exclu_par_terme(dataset: dict, termes: list[str]) -> bool:
     return any(normaliser(t) in titre or normaliser(t) in org for t in termes)
 
 
+def _filtrer_communs(datasets: list, decouverte: dict, ignorer_deja_vus: bool = False,
+                      ids_ignores_supp: set | None = None, deja_vus: set | None = None) -> list:
+    """Applique les filtres invariants (orgs, géo, termes, déjà vus). Partagé par la session
+    interactive (main()) et par la découverte automatique (rechercher_et_filtrer_auto())."""
+    exclusions_termes = decouverte.get("exclusions_termes", [])
+    exclus_ids = set(decouverte["exclus"])
+    ids_ignores_supp = ids_ignores_supp or set()
+    if deja_vus is None:
+        deja_vus = set(decouverte["vus"])
+    return [
+        ds for ds in datasets
+        if not est_org_exclue(ds)
+        and not est_org_hors_rm(ds)
+        and couvre_rennes(ds)
+        and (not titre_hors_rm(ds) or description_suggerant_commune(ds))
+        and not est_exclu_par_terme(ds, exclusions_termes)
+        and (ignorer_deja_vus or ds["id"] not in deja_vus)
+        and ds["id"] not in exclus_ids
+        and ds["id"] not in ids_ignores_supp
+    ]
+
+
 EPCI_SIREN_RM = "243500139"  # SIREN de Rennes Métropole
 
 ZONES_INCLUANT_RM = {
@@ -1894,10 +1916,11 @@ def charger_decouverte() -> dict:
         d.setdefault("echecs_n", {})     # {dataset_id: nb_echecs consécutifs}
         d.setdefault("sans_ressource", [])
         d.setdefault("exclusions_termes", [])
+        d.setdefault("a_examiner", [])   # backlog de revue différée (découverte automatique)
         return d
     return {"vus": [], "candidats": [], "exclus": [],
             "echecs": [], "echecs_n": {}, "sans_ressource": [],
-            "exclusions_termes": []}
+            "exclusions_termes": [], "a_examiner": []}
 
 
 def fetcher_datasets_par_ids(ids: list) -> list:
@@ -1941,6 +1964,395 @@ def _sauver_service_geo(entry: dict) -> None:
         json.dump(existing, f, ensure_ascii=False, indent=2)
     print(f"  Sauvegardé dans data/geo_services.json ({len(existing)} service(s))")
     print("  Lancez : python3 src/harvest_geo.py")
+
+
+# ---------------------------------------------------------------------------
+# Découverte automatique (non-interactive, pour cron/Jenkins — src/harvest_auto.py)
+# ---------------------------------------------------------------------------
+
+def _upsert_a_examiner(a_examiner_par_id: dict, ds: dict, result: dict | None, raison: str) -> None:
+    """Ajoute/rafraîchit une entrée du backlog de revue différée (decouverte['a_examiner'])."""
+    did = ds["id"]
+    result = result or {}
+    type_ = result.get("type") or "tabulaire"
+    if type_ == "wfs":
+        couches = result.get("wfs_layers", [])
+    elif type_ == "wms":
+        couches = [c["nom"] for c in result.get("couches", [])]
+    else:
+        couches = []
+    a_examiner_par_id[did] = {
+        "dataset_id": did,
+        "titre": ds.get("title", ""),
+        "organisation": (ds.get("organization") or {}).get("name", ""),
+        "url": ds.get("_url") or f"https://www.data.gouv.fr/datasets/{did}",
+        "type": type_,
+        "raison": raison,
+        "nb_rm": result.get("nb_rm", 0),
+        "champs_detectes": {
+            "champ_cp": result.get("champ_cp"),
+            "champ_ville": result.get("champ_ville"),
+            "champ_iris": result.get("champ_iris"),
+            "champ_adresse": result.get("champ_adresse"),
+        },
+        "couches": couches,
+        "service_url": result.get("url") if type_ in ("wfs", "wms") else None,
+        "date_ajout": datetime.date.today().isoformat(),
+    }
+
+
+def rechercher_et_filtrer_auto(decouverte: dict) -> dict:
+    """
+    Version non-interactive du cycle recherche + pré-filtrage de main() : jamais d'input().
+    Réutilise les mêmes fonctions (_paginer, _filtrer_communs, pre_filtrer) pour ne pas
+    dupliquer la logique de matching.
+
+    - Datasets tabulaires avec RM détecté (nb_rm > 0) : ajoutés automatiquement à
+      decouverte["candidats"], exactement comme en session interactive.
+    - Services WFS/WMS, ou datasets tabulaires ambigus (0 RM détecté) ou en échec d'analyse :
+      accumulés (upsert par dataset_id) dans decouverte["a_examiner"] pour revue différée
+      (voir resoudre_a_examiner() et la vue dédiée du dashboard).
+
+    Retourne des statistiques de run (pas d'affichage — appelant : src/harvest_auto.py).
+    """
+    _purger_cache(jours=30)
+    decouverte.setdefault("a_examiner", [])
+
+    datasets_trouves: list = []
+    ids_trouves: set = set()
+    requetes = REQUETES_STRUCTUREES if RECHERCHE_STRUCTUREE else [{"params": {"q": k}} for k in KEYWORDS]
+    print(f"[découverte] recherche API : {len(requetes)} requête(s)...", flush=True)
+    for requete in requetes:
+        resultats, total = _paginer(requete["params"])
+        nouveaux = 0
+        for ds in resultats:
+            if ds["id"] not in ids_trouves:
+                datasets_trouves.append(ds)
+                ids_trouves.add(ds["id"])
+                nouveaux += 1
+        print(f"[découverte]   {requete.get('label', requete['params'])} : "
+              f"{total} résultat(s), {nouveaux} nouveau(x) (cumul {len(datasets_trouves)})", flush=True)
+
+    candidats_nouveaux = _filtrer_communs(datasets_trouves, decouverte)
+    print(f"[découverte] {len(datasets_trouves)} JDD trouvés, {len(candidats_nouveaux)} restants "
+          f"après filtres (org/géo/déjà vus/exclus)...", flush=True)
+
+    stats = {"analyses": len(candidats_nouveaux), "ignores": 0,
+             "candidats_auto": 0, "a_examiner": 0, "echecs_analyse": 0}
+    if not candidats_nouveaux:
+        sauvegarder_decouverte(decouverte)
+        return stats
+
+    a_examiner_par_id = {e["dataset_id"]: e for e in decouverte["a_examiner"]}
+
+    total_pf = len(candidats_nouveaux)
+    done_pf = 0
+    with ThreadPoolExecutor(max_workers=10) as pf_exec:
+        future_to_ds = {pf_exec.submit(pre_filtrer, ds): ds for ds in candidats_nouveaux}
+        for fut in as_completed(future_to_ds):
+            ds = future_to_ds[fut]
+            done_pf += 1
+            if done_pf % 50 == 0 or done_pf == total_pf:
+                print(f"[découverte]   analyse : {done_pf}/{total_pf}...", flush=True)
+            try:
+                verdict, result = fut.result()
+            except Exception as e:
+                decouverte["vus"].append(ds["id"])
+                stats["echecs_analyse"] += 1
+                _upsert_a_examiner(a_examiner_par_id, ds, None, raison=f"analyse échouée : {e}")
+                continue
+
+            if verdict == "skip":
+                decouverte["vus"].append(ds["id"])
+                stats["ignores"] += 1
+            elif verdict == "candidat" and result.get("type") not in ("wfs", "wms"):
+                decouverte["candidats"].append({
+                    "dataset_id": ds["id"],
+                    "titre": ds["title"],
+                    "dossier": ds["id"][:30].replace("-", "_"),
+                    "champ_cp":      result["champ_cp"],
+                    "champ_ville":   result["champ_ville"],
+                    "champ_iris":    result.get("champ_iris"),
+                    "champ_adresse": result.get("champ_adresse"),
+                    "nb_rm":         result["nb_rm"],
+                })
+                decouverte["vus"].append(ds["id"])
+                stats["candidats_auto"] += 1
+            else:
+                if result and result.get("type") in ("wfs", "wms"):
+                    raison = "service géo — confirmation requise"
+                elif result is not None:
+                    raison = "0 ligne RM détectée"
+                else:
+                    raison = "analyse échouée"
+                _upsert_a_examiner(a_examiner_par_id, ds, result, raison=raison)
+                decouverte["vus"].append(ds["id"])
+
+    decouverte["a_examiner"] = list(a_examiner_par_id.values())
+    stats["a_examiner"] = len(decouverte["a_examiner"])
+    sauvegarder_decouverte(decouverte)
+    return stats
+
+
+def resoudre_a_examiner(decouverte: dict, dataset_id: str, decision: str,
+                         champs_manuels: dict | None = None) -> bool:
+    """
+    Applique une décision de revue humaine sur une entrée de decouverte["a_examiner"] :
+      "exclure"  → faux positif définitif, ajouté à decouverte["exclus"]
+      "candidat" → ajouté quand même à decouverte["candidats"] (nécessite un champ détecté —
+                   n'a de sens que pour une entrée tabulaire)
+      "ignorer"  → retiré du backlog sans autre action (ex : service géo déjà copié à la main
+                   dans DATASETS_GEO)
+
+    champs_manuels : pour decision="candidat", remplace les champs auto-détectés par un tag
+    manuel (voir revue_manuelle_a_examiner()) — dict champ_cp/champ_ville/champ_iris/
+    champ_adresse/champ_siren/nb_rm. None (défaut) = comportement inchangé, utilise
+    entree["champs_detectes"]/entree["nb_rm"].
+
+    Retourne True si l'entrée existait et a été traitée, False sinon (dataset_id inconnu ou
+    décision invalide/inapplicable).
+    """
+    a_examiner = decouverte.get("a_examiner", [])
+    entree = next((e for e in a_examiner if e["dataset_id"] == dataset_id), None)
+    if entree is None:
+        return False
+
+    if decision == "exclure":
+        if dataset_id not in decouverte["exclus"]:
+            decouverte["exclus"].append(dataset_id)
+    elif decision == "candidat":
+        champs = champs_manuels if champs_manuels is not None else entree.get("champs_detectes", {})
+        if not any(champs.get(c) for c in
+                   ("champ_cp", "champ_ville", "champ_iris", "champ_adresse", "champ_siren")):
+            return False
+        decouverte["candidats"].append({
+            "dataset_id": dataset_id,
+            "titre": entree["titre"],
+            "dossier": dataset_id[:30].replace("-", "_"),
+            "champ_cp": champs.get("champ_cp"),
+            "champ_ville": champs.get("champ_ville"),
+            "champ_iris": champs.get("champ_iris"),
+            "champ_adresse": champs.get("champ_adresse"),
+            "champ_siren": champs.get("champ_siren"),
+            "nb_rm": champs.get("nb_rm", entree.get("nb_rm", 0)),
+        })
+    elif decision == "ignorer":
+        pass
+    else:
+        return False
+
+    decouverte["a_examiner"] = [e for e in a_examiner if e["dataset_id"] != dataset_id]
+    sauvegarder_decouverte(decouverte)
+    return True
+
+
+# ---------------------------------------------------------------------------
+# Revue manuelle du backlog a_examiner (tagging manuel des colonnes)
+# ---------------------------------------------------------------------------
+
+_CHAMPS_TAGUABLES = [
+    ("champ_iris", "code INSEE / IRIS commune"),
+    ("champ_cp", "code postal"),
+    ("champ_ville", "ville / commune"),
+    ("champ_adresse", "adresse complète"),
+    ("champ_siren", "SIREN / SIRET"),
+]
+
+
+def _decoder_apercu_csv(contenu: bytes):
+    """
+    Décode des bytes CSV pour la revue manuelle (aperçu colonnes + tagging).
+    Retourne (texte, delimiteur, entetes), ou None (binaire/HTML), ou
+    "__DICTIONNAIRE__" (résumé colonne/description, pas de vraies données).
+
+    Duplique volontairement le début de _analyser_contenu_csv() plutôt que de le
+    factoriser : cette dernière a un logging précis par cas d'échec (log_analyse())
+    qu'on ne veut pas perturber en la faisant passer par un helper partagé pour un
+    usage différent — une quinzaine de lignes similaires valent mieux qu'une
+    abstraction prématurée sur une fonction déjà centrale au pipeline d'auto-détection.
+    """
+    if contenu[:5] in (b"%PDF-", b"PK\x03\x04", b"\x1f\x8b\x08"):
+        return None
+    debut = contenu[:100].lstrip().lower()
+    if debut.startswith((b"<!doctype", b"<html")):
+        return None
+
+    texte = contenu.decode("utf-8-sig", errors="replace")
+    if texte.count("�") > 10:
+        texte = contenu.decode("latin-1")
+    sample = texte[:4096]
+    try:
+        dialect = csv.Sniffer().sniff(sample, delimiters=";,\t|")
+        delimiteur = dialect.delimiter
+    except csv.Error:
+        delimiteur = ","
+
+    premiere_ligne = texte.split("\n")[0]
+    premiere_norm = normaliser(premiere_ligne.split(",")[0].split(";")[0])
+    if premiere_norm in ("colonne", "column", "champ", "field", "variable"):
+        return "__DICTIONNAIRE__"
+
+    nb_cols = len(premiere_ligne.split(delimiteur))
+    if nb_cols <= 2:
+        for sep in (";", "\t", "|", ","):
+            n = len(premiere_ligne.split(sep))
+            if n > nb_cols:
+                nb_cols, delimiteur = n, sep
+
+    reader = csv.DictReader(io.StringIO(texte, newline=""), delimiter=delimiteur)
+    entetes = list(reader.fieldnames or [])
+    return texte, delimiteur, entetes
+
+
+def _apercu_colonnes(entetes: list[str], lignes: list[dict]) -> None:
+    """Affiche chaque colonne avec ses valeurs sur les premières lignes fournies."""
+    for i, entete in enumerate(entetes, 1):
+        valeurs = []
+        for ligne in lignes:
+            v = str(ligne.get(entete, ""))
+            valeurs.append(v[:20] + ("…" if len(v) > 20 else ""))
+        print(f"  {i:2d}. {entete[:30]:30s} : {', '.join(valeurs)}")
+
+
+def revue_manuelle_a_examiner() -> None:
+    """
+    Revue manuelle du backlog decouverte["a_examiner"] (entrées tabulaires uniquement —
+    les services WFS/WMS restent gérés par les flux existants : dashboard ou revue
+    interactive de main()).
+
+    Pour chaque entrée : télécharge la ressource, affiche un aperçu colonne par colonne
+    (en-têtes + valeurs d'exemple), puis laisse l'utilisateur désigner lui-même la colonne
+    de filtrage (code INSEE/IRIS, CP, ville, adresse, SIREN) — utile quand la détection
+    automatique (_detecter_champs()) n'a rien trouvé ou s'est trompée.
+    """
+    from connectors.datagouv import get_dataset_metadata
+
+    decouverte = charger_decouverte()
+    ids = [e["dataset_id"] for e in decouverte.get("a_examiner", [])
+           if e.get("type", "tabulaire") == "tabulaire"]
+    if not ids:
+        print("Aucun JDD tabulaire en attente d'examen manuel (a_examiner).")
+        return
+
+    print(f"{len(ids)} JDD tabulaire(s) en attente d'examen manuel.\n")
+    n_ajoutes, n_exclus, n_passes = 0, 0, 0
+
+    for i, did in enumerate(ids, 1):
+        entree = next((e for e in decouverte["a_examiner"] if e["dataset_id"] == did), None)
+        if entree is None:
+            continue  # déjà traité plus tôt dans cette même session
+
+        print(f"\n{SEP}")
+        print(f"[{i}/{len(ids)}] {entree['titre'][:70]}")
+        print(f"  Organisation : {entree.get('organisation', '')}")
+        print(f"  Raison       : {entree.get('raison', '')}")
+        print(f"  URL          : {entree.get('url', '')}")
+
+        try:
+            metadata = get_dataset_metadata(did)
+        except Exception as e:
+            print(f"  (impossible de récupérer les métadonnées : {e})")
+            n_passes += 1
+            continue
+
+        ressource = trouver_ressource_analysable(metadata)
+        if ressource is None or _format_analysable(ressource) != "csv":
+            fmt_desc = ressource.get("format", "?") if ressource else "aucune ressource"
+            print(f"  (type de ressource non supporté pour la revue manuelle : {fmt_desc}"
+                  f" — laissé dans le backlog)")
+            n_passes += 1
+            continue
+
+        chemin, taille_mo, depuis_cache, erreur = _telecharger(ressource["url"], verbose=True)
+        if erreur:
+            print(f"  (échec du téléchargement : {erreur})")
+            n_passes += 1
+            continue
+        with open(chemin, "rb") as f:
+            contenu = f.read()
+
+        decode = _decoder_apercu_csv(contenu)
+        if decode is None:
+            print("  (fichier binaire ou réponse HTML — impossible d'afficher un aperçu)")
+            n_passes += 1
+            continue
+        if decode == "__DICTIONNAIRE__":
+            print("  (ressource détectée comme dictionnaire de colonnes, pas des données — ignorée)")
+            n_passes += 1
+            continue
+        texte, delimiteur, entetes = decode
+        if not entetes:
+            print("  (aucune colonne détectée)")
+            n_passes += 1
+            continue
+
+        while True:
+            lignes_exemple = list(csv.DictReader(io.StringIO(texte, newline=""), delimiter=delimiteur))[:3]
+            print(f"\n  Colonnes disponibles ({len(entetes)}) — valeurs d'exemple sur les 3 premières lignes :")
+            _apercu_colonnes(entetes, lignes_exemple)
+
+            detectes = entree.get("champs_detectes", {}) or {}
+            print("\n  Quelle colonne contient... (numéro de colonne, ou Entrée si aucune)")
+            champs_manuels = {}
+            for cle, label in _CHAMPS_TAGUABLES:
+                defaut_nom = detectes.get(cle)
+                defaut_idx = entetes.index(defaut_nom) + 1 if defaut_nom in entetes else None
+                suffixe = f" [{defaut_idx}]" if defaut_idx else ""
+                saisie = input(f"    {label}{suffixe} : ").strip()
+                if not saisie:
+                    champs_manuels[cle] = defaut_nom if defaut_idx else None
+                elif saisie.isdigit() and 1 <= int(saisie) <= len(entetes):
+                    champs_manuels[cle] = entetes[int(saisie) - 1]
+                else:
+                    print("      (numéro invalide, ignoré)")
+                    champs_manuels[cle] = None
+
+            nb_total, nb_rm, exemples = 0, 0, []
+            if any(champs_manuels.values()):
+                nb_total, nb_rm, exemples, _ = _compter_lignes_rm(
+                    csv.DictReader(io.StringIO(texte, newline=""), delimiter=delimiteur),
+                    champs_manuels.get("champ_cp"), champs_manuels.get("champ_ville"),
+                    champs_manuels.get("champ_iris"), None, champs_manuels.get("champ_adresse"),
+                    champs_manuels.get("champ_siren"),
+                )
+                print(f"\n  → {nb_rm} ligne(s) RM sur {nb_total}.")
+                if exemples:
+                    print("  Exemples :")
+                    for ex in exemples:
+                        print("    " + _resumer_ligne(ex))
+            else:
+                print("\n  Aucune colonne taguée — impossible de calculer un filtre.")
+
+            choix = input("\n  (o) ajouter aux candidats  (r) refaire le tag  "
+                          "(p) passer  (x) faux positif  (q) quitter la revue ? ").strip().lower()
+
+            if choix == "o":
+                if not any(champs_manuels.values()):
+                    print("  → Impossible : aucune colonne taguée.")
+                    continue
+                if nb_rm == 0 and input("  0 ligne RM — ajouter quand même aux candidats ? "
+                                        "(o/n) ").strip().lower() != "o":
+                    continue
+                champs_manuels["nb_rm"] = nb_rm
+                resoudre_a_examiner(decouverte, did, "candidat", champs_manuels=champs_manuels)
+                print("  → Ajouté aux candidats.")
+                n_ajoutes += 1
+                break
+            elif choix == "r":
+                continue
+            elif choix == "x":
+                resoudre_a_examiner(decouverte, did, "exclure")
+                print("  → Marqué comme faux positif (exclu définitivement).")
+                n_exclus += 1
+                break
+            elif choix == "q":
+                print(f"\nRevue interrompue. {n_ajoutes} ajouté(s), {n_exclus} exclu(s), {n_passes} passé(s).")
+                return
+            else:  # "p" ou saisie inconnue = passer
+                n_passes += 1
+                break
+
+    print(f"\nFin de la revue manuelle. {n_ajoutes} ajouté(s), {n_exclus} exclu(s), {n_passes} passé(s).")
 
 
 # ---------------------------------------------------------------------------
@@ -2106,23 +2518,11 @@ def main():
     if choix_depart not in options_valides:
         choix_depart = "n"
 
-    exclusions_termes = decouverte.get("exclusions_termes", [])
-    exclus_ids = set(decouverte["exclus"])
     echecs_ids_fetched = {ds["id"] for ds in echecs_datasets}
 
-    def _filtrer_communs(datasets, ignorer_deja_vus=False):
-        """Applique les filtres invariants (orgs, géo, termes, déjà vus)."""
-        return [
-            ds for ds in datasets
-            if not est_org_exclue(ds)
-            and not est_org_hors_rm(ds)
-            and couvre_rennes(ds)
-            and (not titre_hors_rm(ds) or description_suggerant_commune(ds))
-            and not est_exclu_par_terme(ds, exclusions_termes)
-            and (ignorer_deja_vus or ds["id"] not in deja_vus)
-            and ds["id"] not in exclus_ids
-            and ds["id"] not in echecs_ids_fetched
-        ]
+    def _filtrer(datasets, ignorer_deja_vus=False):
+        return _filtrer_communs(datasets, decouverte, ignorer_deja_vus=ignorer_deja_vus,
+                                 ids_ignores_supp=echecs_ids_fetched, deja_vus=deja_vus)
 
     candidats_nouveaux = []
 
@@ -2131,7 +2531,7 @@ def main():
         # ignorer_deja_vus=True car ces datasets ont été marqués vus au pré-filtrage
         with open(PREFILTRES_FILE, encoding="utf-8") as f:
             prefiltres_bruts = json.load(f)
-        candidats_nouveaux = _filtrer_communs(prefiltres_bruts, ignorer_deja_vus=True)
+        candidats_nouveaux = _filtrer(prefiltres_bruts, ignorer_deja_vus=True)
         _resultats_auto = {}
         print(f"  → {len(candidats_nouveaux)} JDD chargés (après filtres mis à jour).\n")
 
@@ -2167,7 +2567,7 @@ def main():
             with open(RESULTATS_API_FILE, "w", encoding="utf-8") as f:
                 json.dump(datasets_trouves, f, ensure_ascii=False)
 
-        candidats_nouveaux = _filtrer_communs(datasets_trouves)
+        candidats_nouveaux = _filtrer(datasets_trouves)
 
         # Analyse automatique : description → en-têtes → analyse RM en parallèle
         if candidats_nouveaux:

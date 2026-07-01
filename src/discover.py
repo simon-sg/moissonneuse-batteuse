@@ -29,6 +29,7 @@ from filters.geographic import est_dans_rm, est_commune_rm, normaliser
 from conf.communes_rm import CODES_POSTAUX_RM, CODES_INSEE_RM, COMMUNES_RM
 from connectors.sirene import obtenir_sirens_rm
 from connectors.geo_services import wms_get_capabilities, wms_couches_dans_rm, nettoyer_url_ogc
+from connectors.http import session
 
 # ---------------------------------------------------------------------------
 # Configuration
@@ -340,7 +341,10 @@ def _paginer(params_base: dict, nb_pages: int = NB_PAGES) -> tuple[list, int]:
     for page in range(1, nb_pages + 1):
         params = {**params_base, "page_size": PAGE_SIZE, "page": page}
         try:
-            response = requests.get(url, params=params, timeout=10)
+            # session partagé = retry/backoff automatique sur 429/5xx/erreurs
+            # de connexion (voir src/connectors/http.py) ; timeout généreux car
+            # les pages profondes de l'API data.gouv.fr sont parfois lentes.
+            response = session.get(url, params=params, timeout=30)
             if response.status_code == 404:
                 break  # page inexistante = fin de pagination
             response.raise_for_status()
@@ -351,8 +355,11 @@ def _paginer(params_base: dict, nb_pages: int = NB_PAGES) -> tuple[list, int]:
             if len(resultats) < PAGE_SIZE:
                 break
         except Exception as e:
-            print(f"  (Erreur page {page} : {e})")
-            break
+            # Une page en échec persistant (même après les retries de la
+            # session) ne doit pas faire perdre toutes les pages suivantes :
+            # on saute juste celle-ci et on continue la pagination.
+            print(f"  (Erreur page {page} : {e} — page ignorée, poursuite)")
+            continue
     return tous, total
 
 
@@ -900,8 +907,8 @@ def _purger_cache(jours: int = 30) -> None:
 
 def _telecharger(url: str, verbose: bool, plafond_mo: float | None = 50) -> tuple:
     """
-    Retourne (contenu_bytes, taille_mo, depuis_cache, erreur).
-    Utilise le cache si le fichier a déjà été téléchargé.
+    Télécharge en streaming vers le cache disque (un chunk à la fois, jamais en mémoire).
+    Retourne (chemin, taille_mo, depuis_cache, erreur).
 
     plafond_mo : tronque le téléchargement au-delà de ce plafond (suffisant pour
     échantillonner un CSV/GZ). None = pas de plafond — nécessaire pour un ZIP, dont
@@ -910,12 +917,10 @@ def _telecharger(url: str, verbose: bool, plafond_mo: float | None = 50) -> tupl
     """
     chemin = _chemin_cache(url)
     if os.path.exists(chemin):
-        with open(chemin, "rb") as f:
-            contenu = f.read()
-        taille = len(contenu) / 1024 / 1024
+        taille = os.path.getsize(chemin) / 1024 / 1024
         if verbose:
             print(f"  Cache ({taille:.1f} Mo).")
-        return contenu, taille, True, None
+        return chemin, taille, True, None
 
     if verbose:
         print("  Téléchargement en cours...")
@@ -925,38 +930,38 @@ def _telecharger(url: str, verbose: bool, plafond_mo: float | None = 50) -> tupl
     except Exception as e:
         return None, 0, False, f"téléchargement : {e}"
 
-    contenu = b""
     total = 0
     interrompu = None
+    os.makedirs(CACHE_DIR, exist_ok=True)
+    chemin_tmp = chemin + ".tmp"
     try:
-        for chunk in response.iter_content(chunk_size=1024 * 1024):
-            contenu += chunk
-            total += len(chunk)
-            if verbose:
-                print(f"  {total / 1024 / 1024:.1f} Mo...", end="\r")
-            if plafond_mo is not None and total >= plafond_mo * 1024 * 1024:
-                response.close()
+        with open(chemin_tmp, "wb") as f:
+            for chunk in response.iter_content(chunk_size=1024 * 1024):
+                f.write(chunk)
+                total += len(chunk)
                 if verbose:
-                    print(f"\n  (Plafond {plafond_mo} Mo atteint — données partielles utilisées)")
-                break
+                    print(f"  {total / 1024 / 1024:.1f} Mo...", end="\r")
+                if plafond_mo is not None and total >= plafond_mo * 1024 * 1024:
+                    response.close()
+                    if verbose:
+                        print(f"\n  (Plafond {plafond_mo} Mo atteint — données partielles utilisées)")
+                    break
     except Exception as e:
         interrompu = str(e)
     if verbose:
         print()
 
     if interrompu:
-        # Si on a quand même récupéré des données, on les utilise (transfert partiel)
-        if total >= 1024 * 1024:  # au moins 1 Mo
+        if total >= 1024 * 1024:
             if verbose:
                 print(f"  (Transfert interrompu après {total/1024/1024:.1f} Mo — données partielles utilisées)")
         else:
+            if os.path.exists(chemin_tmp):
+                os.remove(chemin_tmp)
             return None, 0, False, f"téléchargement interrompu : {interrompu}"
 
-    os.makedirs(CACHE_DIR, exist_ok=True)
-    with open(chemin, "wb") as f:
-        f.write(contenu)
-
-    return contenu, total / 1024 / 1024, False, None
+    os.rename(chemin_tmp, chemin)
+    return chemin, total / 1024 / 1024, False, None
 
 
 def _detecter_champs(entetes: list[str]) -> tuple:
@@ -1136,24 +1141,26 @@ def analyser_csv(url: str, verbose: bool = True,
     verbose=False supprime les prints (pour l'exécution en arrière-plan).
     Retourne None si le téléchargement ou le parsing échoue (le JDD sera reproposé).
     """
-    contenu, taille_mo, depuis_cache, erreur = _telecharger(url, verbose)
+    chemin, taille_mo, depuis_cache, erreur = _telecharger(url, verbose)
     if erreur:
         log_analyse({"url": url, "dataset_id": dataset_id, "titre": titre, "erreur": erreur})
         if verbose:
             print(f"  (Échec : {erreur})")
         return None
+    with open(chemin, "rb") as f:
+        contenu = f.read()
     return _analyser_contenu_csv(contenu, verbose, dataset_id, titre, url, taille_mo, depuis_cache)
 
 
 def analyser_zip(url: str, verbose: bool = False,
                  dataset_id: str = "", titre: str = "") -> dict | None:
     """Télécharge une archive ZIP et analyse les fichiers CSV ou GeoJSON qu'elle contient."""
-    contenu, taille_mo, depuis_cache, erreur = _telecharger(url, verbose, plafond_mo=None)
+    chemin, taille_mo, depuis_cache, erreur = _telecharger(url, verbose, plafond_mo=None)
     if erreur:
         log_analyse({"url": url, "dataset_id": dataset_id, "titre": titre, "erreur": erreur})
         return None
     try:
-        with zipfile.ZipFile(io.BytesIO(contenu)) as zf:
+        with zipfile.ZipFile(chemin) as zf:
             noms = [n for n in zf.namelist() if not n.startswith("__MACOSX")]
             membres_csv = [n for n in noms if n.lower().endswith(".csv")]
             membres_geo = [n for n in noms if n.lower().endswith(".geojson")]
@@ -1202,12 +1209,13 @@ def analyser_zip(url: str, verbose: bool = False,
 def analyser_gz(url: str, verbose: bool = False,
                 dataset_id: str = "", titre: str = "") -> dict | None:
     """Télécharge un fichier GZ et analyse le CSV décompressé."""
-    contenu, taille_mo, depuis_cache, erreur = _telecharger(url, verbose)
+    chemin, taille_mo, depuis_cache, erreur = _telecharger(url, verbose)
     if erreur:
         log_analyse({"url": url, "dataset_id": dataset_id, "titre": titre, "erreur": erreur})
         return None
     try:
-        contenu_csv = gzip.decompress(contenu)
+        with gzip.open(chemin, "rb") as f:
+            contenu_csv = f.read()
     except Exception as e:
         log_analyse({"url": url, "dataset_id": dataset_id, "titre": titre,
                      "erreur": f"décompression GZ : {e}"})
@@ -1230,7 +1238,7 @@ def analyser_xlsx(url: str, verbose: bool = False,
             print("  (openpyxl non installé — pip install openpyxl)")
         return None
 
-    contenu, taille_mo, depuis_cache, erreur = _telecharger(url, verbose)
+    chemin, taille_mo, depuis_cache, erreur = _telecharger(url, verbose)
     if erreur:
         log_analyse({"url": url, "dataset_id": dataset_id, "titre": titre, "erreur": erreur})
         return None
@@ -1240,7 +1248,7 @@ def analyser_xlsx(url: str, verbose: bool = False,
     try:
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            wb = openpyxl.load_workbook(io.BytesIO(contenu), read_only=True, data_only=True)
+            wb = openpyxl.load_workbook(chemin, read_only=True, data_only=True)
         ws = wb.active
         lignes = list(ws.iter_rows(values_only=True))
         wb.close()
@@ -1493,12 +1501,14 @@ def _analyser_contenu_geojson(contenu: bytes, verbose: bool,
 def analyser_geojson(url: str, verbose: bool = False,
                      dataset_id: str = "", titre: str = "") -> dict | None:
     """Télécharge (ou récupère du cache) un GeoJSON et cherche des données Rennes Métropole."""
-    contenu, taille_mo, depuis_cache, erreur = _telecharger(url, verbose)
+    chemin, taille_mo, depuis_cache, erreur = _telecharger(url, verbose)
     if erreur:
         log_analyse({"url": url, "dataset_id": dataset_id, "titre": titre, "erreur": erreur})
         if verbose:
             print(f"  (Échec : {erreur})")
         return None
+    with open(chemin, "rb") as f:
+        contenu = f.read()
     return _analyser_contenu_geojson(contenu, verbose, dataset_id, titre, url, taille_mo)
 
 

@@ -84,6 +84,16 @@ def arreter_conteneur() -> tuple[bool, str]:
     return False, (r.stderr or r.stdout).strip() or "Échec de l'arrêt du conteneur."
 
 
+def noeud_pret(conf: dict) -> bool:
+    """Vérifie que le nœud répond vraiment (pas seulement que le conteneur Podman tourne) —
+    l'application interne (Node/Java) met plusieurs secondes à démarrer après `podman start`."""
+    try:
+        session.get(conf["url"], timeout=3)
+        return True
+    except Exception:
+        return False
+
+
 def _api_version(base_url: str) -> str:
     """Récupère la version de l'API catalog du nœud RUDI."""
     catalog_url = base_url.rstrip("/").rsplit("/", 1)[0] + ":3030/catalog"

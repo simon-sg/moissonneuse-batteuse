@@ -18,6 +18,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+from conf.communes_rm import CODES_INSEE_RM
 from conf.datasets import DATASETS_GEO
 from connectors.geo_services import (
     nettoyer_url_ogc,
@@ -132,6 +133,84 @@ def traiter_ogcapi(config: dict, dossier: str, state: dict) -> list[tuple[str, s
     return resultats
 
 
+def traiter_geojson(config: dict, dossier: str, state: dict) -> list[tuple[str, str]]:
+    """Télécharge un fichier GeoJSON statique et filtre les features RM.
+
+    Filtrage par propriété si `champ_iris` est défini dans la config (valeur = code INSEE
+    commune sur 5 chiffres) ; sinon filtrage par bbox RM (lon 1.4–1.9, lat 47.9–48.3).
+    Utilise l'ETag/Last-Modified pour sauter le téléchargement si le fichier n'a pas changé.
+
+    Exemple de config dans DATASETS_GEO :
+        {
+            "id": "centroides-communes-rm",
+            "type": "geojson",
+            "url": "https://…/centroides_communes_population.geojson",
+            "champ_iris": "code_commune",  # optionnel — propriété = code INSEE 5c
+            "titre": "Centroïdes des communes RM",
+            "producteur": "…",
+            "dossier": "centroides-communes-rm",
+            "theme": "location",
+        }
+    """
+    from connectors.http import session
+
+    # Bbox approchée de Rennes Métropole (43 communes)
+    BBOX_RM = (1.40, 47.90, 1.90, 48.30)
+
+    url = config["url"]
+    champ_commune = config.get("champ_iris")  # clé de propriété = code INSEE commune
+    nom_fichier = config.get("nom_fichier", "features-rennesmetropole.geojson")
+    chemin = os.path.join(dossier, nom_fichier)
+    cle = f"{config['id']}::geojson"
+
+    # Vérification ETag/Last-Modified pour éviter un re-téléchargement inutile
+    try:
+        head = session.head(url, timeout=20, allow_redirects=True)
+        sig_actuelle = head.headers.get("ETag") or head.headers.get("Last-Modified")
+    except Exception:
+        sig_actuelle = None
+
+    if sig_actuelle and os.path.exists(chemin) and sig_actuelle == state.get(cle, {}).get("signature"):
+        print(f"  GeoJSON inchangé (cache) : {os.path.basename(chemin)}")
+        return [(chemin, nom_fichier)]
+
+    print(f"  Téléchargement GeoJSON : {url[:70]}")
+    resp = session.get(url, timeout=120)
+    resp.raise_for_status()
+    data = resp.json()
+
+    features_src = data.get("features", [])
+    print(f"  {len(features_src)} features au total")
+
+    if champ_commune:
+        codes_rm = set(CODES_INSEE_RM)
+        features_rm = [
+            f for f in features_src
+            if str((f.get("properties") or {}).get(champ_commune, "")) in codes_rm
+        ]
+    else:
+        lon_min, lat_min, lon_max, lat_max = BBOX_RM
+        def _dans_bbox(f):
+            geom = f.get("geometry") or {}
+            coords = geom.get("coordinates")
+            if not coords:
+                return False
+            gtype = geom.get("type", "")
+            if gtype == "Point":
+                lon, lat = coords[0], coords[1]
+                return lon_min <= lon <= lon_max and lat_min <= lat <= lat_max
+            return True  # types complexes : inclure par défaut, trop coûteux à vérifier
+        features_rm = [f for f in features_src if _dans_bbox(f)]
+
+    print(f"  {len(features_rm)} features RM conservées")
+    geojson_rm = {**data, "features": features_rm}
+    with open(chemin, "w", encoding="utf-8") as f:
+        json.dump(geojson_rm, f, ensure_ascii=False)
+
+    state[cle] = {"signature": sig_actuelle} if sig_actuelle else {}
+    return [(chemin, nom_fichier)]
+
+
 def traiter_wms(config: dict, dossier: str) -> dict:
     """
     Sonde le service WMS via GetCapabilities et sauvegarde wms_service.json.
@@ -182,8 +261,10 @@ def traiter_geo_dataset(config: dict, state: dict) -> None:
         fichiers_geojson = traiter_ogcapi(config, dossier, state)
     elif service_type == "wms":
         wms_service = traiter_wms(config, dossier)
+    elif service_type == "geojson":
+        fichiers_geojson = traiter_geojson(config, dossier, state)
     else:
-        print(f"  Type inconnu : {service_type!r}. Types supportés : wfs, wms, ogcapi")
+        print(f"  Type inconnu : {service_type!r}. Types supportés : wfs, wms, ogcapi, geojson")
         return
 
     # Métadonnées RUDI

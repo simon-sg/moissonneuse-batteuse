@@ -17,7 +17,7 @@ DATASETS = [
 # ---------------------------------------------------------------------------
 # Champs obligatoires :
 #   id         : identifiant local unique (slug sans espaces)
-#   type       : "wfs" | "wms" | "ogcapi"
+#   type       : "wfs" | "wms" | "ogcapi" | "geojson"
 #   url        : URL du service (sans paramètres OGC — seront ajoutés automatiquement)
 #   dossier    : sous-dossier de sortie sous data/
 #   theme      : thème RUDI (voir ci-dessus)
@@ -35,6 +35,20 @@ _geo_json = _json.load(open(_GEO_FILE, encoding="utf-8")) if _os.path.exists(_GE
 
 DATASETS_GEO = _geo_json + [
     # Entrées manuelles (optionnel — la plupart viennent de data/geo_services.json via discover.py)
+    #
+    # type: "geojson" — fichier GeoJSON statique (téléchargé une fois, features filtrées par RM)
+    # champ_iris : propriété GeoJSON contenant le code INSEE commune (5 chiffres)
+    # (si absent : filtrage par bbox approximative RM)
+    {
+        "id": "centroides-communes-rm",
+        "type": "geojson",
+        "url": "https://static.data.gouv.fr/resources/centroides-des-communes-hexagonales-selon-leur-population/20251015-134212/centroides-communes-population.geojson",
+        "champ_iris": "INSEE_COM",
+        "titre": "Centroïdes des communes de Rennes Métropole",
+        "producteur": "data.gouv.fr / communes-fr",
+        "dossier": "centroides-communes-rm",
+        "theme": "location",
+    },
 ]
 
 # ---------------------------------------------------------------------------

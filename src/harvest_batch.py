@@ -272,8 +272,10 @@ def analyser_ressources(metadata: dict) -> dict:
     has_json = False
 
     for r in resources:
-        fmt_r = r.get("format", "").lower()
-        titre_lower = r.get("title", "").lower()
+        if r is None:
+            continue
+        fmt_r = (r.get("format") or "").lower()
+        titre_lower = (r.get("title") or "").lower()
 
         if _est_dictionnaire_titre(r):
             dicts.append(r)
@@ -295,8 +297,9 @@ def analyser_ressources(metadata: dict) -> dict:
         return {"csvs": csvs_fmt, "dicts": dicts, "has_json": has_json, "fmt": fmt_principal}
 
     # Pas de ressource tabulaire : essayer JSON directement
-    jsons = [r for r in resources if r.get("format", "").lower() == "json"
-             and "geo" not in r.get("title", "").lower()
+    jsons = [r for r in resources if r is not None
+             and (r.get("format") or "").lower() == "json"
+             and "geo" not in (r.get("title") or "").lower()
              and not _est_dictionnaire_titre(r)]
     if jsons:
         return {"csvs": [(jsons[0], "json")], "dicts": dicts, "has_json": False, "fmt": "json"}
@@ -330,18 +333,33 @@ def filtrer_toutes_ressources(
             entrees: list[tuple[dict, list[dict], list[str]]] = []
 
             if fmt == "zip":
-                membres = _extraire_csvs_zip(chemin)
-                if not membres:
+                with zipfile.ZipFile(chemin) as zf:
+                    noms_csv = [n for n in zf.namelist()
+                                if n.lower().endswith(".csv") and not n.startswith("__MACOSX")]
+                if not noms_csv:
                     print(f"    → ZIP sans CSV")
                     resultats.append((r, [], []))
                     continue
-                for nom_membre, contenu_csv in membres:
-                    r_m = {**r, "title": os.path.basename(nom_membre)}
-                    lignes, entetes = filtrer_csv_bytes(contenu_csv, champ_cp, champ_ville, champ_iris,
-                                                         champ_adresse, champ_siren)
-                    if len(membres) > 1:
-                        print(f"    ↳ {nom_membre}: {len(lignes)} lignes RM")
-                    entrees.append((r_m, lignes, entetes))
+                sirens_rm = obtenir_sirens_rm() if champ_siren else None
+                with zipfile.ZipFile(chemin) as zf:
+                    for nom_membre in noms_csv:
+                        with zf.open(nom_membre) as fp:
+                            sample_bytes = fp.read(8192)
+                        encoding = _detecter_encodage_bytes(sample_bytes)
+                        delimiteur = _detecter_delimiteur(
+                            sample_bytes.decode(encoding, errors="replace")[:4096])
+                        with zf.open(nom_membre) as fp:
+                            tf = io.TextIOWrapper(fp, encoding=encoding,
+                                                  errors="replace", newline="")
+                            reader = csv.DictReader(tf, delimiter=delimiteur)
+                            lignes = [dict(row) for row in reader
+                                      if _ligne_est_rm(row, champ_cp, champ_ville, champ_iris,
+                                                       champ_adresse, champ_siren, sirens_rm)]
+                            entetes = list(reader.fieldnames or [])
+                        r_m = {**r, "title": os.path.basename(nom_membre)}
+                        if len(noms_csv) > 1:
+                            print(f"    ↳ {nom_membre}: {len(lignes)} lignes RM")
+                        entrees.append((r_m, lignes, entetes))
             elif fmt == "gz":
                 lignes, entetes = filtrer_gz(chemin, champ_cp, champ_ville, champ_iris, champ_adresse, champ_siren)
                 entrees = [(r, lignes, entetes)]

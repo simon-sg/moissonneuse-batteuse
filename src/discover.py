@@ -1067,6 +1067,99 @@ def _construire_resultat(champ_cp, champ_ville, champ_iris, champ_adresse,
     }
 
 
+def _analyser_csv_depuis_stream(preambule: bytes, fp_bin,
+                                 verbose: bool, dataset_id: str, titre: str,
+                                 url: str = "", taille_mo: float = 0,
+                                 depuis_cache: bool = False) -> dict | None:
+    """Analyse un CSV en streaming sans charger le fichier entier en RAM.
+
+    preambule : premiers octets déjà lus (≤ 8 Ko) pour la détection du format.
+    fp_bin    : binary file-like positionné en début de fichier (position 0).
+    """
+    log = {"url": url, "dataset_id": dataset_id, "titre": titre,
+           "taille_mo": round(taille_mo, 2), "cache": depuis_cache}
+
+    if preambule[:5] in (b"%PDF-", b"PK\x03\x04", b"\x1f\x8b\x08"):
+        log["erreur"] = "fichier binaire"
+        log_analyse(log)
+        if verbose:
+            print("  (Fichier binaire détecté, non supporté)")
+        return None
+
+    debut = preambule[:100].lstrip().lower()
+    if debut.startswith((b"<!doctype", b"<html")):
+        log["erreur"] = "réponse HTML"
+        log_analyse(log)
+        if verbose:
+            print("  (Réponse HTML reçue — redirection ou authentification)")
+        return None
+
+    sample_str = preambule.decode("utf-8-sig", errors="replace")
+    encoding = "latin-1" if sample_str.count("�") > 10 else "utf-8-sig"
+    sample_str = preambule.decode(encoding, errors="replace")
+
+    try:
+        dialect = csv.Sniffer().sniff(sample_str[:4096], delimiters=";,\t|")
+        delimiteur = dialect.delimiter
+    except csv.Error:
+        delimiteur = ","
+
+    premiere_ligne = sample_str.split("\n")[0]
+    premiere_norm = normaliser(premiere_ligne.split(",")[0].split(";")[0])
+    if premiere_norm in ("colonne", "column", "champ", "field", "variable"):
+        return None
+
+    nb_cols = len(premiere_ligne.split(delimiteur))
+    if nb_cols <= 2:
+        for sep in (";", "\t", "|", ","):
+            n = len(premiere_ligne.split(sep))
+            if n > nb_cols:
+                nb_cols, delimiteur = n, sep
+    log["delimiteur"] = delimiteur
+
+    tf = io.TextIOWrapper(fp_bin, encoding=encoding, errors="replace", newline="")
+    reader = csv.DictReader(tf, delimiter=delimiteur)
+    entetes = list(reader.fieldnames or [])
+    log["entetes"] = entetes[:15]
+
+    champ_cp, champ_ville, champ_iris, champ_dep, champ_adresse, champ_siren, champ_lat, champ_lon = _detecter_champs(entetes)
+    log.update({"champ_cp": champ_cp, "champ_ville": champ_ville,
+                "champ_iris": champ_iris, "champ_adresse": champ_adresse,
+                "champ_siren": champ_siren, "champ_lat": champ_lat})
+
+    if verbose:
+        print(f"  En-têtes détectés : {entetes[:10]}")
+        if champ_iris:
+            print(f"  Champ IRIS trouvé : {champ_iris}")
+        elif champ_adresse:
+            print(f"  Champ adresse trouvé : {champ_adresse}")
+        elif champ_siren:
+            print(f"  Champ SIREN trouvé : {champ_siren}")
+        elif champ_lat:
+            desc = champ_lat if champ_lon is None else f"{champ_lat} + {champ_lon}"
+            print(f"  Champ géo trouvé : {desc}")
+        else:
+            print(f"  Champ CP trouvé : {champ_cp} | Champ ville trouvé : {champ_ville}")
+
+    try:
+        nb_total, nb_rm, exemples, premieres_lignes = _compter_lignes_rm(
+            reader, champ_cp, champ_ville, champ_iris, champ_dep, champ_adresse,
+            champ_siren, champ_lat, champ_lon
+        )
+    except csv.Error as e:
+        log["erreur"] = f"parsing CSV : {e}"
+        log_analyse(log)
+        if verbose:
+            print(f"  (Erreur de parsing CSV : {e})")
+        return None
+
+    log.update({"nb_total": nb_total, "nb_rm": nb_rm})
+    log_analyse(log)
+    return _construire_resultat(champ_cp, champ_ville, champ_iris, champ_adresse,
+                                nb_total, nb_rm, exemples, premieres_lignes,
+                                champ_siren=champ_siren, champ_lat=champ_lat, champ_lon=champ_lon)
+
+
 def _analyser_contenu_csv(contenu: bytes, verbose: bool, dataset_id: str, titre: str,
                            url: str = "", taille_mo: float = 0,
                            depuis_cache: bool = False) -> dict | None:
@@ -1169,9 +1262,11 @@ def analyser_csv(url: str, verbose: bool = True,
         if verbose:
             print(f"  (Échec : {erreur})")
         return None
-    with open(chemin, "rb") as f:
-        contenu = f.read()
-    return _analyser_contenu_csv(contenu, verbose, dataset_id, titre, url, taille_mo, depuis_cache)
+    with open(chemin, "rb") as fp:
+        preambule = fp.read(8192)
+    with open(chemin, "rb") as fp:
+        return _analyser_csv_depuis_stream(
+            preambule, fp, verbose, dataset_id, titre, url, taille_mo, depuis_cache)
 
 
 def analyser_zip(url: str, verbose: bool = False,
@@ -1194,12 +1289,14 @@ def analyser_zip(url: str, verbose: bool = False,
             for membre in membres_csv:
                 if verbose:
                     print(f"  ZIP → {membre}")
-                with zf.open(membre) as f:
-                    contenu_membre = f.read()
-                result = _analyser_contenu_csv(
-                    contenu_membre, verbose, dataset_id, f"{titre} [{membre}]",
-                    url=f"{url}#{membre}", taille_mo=len(contenu_membre) / 1024 / 1024
-                )
+                taille_membre = zf.getinfo(membre).file_size / 1024 / 1024
+                with zf.open(membre) as fp:
+                    preambule = fp.read(8192)
+                with zf.open(membre) as fp:
+                    result = _analyser_csv_depuis_stream(
+                        preambule, fp, verbose, dataset_id, f"{titre} [{membre}]",
+                        url=f"{url}#{membre}", taille_mo=taille_membre,
+                    )
                 if result is None:
                     continue
                 if meilleur is None or result["nb_rm"] > meilleur["nb_rm"]:
@@ -1236,18 +1333,24 @@ def analyser_gz(url: str, verbose: bool = False,
         log_analyse({"url": url, "dataset_id": dataset_id, "titre": titre, "erreur": erreur})
         return None
     try:
-        with gzip.open(chemin, "rb") as f:
-            contenu_csv = f.read()
+        with gzip.open(chemin, "rb") as fp:
+            preambule = fp.read(8192)
     except Exception as e:
         log_analyse({"url": url, "dataset_id": dataset_id, "titre": titre,
                      "erreur": f"décompression GZ : {e}"})
         if verbose:
             print(f"  (Erreur décompression GZ : {e})")
         return None
-    return _analyser_contenu_csv(
-        contenu_csv, verbose, dataset_id, titre,
-        url=url, taille_mo=len(contenu_csv) / 1024 / 1024
-    )
+    try:
+        with gzip.open(chemin, "rb") as fp:
+            return _analyser_csv_depuis_stream(
+                preambule, fp, verbose, dataset_id, titre, url=url, taille_mo=taille_mo)
+    except Exception as e:
+        log_analyse({"url": url, "dataset_id": dataset_id, "titre": titre,
+                     "erreur": f"parsing GZ : {e}"})
+        if verbose:
+            print(f"  (Erreur parsing GZ : {e})")
+        return None
 
 
 def analyser_xlsx(url: str, verbose: bool = False,

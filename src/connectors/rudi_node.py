@@ -2,6 +2,7 @@ import json
 import subprocess
 import uuid
 import os
+from urllib.parse import urlparse
 
 from rudi_node_write.rudi_node_writer import RudiNodeWriter
 from rudi_node_write.connectors.rudi_node_auth import RudiNodeAuth
@@ -96,7 +97,8 @@ def noeud_pret(conf: dict) -> bool:
 
 def _api_version(base_url: str) -> str:
     """Récupère la version de l'API catalog du nœud RUDI."""
-    catalog_url = base_url.rstrip("/").rsplit("/", 1)[0] + ":3030/catalog"
+    parsed = urlparse(base_url.rstrip("/"))
+    catalog_url = f"{parsed.scheme}://{parsed.hostname}:3030/catalog"
     try:
         return session.get(f"{catalog_url}/version", timeout=5).text.strip()
     except Exception as e:

@@ -457,6 +457,10 @@ GABARIT_HTML = r"""<!DOCTYPE html>
   .description h4, .description h5, .description h6 { margin:10px 0 4px; color:var(--txt); }
   .description h4 { font-size:1rem; } .description h5 { font-size:.95rem; } .description h6 { font-size:.9rem; }
   .description h4:first-child, .description h5:first-child, .description h6:first-child { margin-top:0; }
+  .description.clamp { max-height:4.6em; overflow:hidden; }
+  .voir-plus { display:block; margin:2px 0 8px; font-size:.82rem; color:var(--accent);
+               background:none; border:none; padding:0; cursor:pointer; font-family:inherit; }
+  .voir-plus:hover { text-decoration:underline; }
   .tags { display:flex; flex-wrap:wrap; gap:6px; margin:8px 0; }
   .tag { background:#eef3f6; color:#345; border-radius:99px; padding:2px 10px; font-size:.75rem; }
   .badge { display:inline-block; background:#fdecea; color:#a3372c; border-radius:99px;
@@ -638,7 +642,8 @@ function carte(j){
       ${j.complet?"":'<span class="badge">métadonnées partielles</span>'}
     </div>
     ${j.synopsis?`<div class="synopsis">${esc(j.synopsis)}</div>`:""}
-    ${j.description?`<div class="description">${markdown(j.description)}</div>`:""}
+    ${j.description?`<div class="description clamp">${markdown(j.description)}</div>
+    <button type="button" class="voir-plus" hidden>Afficher la description complète</button>`:""}
     ${tags?`<div class="tags">${tags}</div>`:""}
     ${res?`<details><summary>${j.ressources.length} ressource(s)</summary>
       <table class="res"><tr><th>Fichier</th><th>Format</th><th>Lignes</th><th>Taille</th><th></th></tr>
@@ -664,7 +669,22 @@ function rendu(){
   liste.innerHTML = filtres.length
     ? filtres.map(carte).join("")
     : '<div class="vide">Aucun résultat.</div>';
+  // Le clamp CSS masque déjà l'excédent ; on ne révèle le bouton que pour les
+  // descriptions réellement tronquées (comparaison scrollHeight/clientHeight
+  // après mise en page, donc dans un second passage).
+  liste.querySelectorAll(".description.clamp").forEach(desc => {
+    if (desc.scrollHeight > desc.clientHeight + 1) desc.nextElementSibling.hidden = false;
+  });
 }
+
+// Délégué une fois pour toutes les cartes, y compris celles réaffichées après un filtre.
+liste.addEventListener("click", e => {
+  const btn = e.target.closest(".voir-plus");
+  if (!btn) return;
+  const desc = btn.previousElementSibling;
+  const replie = desc.classList.toggle("clamp");
+  btn.textContent = replie ? "Afficher la description complète" : "Réduire la description";
+});
 
 document.getElementById("recherche").addEventListener("input", rendu);
 selConnecteur.addEventListener("change", rendu);

@@ -60,9 +60,9 @@ REQUETES_STRUCTUREES = [
     {"params": {"organization": "5c812a16634f416583ed1876", "sort": "-views"}, "label": "Cerema"},
     {"params": {"organization": "534fff8da3a7292c64a77eee", "sort": "-views"}, "label": "MTECT (écologie)"},
     {"params": {"q": "transport",         "sort": "-views"}, "label": "transport"},
-    {"params": {"q": "wms",               "sort": "-views"}, "label": "WMS"},
-    {"params": {"q": "wfs",               "sort": "-views"}, "label": "WFS"},
-    {"params": {"q": "geojson",           "sort": "-views"}, "label": "GeoJSON"},
+    {"params": {"format": "wms",          "sort": "-views"}, "label": "WMS"},
+    {"params": {"format": "wfs",          "sort": "-views"}, "label": "WFS"},
+    {"params": {"format": "geojson",      "sort": "-views"}, "label": "GeoJSON"},
 ]
 
 # Mots dans le titre indiquant un territoire clairement hors RM
@@ -798,6 +798,30 @@ def est_iris_rm(code: str) -> bool:
     if code == EPCI_SIREN_RM:
         return True
     return len(code) >= 5 and code[:5] in CODES_INSEE_RM
+
+
+def est_valeur_commune_rm(valeur: str) -> bool:
+    """Teste une colonne 'commune' taguée manuellement en revue (revue_manuelle_a_examiner()),
+    dont la représentation (code INSEE, code IRIS, code postal, ou nom en texte) n'est pas
+    connue à l'avance — combine les trois tests plutôt que de forcer l'utilisateur à préciser
+    le format."""
+    v = str(valeur).strip()
+    if not v:
+        return False
+    if v in CODES_POSTAUX_RM:
+        return True
+    if est_iris_rm(v):
+        return True
+    return est_commune_rm(v)
+
+
+def est_epci_rm(code: str) -> bool:
+    """Égalité stricte avec le SIREN de l'EPCI Rennes Métropole. Volontairement sans le
+    raccourci code[:5] de est_iris_rm() : dans un JDD national avec une colonne EPCI (un
+    SIREN à 9 chiffres par ligne, un par EPCI de France), tronquer à 5 chiffres et comparer
+    à CODES_INSEE_RM créerait des faux positifs pour d'autres EPCI dont le SIREN commence,
+    par coïncidence, par un des 43 préfixes communaux RM."""
+    return str(code).strip() == EPCI_SIREN_RM
 
 
 def deviner_champ_dep(entetes: list[str]) -> str | None:
@@ -2177,6 +2201,9 @@ def rechercher_et_filtrer_auto(decouverte: dict) -> dict:
                     "champ_ville":   result["champ_ville"],
                     "champ_iris":    result.get("champ_iris"),
                     "champ_adresse": result.get("champ_adresse"),
+                    "champ_siren":   result.get("champ_siren"),
+                    "champ_lat":     result.get("champ_lat"),
+                    "champ_lon":     result.get("champ_lon"),
                     "nb_rm":         result["nb_rm"],
                 })
                 decouverte["vus"].append(ds["id"])
@@ -2209,8 +2236,8 @@ def resoudre_a_examiner(decouverte: dict, dataset_id: str, decision: str,
 
     champs_manuels : pour decision="candidat", remplace les champs auto-détectés par un tag
     manuel (voir revue_manuelle_a_examiner()) — dict champ_cp/champ_ville/champ_iris/
-    champ_adresse/champ_siren/nb_rm. None (défaut) = comportement inchangé, utilise
-    entree["champs_detectes"]/entree["nb_rm"].
+    champ_adresse/champ_siren/champ_epci/champ_lat/champ_lon/nb_rm. None (défaut) =
+    comportement inchangé, utilise entree["champs_detectes"]/entree["nb_rm"].
 
     Retourne True si l'entrée existait et a été traitée, False sinon (dataset_id inconnu ou
     décision invalide/inapplicable).
@@ -2226,7 +2253,8 @@ def resoudre_a_examiner(decouverte: dict, dataset_id: str, decision: str,
     elif decision == "candidat":
         champs = champs_manuels if champs_manuels is not None else entree.get("champs_detectes", {})
         if not any(champs.get(c) for c in
-                   ("champ_cp", "champ_ville", "champ_iris", "champ_adresse", "champ_siren")):
+                   ("champ_cp", "champ_ville", "champ_iris", "champ_adresse", "champ_siren",
+                    "champ_epci", "champ_lat")):
             return False
         decouverte["candidats"].append({
             "dataset_id": dataset_id,
@@ -2237,6 +2265,9 @@ def resoudre_a_examiner(decouverte: dict, dataset_id: str, decision: str,
             "champ_iris": champs.get("champ_iris"),
             "champ_adresse": champs.get("champ_adresse"),
             "champ_siren": champs.get("champ_siren"),
+            "champ_epci": champs.get("champ_epci"),
+            "champ_lat": champs.get("champ_lat"),
+            "champ_lon": champs.get("champ_lon"),
             "nb_rm": champs.get("nb_rm", entree.get("nb_rm", 0)),
         })
     elif decision == "ignorer":
@@ -2253,12 +2284,12 @@ def resoudre_a_examiner(decouverte: dict, dataset_id: str, decision: str,
 # Revue manuelle du backlog a_examiner (tagging manuel des colonnes)
 # ---------------------------------------------------------------------------
 
-_CHAMPS_TAGUABLES = [
-    ("champ_iris", "code INSEE / IRIS commune"),
-    ("champ_cp", "code postal"),
-    ("champ_ville", "ville / commune"),
-    ("champ_adresse", "adresse complète"),
-    ("champ_siren", "SIREN / SIRET"),
+_TYPES_VARIABLES = [
+    ("commune", "Commune (code INSEE/IRIS, code postal, ou nom)"),
+    ("epci", "EPCI (code SIREN de l'intercommunalité)"),
+    ("latlon", "Latitude / longitude"),
+    ("siren", "SIREN / SIRET"),
+    ("adresse", "Adresse complète"),
 ]
 
 
@@ -2317,16 +2348,117 @@ def _apercu_colonnes(entetes: list[str], lignes: list[dict]) -> None:
         print(f"  {i:2d}. {entete[:30]:30s} : {', '.join(valeurs)}")
 
 
+def _choisir_colonne(entetes: list[str], question: str) -> str:
+    """Demande un numéro de colonne (1-indexé) et redemande tant que la saisie est invalide."""
+    while True:
+        saisie = input(question).strip()
+        if saisie.isdigit() and 1 <= int(saisie) <= len(entetes):
+            return entetes[int(saisie) - 1]
+        print("    (numéro invalide)")
+
+
+def _choisir_variable_et_type(entetes: list[str]) -> tuple[str, str, str | None]:
+    """Demande à l'utilisateur de désigner UNE colonne de filtrage puis son type.
+
+    Retourne (type_variable, col1, col2) — col2 n'est renseigné que pour
+    type_variable == "latlon" quand les coordonnées sont réparties sur deux colonnes
+    séparées (sinon col1 seule contient la valeur combinée "lat,lon")."""
+    col1 = _choisir_colonne(
+        entetes, "\n  Quelle colonne sert à filtrer Rennes Métropole (numéro) ? ")
+
+    print("\n  Quel type de variable est-ce ?")
+    for i, (_, label) in enumerate(_TYPES_VARIABLES, 1):
+        print(f"    {i}. {label}")
+    while True:
+        saisie = input("  Numéro : ").strip()
+        if saisie.isdigit() and 1 <= int(saisie) <= len(_TYPES_VARIABLES):
+            type_variable = _TYPES_VARIABLES[int(saisie) - 1][0]
+            break
+        print("    (numéro invalide)")
+
+    col2 = None
+    if type_variable == "latlon":
+        reponse = input("  La colonne choisie contient-elle déjà lat ET lon combinés "
+                         "(ex: '48.11,-1.68') ? (o/n) ").strip().lower()
+        if reponse != "o":
+            col2 = _choisir_colonne(
+                entetes, "  Quelle colonne contient l'autre coordonnée (numéro) ? ")
+
+    return type_variable, col1, col2
+
+
+def _compter_lignes_variable(rows, type_variable: str, col1: str, col2: str | None = None) -> tuple:
+    """Équivalent de _compter_lignes_rm() mais pour un seul (type, colonne(s)) déclaré
+    explicitement par l'utilisateur en revue manuelle, plutôt que la cascade de priorité à
+    plusieurs champs simultanés utilisée par la détection automatique. Réutilise les mêmes
+    prédicats RM (est_valeur_commune_rm/est_epci_rm/est_point_rm/est_adresse_rm/SIRENE)."""
+    sirens_rm = obtenir_sirens_rm() if type_variable == "siren" else None
+    nb_total, nb_rm = 0, 0
+    exemples, premieres_lignes = [], []
+    for row in rows:
+        try:
+            nb_total += 1
+            if len(premieres_lignes) < 5:
+                premieres_lignes.append(dict(row))
+            if type_variable == "commune":
+                in_rm = est_valeur_commune_rm(row.get(col1, ""))
+            elif type_variable == "epci":
+                in_rm = est_epci_rm(row.get(col1, ""))
+            elif type_variable == "latlon":
+                lon_val = str(row.get(col2, "")).strip() if col2 else None
+                in_rm = est_point_rm(str(row.get(col1, "")).strip(), lon_val)
+            elif type_variable == "siren":
+                val = str(row.get(col1, "")).strip().replace(" ", "")
+                in_rm = val.isdigit() and len(val) in (9, 14) and val[:9] in sirens_rm
+            elif type_variable == "adresse":
+                in_rm = est_adresse_rm(str(row.get(col1, "")))
+            else:
+                in_rm = False
+            if in_rm:
+                nb_rm += 1
+                if len(exemples) < 3:
+                    exemples.append(dict(row))
+        except csv.Error:
+            break  # ligne tronquée (téléchargement partiel) — on garde ce qu'on a
+    return nb_total, nb_rm, exemples, premieres_lignes
+
+
+def _construire_champs_manuels(type_variable: str, col1: str, col2: str | None, nb_rm: int) -> dict:
+    """Construit le dict champs_manuels attendu par resoudre_a_examiner(), en posant la clé
+    champ_* correspondant au type de variable choisi en revue manuelle."""
+    champs = {"champ_cp": None, "champ_ville": None, "champ_iris": None,
+              "champ_adresse": None, "champ_siren": None,
+              "champ_epci": None, "champ_lat": None, "champ_lon": None,
+              "nb_rm": nb_rm}
+    if type_variable == "commune":
+        champs["champ_iris"] = col1  # est_valeur_commune_rm() teste code INSEE/IRIS/CP/nom
+    elif type_variable == "epci":
+        champs["champ_epci"] = col1
+    elif type_variable == "latlon":
+        champs["champ_lat"] = col1
+        champs["champ_lon"] = col2
+    elif type_variable == "siren":
+        champs["champ_siren"] = col1
+    elif type_variable == "adresse":
+        champs["champ_adresse"] = col1
+    return champs
+
+
 def revue_manuelle_a_examiner() -> None:
     """
     Revue manuelle du backlog decouverte["a_examiner"] (entrées tabulaires uniquement —
     les services WFS/WMS restent gérés par les flux existants : dashboard ou revue
     interactive de main()).
 
-    Pour chaque entrée : télécharge la ressource, affiche un aperçu colonne par colonne
-    (en-têtes + valeurs d'exemple), puis laisse l'utilisateur désigner lui-même la colonne
-    de filtrage (code INSEE/IRIS, CP, ville, adresse, SIREN) — utile quand la détection
-    automatique (_detecter_champs()) n'a rien trouvé ou s'est trompée.
+    Pour chaque entrée, trois étapes :
+      1. Synthèse (titre/organisation/raison/URL) + tri rapide sans téléchargement :
+         passer une fois / exclure définitivement / analyser manuellement / quitter.
+      2. Si "analyser" : télécharge la ressource, affiche un aperçu des 5 premières lignes,
+         puis laisse l'utilisateur désigner UNE colonne de filtrage et déclarer son type
+         (commune, EPCI, lat/long, SIREN, adresse) — utile quand la détection automatique
+         (_detecter_champs()) n'a rien trouvé ou s'est trompée.
+      3. Résultat (nb de lignes RM) + décision : ajouter au catalogue (= aux candidats,
+         moissonné au prochain passage de harvest_batch.py) / réessayer / exclure / passer.
     """
     from connectors.datagouv import get_dataset_metadata
 
@@ -2350,6 +2482,20 @@ def revue_manuelle_a_examiner() -> None:
         print(f"  Organisation : {entree.get('organisation', '')}")
         print(f"  Raison       : {entree.get('raison', '')}")
         print(f"  URL          : {entree.get('url', '')}")
+
+        choix1 = input("\n  (p) passer une fois  (x) exclure définitivement  "
+                       "(a) analyser manuellement  (q) quitter la revue ? ").strip().lower()
+        if choix1 == "x":
+            resoudre_a_examiner(decouverte, did, "exclure")
+            print("  → Marqué comme faux positif (exclu définitivement).")
+            n_exclus += 1
+            continue
+        elif choix1 == "q":
+            print(f"\nRevue interrompue. {n_ajoutes} ajouté(s), {n_exclus} exclu(s), {n_passes} passé(s).")
+            return
+        elif choix1 != "a":  # "p" ou saisie inconnue = passer
+            n_passes += 1
+            continue
 
         try:
             metadata = get_dataset_metadata(did)
@@ -2390,65 +2536,40 @@ def revue_manuelle_a_examiner() -> None:
             continue
 
         while True:
-            lignes_exemple = list(csv.DictReader(io.StringIO(texte, newline=""), delimiter=delimiteur))[:3]
-            print(f"\n  Colonnes disponibles ({len(entetes)}) — valeurs d'exemple sur les 3 premières lignes :")
+            lignes_exemple = list(csv.DictReader(io.StringIO(texte, newline=""), delimiter=delimiteur))[:5]
+            print(f"\n  Colonnes disponibles ({len(entetes)}) — valeurs d'exemple sur les 5 premières lignes :")
             _apercu_colonnes(entetes, lignes_exemple)
 
-            detectes = entree.get("champs_detectes", {}) or {}
-            print("\n  Quelle colonne contient... (numéro de colonne, ou Entrée si aucune)")
-            champs_manuels = {}
-            for cle, label in _CHAMPS_TAGUABLES:
-                defaut_nom = detectes.get(cle)
-                defaut_idx = entetes.index(defaut_nom) + 1 if defaut_nom in entetes else None
-                suffixe = f" [{defaut_idx}]" if defaut_idx else ""
-                saisie = input(f"    {label}{suffixe} : ").strip()
-                if not saisie:
-                    champs_manuels[cle] = defaut_nom if defaut_idx else None
-                elif saisie.isdigit() and 1 <= int(saisie) <= len(entetes):
-                    champs_manuels[cle] = entetes[int(saisie) - 1]
-                else:
-                    print("      (numéro invalide, ignoré)")
-                    champs_manuels[cle] = None
+            type_variable, col1, col2 = _choisir_variable_et_type(entetes)
 
-            nb_total, nb_rm, exemples = 0, 0, []
-            if any(champs_manuels.values()):
-                nb_total, nb_rm, exemples, _ = _compter_lignes_rm(
-                    csv.DictReader(io.StringIO(texte, newline=""), delimiter=delimiteur),
-                    champs_manuels.get("champ_cp"), champs_manuels.get("champ_ville"),
-                    champs_manuels.get("champ_iris"), None, champs_manuels.get("champ_adresse"),
-                    champs_manuels.get("champ_siren"),
-                )
-                print(f"\n  → {nb_rm} ligne(s) RM sur {nb_total}.")
-                if exemples:
-                    print("  Exemples :")
-                    for ex in exemples:
-                        print("    " + _resumer_ligne(ex))
-            else:
-                print("\n  Aucune colonne taguée — impossible de calculer un filtre.")
+            rows = csv.DictReader(io.StringIO(texte, newline=""), delimiter=delimiteur)
+            nb_total, nb_rm, exemples, _ = _compter_lignes_variable(rows, type_variable, col1, col2)
+            print(f"\n  → {nb_rm} ligne(s) RM sur {nb_total}.")
+            if exemples:
+                print("  Exemples :")
+                for ex in exemples:
+                    print("    " + _resumer_ligne(ex))
 
-            choix = input("\n  (o) ajouter aux candidats  (r) refaire le tag  "
-                          "(p) passer  (x) faux positif  (q) quitter la revue ? ").strip().lower()
+            choix2 = input("\n  (o) ajouter au catalogue  (r) réessayer  "
+                           "(p) passer  (x) exclure  (q) quitter la revue ? ").strip().lower()
 
-            if choix == "o":
-                if not any(champs_manuels.values()):
-                    print("  → Impossible : aucune colonne taguée.")
-                    continue
-                if nb_rm == 0 and input("  0 ligne RM — ajouter quand même aux candidats ? "
+            if choix2 == "o":
+                if nb_rm == 0 and input("  0 ligne RM — ajouter quand même au catalogue ? "
                                         "(o/n) ").strip().lower() != "o":
                     continue
-                champs_manuels["nb_rm"] = nb_rm
+                champs_manuels = _construire_champs_manuels(type_variable, col1, col2, nb_rm)
                 resoudre_a_examiner(decouverte, did, "candidat", champs_manuels=champs_manuels)
-                print("  → Ajouté aux candidats.")
+                print("  → Ajouté au catalogue.")
                 n_ajoutes += 1
                 break
-            elif choix == "r":
+            elif choix2 == "r":
                 continue
-            elif choix == "x":
+            elif choix2 == "x":
                 resoudre_a_examiner(decouverte, did, "exclure")
                 print("  → Marqué comme faux positif (exclu définitivement).")
                 n_exclus += 1
                 break
-            elif choix == "q":
+            elif choix2 == "q":
                 print(f"\nRevue interrompue. {n_ajoutes} ajouté(s), {n_exclus} exclu(s), {n_passes} passé(s).")
                 return
             else:  # "p" ou saisie inconnue = passer
@@ -2468,7 +2589,8 @@ def _reanalyser_candidats_sans_champ(decouverte: dict) -> None:
 
     sans_champ = [
         c for c in decouverte.get("candidats", [])
-        if not any(c.get(ch) for ch in ("champ_cp", "champ_ville", "champ_iris", "champ_adresse"))
+        if not any(c.get(ch) for ch in ("champ_cp", "champ_ville", "champ_iris", "champ_adresse",
+                                         "champ_siren", "champ_lat"))
     ]
     if not sans_champ:
         return
@@ -2491,11 +2613,16 @@ def _reanalyser_candidats_sans_champ(decouverte: dict) -> None:
             _, result = fut.result()
         except Exception:
             result = None
-        if result and any(result.get(ch) for ch in ("champ_cp", "champ_ville", "champ_iris", "champ_adresse")):
+        if result and any(result.get(ch) for ch in
+                          ("champ_cp", "champ_ville", "champ_iris", "champ_adresse",
+                           "champ_siren", "champ_lat")):
             candidat["champ_cp"] = result["champ_cp"]
             candidat["champ_ville"] = result["champ_ville"]
             candidat["champ_iris"] = result.get("champ_iris")
             candidat["champ_adresse"] = result.get("champ_adresse")
+            candidat["champ_siren"] = result.get("champ_siren")
+            candidat["champ_lat"] = result.get("champ_lat")
+            candidat["champ_lon"] = result.get("champ_lon")
             candidat["nb_rm"] = result["nb_rm"]
             print(f"  ✓ {candidat['titre'][:60]} — {result['nb_rm']} lignes RM")
             modifies += 1
@@ -2516,7 +2643,8 @@ def _harvest_nouveaux_candidats(decouverte: dict, ids_avant_session: set) -> Non
     nouveaux = [
         c for c in decouverte.get("candidats", [])
         if c["dataset_id"] not in ids_avant_session
-        and any(c.get(ch) for ch in ("champ_cp", "champ_ville", "champ_iris", "champ_adresse"))
+        and any(c.get(ch) for ch in ("champ_cp", "champ_ville", "champ_iris", "champ_adresse",
+                                      "champ_siren", "champ_epci", "champ_lat"))
     ]
     if not nouveaux:
         return
@@ -2572,7 +2700,8 @@ def main():
     # Évolution 4 : re-analyser les candidats sans champ géo identifié
     _n_sans_champ = sum(
         1 for c in decouverte.get("candidats", [])
-        if not any(c.get(ch) for ch in ("champ_cp", "champ_ville", "champ_iris", "champ_adresse"))
+        if not any(c.get(ch) for ch in ("champ_cp", "champ_ville", "champ_iris", "champ_adresse",
+                                         "champ_siren", "champ_lat"))
     )
     if _n_sans_champ:
         _rep = input(f"\n{_n_sans_champ} candidat(s) sans champ géo — re-analyser maintenant ? (o/N) ").strip().lower()

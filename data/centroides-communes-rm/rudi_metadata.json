@@ -1,0 +1,79 @@
+{
+  "local_id": "2b757d04-f1df-5fb7-a996-a974bf264e0b",
+  "resource_title": "Centroïdes des communes de Rennes Métropole — Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Centroïdes des communes de Rennes Métropole — données géographiques pour Rennes Métropole (GEOJSON)"
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Service GEOJSON filtré sur Rennes Métropole (43 communes, EPCI 243500139).\n\nSource : https://static.data.gouv.fr/resources/centroides-des-communes-hexagonales-selon-leur-population/20251015-134212/centroides-communes-population.geojson\n\nJeu de données du thème « référentiels géographiques », produit par data.gouv.fr / communes-fr, limité aux communes de Rennes Métropole. Les enregistrements comportent les champs suivants : INSEE_COM, x_2154, y_2154, NOM, INSEE_DEP, x_4326, y_4326."
+    }
+  ],
+  "theme": "location",
+  "keywords": [
+    "rennes métropole",
+    "géographique",
+    "geojson"
+  ],
+  "producer": {
+    "organization_name": "data.gouv.fr / communes-fr"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "de50cd49-fe5a-5a7a-88f7-08763f5e98a6",
+      "media_type": "FILE",
+      "media_name": "features-rennesmetropole.geojson",
+      "media_caption": "features-rennesmetropole.geojson — GeoJSON filtré Rennes Métropole",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "145bfa6c-1049-5102-bc3c-12c50a4c311c",
+      "media_type": "SERVICE",
+      "media_name": "service-geojson",
+      "media_caption": "Jeu de données complet (non filtré)",
+      "connector": {
+        "url": "https://static.data.gouv.fr/resources/centroides-des-communes-hexagonales-selon-leur-population/20251015-134212/centroides-communes-population.geojson",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2026-07-04T17:57:09Z",
+    "updated": "2026-07-04T17:57:09Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2026-07-04T17:57:09Z",
+      "updated": "2026-07-04T17:57:09Z"
+    },
+    "metadata_source": "https://static.data.gouv.fr/resources/centroides-des-communes-hexagonales-selon-leur-population/20251015-134212/centroides-communes-population.geojson"
+  }
+}

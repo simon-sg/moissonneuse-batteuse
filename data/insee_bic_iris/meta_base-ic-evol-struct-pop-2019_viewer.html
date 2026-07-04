@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title></title>
+<script>(function(){try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<style>
+:root{--bg:#f5f6f8;--card:#fff;--txt:#1c2733;--muted:#667;--accent:#0b6e99;--bord:#e2e6ea;
+      --avert-bg:#fff8e1;--avert-bord:#ffe082;--avert-txt:#6d4c00;
+      --geo-bg:#eaf4fb;--geo-hover:#d4ecf7;--stripe:#fafbfc;--row-hover:#eef6fb;
+      --resizer:rgba(11,110,153,.35);--td-bord:#f0f2f4}
+:root[data-theme="dark"]{--bg:#10151b;--card:#1a222b;--txt:#dbe2e8;--muted:#8996a3;--accent:#4fb3da;--bord:#29323c;
+      --avert-bg:#3a2f10;--avert-bord:#6b5418;--avert-txt:#e8c96a;
+      --geo-bg:#16303c;--geo-hover:#1d3f4d;--stripe:#161d24;--row-hover:#17242c;
+      --resizer:rgba(79,179,218,.35);--td-bord:#232c35}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#10151b;--card:#1a222b;--txt:#dbe2e8;--muted:#8996a3;--accent:#4fb3da;--bord:#29323c;
+      --avert-bg:#3a2f10;--avert-bord:#6b5418;--avert-txt:#e8c96a;
+      --geo-bg:#16303c;--geo-hover:#1d3f4d;--stripe:#161d24;--row-hover:#17242c;
+      --resizer:rgba(79,179,218,.35);--td-bord:#232c35}
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+     background:var(--bg);color:var(--txt);display:flex;flex-direction:column;height:100vh}
+header{background:var(--card);border-bottom:1px solid var(--bord);padding:10px 16px;
+       display:flex;flex-wrap:wrap;gap:10px;align-items:center;flex-shrink:0}
+h1{font-size:.9rem;font-weight:600;flex:1;min-width:150px;
+   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#filtre{padding:7px 11px;font-size:.9rem;border:1px solid var(--bord);
+        border-radius:6px;width:220px;background:var(--card);color:var(--txt)}
+#info{color:var(--muted);font-size:.82rem;white-space:nowrap}
+#theme-toggle{background:none;border:1px solid var(--bord);border-radius:6px;padding:5px 10px;
+              cursor:pointer;font-size:.9rem;line-height:1;color:var(--txt);flex-shrink:0}
+#theme-toggle:hover{background:var(--bg)}
+.avert{background:var(--avert-bg);border-bottom:1px solid var(--avert-bord);padding:5px 16px;
+       font-size:.8rem;color:var(--avert-txt);flex-shrink:0}
+.wrap{flex:1;overflow:auto}
+table{border-collapse:collapse;font-size:.82rem;table-layout:fixed}
+thead{position:sticky;top:0;z-index:2;background:var(--card);box-shadow:0 1px 0 var(--bord)}
+th{padding:8px 12px;text-align:left;cursor:pointer;user-select:none;color:var(--muted);font-weight:600;
+   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative}
+th:hover{background:var(--bg);color:var(--txt)}
+th.asc::after{content:" ↑";color:var(--accent)}
+th.desc::after{content:" ↓";color:var(--accent)}
+th.geo{color:var(--accent);background:var(--geo-bg)}
+th.geo:hover{background:var(--geo-hover)}
+th.trad{text-decoration:underline dotted;text-decoration-color:var(--accent);text-underline-offset:3px}
+td{padding:0;border-bottom:1px solid var(--td-bord)}
+td div{padding:5px 12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+td div a{color:var(--accent);text-decoration:none}
+td div a:hover{text-decoration:underline}
+tr:nth-child(even) td{background:var(--stripe)}
+tr:hover td{background:var(--row-hover)}
+.resizer{position:absolute;right:0;top:0;width:5px;height:100%;cursor:col-resize;z-index:1}
+.resizer:hover,.resizer.active{background:var(--resizer)}
+</style>
+</head>
+<body>
+<header>
+  <h1 id="titre"></h1>
+  <input id="filtre" type="search" placeholder="Filtrer toutes les colonnes…">
+  <span id="info"></span>
+  <button id="theme-toggle" title="Basculer thème clair/sombre" aria-label="Basculer thème clair/sombre">🌙</button>
+</header>
+<div id="avert" class="avert" style="display:none"></div>
+<div class="wrap"><table id="t"><colgroup id="cols"></colgroup><thead id="thead"></thead><tbody id="tbody"></tbody></table></div>
+<script id="d" type="application/json">{"nom": "meta_base-ic-evol-struct-pop-2019.CSV", "champs_geo": [], "dictionnaire": {"COM": "Code du département suivi du numéro de commune ou du numéro d'arrondissement municipal pour Paris Lyon et Marseille", "TYP_IRIS": "Type d'IRIS : habitat (H), activité (A), divers (D), Autre (Z)", "MODIF_IRIS": "Type de modification de l'IRIS", "LAB_IRIS": "Label de qualité de l'IRIS", "P19_POP": "Population", "P19_POP0002": "Nombre de personnes de 0 à 2 ans", "P19_POP0305": "Nombre de personnes de 3 à 5 ans", "P19_POP0610": "Nombre de personnes de 6 à 10 ans", "P19_POP1117": "Nombre de personnes de 11 à 17 ans", "P19_POP1824": "Nombre de personnes de 18 à 24 ans", "P19_POP2539": "Nombre de personnes de 25 à 39 ans", "P19_POP4054": "Nombre de personnes de 40 à 54 ans", "P19_POP5564": "Nombre de personnes de 55 à 64 ans", "P19_POP6579": "Nombre de personnes de 65 à 79 ans", "P19_POP80P": "Nombre de personnes de 80 ans ou plus", "P19_POP0014": "Nombre de personnes de 0 à 14 ans", "P19_POP1529": "Nombre de personnes de 15 à 29 ans", "P19_POP3044": "Nombre de personnes de 30 à 44 ans", "P19_POP4559": "Nombre de personnes de 45 à 59 ans", "P19_POP6074": "Nombre de personnes de 60 à 74 ans", "P19_POP75P": "Nombre de personnes de 75 ans ou plus", "P19_POP0019": "Nombre de personnes de 0 à 19 ans", "P19_POP2064": "Nombre de personnes de 20 à 64 ans", "P19_POP65P": "Nombre de personnes de 65 ans ou plus", "P19_POPH": "Nombre d'hommes", "P19_H0014": "Nombre d'hommes de 0 à 14 ans", "P19_H1529": "Nombre d'hommes de 15 à 29 ans", "P19_H3044": "Nombre d'hommes de 30 à 44 ans", "P19_H4559": "Nombre d'hommes de 45 à 59 ans", "P19_H6074": "Nombre d'hommes de 60 à 74 ans", "P19_H75P": "Nombre d'hommes de 75 ans ou plus", "P19_H0019": "Nombre d'hommes de 0 à 19 ans", "P19_H2064": "Nombre d'hommes de 20 à 64 ans", "P19_H65P": "Nombre d'hommes de 65 ans ou plus", "P19_POPF": "Nombre de femmes", "P19_F0014": "Nombre de femmes de 0 à 14 ans", "P19_F1529": "Nombre de femmes de 15 à 29 ans", "P19_F3044": "Nombre de femmes de 30 à 44 ans", "P19_F4559": "Nombre de femmes de 45 à 59 ans", "P19_F6074": "Nombre de femmes de 60 à 74 ans", "P19_F75P": "Nombre de femmes de 75 ans ou plus", "P19_F0019": "Nombre de femmes de 0 à 19 ans", "P19_F2064": "Nombre de femmes de 20 à 64 ans", "P19_F65P": "Nombre de femmes de 65 ans ou plus", "C19_POP15P": "Nombre de personnes de 15 ans ou plus", "C19_POP15P_CS1": "Nombre de personnes de 15 ans ou plus Agriculteurs exploitants", "C19_POP15P_CS2": "Nombre de personnes de 15 ans ou plus Artisans, Commerçants, Chefs d'entreprise", "C19_POP15P_CS3": "Nombre de personnes de 15 ans ou plus Cadres et Professions intellectuelles supérieures", "C19_POP15P_CS4": "Nombre de personnes de 15 ans ou plus Professions intermédiaires", "C19_POP15P_CS5": "Nombre de personnes de 15 ans ou plus Employés", "C19_POP15P_CS6": "Nombre de personnes de 15 ans ou plus Ouvriers", "C19_POP15P_CS7": "Nombre de personnes de 15 ans ou plus Retraités", "C19_POP15P_CS8": "Nombre de personnes de 15 ans ou plus Autres sans activité professionnelle", "C19_H15P": "Nombre d'hommes de 15 ans ou plus", "C19_H15P_CS1": "Nombre d'hommes de 15 ans ou plus Agriculteurs exploitants", "C19_H15P_CS2": "Nombre d'hommes de 15 ans ou plus Artisans, Commerçants, Chefs d'entreprise", "C19_H15P_CS3": "Nombre d'hommes de 15 ans ou plus Cadres et Professions intellectuelles supérieures", "C19_H15P_CS4": "Nombre d'hommes de 15 ans ou plus Professions intermédiaires", "C19_H15P_CS5": "Nombre d'hommes de 15 ans ou plus Employés", "C19_H15P_CS6": "Nombre d'hommes de 15 ans ou plus Ouvriers", "C19_H15P_CS7": "Nombre d'hommes de 15 ans ou plus Retraités", "C19_H15P_CS8": "Nombre d'hommes de 15 ans ou plus Autres sans activité professionnelle", "C19_F15P": "Nombre de femmes de 15 ans ou plus", "C19_F15P_CS1": "Nombre de femmes de 15 ans ou plus Agriculteurs exploitants", "C19_F15P_CS2": "Nombre de femmes de 15 ans ou plus Artisans, Commerçants, Chefs d'entreprise", "C19_F15P_CS3": "Nombre de femmes de 15 ans ou plus Cadres et Professions intellectuelles supérieures", "C19_F15P_CS4": "Nombre de femmes de 15 ans ou plus Professions intermédiaires", "C19_F15P_CS5": "Nombre de femmes de 15 ans ou plus Employés", "C19_F15P_CS6": "Nombre de femmes de 15 ans ou plus Ouvriers", "C19_F15P_CS7": "Nombre de femmes de 15 ans ou plus Retraités", "C19_F15P_CS8": "Nombre de femmes de 15 ans ou plus Autres sans activité professionnelle", "P19_POP_FR": "Nombre de personnes de nationalité française", "P19_POP_ETR": "Nombre de personnes étrangères", "P19_POP_IMM": "Nombres de personnes immigrées", "P19_PMEN": "Population des ménages", "P19_PHORMEN": "Population hors ménages", "P20_POP": "Population", "P20_POP0002": "Nombre de personnes de 0 à 2 ans", "P20_POP0305": "Nombre de personnes de 3 à 5 ans", "P20_POP0610": "Nombre de personnes de 6 à 10 ans", "P20_POP1117": "Nombre de personnes de 11 à 17 ans", "P20_POP1824": "Nombre de personnes de 18 à 24 ans", "P20_POP2539": "Nombre de personnes de 25 à 39 ans", "P20_POP4054": "Nombre de personnes de 40 à 54 ans", "P20_POP5564": "Nombre de personnes de 55 à 64 ans", "P20_POP6579": "Nombre de personnes de 65 à 79 ans", "P20_POP80P": "Nombre de personnes de 80 ans ou plus", "P20_POP0014": "Nombre de personnes de 0 à 14 ans", "P20_POP1529": "Nombre de personnes de 15 à 29 ans", "P20_POP3044": "Nombre de personnes de 30 à 44 ans", "P20_POP4559": "Nombre de personnes de 45 à 59 ans", "P20_POP6074": "Nombre de personnes de 60 à 74 ans", "P20_POP75P": "Nombre de personnes de 75 ans ou plus", "P20_POP0019": "Nombre de personnes de 0 à 19 ans", "P20_POP2064": "Nombre de personnes de 20 à 64 ans", "P20_POP65P": "Nombre de personnes de 65 ans ou plus", "P20_POPH": "Nombre d'hommes", "P20_H0014": "Nombre d'hommes de 0 à 14 ans", "P20_H1529": "Nombre d'hommes de 15 à 29 ans", "P20_H3044": "Nombre d'hommes de 30 à 44 ans", "P20_H4559": "Nombre d'hommes de 45 à 59 ans", "P20_H6074": "Nombre d'hommes de 60 à 74 ans", "P20_H75P": "Nombre d'hommes de 75 ans ou plus", "P20_H0019": "Nombre d'hommes de 0 à 19 ans", "P20_H2064": "Nombre d'hommes de 20 à 64 ans", "P20_H65P": "Nombre d'hommes de 65 ans ou plus", "P20_POPF": "Nombre de femmes", "P20_F0014": "Nombre de femmes de 0 à 14 ans", "P20_F1529": "Nombre de femmes de 15 à 29 ans", "P20_F3044": "Nombre de femmes de 30 à 44 ans", "P20_F4559": "Nombre de femmes de 45 à 59 ans", "P20_F6074": "Nombre de femmes de 60 à 74 ans", "P20_F75P": "Nombre de femmes de 75 ans ou plus", "P20_F0019": "Nombre de femmes de 0 à 19 ans", "P20_F2064": "Nombre de femmes de 20 à 64 ans", "P20_F65P": "Nombre de femmes de 65 ans ou plus", "C20_POP15P": "Nombre de personnes de 15 ans ou plus", "C20_POP15P_CS1": "Nombre de personnes de 15 ans ou plus Agriculteurs exploitants", "C20_POP15P_CS2": "Nombre de personnes de 15 ans ou plus Artisans, Commerçants, Chefs d'entreprise", "C20_POP15P_CS3": "Nombre de personnes de 15 ans ou plus Cadres et Professions intellectuelles supérieures", "C20_POP15P_CS4": "Nombre de personnes de 15 ans ou plus Professions intermédiaires", "C20_POP15P_CS5": "Nombre de personnes de 15 ans ou plus Employés", "C20_POP15P_CS6": "Nombre de personnes de 15 ans ou plus Ouvriers", "C20_POP15P_CS7": "Nombre de personnes de 15 ans ou plus Retraités", "C20_POP15P_CS8": "Nombre de personnes de 15 ans ou plus Autres sans activité professionnelle", "C20_H15P": "Nombre d'hommes de 15 ans ou plus", "C20_H15P_CS1": "Nombre d'hommes de 15 ans ou plus Agriculteurs exploitants", "C20_H15P_CS2": "Nombre d'hommes de 15 ans ou plus Artisans, Commerçants, Chefs d'entreprise", "C20_H15P_CS3": "Nombre d'hommes de 15 ans ou plus Cadres et Professions intellectuelles supérieures", "C20_H15P_CS4": "Nombre d'hommes de 15 ans ou plus Professions intermédiaires", "C20_H15P_CS5": "Nombre d'hommes de 15 ans ou plus Employés", "C20_H15P_CS6": "Nombre d'hommes de 15 ans ou plus Ouvriers", "C20_H15P_CS7": "Nombre d'hommes de 15 ans ou plus Retraités", "C20_H15P_CS8": "Nombre d'hommes de 15 ans ou plus Autres sans activité professionnelle", "C20_F15P": "Nombre de femmes de 15 ans ou plus", "C20_F15P_CS1": "Nombre de femmes de 15 ans ou plus Agriculteurs exploitants", "C20_F15P_CS2": "Nombre de femmes de 15 ans ou plus Artisans, Commerçants, Chefs d'entreprise", "C20_F15P_CS3": "Nombre de femmes de 15 ans ou plus Cadres et Professions intellectuelles supérieures", "C20_F15P_CS4": "Nombre de femmes de 15 ans ou plus Professions intermédiaires", "C20_F15P_CS5": "Nombre de femmes de 15 ans ou plus Employés", "C20_F15P_CS6": "Nombre de femmes de 15 ans ou plus Ouvriers", "C20_F15P_CS7": "Nombre de femmes de 15 ans ou plus Retraités", "C20_F15P_CS8": "Nombre de femmes de 15 ans ou plus Autres sans activité professionnelle", "P20_POP_FR": "Nombre de personnes de nationalité française", "P20_POP_ETR": "Nombre de personnes étrangères", "P20_POP_IMM": "Nombres de personnes immigrées", "P20_PMEN": "Population des ménages", "P20_PHORMEN": "Population hors ménages"}, "entetes": ["COD_VAR", "LIB_VAR", "LIB_VAR_LONG", "COD_MOD", "LIB_MOD", "TYPE_VAR", "LONG_VAR"], "lignes": [["COM", "Commune ou ARM", "Code du département suivi du numéro de commune ou du numéro d'arrondissement municipal pour Paris Lyon et Marseille", "", "", "CHAR", "5"], ["TYP_IRIS", "Type d'IRIS", "Type d'IRIS : habitat (H), activité (A), divers (D), Autre (Z)", "", "", "CHAR", "1"], ["MODIF_IRIS", "Modification de l'IRIS", "Type de modification de l'IRIS", "", "", "CHAR", "1"], ["LAB_IRIS", "Label de l'IRIS", "Label de qualité de l'IRIS", "", "", "CHAR", "1"], ["P19_POP", "Population en 2019 (princ)", "Population", "", "", "NUM", "16"], ["P19_POP0002", "Pop 0-2 ans en 2019 (princ)", "Nombre de personnes de 0 à 2 ans", "", "", "NUM", "17"], ["P19_POP0305", "Pop 3-5 ans en 2019 (princ)", "Nombre de personnes de 3 à 5 ans", "", "", "NUM", "17"], ["P19_POP0610", "Pop 6-10 ans en 2019 (princ)", "Nombre de personnes de 6 à 10 ans", "", "", "NUM", "17"], ["P19_POP1117", "Pop 11-17 ans en 2019 (princ)", "Nombre de personnes de 11 à 17 ans", "", "", "NUM", "17"], ["P19_POP1824", "Pop 18-24 ans en 2019 (princ)", "Nombre de personnes de 18 à 24 ans", "", "", "NUM", "17"], ["P19_POP2539", "Pop 25-39 ans en 2019 (princ)", "Nombre de personnes de 25 à 39 ans", "", "", "NUM", "17"], ["P19_POP4054", "Pop 40-54 ans en 2019 (princ)", "Nombre de personnes de 40 à 54 ans", "", "", "NUM", "17"], ["P19_POP5564", "Pop 55-64 ans en 2019 (princ)", "Nombre de personnes de 55 à 64 ans", "", "", "NUM", "17"], ["P19_POP6579", "Pop 65-79 ans en 2019 (princ)", "Nombre de personnes de 65 à 79 ans", "", "", "NUM", "17"], ["P19_POP80P", "Pop 80 ans ou plus en 2019 (princ)", "Nombre de personnes de 80 ans ou plus", "", "", "NUM", "17"], ["P19_POP0014", "Pop 0-14 ans en 2019 (princ)", "Nombre de personnes de 0 à 14 ans", "", "", "NUM", "17"], ["P19_POP1529", "Pop 15-29 ans en 2019 (princ)", "Nombre de personnes de 15 à 29 ans", "", "", "NUM", "17"], ["P19_POP3044", "Pop 30-44 ans en 2019 (princ)", "Nombre de personnes de 30 à 44 ans", "", "", "NUM", "17"], ["P19_POP4559", "Pop 45-59 ans en 2019 (princ)", "Nombre de personnes de 45 à 59 ans", "", "", "NUM", "17"], ["P19_POP6074", "Pop 60-74 ans en 2019 (princ)", "Nombre de personnes de 60 à 74 ans", "", "", "NUM", "17"], ["P19_POP75P", "Pop 75 ans ou plus en 2019 (princ)", "Nombre de personnes de 75 ans ou plus", "", "", "NUM", "17"], ["P19_POP0019", "Pop 0-19 ans en 2019 (princ)", "Nombre de personnes de 0 à 19 ans", "", "", "NUM", "17"], ["P19_POP2064", "Pop 20-64 ans en 2019 (princ)", "Nombre de personnes de 20 à 64 ans", "", "", "NUM", "16"], ["P19_POP65P", "Pop 65 ans ou plus en 2019 (princ)", "Nombre de personnes de 65 ans ou plus", "", "", "NUM", "17"], ["P19_POPH", "Pop Hommes en 2019 (princ)", "Nombre d'hommes", "", "", "NUM", "17"], ["P19_H0014", "Pop Hommes 0-14 ans en 2019 (princ)", "Nombre d'hommes de 0 à 14 ans", "", "", "NUM", "17"], ["P19_H1529", "Pop Hommes 15-29 ans en 2019 (princ)", "Nombre d'hommes de 15 à 29 ans", "", "", "NUM", "17"], ["P19_H3044", "Pop Hommes 30-44 ans en 2019 (princ)", "Nombre d'hommes de 30 à 44 ans", "", "", "NUM", "17"], ["P19_H4559", "Pop Hommes 45-59 ans en 2019 (princ)", "Nombre d'hommes de 45 à 59 ans", "", "", "NUM", "17"], ["P19_H6074", "Pop Hommes 60-74 ans en 2019 (princ)", "Nombre d'hommes de 60 à 74 ans", "", "", "NUM", "17"], ["P19_H75P", "Pop Hommes 75 ans ou plus en 2019 (princ)", "Nombre d'hommes de 75 ans ou plus", "", "", "NUM", "17"], ["P19_H0019", "Pop Hommes 0-19 ans en 2019 (princ)", "Nombre d'hommes de 0 à 19 ans", "", "", "NUM", "17"], ["P19_H2064", "Pop Hommes 20-64 ans en 2019 (princ)", "Nombre d'hommes de 20 à 64 ans", "", "", "NUM", "17"], ["P19_H65P", "Pop Hommes 65 ans ou plus en 2019 (princ)", "Nombre d'hommes de 65 ans ou plus", "", "", "NUM", "17"], ["P19_POPF", "Pop Femmes en 2019 (princ)", "Nombre de femmes", "", "", "NUM", "17"], ["P19_F0014", "Pop Femmes 0-14 ans en 2019 (princ)", "Nombre de femmes de 0 à 14 ans", "", "", "NUM", "17"], ["P19_F1529", "Pop Femmes 15-29 ans en 2019 (princ)", "Nombre de femmes de 15 à 29 ans", "", "", "NUM", "17"], ["P19_F3044", "Pop Femmes 30-44 ans en 2019 (princ)", "Nombre de femmes de 30 à 44 ans", "", "", "NUM", "17"], ["P19_F4559", "Pop Femmes 45-59 ans en 2019 (princ)", "Nombre de femmes de 45 à 59 ans", "", "", "NUM", "17"], ["P19_F6074", "Pop Femmes 60-74 ans en 2019 (princ)", "Nombre de femmes de 60 à 74 ans", "", "", "NUM", "17"], ["P19_F75P", "Pop Femmes 75 ans ou plus en 2019 (princ)", "Nombre de femmes de 75 ans ou plus", "", "", "NUM", "17"], ["P19_F0019", "Pop Femmes 0-19 ans en 2019 (princ)", "Nombre de femmes de 0 à 19 ans", "", "", "NUM", "17"], ["P19_F2064", "Pop Femmes 20-64 ans en 2019 (princ)", "Nombre de femmes de 20 à 64 ans", "", "", "NUM", "17"], ["P19_F65P", "Pop Femmes 65 ans ou plus en 2019 (princ)", "Nombre de femmes de 65 ans ou plus", "", "", "NUM", "17"], ["C19_POP15P", "Pop 15 ans ou plus en 2019 (compl)", "Nombre de personnes de 15 ans ou plus", "", "", "NUM", "16"], ["C19_POP15P_CS1", "Pop 15 ans ou plus Agriculteurs exploitants en 2019 (compl)", "Nombre de personnes de 15 ans ou plus Agriculteurs exploitants", "", "", "NUM", "17"], ["C19_POP15P_CS2", "Pop 15 ans ou plus Artisans, Comm., Chefs entr. en 2019 (compl)", "Nombre de personnes de 15 ans ou plus Artisans, Commerçants, Chefs d'entreprise", "", "", "NUM", "17"], ["C19_POP15P_CS3", "Pop 15 ans ou plus Cadres, Prof. intel. sup. en 2019 (compl)", "Nombre de personnes de 15 ans ou plus Cadres et Professions intellectuelles supérieures", "", "", "NUM", "17"], ["C19_POP15P_CS4", "Pop 15 ans ou plus Prof. intermédiaires en 2019 (compl)", "Nombre de personnes de 15 ans ou plus Professions intermédiaires", "", "", "NUM", "17"], ["C19_POP15P_CS5", "Pop 15 ans ou plus Employés en 2019 (compl)", "Nombre de personnes de 15 ans ou plus Employés", "", "", "NUM", "17"], ["C19_POP15P_CS6", "Pop 15 ans ou plus Ouvriers en 2019 (compl)", "Nombre de personnes de 15 ans ou plus Ouvriers", "", "", "NUM", "17"], ["C19_POP15P_CS7", "Pop 15 ans ou plus Retraités en 2019 (compl)", "Nombre de personnes de 15 ans ou plus Retraités", "", "", "NUM", "17"], ["C19_POP15P_CS8", "Pop 15 ans ou plus Autres en 2019 (compl)", "Nombre de personnes de 15 ans ou plus Autres sans activité professionnelle", "", "", "NUM", "17"], ["C19_H15P", "Pop 15 ans ou plus Hommes en 2019 (compl)", "Nombre d'hommes de 15 ans ou plus", "", "", "NUM", "17"], ["C19_H15P_CS1", "Pop 15 ans ou plus Hommes Agriculteurs exploitants en 2019 (compl)", "Nombre d'hommes de 15 ans ou plus Agriculteurs exploitants", "", "", "NUM", "17"], ["C19_H15P_CS2", "Pop 15 ans ou plus Hommes Artisans, Comm., Chefs entr. en 2019 (compl)", "Nombre d'hommes de 15 ans ou plus Artisans, Commerçants, Chefs d'entreprise", "", "", "NUM", "17"], ["C19_H15P_CS3", "Pop 15 ans ou plus Hommes Cadres, Prof. intel. sup. en 2019 (compl)", "Nombre d'hommes de 15 ans ou plus Cadres et Professions intellectuelles supérieures", "", "", "NUM", "17"], ["C19_H15P_CS4", "Pop 15 ans ou plus Hommes Prof. intermédiaires en 2019 (compl)", "Nombre d'hommes de 15 ans ou plus Professions intermédiaires", "", "", "NUM", "17"], ["C19_H15P_CS5", "Pop 15 ans ou plus Hommes Employés en 2019 (compl)", "Nombre d'hommes de 15 ans ou plus Employés", "", "", "NUM", "17"], ["C19_H15P_CS6", "Pop 15 ans ou plus Hommes Ouvriers en 2019 (compl)", "Nombre d'hommes de 15 ans ou plus Ouvriers", "", "", "NUM", "17"], ["C19_H15P_CS7", "Pop 15 ans ou plus Hommes Retraités en 2019 (compl)", "Nombre d'hommes de 15 ans ou plus Retraités", "", "", "NUM", "17"], ["C19_H15P_CS8", "Pop 15 ans ou plus Hommes Autres en 2019 (compl)", "Nombre d'hommes de 15 ans ou plus Autres sans activité professionnelle", "", "", "NUM", "17"], ["C19_F15P", "Pop 15 ans ou plus Femmes en 2019 (compl)", "Nombre de femmes de 15 ans ou plus", "", "", "NUM", "17"], ["C19_F15P_CS1", "Pop 15 ans ou plus Femmes Agriculteurs exploitants en 2019 (compl)", "Nombre de femmes de 15 ans ou plus Agriculteurs exploitants", "", "", "NUM", "17"], ["C19_F15P_CS2", "Pop 15 ans ou plus Femmes Artisans, Comm., Chefs entr. en 2019 (compl)", "Nombre de femmes de 15 ans ou plus Artisans, Commerçants, Chefs d'entreprise", "", "", "NUM", "18"], ["C19_F15P_CS3", "Pop 15 ans ou plus Femmes Cadres, Prof. intel. sup. en 2019 (compl)", "Nombre de femmes de 15 ans ou plus Cadres et Professions intellectuelles supérieures", "", "", "NUM", "17"], ["C19_F15P_CS4", "Pop 15 ans ou plus Femmes Prof. intermédiaires en 2019 (compl)", "Nombre de femmes de 15 ans ou plus Professions intermédiaires", "", "", "NUM", "17"], ["C19_F15P_CS5", "Pop 15 ans ou plus Femmes Employés en 2019 (compl)", "Nombre de femmes de 15 ans ou plus Employés", "", "", "NUM", "17"], ["C19_F15P_CS6", "Pop 15 ans ou plus Femmes Ouvriers en 2019 (compl)", "Nombre de femmes de 15 ans ou plus Ouvriers", "", "", "NUM", "17"], ["C19_F15P_CS7", "Pop 15 ans ou plus Femmes Retraités en 2019 (compl)", "Nombre de femmes de 15 ans ou plus Retraités", "", "", "NUM", "17"], ["C19_F15P_CS8", "Pop 15 ans ou plus Femmes Autres en 2019 (compl)", "Nombre de femmes de 15 ans ou plus Autres sans activité professionnelle", "", "", "NUM", "17"], ["P19_POP_FR", "Pop Français en 2019 (princ)", "Nombre de personnes de nationalité française", "", "", "NUM", "16"], ["P19_POP_ETR", "Pop Etrangers en 2019 (princ)", "Nombre de personnes étrangères", "", "", "NUM", "17"], ["P19_POP_IMM", "Pop Immigrés en 2019 (princ)", "Nombres de personnes immigrées", "", "", "NUM", "17"], ["P19_PMEN", "Pop ménages en 2019 (princ)", "Population des ménages", "", "", "NUM", "17"], ["P19_PHORMEN", "Pop hors ménages en 2019 (princ)", "Population hors ménages", "", "", "NUM", "17"]], "tronque": false, "nb_total": 76}</script>
+<script>
+(function(){
+  const btn = document.getElementById("theme-toggle");
+  function effectif(){
+    return document.documentElement.getAttribute("data-theme") ||
+      (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  }
+  function majIcone(){ btn.textContent = effectif() === "dark" ? "☀️" : "🌙"; }
+  btn.addEventListener("click", () => {
+    const suivant = effectif() === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", suivant);
+    try { localStorage.setItem("theme", suivant); } catch(e) {}
+    majIcone();
+  });
+  majIcone();
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+    if (!document.documentElement.getAttribute("data-theme")) majIcone();
+  });
+})();
+
+const D=JSON.parse(document.getElementById("d").textContent);
+const tbl=document.getElementById("t"),wrap=document.querySelector(".wrap");
+const nCols=D.entetes.length;
+const wrapW=wrap.clientWidth||800;
+const colW=Math.max(80,Math.floor(Math.max(wrapW,nCols*160)/nCols));
+tbl.style.width=Math.max(wrapW,nCols*160)+"px";
+document.getElementById("cols").innerHTML=D.entetes.map(()=>`<col style="width:${colW}px">`).join("");
+document.title=D.nom;document.getElementById("titre").textContent=D.nom;
+if(D.tronque){const a=document.getElementById("avert");a.style.display="";
+  a.textContent=`Prévisualisation : ${D.lignes.length.toLocaleString("fr")} premières lignes sur ${D.nb_total.toLocaleString("fr")} au total.`;}
+const geo=new Set(D.champs_geo||[]);
+const DICO=D.dictionnaire||{};
+let sc=-1,asc=true,q="";
+function esc(s){return String(s??"").replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function cell(v){const s=String(v??"").trim();return /^https?:\/\/\S+$/.test(s)?`<a href="${esc(s)}" target="_blank" rel="noopener">${esc(s)}</a>`:esc(v);}
+function rendu(){
+  let rows=D.lignes;
+  if(q){const f=q.toLowerCase();rows=rows.filter(r=>r.some(v=>String(v??"").toLowerCase().includes(f)));}
+  if(sc>=0){const col=sc,up=asc;rows=[...rows].sort((a,b)=>{
+    const va=a[col]??"",vb=b[col]??"",na=+va,nb=+vb;
+    return(!isNaN(na)&&!isNaN(nb))?(up?na-nb:nb-na):(up?String(va).localeCompare(String(vb),"fr"):String(vb).localeCompare(String(va),"fr"));
+  });}
+  const th=D.entetes.map((h,i)=>{
+    const trad=DICO[h];
+    const cls=[sc===i?(asc?"asc":"desc"):"",geo.has(h)?"geo":"",trad?"trad":""].filter(Boolean).join(" ");
+    const tip=trad?` title="${esc(h)}"`:"";
+    return`<th class="${cls}"${tip}>${esc(trad||h)}<div class="resizer"></div></th>`;
+  }).join("");
+  document.getElementById("thead").innerHTML=`<tr>${th}</tr>`;
+  document.getElementById("tbody").innerHTML=rows.map(r=>`<tr>${r.map(v=>`<td><div title="${esc(v)}">${cell(v)}</div></td>`).join("")}</tr>`).join("");
+  const n=rows.length,tot=D.lignes.length;
+  document.getElementById("info").textContent=n<tot
+    ?`${n.toLocaleString("fr")} / ${tot.toLocaleString("fr")} lignes`
+    :`${n.toLocaleString("fr")} ligne${n>1?"s":""}`;
+}
+// Sort via delegation — ignore clicks that start on the resizer handle
+tbl.addEventListener("click",e=>{
+  if(e.target.closest(".resizer"))return;
+  const th=e.target.closest("th");
+  if(!th)return;
+  const i=th.cellIndex;sc===i?asc=!asc:(sc=i,asc=true);rendu();
+});
+// Column resize
+tbl.addEventListener("mousedown",e=>{
+  const rz=e.target.closest(".resizer");
+  if(!rz)return;
+  e.preventDefault();
+  const th=rz.parentElement,idx=th.cellIndex;
+  const cols=document.querySelectorAll("#cols col");
+  const startX=e.clientX,startW=th.offsetWidth;
+  rz.classList.add("active");
+  document.body.style.cursor="col-resize";
+  function onMove(e){
+    const w=Math.max(40,startW+(e.clientX-startX));
+    cols[idx].style.width=w+"px";
+    tbl.style.width=Array.from(cols).reduce((s,c)=>s+(parseInt(c.style.width)||colW),0)+"px";
+  }
+  function onUp(){
+    rz.classList.remove("active");
+    document.body.style.cursor="";
+    document.removeEventListener("mousemove",onMove);
+    document.removeEventListener("mouseup",onUp);
+  }
+  document.addEventListener("mousemove",onMove);
+  document.addEventListener("mouseup",onUp);
+});
+document.getElementById("filtre").addEventListener("input",e=>{q=e.target.value;rendu();});
+rendu();
+</script>
+</body>
+</html>

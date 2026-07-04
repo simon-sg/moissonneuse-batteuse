@@ -1,0 +1,86 @@
+{
+  "local_id": "04bb3944-ba8e-5e1d-8367-7f827301b6a9",
+  "resource_title": "Les adresses des centres Apec  - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Les adresses des centres Apec  — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/5bb63863634f416bcbbbfb17\n\nL’Apec est présente sur l’ensemble du territoire avec une cinquantaine de centres, en France métropolitaine et en Outre-mer. \n\nLes 500 consultantes et consultants peuvent ainsi accompagner les entreprises, les cadres et les jeunes diplômés au plus près de leurs besoins et de leurs attentes. L’Apec propose à ses clients un accompagnement ciblé.\n\nEn 2019, elle renforce sa présence dans les territoires, avec des implantations à la Réunion, en Martinique, Guadeloupe et Corse. \nL’Apec consolide ainsi son ancrage dans les territoires et son rôle de mise en relation au plus près des besoins de ses clients et des spécificités du tissu économique local.\n\nRetrouvez la localisation sur Apec.fr : [Mon centre](https://www.apec.fr/mon-centre.html#/recherche)\n\n"
+    }
+  ],
+  "theme": "health",
+  "keywords": [
+    "centres-apec",
+    "drom-com",
+    "emploi-cadre",
+    "region",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Association Pour l'Emploi des Cadres"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "cb09cdab-f80c-5ef1-b788-6e0b231a1d2c",
+      "media_type": "FILE",
+      "media_name": "liste-des-centres-apec-en-france-metropolitaine-et-rennesmetropole.csv",
+      "media_caption": "Liste des centres Apec en France métropolitaine et Outre-mer — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "1090d142-f84e-535d-8cc8-74425886210c",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://static.data.gouv.fr/resources/les-adresses-des-centres-apec/20210420-174430/2021-liste-des-centres-apec.csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2018-10-04T00:00:00Z",
+    "updated": "2021-04-20T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "CUSTOM",
+      "custom_licence_label": [
+        {
+          "lang": "fr",
+          "text": "fr-lo"
+        }
+      ],
+      "custom_licence_uri": "https://www.data.gouv.fr/datasets/5bb63863634f416bcbbbfb17"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2018-10-04T00:00:00Z",
+      "updated": "2021-04-20T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/5bb63863634f416bcbbbfb17"
+  }
+}

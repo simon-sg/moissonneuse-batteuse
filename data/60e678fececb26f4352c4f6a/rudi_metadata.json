@@ -1,0 +1,92 @@
+{
+  "local_id": "a4552b37-8f4c-5c53-933e-202c9824ef94",
+  "resource_title": "Carte scolaire des collèges publics - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Carte scolaire des collèges publics — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/60e678fececb26f4352c4f6a\n\nCet actif a été lié à l'actif suivant : [Carte scolaire des collèges publics - Visualization](/explore/assets/visualisation-fr-en-carte-scolaire-colleges-publics/)\n\n* * *\n\nLes collèges publics accueillent en priorité les élèves habitant dans leur secteur de recrutement. Ce secteur est déterminé par le lieu de résidence de l’élève. Ce n’est donc ni l’école primaire fréquentée, ni le lieu d’exercice professionnel des parents qui déterminent le (ou les) collège(s) de secteur.\n\nC’est le conseil départemental qui **définit la « carte scolaire des collèges publics », c’est-à-dire les secteurs de recrutement des différents collèges publics du département** , en précisant dans quel(s) collège(s) public(s) doivent être scolarisés les élèves qui habitent dans telle zone du département. Lorsque cela favorise la mixité sociale, le conseil départemental peut décider qu’un même secteur de recrutement soit partagé par plusieurs collèges publics (on parle dans ce cas de « secteur multi-collèges »). \n\nRéférence : Code de l'éducation, article L213-1 (<https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000031104883>)\n\nLa carte scolaire est prise en compte par le DASEN pour préparer l’affectation des élèves au moyen de l'application Affelnet 6e. Pour automatiser le rapprochement entre l’adresse des élèves et leur(s) collège(s) de secteur, le DASEN peut importer un fichier de carte scolaire dans Affelnet 6e, sous réserve que ce fichier ait été préalablement transmis par le conseil départemental dans un format harmonisé, défini à l'échelle nationale.\n\nLe jeu de données publié résulte de l’agrégation, au niveau national, des fichiers départementaux **utilisés par les DASEN pour déterminer automatiquement le(s) collège(s) de secteur des élèves**. Pour l'année 2025, ce jeu de données couvre 95 départements (sur un total de 101).\n\n  * Six départements n'ont pas encore intégré leurs données de carte scolaire dans l'application Affelnet 6e : la **Charente-Maritime** , les **Côtes-d’Armor** , la **Corse-du-Sud** , la **Guadeloupe** , la **Martinique** et **Mayotte.**\n  * Par ailleurs, des communes appartenant à deux des six départements concernés (la **Charente-Maritime** et les **Côtes-d’Armor**), figurent dans le jeu de données au motif qu’elles sont couvertes par le secteur d’un collège situé dans un département limitrophe et qui dispose d’un fichier de carte scolaire."
+    }
+  ],
+  "theme": "education",
+  "keywords": [
+    "affectation",
+    "carte-scolaire",
+    "colleges",
+    "eleves-etudiants-et-apprentis",
+    "etablissements-dont-ips",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Ministères de l'Éducation nationale"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "c8c68d39-75b3-56db-b9c4-518dddb5d28d",
+      "media_type": "FILE",
+      "media_name": "fr-en-carte-scolaire-colleges-publics-rennesmetropole.csv",
+      "media_caption": "fr-en-carte-scolaire-colleges-publics.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "ef8fed6a-d6c2-5cae-a4b6-d855d8b809a3",
+      "media_type": "FILE",
+      "media_name": "fr-en-carte-scolaire-colleges-publics-rennesmetropole.json",
+      "media_caption": "fr-en-carte-scolaire-colleges-publics.csv — données filtrées sur Rennes Métropole (JSON)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "74f0bfa8-7a75-5742-b326-73efc927d763",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://data.education.gouv.fr/api/explore/v2.1/catalog/datasets/fr-en-carte-scolaire-colleges-publics/exports/csv?use_labels=true",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2021-07-02T00:00:00Z",
+    "updated": "2026-02-02T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2021-07-02T00:00:00Z",
+      "updated": "2026-02-02T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/60e678fececb26f4352c4f6a"
+  }
+}

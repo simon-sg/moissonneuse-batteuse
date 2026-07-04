@@ -15,6 +15,7 @@ import datetime
 import hashlib
 import zipfile
 import gzip
+import bz2
 import warnings
 warnings.filterwarnings("ignore", module="requests")
 import xml.etree.ElementTree as ET
@@ -25,7 +26,7 @@ import requests
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from filters.geographic import est_dans_rm, est_commune_rm, normaliser
+from filters.geographic import est_dans_rm, est_commune_rm, normaliser, est_circonscription_rm
 from conf.communes_rm import CODES_POSTAUX_RM, CODES_INSEE_RM, COMMUNES_RM
 from connectors.sirene import obtenir_sirens_rm
 from connectors.geo_services import wms_get_capabilities, wms_couches_dans_rm, nettoyer_url_ogc
@@ -133,10 +134,28 @@ CHAMPS_SIREN = [
     "siren etablissement", "siret etablissement",
     "identifiant siren", "identifiant siret",
 ]
-# Colonnes combinant lat et lon en un seul champ (format OpenDataSoft "lat,lon")
+# Noms de champs courants pour la circonscription législative (Assemblée nationale)
+CHAMPS_CIRCONSCRIPTION = [
+    "circonscription", "circo", "code circonscription", "code circo",
+    "circonscription legislative", "circonscription_legislative",
+    "num circonscription", "num_circonscription",
+    "numero circonscription", "numero_circonscription",
+    "n circonscription", "n_circonscription",
+]
+# Colonnes combinant lat et lon en un seul champ (format OpenDataSoft "lat,lon", WKT
+# "POINT(lon lat)"/"POLYGON(...)", ou géométrie GeoJSON sérialisée en JSON "{"coordinates": ...}")
 CHAMPS_GEO_POINT = [
     "geo point 2d", "geo_point_2d", "geo point", "geo_point", "geopoint",
     "coordonnees gps", "coord gps", "point gps", "point_gps",
+    # Centroïde (souvent un WKT "POINT(lon lat)") et variantes
+    "centroid", "centroide", "centroid geom", "centroid_geom",
+    "geom centroid", "geom_centroid", "the geom centroid", "the_geom_centroid",
+    "wkt centroid", "wkt_centroid", "centroid wkt", "centroid_wkt",
+    "centroid wgs84", "centroid_wgs84", "point centroide", "point_centroide",
+    # Géométrie complète (GeoJSON ou WKT) — Point/LineString/Polygon/MultiPolygon,
+    # fréquent en export OpenDataSoft ("geo_shape") ou Esri ("the_geom", "shape")
+    "geom", "the geom", "the_geom", "geo shape", "geo_shape",
+    "geometrie", "geometry", "geojson", "shape", "wkt",
 ]
 # Colonnes latitude et longitude séparées
 CHAMPS_LAT = [
@@ -164,6 +183,13 @@ CHAMPS_ADRESSE = [
 _COMMUNES_NORM_RM = {normaliser(c) for c in COMMUNES_RM}
 # Regex pour extraire un code postal 35xxx depuis une adresse textuelle
 _RE_CP_35 = re.compile(r'\b(35\d{3})\b')
+# Regex pour un WKT "POINT(lon lat)" (colonne centroïde) — groupes en ordre X Y
+_RE_WKT_POINT = re.compile(r'^POINT\s*\(\s*(-?\d+\.?\d*)\s+(-?\d+\.?\d*)\s*\)$', re.IGNORECASE)
+# Paires "lon lat" (ordre WKT standard X Y) à l'intérieur d'un WKT non-POINT
+# (POLYGON/MULTIPOLYGON/LINESTRING...) — un simple test de présence d'un sommet dans la
+# bbox RM, pas une vraie intersection géométrique (cohérent avec le test bbox déjà utilisé
+# ailleurs pour les couches WMS/WFS, voir analyser_wms()/analyser_wfs()).
+_RE_WKT_PAIRE = re.compile(r'(-?\d+\.\d+)\s+(-?\d+\.\d+)')
 
 # Marqueurs dans le titre (phrase exacte normalisée)
 MARQUEURS_TITRE = ["par commune", "par communes", "par iris", "par code postal",
@@ -196,6 +222,8 @@ MARQUEURS_ENTETES = set(
     "rue", "lieu", "localite", "quartier", "secteur", "territoire",
     # Identifiants entreprises (souvent liés à une adresse commune)
     "siret", "siren", "nic",
+    # Circonscription législative
+    "circonscription", "circo",
     # Géométrie / coordonnées
     "geo point", "geo_point", "geo point 2d", "geo_point_2d",
     "geo shape", "geo_shape", "geometry", "geom", "wkt",
@@ -551,6 +579,8 @@ def _format_analysable(res: dict) -> str | None:
         return "wfs"
     if url.endswith(".csv.gz") or url.endswith(".tsv.gz") or fmt == "gz":
         return "gz"
+    if url.endswith(".csv.bz2") or url.endswith(".tsv.bz2") or fmt == "bz2":
+        return "bz2"
     if "csv" in fmt or url.endswith(".csv"):
         return "csv"
     if fmt in ("xlsx", "excel") or url.endswith(".xlsx"):
@@ -565,7 +595,7 @@ def _format_analysable(res: dict) -> str | None:
 
 
 def trouver_ressource_analysable(dataset: dict) -> dict | None:
-    """Retourne la première ressource analysable (CSV, ZIP, GZ, XLSX) ou JSON."""
+    """Retourne la première ressource analysable (CSV, ZIP, GZ, BZ2, XLSX) ou JSON."""
     for r in dataset.get("resources", []):
         if _format_analysable(r):
             return r
@@ -593,6 +623,7 @@ def formats_disponibles(dataset: dict) -> list:
 _MAGIC_BINAIRE = [
     b"PK\x03\x04",   # ZIP / XLSX / ODS / DOCX
     b"\x1f\x8b",     # gzip
+    b"BZh",          # bzip2
     b"%PDF-",         # PDF
     b"\xd0\xcf\x11\xe0",  # OLE2 (XLS, DOC ancien format)
 ]
@@ -688,6 +719,8 @@ def obtenir_extrait(ressource: dict) -> str:
         return "(fichier Excel — voir résultat d'analyse)"
     elif fmt == "gz":
         return "(fichier compressé GZ — voir résultat d'analyse)"
+    elif fmt == "bz2":
+        return "(fichier compressé BZ2 — voir résultat d'analyse)"
     return "(format non supporté pour l'extrait)"
 
 
@@ -732,6 +765,8 @@ def afficher_fiche(dataset: dict, extrait: str, resultat: dict | None = None) ->
         elif resultat.get("champ_cp") or resultat.get("champ_ville"):
             methode = "CP/ville"
             champ = " + ".join(filter(None, [resultat.get("champ_cp"), resultat.get("champ_ville")]))
+        elif resultat.get("champ_circonscription"):
+            methode, champ = "circonscription", resultat["champ_circonscription"]
         else:
             methode, champ = "?", "?"
         print(f"ANALYSE  : {resultat['nb_total']} lignes | {resultat['nb_rm']} RM | {methode}: {champ}")
@@ -859,6 +894,19 @@ def deviner_champ_siren(entetes: list[str]) -> str | None:
     return None
 
 
+def deviner_champ_circonscription(entetes: list[str]) -> str | None:
+    """Détecte une colonne contenant un code de circonscription législative."""
+    entetes_norm = [normaliser(e) for e in entetes]
+    for nom in CHAMPS_CIRCONSCRIPTION:
+        if nom in entetes_norm:
+            return entetes[entetes_norm.index(nom)]
+    # Fallback : colonne dont le nom contient "circonscription" ou commence par "circo"
+    for i, e in enumerate(entetes_norm):
+        if "circonscription" in e or e.startswith("circo"):
+            return entetes[i]
+    return None
+
+
 def deviner_champs_geo(entetes: list[str]) -> tuple[str | None, str | None]:
     """Détecte des colonnes de coordonnées géographiques WGS84.
     Retourne (champ_lat, champ_lon) où :
@@ -894,16 +942,66 @@ def deviner_champs_geo(entetes: list[str]) -> tuple[str | None, str | None]:
     return None, None
 
 
+def _points_depuis_geojson(texte: str) -> list:
+    """Extrait les paires (lat, lon) d'une géométrie GeoJSON sérialisée en JSON dans une
+    cellule CSV (colonnes "geom"/"geo_shape"/"the_geom" typiques des exports OpenDataSoft/Esri).
+    Gère Point/LineString/Polygon/MultiPolygon (coordinates imbriquées à n'importe quelle
+    profondeur) et une Feature enveloppant sa géométrie sous la clé "geometry".
+    GeoJSON stocke les coordonnées en [lon, lat] (X, Y) — inversé ici vers (lat, lon).
+    Retourne une liste vide si le texte n'est pas un JSON exploitable."""
+    try:
+        obj = json.loads(texte)
+    except (ValueError, TypeError):
+        return []
+    if isinstance(obj, dict) and isinstance(obj.get("geometry"), dict):
+        obj = obj["geometry"]
+    coords = obj.get("coordinates") if isinstance(obj, dict) else None
+    if coords is None:
+        return []
+    points = []
+
+    def _parcourir(node):
+        if (isinstance(node, list) and len(node) >= 2
+                and all(isinstance(x, (int, float)) for x in node[:2])):
+            points.append((node[1], node[0]))
+        elif isinstance(node, list):
+            for enfant in node:
+                _parcourir(enfant)
+
+    _parcourir(coords)
+    return points
+
+
 def est_point_rm(lat_val: str, lon_val: str | None) -> bool:
-    """Retourne True si le point WGS84 est dans la bounding box de RM.
-    Si lon_val is None, lat_val est au format "lat,lon" (OpenDataSoft).
+    """Retourne True si le point (ou au moins un sommet de la géométrie) WGS84 est dans la
+    bounding box de RM. Si lon_val is None, lat_val est au format "lat,lon" (OpenDataSoft),
+    un WKT "POINT(lon lat)"/"POLYGON(...)"/"MULTIPOLYGON(...)" (ordre X Y standard WKT), ou
+    une géométrie GeoJSON sérialisée en JSON (colonne "geom"/"geo_shape"/"the_geom").
+    Pour une géométrie à plusieurs sommets (polygone...), teste chaque sommet — approximation
+    bbox, pas une vraie intersection, cohérente avec le test déjà utilisé pour les couches
+    WMS/WFS ailleurs dans ce module.
     """
     try:
         if lon_val is None:
-            parties = str(lat_val).replace(";", ",").split(",")
-            if len(parties) < 2:
+            texte = str(lat_val).strip()
+            if not texte:
                 return False
-            lat, lon = float(parties[0]), float(parties[1])
+            if texte[0] in "{[":
+                points = _points_depuis_geojson(texte)
+                return any(_RM_LAT_MIN <= la <= _RM_LAT_MAX and _RM_LON_MIN <= lo <= _RM_LON_MAX
+                            for la, lo in points)
+            m = _RE_WKT_POINT.match(texte)
+            if m:
+                lon, lat = float(m.group(1)), float(m.group(2))
+            elif texte[:3].upper() in ("POL", "MUL", "LIN", "GEO"):
+                paires = _RE_WKT_PAIRE.findall(texte)
+                return any(_RM_LAT_MIN <= float(la) <= _RM_LAT_MAX and _RM_LON_MIN <= float(lo) <= _RM_LON_MAX
+                            for lo, la in paires)
+            else:
+                parties = texte.replace(";", ",").split(",")
+                if len(parties) < 2:
+                    return False
+                lat, lon = float(parties[0]), float(parties[1])
         else:
             lat, lon = float(lat_val), float(lon_val)
     except (ValueError, TypeError):
@@ -1011,7 +1109,8 @@ def _telecharger(url: str, verbose: bool, plafond_mo: float | None = 50) -> tupl
 
 
 def _detecter_champs(entetes: list[str]) -> tuple:
-    """Retourne (champ_cp, champ_ville, champ_iris, champ_dep, champ_adresse, champ_siren)."""
+    """Retourne (champ_cp, champ_ville, champ_iris, champ_dep, champ_adresse, champ_siren,
+    champ_lat, champ_lon, champ_circonscription)."""
     champ_cp, champ_ville = deviner_champs(list(entetes))
     champ_iris = deviner_champ_iris(list(entetes))
     champ_dep = deviner_champ_dep(list(entetes)) if champ_iris else None
@@ -1028,11 +1127,20 @@ def _detecter_champs(entetes: list[str]) -> tuple:
     champ_lat, champ_lon = (None, None) if (champ_cp or champ_ville or champ_iris
                                              or champ_adresse or champ_siren) \
         else deviner_champs_geo(list(entetes))
-    return champ_cp, champ_ville, champ_iris, champ_dep, champ_adresse, champ_siren, champ_lat, champ_lon
+    # Circonscription législative : dernier recours absolu — plus large que RM, voir
+    # est_circonscription_rm() et CLAUDE.md "Known limitations"
+    champ_circonscription = (
+        None if (champ_cp or champ_ville or champ_iris or champ_adresse
+                  or champ_siren or champ_lat)
+        else deviner_champ_circonscription(list(entetes))
+    )
+    return (champ_cp, champ_ville, champ_iris, champ_dep, champ_adresse, champ_siren,
+            champ_lat, champ_lon, champ_circonscription)
 
 
 def _compter_lignes_rm(rows, champ_cp, champ_ville, champ_iris, champ_dep, champ_adresse,
-                        champ_siren=None, champ_lat=None, champ_lon=None) -> tuple:
+                        champ_siren=None, champ_lat=None, champ_lon=None,
+                        champ_circonscription=None) -> tuple:
     """Itère rows (dicts) et compte ceux appartenant à Rennes Métropole."""
     sirens_rm = obtenir_sirens_rm() if champ_siren else None
     nb_total, nb_rm = 0, 0
@@ -1058,6 +1166,8 @@ def _compter_lignes_rm(rows, champ_cp, champ_ville, champ_iris, champ_dep, champ
                 lat_val = str(row.get(champ_lat, "")).strip()
                 lon_val = str(row.get(champ_lon, "")).strip() if champ_lon else None
                 in_rm = est_point_rm(lat_val, lon_val)
+            elif champ_circonscription:
+                in_rm = est_circonscription_rm(str(row.get(champ_circonscription, "")))
             else:
                 cp = str(row.get(champ_cp, "")).strip() if champ_cp else ""
                 ville = str(row.get(champ_ville, "")).strip() if champ_ville else ""
@@ -1080,13 +1190,15 @@ def _compter_lignes_rm(rows, champ_cp, champ_ville, champ_iris, champ_dep, champ
 
 def _construire_resultat(champ_cp, champ_ville, champ_iris, champ_adresse,
                          nb_total, nb_rm, exemples, premieres_lignes,
-                         champ_siren=None, champ_lat=None, champ_lon=None) -> dict:
+                         champ_siren=None, champ_lat=None, champ_lon=None,
+                         champ_circonscription=None) -> dict:
     return {
         "nb_total": nb_total, "nb_rm": nb_rm,
         "champ_cp": champ_cp, "champ_ville": champ_ville,
         "champ_iris": champ_iris, "champ_adresse": champ_adresse,
         "champ_siren": champ_siren,
         "champ_lat": champ_lat, "champ_lon": champ_lon,
+        "champ_circonscription": champ_circonscription,
         "exemples": exemples, "premieres_lignes": premieres_lignes,
     }
 
@@ -1146,10 +1258,12 @@ def _analyser_csv_depuis_stream(preambule: bytes, fp_bin,
     entetes = list(reader.fieldnames or [])
     log["entetes"] = entetes[:15]
 
-    champ_cp, champ_ville, champ_iris, champ_dep, champ_adresse, champ_siren, champ_lat, champ_lon = _detecter_champs(entetes)
+    (champ_cp, champ_ville, champ_iris, champ_dep, champ_adresse, champ_siren,
+     champ_lat, champ_lon, champ_circonscription) = _detecter_champs(entetes)
     log.update({"champ_cp": champ_cp, "champ_ville": champ_ville,
                 "champ_iris": champ_iris, "champ_adresse": champ_adresse,
-                "champ_siren": champ_siren, "champ_lat": champ_lat})
+                "champ_siren": champ_siren, "champ_lat": champ_lat,
+                "champ_circonscription": champ_circonscription})
 
     if verbose:
         print(f"  En-têtes détectés : {entetes[:10]}")
@@ -1162,13 +1276,15 @@ def _analyser_csv_depuis_stream(preambule: bytes, fp_bin,
         elif champ_lat:
             desc = champ_lat if champ_lon is None else f"{champ_lat} + {champ_lon}"
             print(f"  Champ géo trouvé : {desc}")
+        elif champ_circonscription:
+            print(f"  Champ circonscription trouvé : {champ_circonscription}")
         else:
             print(f"  Champ CP trouvé : {champ_cp} | Champ ville trouvé : {champ_ville}")
 
     try:
         nb_total, nb_rm, exemples, premieres_lignes = _compter_lignes_rm(
             reader, champ_cp, champ_ville, champ_iris, champ_dep, champ_adresse,
-            champ_siren, champ_lat, champ_lon
+            champ_siren, champ_lat, champ_lon, champ_circonscription
         )
     except csv.Error as e:
         log["erreur"] = f"parsing CSV : {e}"
@@ -1181,7 +1297,8 @@ def _analyser_csv_depuis_stream(preambule: bytes, fp_bin,
     log_analyse(log)
     return _construire_resultat(champ_cp, champ_ville, champ_iris, champ_adresse,
                                 nb_total, nb_rm, exemples, premieres_lignes,
-                                champ_siren=champ_siren, champ_lat=champ_lat, champ_lon=champ_lon)
+                                champ_siren=champ_siren, champ_lat=champ_lat, champ_lon=champ_lon,
+                                champ_circonscription=champ_circonscription)
 
 
 def _analyser_contenu_csv(contenu: bytes, verbose: bool, dataset_id: str, titre: str,
@@ -1235,10 +1352,12 @@ def _analyser_contenu_csv(contenu: bytes, verbose: bool, dataset_id: str, titre:
     entetes = list(reader.fieldnames or [])
     log["entetes"] = entetes[:15]
 
-    champ_cp, champ_ville, champ_iris, champ_dep, champ_adresse, champ_siren, champ_lat, champ_lon = _detecter_champs(entetes)
+    (champ_cp, champ_ville, champ_iris, champ_dep, champ_adresse, champ_siren,
+     champ_lat, champ_lon, champ_circonscription) = _detecter_champs(entetes)
     log.update({"champ_cp": champ_cp, "champ_ville": champ_ville,
                 "champ_iris": champ_iris, "champ_adresse": champ_adresse,
-                "champ_siren": champ_siren, "champ_lat": champ_lat})
+                "champ_siren": champ_siren, "champ_lat": champ_lat,
+                "champ_circonscription": champ_circonscription})
 
     if verbose:
         print(f"  En-têtes détectés : {entetes[:10]}")
@@ -1251,13 +1370,15 @@ def _analyser_contenu_csv(contenu: bytes, verbose: bool, dataset_id: str, titre:
         elif champ_lat:
             desc = champ_lat if champ_lon is None else f"{champ_lat} + {champ_lon}"
             print(f"  Champ géo trouvé : {desc}")
+        elif champ_circonscription:
+            print(f"  Champ circonscription trouvé : {champ_circonscription}")
         else:
             print(f"  Champ CP trouvé : {champ_cp} | Champ ville trouvé : {champ_ville}")
 
     try:
         nb_total, nb_rm, exemples, premieres_lignes = _compter_lignes_rm(
             reader, champ_cp, champ_ville, champ_iris, champ_dep, champ_adresse,
-            champ_siren, champ_lat, champ_lon
+            champ_siren, champ_lat, champ_lon, champ_circonscription
         )
     except csv.Error as e:
         log["erreur"] = f"parsing CSV : {e}"
@@ -1270,7 +1391,8 @@ def _analyser_contenu_csv(contenu: bytes, verbose: bool, dataset_id: str, titre:
     log_analyse(log)
     return _construire_resultat(champ_cp, champ_ville, champ_iris, champ_adresse,
                                 nb_total, nb_rm, exemples, premieres_lignes,
-                                champ_siren=champ_siren, champ_lat=champ_lat, champ_lon=champ_lon)
+                                champ_siren=champ_siren, champ_lat=champ_lat, champ_lon=champ_lon,
+                                champ_circonscription=champ_circonscription)
 
 
 def analyser_csv(url: str, verbose: bool = True,
@@ -1377,6 +1499,34 @@ def analyser_gz(url: str, verbose: bool = False,
         return None
 
 
+def analyser_bz2(url: str, verbose: bool = False,
+                 dataset_id: str = "", titre: str = "") -> dict | None:
+    """Télécharge un fichier BZ2 et analyse le CSV décompressé (même logique qu'analyser_gz())."""
+    chemin, taille_mo, depuis_cache, erreur = _telecharger(url, verbose)
+    if erreur:
+        log_analyse({"url": url, "dataset_id": dataset_id, "titre": titre, "erreur": erreur})
+        return None
+    try:
+        with bz2.open(chemin, "rb") as fp:
+            preambule = fp.read(8192)
+    except Exception as e:
+        log_analyse({"url": url, "dataset_id": dataset_id, "titre": titre,
+                     "erreur": f"décompression BZ2 : {e}"})
+        if verbose:
+            print(f"  (Erreur décompression BZ2 : {e})")
+        return None
+    try:
+        with bz2.open(chemin, "rb") as fp:
+            return _analyser_csv_depuis_stream(
+                preambule, fp, verbose, dataset_id, titre, url=url, taille_mo=taille_mo)
+    except Exception as e:
+        log_analyse({"url": url, "dataset_id": dataset_id, "titre": titre,
+                     "erreur": f"parsing BZ2 : {e}"})
+        if verbose:
+            print(f"  (Erreur parsing BZ2 : {e})")
+        return None
+
+
 def analyser_xlsx(url: str, verbose: bool = False,
                   dataset_id: str = "", titre: str = "") -> dict | None:
     """Télécharge un fichier Excel XLSX et cherche des données Rennes Métropole."""
@@ -1414,10 +1564,12 @@ def analyser_xlsx(url: str, verbose: bool = False,
     entetes = [str(c or "").strip() for c in lignes[0]]
     log["entetes"] = entetes[:15]
 
-    champ_cp, champ_ville, champ_iris, champ_dep, champ_adresse, champ_siren, champ_lat, champ_lon = _detecter_champs(entetes)
+    (champ_cp, champ_ville, champ_iris, champ_dep, champ_adresse, champ_siren,
+     champ_lat, champ_lon, champ_circonscription) = _detecter_champs(entetes)
     log.update({"champ_cp": champ_cp, "champ_ville": champ_ville,
                 "champ_iris": champ_iris, "champ_adresse": champ_adresse,
-                "champ_siren": champ_siren, "champ_lat": champ_lat})
+                "champ_siren": champ_siren, "champ_lat": champ_lat,
+                "champ_circonscription": champ_circonscription})
 
     if verbose:
         print(f"  En-têtes XLSX : {entetes[:10]}")
@@ -1429,6 +1581,8 @@ def analyser_xlsx(url: str, verbose: bool = False,
             print(f"  Champ SIREN trouvé : {champ_siren}")
         elif champ_lat:
             print(f"  Champ géo : {champ_lat}" + (f" + {champ_lon}" if champ_lon else ""))
+        elif champ_circonscription:
+            print(f"  Champ circonscription trouvé : {champ_circonscription}")
         else:
             print(f"  Champ CP : {champ_cp} | Champ ville : {champ_ville}")
 
@@ -1438,13 +1592,14 @@ def analyser_xlsx(url: str, verbose: bool = False,
 
     nb_total, nb_rm, exemples, premieres_lignes = _compter_lignes_rm(
         _lignes_en_dicts(), champ_cp, champ_ville, champ_iris, champ_dep, champ_adresse,
-        champ_siren, champ_lat, champ_lon
+        champ_siren, champ_lat, champ_lon, champ_circonscription
     )
     log.update({"nb_total": nb_total, "nb_rm": nb_rm})
     log_analyse(log)
     return _construire_resultat(champ_cp, champ_ville, champ_iris, champ_adresse,
                                 nb_total, nb_rm, exemples, premieres_lignes,
-                                champ_siren=champ_siren, champ_lat=champ_lat, champ_lon=champ_lon)
+                                champ_siren=champ_siren, champ_lat=champ_lat, champ_lon=champ_lon,
+                                champ_circonscription=champ_circonscription)
 
 
 def analyser_parquet(url: str, verbose: bool = False,
@@ -1478,7 +1633,8 @@ def analyser_parquet(url: str, verbose: bool = False,
         log["entetes"] = cols[:15]
 
         # 2. Détection des champs géographiques
-        champ_cp, champ_ville, champ_iris, champ_dep, champ_adresse, champ_siren, champ_lat, champ_lon = _detecter_champs(cols)
+        (champ_cp, champ_ville, champ_iris, champ_dep, champ_adresse, champ_siren,
+         champ_lat, champ_lon, champ_circonscription) = _detecter_champs(cols)
 
         if verbose:
             print(f"  Colonnes Parquet ({len(cols)}) : {cols[:10]}")
@@ -1487,7 +1643,8 @@ def analyser_parquet(url: str, verbose: bool = False,
             elif champ_ville:
                 print(f"  Champ commune : {champ_ville}")
 
-        if not any([champ_iris, champ_cp, champ_ville, champ_adresse, champ_siren, champ_lat]):
+        if not any([champ_iris, champ_cp, champ_ville, champ_adresse, champ_siren, champ_lat,
+                    champ_circonscription]):
             log["erreur"] = "aucun champ géo détecté"
             log_analyse(log)
             return None
@@ -1533,6 +1690,7 @@ def analyser_parquet(url: str, verbose: bool = False,
             champ_cp, champ_ville, champ_iris, champ_adresse,
             nb_total, nb_rm, exemples, premieres_lignes,
             champ_siren=champ_siren, champ_lat=champ_lat, champ_lon=champ_lon,
+            champ_circonscription=champ_circonscription,
         )
 
     except Exception as e:
@@ -1574,8 +1732,8 @@ def _analyser_features_geojson(features: list, verbose: bool,
         return None
 
     entetes = list((features[0].get("properties") or {}).keys())
-    champ_cp, champ_ville, champ_iris, champ_dep, champ_adresse, champ_siren, champ_lat, champ_lon = \
-        _detecter_champs(entetes)
+    (champ_cp, champ_ville, champ_iris, champ_dep, champ_adresse, champ_siren,
+     champ_lat, champ_lon, champ_circonscription) = _detecter_champs(entetes)
 
     if verbose:
         print(f"  Propriétés GeoJSON : {entetes[:10]}")
@@ -1588,11 +1746,12 @@ def _analyser_features_geojson(features: list, verbose: bool,
         else:
             print("  Aucun champ géographique textuel — fallback coordonnées géométrie")
 
-    if champ_cp or champ_ville or champ_iris or champ_adresse or champ_siren or champ_lat:
+    if (champ_cp or champ_ville or champ_iris or champ_adresse or champ_siren or champ_lat
+            or champ_circonscription):
         rows = (f.get("properties") or {} for f in features)
         nb_total, nb_rm, exemples, premieres_lignes = _compter_lignes_rm(
             rows, champ_cp, champ_ville, champ_iris, champ_dep, champ_adresse,
-            champ_siren, champ_lat, champ_lon
+            champ_siren, champ_lat, champ_lon, champ_circonscription
         )
     else:
         # Fallback : vérifier les coordonnées des géométries dans la bbox RM
@@ -1616,6 +1775,7 @@ def _analyser_features_geojson(features: list, verbose: bool,
         champ_cp, champ_ville, champ_iris, champ_adresse,
         nb_total, nb_rm, exemples, premieres_lignes,
         champ_siren=champ_siren, champ_lat=champ_lat, champ_lon=champ_lon,
+        champ_circonscription=champ_circonscription,
     )
 
 
@@ -1813,6 +1973,7 @@ _ANALYSEURS = {
     "csv":     analyser_csv,
     "zip":     analyser_zip,
     "gz":      analyser_gz,
+    "bz2":     analyser_bz2,
     "xlsx":    analyser_xlsx,
     "geojson": analyser_geojson,
     "wfs":     analyser_wfs,
@@ -2000,6 +2161,7 @@ def traiter_resultat(ds: dict, resultat: dict | None, decouverte: dict) -> None:
             "champ_ville": resultat["champ_ville"],
             "champ_iris": resultat.get("champ_iris"),
             "champ_adresse": resultat.get("champ_adresse"),
+            "champ_circonscription": resultat.get("champ_circonscription"),
             "nb_rm": resultat["nb_rm"],
         }
         decouverte["candidats"].append(candidat)
@@ -2020,6 +2182,7 @@ def traiter_resultat(ds: dict, resultat: dict | None, decouverte: dict) -> None:
                 "champ_ville": resultat["champ_ville"],
                 "champ_iris": resultat.get("champ_iris"),
                 "champ_adresse": resultat.get("champ_adresse"),
+                "champ_circonscription": resultat.get("champ_circonscription"),
                 "nb_rm": 0,
             }
             decouverte["candidats"].append(candidat)
@@ -2044,10 +2207,11 @@ def charger_decouverte() -> dict:
         d.setdefault("sans_ressource", [])
         d.setdefault("exclusions_termes", [])
         d.setdefault("a_examiner", [])   # backlog de revue différée (découverte automatique)
+        d.setdefault("historique", [])   # décisions "exclure"/"ignorer" (onglets /examen)
         return d
     return {"vus": [], "candidats": [], "exclus": [],
             "echecs": [], "echecs_n": {}, "sans_ressource": [],
-            "exclusions_termes": [], "a_examiner": []}
+            "exclusions_termes": [], "a_examiner": [], "historique": []}
 
 
 def fetcher_datasets_par_ids(ids: list) -> list:
@@ -2071,9 +2235,17 @@ def fetcher_datasets_par_ids(ids: list) -> list:
 
 
 def sauvegarder_decouverte(decouverte: dict) -> None:
+    """Écriture atomique (fichier temporaire + os.replace) : decouverte.json est réécrit très
+    fréquemment (une fois par entrée lors d'un rattrapage en masse, voir
+    verifier_ressources_a_examiner()) pendant que le dashboard web le relit en parallèle
+    (polling /api/etat, /api/a_examiner) — une écriture en place exposerait un JSON tronqué à un
+    lecteur concurrent. os.replace() est atomique sur un même système de fichiers : un lecteur ne
+    voit jamais que l'ancienne version complète ou la nouvelle, jamais un état intermédiaire."""
     os.makedirs(os.path.dirname(DECOUVERTE_FILE), exist_ok=True)
-    with open(DECOUVERTE_FILE, "w", encoding="utf-8") as f:
+    chemin_tmp = DECOUVERTE_FILE + ".tmp"
+    with open(chemin_tmp, "w", encoding="utf-8") as f:
         json.dump(decouverte, f, ensure_ascii=False, indent=2)
+    os.replace(chemin_tmp, DECOUVERTE_FILE)
 
 
 GEO_FILE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data", "geo_services.json")
@@ -2105,10 +2277,13 @@ def _upsert_a_examiner(a_examiner_par_id: dict, ds: dict, result: dict | None, r
     if type_ == "wfs":
         couches = result.get("wfs_layers", [])
     elif type_ == "wms":
-        couches = [c["nom"] for c in result.get("couches", [])]
+        # Dicts complets (nom/titre/bbox_wgs84), pas juste les noms : nécessaire pour générer une
+        # carte de prévisualisation (dashboard.py, /examen/carte/<id>) sans refaire un
+        # GetCapabilities — wms_couches_dans_rm() retourne déjà exactement cette forme.
+        couches = result.get("couches", [])
     else:
         couches = []
-    a_examiner_par_id[did] = {
+    entree = {
         "dataset_id": did,
         "titre": ds.get("title", ""),
         "organisation": (ds.get("organization") or {}).get("name", ""),
@@ -2116,16 +2291,37 @@ def _upsert_a_examiner(a_examiner_par_id: dict, ds: dict, result: dict | None, r
         "type": type_,
         "raison": raison,
         "nb_rm": result.get("nb_rm", 0),
+        "description": (ds.get("description") or "")[:500],
         "champs_detectes": {
             "champ_cp": result.get("champ_cp"),
             "champ_ville": result.get("champ_ville"),
             "champ_iris": result.get("champ_iris"),
             "champ_adresse": result.get("champ_adresse"),
+            "champ_circonscription": result.get("champ_circonscription"),
         },
         "couches": couches,
         "service_url": result.get("url") if type_ in ("wfs", "wms") else None,
         "date_ajout": datetime.date.today().isoformat(),
     }
+
+    if type_ == "tabulaire":
+        # Classification "sans ressource" gratuite : ds["resources"] est déjà en mémoire (même
+        # dict que pre_filtrer() a reçu), donc trouver_ressource_analysable()/_format_analysable()
+        # ne coûtent aucun appel réseau supplémentaire ici — contrairement à un vrai téléchargement,
+        # ça ne vérifie que le format déclaré, pas que le contenu s'ouvre réellement (un ZIP/XLSX
+        # annoncé peut encore s'avérer illisible une fois ouvert ; ce cas est rattrapé par le clic
+        # "Analyser" du dashboard, qui reclasse l'entrée si besoin).
+        ressource = trouver_ressource_analysable(ds)
+        fmt = _format_analysable(ressource) if ressource else None
+        entree["ressource_verifiee"] = True
+        if ressource is None or fmt is None:
+            entree["sans_ressource"] = True
+            entree["raison_indisponible"] = "Aucune ressource dans un format pris en charge pour la revue manuelle."
+        else:
+            entree["sans_ressource"] = False
+            entree["raison_indisponible"] = None
+
+    a_examiner_par_id[did] = entree
 
 
 def rechercher_et_filtrer_auto(decouverte: dict) -> dict:
@@ -2136,9 +2332,13 @@ def rechercher_et_filtrer_auto(decouverte: dict) -> dict:
 
     - Datasets tabulaires avec RM détecté (nb_rm > 0) : ajoutés automatiquement à
       decouverte["candidats"], exactement comme en session interactive.
-    - Services WFS/WMS, ou datasets tabulaires ambigus (0 RM détecté) ou en échec d'analyse :
-      accumulés (upsert par dataset_id) dans decouverte["a_examiner"] pour revue différée
-      (voir resoudre_a_examiner() et la vue dédiée du dashboard).
+    - Services WFS avec features RM confirmées (nb_rm > 0, voir analyser_wfs()) : ajoutés
+      automatiquement à data/geo_services.json (_sauver_service_geo()), qui alimente
+      DATASETS_GEO — jamais présentés en revue humaine, contrairement à la session interactive.
+    - Services WMS (toujours, signal de bbox de couche jugé trop faible), WFS sans feature RM
+      confirmée, ou datasets tabulaires ambigus (0 RM détecté) ou en échec d'analyse : accumulés
+      (upsert par dataset_id) dans decouverte["a_examiner"] pour revue différée (voir
+      resoudre_a_examiner() et la vue dédiée du dashboard).
 
     Retourne des statistiques de run (pas d'affichage — appelant : src/harvest_auto.py).
     """
@@ -2165,7 +2365,7 @@ def rechercher_et_filtrer_auto(decouverte: dict) -> dict:
           f"après filtres (org/géo/déjà vus/exclus)...", flush=True)
 
     stats = {"analyses": len(candidats_nouveaux), "ignores": 0,
-             "candidats_auto": 0, "a_examiner": 0, "echecs_analyse": 0}
+             "candidats_auto": 0, "geo_auto": 0, "a_examiner": 0, "echecs_analyse": 0}
     if not candidats_nouveaux:
         sauvegarder_decouverte(decouverte)
         return stats
@@ -2192,6 +2392,28 @@ def rechercher_et_filtrer_auto(decouverte: dict) -> dict:
             if verdict == "skip":
                 decouverte["vus"].append(ds["id"])
                 stats["ignores"] += 1
+            elif verdict == "candidat" and result.get("type") == "wfs":
+                # Features RM réellement confirmées par analyser_wfs() (pas juste un
+                # chevauchement de bbox) — signal aussi fiable que pour un JDD tabulaire, donc
+                # même traitement : ajout direct à data/geo_services.json (alimente DATASETS_GEO,
+                # voir src/conf/datasets.py), sans passer par a_examiner. Le WMS n'a pas
+                # d'équivalent : wms_couches_dans_rm() ne teste qu'un chevauchement de bbox de
+                # couche (souvent national/régional), signal jugé trop faible pour sauter la
+                # confirmation humaine — il reste toujours routé vers a_examiner ci-dessous.
+                layers = result.get("wfs_layers", [])
+                geo_entry = {
+                    "id": ds["id"][:30].replace("-", "_"),
+                    "type": "wfs",
+                    "url": result.get("url", ""),
+                    "couches": layers[:10],
+                    "titre": ds["title"],
+                    "producteur": (ds.get("organization") or {}).get("name", ""),
+                    "dossier": ds["id"][:30].replace("-", "_"),
+                    "theme": "environment",
+                }
+                _sauver_service_geo(geo_entry)
+                decouverte["vus"].append(ds["id"])
+                stats["geo_auto"] += 1
             elif verdict == "candidat" and result.get("type") not in ("wfs", "wms"):
                 decouverte["candidats"].append({
                     "dataset_id": ds["id"],
@@ -2204,6 +2426,7 @@ def rechercher_et_filtrer_auto(decouverte: dict) -> dict:
                     "champ_siren":   result.get("champ_siren"),
                     "champ_lat":     result.get("champ_lat"),
                     "champ_lon":     result.get("champ_lon"),
+                    "champ_circonscription": result.get("champ_circonscription"),
                     "nb_rm":         result["nb_rm"],
                 })
                 decouverte["vus"].append(ds["id"])
@@ -2224,20 +2447,62 @@ def rechercher_et_filtrer_auto(decouverte: dict) -> dict:
     return stats
 
 
+def _upsert_historique(decouverte: dict, entree: dict, decision: str) -> None:
+    """Enregistre un instantané complet de l'entrée a_examiner au moment d'une décision
+    terminale (exclure/ignorer) — ces deux décisions retirent l'entrée de a_examiner sans
+    laisser de trace ailleurs (contrairement à "candidat"/"ajouter_geo", déjà visibles via
+    decouverte["candidats"]/data/geo_services.json). Alimente les onglets « Exclus »/« Ignorés »
+    de /examen. Instantané complet (pas juste titre/url) pour que rouvrir_historique() puisse
+    reconstruire l'entrée a_examiner à l'identique (carte WMS, colonnes détectées, etc.)."""
+    historique = decouverte.setdefault("historique", [])
+    historique[:] = [h for h in historique if h["dataset_id"] != entree["dataset_id"]]
+    historique.append({
+        **entree,
+        "decision": decision,
+        "date_decision": datetime.date.today().isoformat(),
+    })
+
+
+def rouvrir_historique(decouverte: dict, dataset_id: str) -> bool:
+    """Annule une décision "exclure"/"ignorer" : remet l'entrée dans decouverte["a_examiner"]
+    telle qu'elle était au moment de la décision, et la retire de decouverte["historique"].
+    Pour une réouverture d'exclusion, retire aussi l'id de decouverte["exclus"] — sinon le
+    JDD resterait bloqué par le filtre "déjà exclus" (_filtrer_communs()) alors même qu'il est
+    de nouveau visible dans le backlog de revue. Retourne False si l'id n'est pas dans
+    l'historique, ou si l'entrée est déjà revenue dans a_examiner entre-temps."""
+    historique = decouverte.get("historique", [])
+    snapshot = next((h for h in historique if h["dataset_id"] == dataset_id), None)
+    if snapshot is None:
+        return False
+    if any(e["dataset_id"] == dataset_id for e in decouverte.get("a_examiner", [])):
+        return False
+    entree = {k: v for k, v in snapshot.items() if k not in ("decision", "date_decision")}
+    decouverte["a_examiner"].append(entree)
+    decouverte["historique"] = [h for h in historique if h["dataset_id"] != dataset_id]
+    if dataset_id in decouverte.get("exclus", []):
+        decouverte["exclus"] = [i for i in decouverte["exclus"] if i != dataset_id]
+    sauvegarder_decouverte(decouverte)
+    return True
+
+
 def resoudre_a_examiner(decouverte: dict, dataset_id: str, decision: str,
                          champs_manuels: dict | None = None) -> bool:
     """
     Applique une décision de revue humaine sur une entrée de decouverte["a_examiner"] :
-      "exclure"  → faux positif définitif, ajouté à decouverte["exclus"]
-      "candidat" → ajouté quand même à decouverte["candidats"] (nécessite un champ détecté —
-                   n'a de sens que pour une entrée tabulaire)
-      "ignorer"  → retiré du backlog sans autre action (ex : service géo déjà copié à la main
-                   dans DATASETS_GEO)
+      "exclure"     → faux positif définitif, ajouté à decouverte["exclus"] + instantané dans
+                      decouverte["historique"] (onglet « Exclus » de /examen)
+      "candidat"    → ajouté quand même à decouverte["candidats"] (nécessite un champ détecté —
+                      n'a de sens que pour une entrée tabulaire)
+      "ajouter_geo" → service WFS/WMS confirmé par l'utilisateur : ajouté à
+                      data/geo_services.json (_sauver_service_geo(), alimente DATASETS_GEO) —
+                      n'a de sens que pour une entrée type wfs/wms
+      "ignorer"     → retiré du backlog + instantané dans decouverte["historique"] (onglet
+                      « Ignorés » de /examen)
 
     champs_manuels : pour decision="candidat", remplace les champs auto-détectés par un tag
     manuel (voir revue_manuelle_a_examiner()) — dict champ_cp/champ_ville/champ_iris/
-    champ_adresse/champ_siren/champ_epci/champ_lat/champ_lon/nb_rm. None (défaut) =
-    comportement inchangé, utilise entree["champs_detectes"]/entree["nb_rm"].
+    champ_adresse/champ_siren/champ_epci/champ_lat/champ_lon/champ_circonscription/nb_rm.
+    None (défaut) = comportement inchangé, utilise entree["champs_detectes"]/entree["nb_rm"].
 
     Retourne True si l'entrée existait et a été traitée, False sinon (dataset_id inconnu ou
     décision invalide/inapplicable).
@@ -2250,11 +2515,12 @@ def resoudre_a_examiner(decouverte: dict, dataset_id: str, decision: str,
     if decision == "exclure":
         if dataset_id not in decouverte["exclus"]:
             decouverte["exclus"].append(dataset_id)
+        _upsert_historique(decouverte, entree, "exclure")
     elif decision == "candidat":
         champs = champs_manuels if champs_manuels is not None else entree.get("champs_detectes", {})
         if not any(champs.get(c) for c in
                    ("champ_cp", "champ_ville", "champ_iris", "champ_adresse", "champ_siren",
-                    "champ_epci", "champ_lat")):
+                    "champ_epci", "champ_lat", "champ_circonscription")):
             return False
         decouverte["candidats"].append({
             "dataset_id": dataset_id,
@@ -2268,10 +2534,30 @@ def resoudre_a_examiner(decouverte: dict, dataset_id: str, decision: str,
             "champ_epci": champs.get("champ_epci"),
             "champ_lat": champs.get("champ_lat"),
             "champ_lon": champs.get("champ_lon"),
+            "champ_circonscription": champs.get("champ_circonscription"),
             "nb_rm": champs.get("nb_rm", entree.get("nb_rm", 0)),
         })
+    elif decision == "ajouter_geo":
+        if entree.get("type") not in ("wfs", "wms"):
+            return False
+        # couches peut être une liste de noms simples (WFS, ou anciennes entrées WMS avant cet
+        # ajout) ou une liste de dicts {"nom","titre","bbox_wgs84"} (WMS depuis _upsert_a_examiner
+        # étendu) — _sauver_service_geo()/DATASETS_GEO n'ont besoin que des noms.
+        noms_couches = [c["nom"] if isinstance(c, dict) else c
+                        for c in entree.get("couches", [])][:10]
+        geo_entry = {
+            "id": dataset_id[:30].replace("-", "_"),
+            "type": entree["type"],
+            "url": entree.get("service_url", ""),
+            "couches": noms_couches,
+            "titre": entree.get("titre", ""),
+            "producteur": entree.get("organisation", ""),
+            "dossier": dataset_id[:30].replace("-", "_"),
+            "theme": "environment",
+        }
+        _sauver_service_geo(geo_entry)
     elif decision == "ignorer":
-        pass
+        _upsert_historique(decouverte, entree, "ignorer")
     else:
         return False
 
@@ -2280,16 +2566,114 @@ def resoudre_a_examiner(decouverte: dict, dataset_id: str, decision: str,
     return True
 
 
+def resoudre_wfs_confirmes_en_masse(decouverte: dict) -> int:
+    """
+    Résout d'un coup toutes les entrées WFS de decouverte["a_examiner"] avec nb_rm > 0 — même
+    critère que l'auto-bypass de rechercher_et_filtrer_auto(), qui ne s'applique qu'aux
+    nouvelles découvertes. Couvre le reliquat de WFS confirmés détectés avant l'existence de cet
+    auto-bypass (et tout futur cas similaire si le critère de bypass change un jour sans être
+    réappliqué au backlog existant). Retourne le nombre d'entrées résolues.
+    """
+    a_traiter = [e["dataset_id"] for e in decouverte.get("a_examiner", [])
+                 if e.get("type") == "wfs" and (e.get("nb_rm") or 0) > 0]
+    for dataset_id in a_traiter:
+        resoudre_a_examiner(decouverte, dataset_id, "ajouter_geo")
+    return len(a_traiter)
+
+
+def marquer_a_examiner_verifie(decouverte: dict, dataset_id: str, sans_ressource: bool,
+                                raison: str | None = None) -> None:
+    """
+    Persiste le résultat d'une vérification de ressource (disponible ou non) sur une entrée de
+    decouverte["a_examiner"], sans la retirer du backlog — alimente la liste séparée "sans
+    ressource / inaccessible" de la revue manuelle web (dashboard.py) et évite qu'une entrée déjà
+    vérifiée (dans un sens ou dans l'autre) soit re-vérifiée inutilement par un futur passage en
+    masse (voir verifier_ressources_a_examiner()). Ne fait rien si l'entrée n'existe plus
+    (résolue entre-temps par un autre onglet/session).
+    """
+    for entree in decouverte.get("a_examiner", []):
+        if entree["dataset_id"] == dataset_id:
+            entree["ressource_verifiee"] = True
+            entree["sans_ressource"] = sans_ressource
+            entree["raison_indisponible"] = raison if sans_ressource else None
+            sauvegarder_decouverte(decouverte)
+            return
+
+
+def marquer_a_examiner_echec(decouverte: dict, dataset_id: str, message: str) -> None:
+    """
+    Persiste un échec transitoire (réseau/parsing) du bouton "Analyser" manuel sur une entrée de
+    decouverte["a_examiner"] — jusqu'ici ce cas ne laissait aucune trace (contrairement à l'échec
+    permanent "aucune ressource exploitable", qui route déjà vers l'onglet « Sans ressource » via
+    marquer_a_examiner_verifie()). Fixe "raison" avec le même préfixe "analyse échouée" que la
+    cascade automatisée utilise déjà, pour que /examen reclasse l'entrée dans l'onglet « Analyse
+    échouée » sans logique de partitionnement supplémentaire côté client.
+    """
+    for entree in decouverte.get("a_examiner", []):
+        if entree["dataset_id"] == dataset_id:
+            entree["raison"] = f"analyse échouée (manuel) : {message}"
+            sauvegarder_decouverte(decouverte)
+            return
+
+
+def verifier_ressources_a_examiner(decouverte: dict) -> dict:
+    """
+    Rattrapage en masse pour le backlog a_examiner existant (entrées ajoutées avant que
+    _upsert_a_examiner() ne classe automatiquement "sans_ressource" à la découverte) : pour
+    chaque entrée tabulaire pas encore vérifiée, récupère les métadonnées data.gouv.fr
+    (get_dataset_metadata — pas de téléchargement) et classe via trouver_ressource_analysable()/
+    _format_analysable(), exactement comme _upsert_a_examiner() le fait gratuitement pour les
+    nouvelles entrées. Persiste au fur et à mesure via marquer_a_examiner_verifie() (une entrée
+    déjà vérifiée par ce run ne serait pas perdue si le run est interrompu).
+
+    Retourne {"total": int, "verifies": int, "sans_ressource": int} pour affichage par
+    l'appelant (cli.py / dashboard.py).
+    """
+    from connectors.datagouv import get_dataset_metadata
+
+    a_verifier = [e for e in decouverte.get("a_examiner", [])
+                  if e.get("type", "tabulaire") == "tabulaire" and not e.get("ressource_verifiee")]
+    stats = {"total": len(a_verifier), "verifies": 0, "sans_ressource": 0}
+    if not a_verifier:
+        return stats
+
+    def _verifier_un(entree: dict) -> tuple:
+        did = entree["dataset_id"]
+        try:
+            metadata = get_dataset_metadata(did)
+        except Exception:
+            return did, None  # échec réseau transitoire — retenté au prochain passage
+        ressource = trouver_ressource_analysable(metadata)
+        fmt = _format_analysable(ressource) if ressource else None
+        if ressource is None or fmt is None:
+            return did, (True, "Aucune ressource dans un format pris en charge pour la revue manuelle.")
+        return did, (False, None)
+
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        for did, resultat in executor.map(_verifier_un, a_verifier):
+            if resultat is None:
+                continue
+            sans_ressource, raison = resultat
+            marquer_a_examiner_verifie(decouverte, did, sans_ressource, raison)
+            stats["verifies"] += 1
+            if sans_ressource:
+                stats["sans_ressource"] += 1
+
+    return stats
+
+
 # ---------------------------------------------------------------------------
 # Revue manuelle du backlog a_examiner (tagging manuel des colonnes)
 # ---------------------------------------------------------------------------
 
 _TYPES_VARIABLES = [
     ("commune", "Commune (code INSEE/IRIS, code postal, ou nom)"),
+    ("cp", "Code postal seul"),
     ("epci", "EPCI (code SIREN de l'intercommunalité)"),
-    ("latlon", "Latitude / longitude"),
+    ("latlon", "Latitude / longitude (WKT \"POINT/POLYGON(...)\" ou géométrie GeoJSON \"geom\")"),
     ("siren", "SIREN / SIRET"),
     ("adresse", "Adresse complète"),
+    ("circonscription", "Circonscription législative (Assemblée nationale)"),
 ]
 
 
@@ -2338,6 +2722,456 @@ def _decoder_apercu_csv(contenu: bytes):
     return texte, delimiteur, entetes
 
 
+# ---------------------------------------------------------------------------
+# Support multi-formats pour la revue manuelle web (dashboard.py) : ZIP/GZ/XLSX/GeoJSON/
+# Parquet, en plus du CSV déjà géré par _decoder_apercu_csv() ci-dessus. Mirror les fonctions
+# d'auto-détection existantes (analyser_zip/gz/xlsx/parquet/geojson) mais renvoie des rows dict
+# génériques pour _compter_lignes_variable() au lieu de lancer la cascade _compter_lignes_rm().
+# ---------------------------------------------------------------------------
+
+_PREVIEW_BORNE = 1024 * 1024   # 1 Mo décompressé/extrait — largement suffisant pour entêtes + 5 lignes
+_SNIFF_BORNE = 65536           # préambule pour sniffer le délimiteur avant un passage streaming complet
+
+
+def _obtenir_bytes_ressource(ressource: dict, fmt: str) -> tuple:
+    """
+    Télécharge (cache disque via _telecharger()) le contenu binaire exploitable d'une ressource
+    CSV/XLSX/GeoJSON pour la revue manuelle. Retourne (True, sous_format, contenu: bytes) —
+    sous_format ∈ {"csv", "geojson", "xlsx"} — ou (False, message, permanent).
+
+    Ne gère PAS gz/zip : leur contenu utile (décompressé/extrait) peut être bien plus gros que
+    ce que _telecharger() a mis en cache (le plafond de téléchargement porte sur les octets
+    compressés/l'archive, pas sur le contenu déballé) — les lire intégralement en mémoire ici a
+    déjà fait planter le process (OOM) sur un GZ à fort ratio de compression. Voir
+    _apercu_csv_gz()/_lignes_csv_gz() et _apercu_csv_zip_membre()/_lignes_csv_zip_membre(), qui
+    bornent explicitement la lecture. Ne gère pas non plus le Parquet, qui évite volontairement
+    _telecharger() (lecture columnar distante, voir analyser_apercu_revue()).
+    """
+    url = ressource.get("url", "")
+
+    if fmt == "csv":
+        chemin, _, _, erreur = _telecharger(url, verbose=False)
+        if erreur:
+            return False, f"Échec du téléchargement : {erreur}", False
+        with open(chemin, "rb") as f:
+            return True, "csv", f.read()
+
+    if fmt == "xlsx":
+        chemin, _, _, erreur = _telecharger(url, verbose=False)
+        if erreur:
+            return False, f"Échec du téléchargement : {erreur}", False
+        with open(chemin, "rb") as f:
+            return True, "xlsx", f.read()
+
+    if fmt == "geojson":
+        chemin, _, _, erreur = _telecharger(url, verbose=False)
+        if erreur:
+            return False, f"Échec du téléchargement : {erreur}", False
+        with open(chemin, "rb") as f:
+            return True, "geojson", f.read()
+
+    return False, "Format non pris en charge pour la revue manuelle.", True
+
+
+def _finaliser_apercu_csv_bytes(contenu: bytes) -> tuple:
+    """(True, entetes, lignes_apercu) ou (False, message, permanent) à partir d'un contenu CSV
+    déjà en mémoire — potentiellement un simple préambule borné (voir _apercu_csv_gz() /
+    _apercu_csv_zip_membre()), pas nécessairement le fichier entier."""
+    decode = _decoder_apercu_csv(contenu)
+    if decode is None:
+        return False, "Fichier binaire ou réponse HTML — impossible d'afficher un aperçu.", False
+    if decode == "__DICTIONNAIRE__":
+        return False, "Ressource détectée comme dictionnaire de colonnes, pas des données.", True
+    texte, delimiteur, entetes = decode
+    if not entetes:
+        return False, "Aucune colonne détectée.", True
+    lignes_apercu = list(csv.DictReader(io.StringIO(texte, newline=""), delimiter=delimiteur))[:5]
+    return True, entetes, lignes_apercu
+
+
+def _sniffer_delimiteur(preambule: bytes) -> tuple:
+    """(True, delimiteur) ou (False, message) — sniffe le délimiteur CSV sur un préambule borné,
+    sans jamais matérialiser le fichier décompressé/extrait en entier."""
+    decode = _decoder_apercu_csv(preambule)
+    if decode is None or decode == "__DICTIONNAIRE__" or not decode[2]:
+        return False, "Contenu illisible pour le filtrage."
+    _, delimiteur, _ = decode
+    return True, delimiteur
+
+
+def _apercu_csv_gz(chemin: str) -> tuple:
+    """(True, entetes, lignes_apercu) ou (False, message, permanent) — lit au plus
+    _PREVIEW_BORNE octets décompressés, jamais le fichier GZ en entier (voir
+    _obtenir_bytes_ressource() pour la raison : ratio de compression potentiellement énorme)."""
+    try:
+        with gzip.open(chemin, "rb") as f:
+            contenu = f.read(_PREVIEW_BORNE)
+    except Exception as e:
+        return False, f"Erreur de décompression GZ : {e}", False
+    return _finaliser_apercu_csv_bytes(contenu)
+
+
+def _lignes_csv_gz(chemin: str) -> tuple:
+    """(True, rows) ou (False, message) — sniffe le délimiteur sur un petit préambule puis relit
+    le GZ en streaming (une ligne décompressée à la fois), jamais buffé intégralement."""
+    try:
+        with gzip.open(chemin, "rb") as f:
+            preambule = f.read(_SNIFF_BORNE)
+    except Exception as e:
+        return False, f"Erreur de décompression GZ : {e}"
+    ok, delimiteur_ou_message = _sniffer_delimiteur(preambule)
+    if not ok:
+        return False, delimiteur_ou_message
+    delimiteur = delimiteur_ou_message
+
+    def _rows():
+        with gzip.open(chemin, "rt", encoding="utf-8-sig", errors="replace", newline="") as f:
+            yield from csv.DictReader(f, delimiter=delimiteur)
+
+    return True, _rows()
+
+
+def _apercu_csv_bz2(chemin: str) -> tuple:
+    """Équivalent de _apercu_csv_gz() pour un BZ2 — même borne, même raison."""
+    try:
+        with bz2.open(chemin, "rb") as f:
+            contenu = f.read(_PREVIEW_BORNE)
+    except Exception as e:
+        return False, f"Erreur de décompression BZ2 : {e}", False
+    return _finaliser_apercu_csv_bytes(contenu)
+
+
+def _lignes_csv_bz2(chemin: str) -> tuple:
+    """Équivalent de _lignes_csv_gz() pour un BZ2."""
+    try:
+        with bz2.open(chemin, "rb") as f:
+            preambule = f.read(_SNIFF_BORNE)
+    except Exception as e:
+        return False, f"Erreur de décompression BZ2 : {e}"
+    ok, delimiteur_ou_message = _sniffer_delimiteur(preambule)
+    if not ok:
+        return False, delimiteur_ou_message
+    delimiteur = delimiteur_ou_message
+
+    def _rows():
+        with bz2.open(chemin, "rt", encoding="utf-8-sig", errors="replace", newline="") as f:
+            yield from csv.DictReader(f, delimiter=delimiteur)
+
+    return True, _rows()
+
+
+def _membre_csv_zip(chemin: str) -> str | None:
+    """Nom du premier membre .csv d'un ZIP, ou None (archive invalide ou sans CSV)."""
+    try:
+        with zipfile.ZipFile(chemin) as zf:
+            for n in zf.namelist():
+                if not n.startswith("__MACOSX") and n.lower().endswith(".csv"):
+                    return n
+    except zipfile.BadZipFile:
+        return None
+    return None
+
+
+def _apercu_csv_zip_membre(chemin: str, membre: str) -> tuple:
+    """Équivalent de _apercu_csv_gz() pour un membre CSV de ZIP — même borne, même raison."""
+    try:
+        with zipfile.ZipFile(chemin) as zf, zf.open(membre) as f:
+            contenu = f.read(_PREVIEW_BORNE)
+    except Exception as e:
+        return False, f"Erreur de lecture ZIP : {e}", False
+    return _finaliser_apercu_csv_bytes(contenu)
+
+
+def _lignes_csv_zip_membre(chemin: str, membre: str) -> tuple:
+    """Équivalent de _lignes_csv_gz() pour un membre CSV de ZIP."""
+    try:
+        with zipfile.ZipFile(chemin) as zf, zf.open(membre) as f:
+            preambule = f.read(_SNIFF_BORNE)
+    except Exception as e:
+        return False, f"Erreur de lecture ZIP : {e}"
+    ok, delimiteur_ou_message = _sniffer_delimiteur(preambule)
+    if not ok:
+        return False, delimiteur_ou_message
+    delimiteur = delimiteur_ou_message
+
+    def _rows():
+        with zipfile.ZipFile(chemin) as zf, zf.open(membre) as f_bin:
+            f_texte = io.TextIOWrapper(f_bin, encoding="utf-8-sig", errors="replace", newline="")
+            yield from csv.DictReader(f_texte, delimiter=delimiteur)
+
+    return True, _rows()
+
+
+def _entetes_et_apercu_xlsx(contenu: bytes) -> tuple:
+    """(True, entetes, lignes_apercu) ou (False, message, permanent)."""
+    try:
+        import openpyxl
+    except ImportError:
+        return False, "openpyxl non installé — pip install openpyxl.", False
+    try:
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            wb = openpyxl.load_workbook(io.BytesIO(contenu), read_only=True, data_only=True)
+        ws = wb.active
+        lignes = list(ws.iter_rows(values_only=True, max_row=6))
+        wb.close()
+    except Exception as e:
+        return False, f"Erreur de lecture XLSX : {e}", False
+    if not lignes:
+        return False, "Fichier XLSX vide.", True
+    entetes = [str(c or "").strip() for c in lignes[0]]
+    if not any(entetes):
+        return False, "Aucune colonne détectée dans le XLSX.", True
+    lignes_apercu = [dict(zip(entetes, (str(v or "").strip() for v in row))) for row in lignes[1:6]]
+    return True, entetes, lignes_apercu
+
+
+def _toutes_lignes_xlsx(contenu: bytes) -> tuple:
+    """(True, rows) ou (False, message)."""
+    try:
+        import openpyxl
+    except ImportError:
+        return False, "openpyxl non installé — pip install openpyxl."
+    try:
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            wb = openpyxl.load_workbook(io.BytesIO(contenu), read_only=True, data_only=True)
+        ws = wb.active
+        lignes = list(ws.iter_rows(values_only=True))
+        wb.close()
+    except Exception as e:
+        return False, f"Erreur de lecture XLSX : {e}"
+    if not lignes:
+        return False, "Fichier XLSX vide."
+    entetes = [str(c or "").strip() for c in lignes[0]]
+    rows = (dict(zip(entetes, (str(v or "").strip() for v in row))) for row in lignes[1:])
+    return True, rows
+
+
+def _entetes_et_apercu_geojson(contenu: bytes) -> tuple:
+    """(True, entetes, lignes_apercu) ou (False, message, permanent)."""
+    try:
+        data = json.loads(contenu.decode("utf-8", errors="replace"))
+    except Exception as e:
+        return False, f"Erreur de parsing JSON : {e}", False
+    features = data.get("features", [])
+    if not features:
+        return False, "Aucune feature GeoJSON trouvée.", True
+    entetes = list((features[0].get("properties") or {}).keys())
+    if not entetes:
+        return False, "Aucune propriété exploitable (géométrie seule).", True
+    lignes_apercu = [(f.get("properties") or {}) for f in features[:5]]
+    return True, entetes, lignes_apercu
+
+
+def _toutes_lignes_geojson(contenu: bytes) -> tuple:
+    """(True, rows) ou (False, message)."""
+    try:
+        data = json.loads(contenu.decode("utf-8", errors="replace"))
+    except Exception as e:
+        return False, f"Erreur de parsing JSON : {e}"
+    features = data.get("features", [])
+    return True, (f.get("properties") or {} for f in features)
+
+
+def analyser_apercu_revue(ressource: dict) -> tuple:
+    """
+    Prépare un aperçu (colonnes + jusqu'à 5 lignes d'exemple) pour la revue manuelle du backlog
+    a_examiner (web, dashboard.py), quel que soit le format reconnu par _format_analysable()
+    (csv/gz/zip/xlsx/geojson/parquet).
+
+    Retourne (True, fmt, entetes, lignes_apercu) en cas de succès, ou (False, message,
+    permanent) en cas d'échec. `permanent=True` signifie que ce JDD n'a réellement aucune
+    ressource exploitable (aucune ressource, format non supporté, contenu structurellement
+    vide) — à distinguer d'un échec transitoire (réseau, dépendance Python manquante, décodage)
+    qui mérite un nouvel essai plutôt qu'un classement définitif dans la revue manuelle web.
+    """
+    fmt = _format_analysable(ressource)
+    if fmt is None:
+        return False, "Aucune ressource dans un format pris en charge pour la revue manuelle.", True
+    url = ressource.get("url", "")
+
+    if fmt == "parquet":
+        try:
+            import pyarrow.parquet as pq
+            import fsspec
+        except ImportError:
+            return False, "pyarrow/fsspec non installés — pip install pyarrow fsspec.", False
+        try:
+            fs, fpath = fsspec.url_to_fs(url)
+            with fs.open(fpath, "rb") as f:
+                pf = pq.ParquetFile(f)
+                entetes = [field.name for field in pf.schema_arrow]
+                try:
+                    lignes_apercu = next(pf.iter_batches(batch_size=5)).to_pylist()
+                except StopIteration:
+                    lignes_apercu = []
+        except Exception as e:
+            return False, f"Erreur de lecture Parquet : {e}", False
+        if not entetes:
+            return False, "Aucune colonne détectée dans le Parquet.", True
+        return True, fmt, entetes, lignes_apercu
+
+    if fmt == "gz":
+        chemin, _, _, erreur = _telecharger(url, verbose=False)
+        if erreur:
+            return False, f"Échec du téléchargement : {erreur}", False
+        resultat = _apercu_csv_gz(chemin)
+        if not resultat[0]:
+            return resultat
+        _, entetes, lignes_apercu = resultat
+        return True, fmt, entetes, lignes_apercu
+
+    if fmt == "bz2":
+        chemin, _, _, erreur = _telecharger(url, verbose=False)
+        if erreur:
+            return False, f"Échec du téléchargement : {erreur}", False
+        resultat = _apercu_csv_bz2(chemin)
+        if not resultat[0]:
+            return resultat
+        _, entetes, lignes_apercu = resultat
+        return True, fmt, entetes, lignes_apercu
+
+    if fmt == "zip":
+        chemin, _, _, erreur = _telecharger(url, verbose=False, plafond_mo=None)
+        if erreur:
+            return False, f"Échec du téléchargement : {erreur}", False
+        membre_csv = _membre_csv_zip(chemin)
+        if membre_csv:
+            resultat = _apercu_csv_zip_membre(chemin, membre_csv)
+            if not resultat[0]:
+                return resultat
+            _, entetes, lignes_apercu = resultat
+            return True, fmt, entetes, lignes_apercu
+        try:
+            with zipfile.ZipFile(chemin) as zf:
+                membres_geo = [n for n in zf.namelist()
+                               if not n.startswith("__MACOSX") and n.lower().endswith(".geojson")]
+                if not membres_geo:
+                    return False, "Archive ZIP sans fichier CSV ou GeoJSON exploitable.", True
+                with zf.open(membres_geo[0]) as f:
+                    contenu = f.read()
+        except zipfile.BadZipFile:
+            return False, "Archive ZIP invalide.", False
+        resultat = _entetes_et_apercu_geojson(contenu)
+        if not resultat[0]:
+            return resultat
+        _, entetes, lignes_apercu = resultat
+        return True, fmt, entetes, lignes_apercu
+
+    resultat = _obtenir_bytes_ressource(ressource, fmt)
+    if not resultat[0]:
+        return resultat
+    _, sous_format, contenu = resultat
+
+    if sous_format == "csv":
+        resultat = _finaliser_apercu_csv_bytes(contenu)
+    elif sous_format == "geojson":
+        resultat = _entetes_et_apercu_geojson(contenu)
+    elif sous_format == "xlsx":
+        resultat = _entetes_et_apercu_xlsx(contenu)
+    else:
+        return False, "Format non pris en charge pour la revue manuelle.", True
+
+    if not resultat[0]:
+        return resultat
+    _, entetes, lignes_apercu = resultat
+    return True, fmt, entetes, lignes_apercu
+
+
+def analyser_lignes_revue(ressource: dict, fmt: str, colonnes_utiles: list[str] | None = None) -> tuple:
+    """
+    Retourne (True, rows) où rows est un itérable de dict (une entrée par ligne/feature), prêt
+    pour _compter_lignes_variable() — ou (False, message). Indépendante de
+    analyser_apercu_revue() : redécode depuis le cache disque (ou relit le Parquet distant),
+    cohérent avec le choix "sans état côté serveur" du reste de la revue manuelle web (voir
+    dashboard.py::_analyser_ressource()) — un second appel pour le même dataset_id revient
+    quasi-instantanément grâce au cache disque de _telecharger().
+
+    colonnes_utiles : pour le Parquet uniquement, restreint la lecture columnar aux colonnes
+    choisies par l'utilisateur (pas de pushdown de ligne possible ici, la colonne n'étant pas
+    forcément COMMUNE) — ignoré pour les autres formats, déjà bon marché à relire en entier.
+    """
+    url = ressource.get("url", "")
+
+    if fmt == "parquet":
+        try:
+            import pyarrow.parquet as pq
+            import fsspec
+        except ImportError:
+            return False, "pyarrow/fsspec non installés — pip install pyarrow fsspec."
+        try:
+            fs, fpath = fsspec.url_to_fs(url)
+            # Vérifie que le fichier/les colonnes sont lisibles avant de renvoyer le générateur
+            # (sinon l'erreur ne remonterait qu'au premier next(), trop tard pour répondre 200/ok).
+            with fs.open(fpath, "rb") as f:
+                pq.ParquetFile(f).schema_arrow
+        except Exception as e:
+            return False, f"Erreur de lecture Parquet : {e}"
+
+        def _rows():
+            # Lecture par batch (jamais to_pylist() sur la table entière) : un JDD comme le
+            # stock SIRENE (dizaines de millions de lignes) ferait croître la mémoire sans
+            # borne sinon — même classe de bug que le GZ (voir _lignes_csv_gz()).
+            with fs.open(fpath, "rb") as f:
+                pf = pq.ParquetFile(f)
+                for batch in pf.iter_batches(columns=colonnes_utiles or None):
+                    yield from batch.to_pylist()
+
+        return True, _rows()
+
+    if fmt == "gz":
+        chemin, _, _, erreur = _telecharger(url, verbose=False)
+        if erreur:
+            return False, f"Échec du téléchargement : {erreur}"
+        return _lignes_csv_gz(chemin)
+
+    if fmt == "bz2":
+        chemin, _, _, erreur = _telecharger(url, verbose=False)
+        if erreur:
+            return False, f"Échec du téléchargement : {erreur}"
+        return _lignes_csv_bz2(chemin)
+
+    if fmt == "zip":
+        chemin, _, _, erreur = _telecharger(url, verbose=False, plafond_mo=None)
+        if erreur:
+            return False, f"Échec du téléchargement : {erreur}"
+        membre_csv = _membre_csv_zip(chemin)
+        if membre_csv:
+            return _lignes_csv_zip_membre(chemin, membre_csv)
+        try:
+            with zipfile.ZipFile(chemin) as zf:
+                membres_geo = [n for n in zf.namelist()
+                               if not n.startswith("__MACOSX") and n.lower().endswith(".geojson")]
+                if not membres_geo:
+                    return False, "Archive ZIP sans fichier CSV ou GeoJSON exploitable."
+                with zf.open(membres_geo[0]) as f:
+                    contenu = f.read()
+        except zipfile.BadZipFile:
+            return False, "Archive ZIP invalide."
+        return _toutes_lignes_geojson(contenu)
+
+    resultat = _obtenir_bytes_ressource(ressource, fmt)
+    if not resultat[0]:
+        return False, resultat[1]
+    _, sous_format, contenu = resultat
+
+    if sous_format == "csv":
+        decode = _decoder_apercu_csv(contenu)
+        if decode is None or decode == "__DICTIONNAIRE__" or not decode[2]:
+            return False, "Contenu illisible pour le filtrage."
+        texte, delimiteur, _ = decode
+        return True, csv.DictReader(io.StringIO(texte, newline=""), delimiter=delimiteur)
+
+    if sous_format == "geojson":
+        return _toutes_lignes_geojson(contenu)
+
+    if sous_format == "xlsx":
+        return _toutes_lignes_xlsx(contenu)
+
+    return False, "Format non pris en charge pour la revue manuelle."
+
+
 def _apercu_colonnes(entetes: list[str], lignes: list[dict]) -> None:
     """Affiche chaque colonne avec ses valeurs sur les premières lignes fournies."""
     for i, entete in enumerate(entetes, 1):
@@ -2379,7 +3213,8 @@ def _choisir_variable_et_type(entetes: list[str]) -> tuple[str, str, str | None]
     col2 = None
     if type_variable == "latlon":
         reponse = input("  La colonne choisie contient-elle déjà lat ET lon combinés "
-                         "(ex: '48.11,-1.68') ? (o/n) ").strip().lower()
+                         "(ex: '48.11,-1.68', WKT \"POINT(...)\"/\"POLYGON(...)\", ou une "
+                         "géométrie GeoJSON \"{coordinates: ...}\") ? (o/n) ").strip().lower()
         if reponse != "o":
             col2 = _choisir_colonne(
                 entetes, "  Quelle colonne contient l'autre coordonnée (numéro) ? ")
@@ -2402,6 +3237,8 @@ def _compter_lignes_variable(rows, type_variable: str, col1: str, col2: str | No
                 premieres_lignes.append(dict(row))
             if type_variable == "commune":
                 in_rm = est_valeur_commune_rm(row.get(col1, ""))
+            elif type_variable == "cp":
+                in_rm = str(row.get(col1, "")).strip() in CODES_POSTAUX_RM
             elif type_variable == "epci":
                 in_rm = est_epci_rm(row.get(col1, ""))
             elif type_variable == "latlon":
@@ -2412,6 +3249,8 @@ def _compter_lignes_variable(rows, type_variable: str, col1: str, col2: str | No
                 in_rm = val.isdigit() and len(val) in (9, 14) and val[:9] in sirens_rm
             elif type_variable == "adresse":
                 in_rm = est_adresse_rm(str(row.get(col1, "")))
+            elif type_variable == "circonscription":
+                in_rm = est_circonscription_rm(row.get(col1, ""))
             else:
                 in_rm = False
             if in_rm:
@@ -2429,9 +3268,12 @@ def _construire_champs_manuels(type_variable: str, col1: str, col2: str | None, 
     champs = {"champ_cp": None, "champ_ville": None, "champ_iris": None,
               "champ_adresse": None, "champ_siren": None,
               "champ_epci": None, "champ_lat": None, "champ_lon": None,
+              "champ_circonscription": None,
               "nb_rm": nb_rm}
     if type_variable == "commune":
         champs["champ_iris"] = col1  # est_valeur_commune_rm() teste code INSEE/IRIS/CP/nom
+    elif type_variable == "cp":
+        champs["champ_cp"] = col1
     elif type_variable == "epci":
         champs["champ_epci"] = col1
     elif type_variable == "latlon":
@@ -2441,6 +3283,8 @@ def _construire_champs_manuels(type_variable: str, col1: str, col2: str | None, 
         champs["champ_siren"] = col1
     elif type_variable == "adresse":
         champs["champ_adresse"] = col1
+    elif type_variable == "circonscription":
+        champs["champ_circonscription"] = col1
     return champs
 
 
@@ -2590,7 +3434,7 @@ def _reanalyser_candidats_sans_champ(decouverte: dict) -> None:
     sans_champ = [
         c for c in decouverte.get("candidats", [])
         if not any(c.get(ch) for ch in ("champ_cp", "champ_ville", "champ_iris", "champ_adresse",
-                                         "champ_siren", "champ_lat"))
+                                         "champ_siren", "champ_lat", "champ_circonscription"))
     ]
     if not sans_champ:
         return
@@ -2615,7 +3459,7 @@ def _reanalyser_candidats_sans_champ(decouverte: dict) -> None:
             result = None
         if result and any(result.get(ch) for ch in
                           ("champ_cp", "champ_ville", "champ_iris", "champ_adresse",
-                           "champ_siren", "champ_lat")):
+                           "champ_siren", "champ_lat", "champ_circonscription")):
             candidat["champ_cp"] = result["champ_cp"]
             candidat["champ_ville"] = result["champ_ville"]
             candidat["champ_iris"] = result.get("champ_iris")
@@ -2623,6 +3467,7 @@ def _reanalyser_candidats_sans_champ(decouverte: dict) -> None:
             candidat["champ_siren"] = result.get("champ_siren")
             candidat["champ_lat"] = result.get("champ_lat")
             candidat["champ_lon"] = result.get("champ_lon")
+            candidat["champ_circonscription"] = result.get("champ_circonscription")
             candidat["nb_rm"] = result["nb_rm"]
             print(f"  ✓ {candidat['titre'][:60]} — {result['nb_rm']} lignes RM")
             modifies += 1
@@ -2644,7 +3489,8 @@ def _harvest_nouveaux_candidats(decouverte: dict, ids_avant_session: set) -> Non
         c for c in decouverte.get("candidats", [])
         if c["dataset_id"] not in ids_avant_session
         and any(c.get(ch) for ch in ("champ_cp", "champ_ville", "champ_iris", "champ_adresse",
-                                      "champ_siren", "champ_epci", "champ_lat"))
+                                      "champ_siren", "champ_epci", "champ_lat",
+                                      "champ_circonscription"))
     ]
     if not nouveaux:
         return
@@ -2701,7 +3547,7 @@ def main():
     _n_sans_champ = sum(
         1 for c in decouverte.get("candidats", [])
         if not any(c.get(ch) for ch in ("champ_cp", "champ_ville", "champ_iris", "champ_adresse",
-                                         "champ_siren", "champ_lat"))
+                                         "champ_siren", "champ_lat", "champ_circonscription"))
     )
     if _n_sans_champ:
         _rep = input(f"\n{_n_sans_champ} candidat(s) sans champ géo — re-analyser maintenant ? (o/N) ").strip().lower()

@@ -1,0 +1,380 @@
+[
+  {
+    "code_commune": "35001",
+    "nom_commune": "Acigné",
+    "population": "6865",
+    "nb_locaux": "3395",
+    "nb_adresses_locaux": "2276"
+  },
+  {
+    "code_commune": "35022",
+    "nom_commune": "Bécherel",
+    "population": "698",
+    "nb_locaux": "458",
+    "nb_adresses_locaux": "305"
+  },
+  {
+    "code_commune": "35024",
+    "nom_commune": "Betton",
+    "population": "12637",
+    "nb_locaux": "6374",
+    "nb_adresses_locaux": "3753"
+  },
+  {
+    "code_commune": "35032",
+    "nom_commune": "Bourgbarré",
+    "population": "4579",
+    "nb_locaux": "2032",
+    "nb_adresses_locaux": "1539"
+  },
+  {
+    "code_commune": "35039",
+    "nom_commune": "Brécé",
+    "population": "2040",
+    "nb_locaux": "993",
+    "nb_adresses_locaux": "807"
+  },
+  {
+    "code_commune": "35047",
+    "nom_commune": "Bruz",
+    "population": "19090",
+    "nb_locaux": "11260",
+    "nb_adresses_locaux": "5100"
+  },
+  {
+    "code_commune": "35051",
+    "nom_commune": "Cesson-Sévigné",
+    "population": "17316",
+    "nb_locaux": "11437",
+    "nb_adresses_locaux": "5027"
+  },
+  {
+    "code_commune": "35055",
+    "nom_commune": "Chantepie",
+    "population": "10236",
+    "nb_locaux": "6113",
+    "nb_adresses_locaux": "2405"
+  },
+  {
+    "code_commune": "35058",
+    "nom_commune": "La Chapelle-Chaussée",
+    "population": "1302",
+    "nb_locaux": "558",
+    "nb_adresses_locaux": "514"
+  },
+  {
+    "code_commune": "35059",
+    "nom_commune": "La Chapelle-des-Fougeretz",
+    "population": "4628",
+    "nb_locaux": "2286",
+    "nb_adresses_locaux": "1539"
+  },
+  {
+    "code_commune": "35065",
+    "nom_commune": "La Chapelle-Thouarault",
+    "population": "2244",
+    "nb_locaux": "1047",
+    "nb_adresses_locaux": "814"
+  },
+  {
+    "code_commune": "35066",
+    "nom_commune": "Chartres-de-Bretagne",
+    "population": "8190",
+    "nb_locaux": "4759",
+    "nb_adresses_locaux": "2352"
+  },
+  {
+    "code_commune": "35076",
+    "nom_commune": "Chavagne",
+    "population": "4268",
+    "nb_locaux": "2272",
+    "nb_adresses_locaux": "1497"
+  },
+  {
+    "code_commune": "35079",
+    "nom_commune": "Chevaigné",
+    "population": "2355",
+    "nb_locaux": "1049",
+    "nb_adresses_locaux": "817"
+  },
+  {
+    "code_commune": "35080",
+    "nom_commune": "Cintré",
+    "population": "2476",
+    "nb_locaux": "1069",
+    "nb_adresses_locaux": "922"
+  },
+  {
+    "code_commune": "35081",
+    "nom_commune": "Clayes",
+    "population": "910",
+    "nb_locaux": "390",
+    "nb_adresses_locaux": "347"
+  },
+  {
+    "code_commune": "35088",
+    "nom_commune": "Corps-Nuds",
+    "population": "3526",
+    "nb_locaux": "1664",
+    "nb_adresses_locaux": "1253"
+  },
+  {
+    "code_commune": "35120",
+    "nom_commune": "Gévezé",
+    "population": "5685",
+    "nb_locaux": "2765",
+    "nb_adresses_locaux": "1967"
+  },
+  {
+    "code_commune": "35131",
+    "nom_commune": "L'Hermitage",
+    "population": "4647",
+    "nb_locaux": "2419",
+    "nb_adresses_locaux": "1477"
+  },
+  {
+    "code_commune": "35132",
+    "nom_commune": "Hirel",
+    "population": "1391",
+    "nb_locaux": "882",
+    "nb_adresses_locaux": "719"
+  },
+  {
+    "code_commune": "35135",
+    "nom_commune": "Irodouër",
+    "population": "2263",
+    "nb_locaux": "1054",
+    "nb_adresses_locaux": "928"
+  },
+  {
+    "code_commune": "35136",
+    "nom_commune": "Janzé",
+    "population": "8523",
+    "nb_locaux": "4453",
+    "nb_adresses_locaux": "3100"
+  },
+  {
+    "code_commune": "35139",
+    "nom_commune": "Laillé",
+    "population": "5162",
+    "nb_locaux": "2504",
+    "nb_adresses_locaux": "1968"
+  },
+  {
+    "code_commune": "35144",
+    "nom_commune": "Langan",
+    "population": "1064",
+    "nb_locaux": "493",
+    "nb_adresses_locaux": "446"
+  },
+  {
+    "code_commune": "35150",
+    "nom_commune": "Lécousse",
+    "population": "3279",
+    "nb_locaux": "1852",
+    "nb_adresses_locaux": "1663"
+  },
+  {
+    "code_commune": "35160",
+    "nom_commune": "Loutehel",
+    "population": "243",
+    "nb_locaux": "182",
+    "nb_adresses_locaux": "168"
+  },
+  {
+    "code_commune": "35170",
+    "nom_commune": "Mecé",
+    "population": "606",
+    "nb_locaux": "305",
+    "nb_adresses_locaux": "296"
+  },
+  {
+    "code_commune": "35180",
+    "nom_commune": "Miniac-sous-Bécherel",
+    "population": "795",
+    "nb_locaux": "353",
+    "nb_adresses_locaux": "331"
+  },
+  {
+    "code_commune": "35189",
+    "nom_commune": "Montgermont",
+    "population": "3564",
+    "nb_locaux": "2015",
+    "nb_adresses_locaux": "1147"
+  },
+  {
+    "code_commune": "35190",
+    "nom_commune": "Monthault",
+    "population": "248",
+    "nb_locaux": "184",
+    "nb_adresses_locaux": "173"
+  },
+  {
+    "code_commune": "35196",
+    "nom_commune": "Mordelles",
+    "population": "7485",
+    "nb_locaux": "4432",
+    "nb_adresses_locaux": "2430"
+  },
+  {
+    "code_commune": "35200",
+    "nom_commune": "Moutiers",
+    "population": "914",
+    "nb_locaux": "397",
+    "nb_adresses_locaux": "374"
+  },
+  {
+    "code_commune": "35204",
+    "nom_commune": "Nouvoitou",
+    "population": "3378",
+    "nb_locaux": "1650",
+    "nb_adresses_locaux": "1379"
+  },
+  {
+    "code_commune": "35206",
+    "nom_commune": "Noyal-Châtillon-sur-Seiche",
+    "population": "7318",
+    "nb_locaux": "4498",
+    "nb_adresses_locaux": "2395"
+  },
+  {
+    "code_commune": "35208",
+    "nom_commune": "Orgères",
+    "population": "5341",
+    "nb_locaux": "2600",
+    "nb_adresses_locaux": "1888"
+  },
+  {
+    "code_commune": "35210",
+    "nom_commune": "Pacé",
+    "population": "12004",
+    "nb_locaux": "5843",
+    "nb_adresses_locaux": "3473"
+  },
+  {
+    "code_commune": "35216",
+    "nom_commune": "Parthenay-de-Bretagne",
+    "population": "1794",
+    "nb_locaux": "727",
+    "nb_adresses_locaux": "582"
+  },
+  {
+    "code_commune": "35230",
+    "nom_commune": "Poilley",
+    "population": "370",
+    "nb_locaux": "263",
+    "nb_adresses_locaux": "236"
+  },
+  {
+    "code_commune": "35235",
+    "nom_commune": "Rannée",
+    "population": "1073",
+    "nb_locaux": "577",
+    "nb_adresses_locaux": "539"
+  },
+  {
+    "code_commune": "35238",
+    "nom_commune": "Rennes",
+    "population": "222485",
+    "nb_locaux": "149098",
+    "nb_adresses_locaux": "25789"
+  },
+  {
+    "code_commune": "35240",
+    "nom_commune": "Le Rheu",
+    "population": "9247",
+    "nb_locaux": "4966",
+    "nb_adresses_locaux": "2600"
+  },
+  {
+    "code_commune": "35245",
+    "nom_commune": "Romillé",
+    "population": "4085",
+    "nb_locaux": "1954",
+    "nb_adresses_locaux": "1520"
+  },
+  {
+    "code_commune": "35250",
+    "nom_commune": "Saint-Armel",
+    "population": "2219",
+    "nb_locaux": "1180",
+    "nb_adresses_locaux": "815"
+  },
+  {
+    "code_commune": "35266",
+    "nom_commune": "Saint-Erblon",
+    "population": "3428",
+    "nb_locaux": "1746",
+    "nb_adresses_locaux": "1137"
+  },
+  {
+    "code_commune": "35275",
+    "nom_commune": "Saint-Gilles",
+    "population": "5312",
+    "nb_locaux": "2664",
+    "nb_adresses_locaux": "1703"
+  },
+  {
+    "code_commune": "35278",
+    "nom_commune": "Saint-Grégoire",
+    "population": "9881",
+    "nb_locaux": "5798",
+    "nb_adresses_locaux": "3150"
+  },
+  {
+    "code_commune": "35281",
+    "nom_commune": "Saint-Jacques-de-la-Lande",
+    "population": "13955",
+    "nb_locaux": "7852",
+    "nb_adresses_locaux": "2463"
+  },
+  {
+    "code_commune": "35310",
+    "nom_commune": "Saint-Sauveur-des-Landes",
+    "population": "1543",
+    "nb_locaux": "673",
+    "nb_adresses_locaux": "643"
+  },
+  {
+    "code_commune": "35315",
+    "nom_commune": "Saint-Sulpice-la-Forêt",
+    "population": "1440",
+    "nb_locaux": "649",
+    "nb_adresses_locaux": "574"
+  },
+  {
+    "code_commune": "35334",
+    "nom_commune": "Thorigné-Fouillard",
+    "population": "8584",
+    "nb_locaux": "4206",
+    "nb_adresses_locaux": "2604"
+  },
+  {
+    "code_commune": "35351",
+    "nom_commune": "Le Verger",
+    "population": "1435",
+    "nb_locaux": "607",
+    "nb_adresses_locaux": "538"
+  },
+  {
+    "code_commune": "35352",
+    "nom_commune": "Vern-sur-Seiche",
+    "population": "8289",
+    "nb_locaux": "4352",
+    "nb_adresses_locaux": "2829"
+  },
+  {
+    "code_commune": "35353",
+    "nom_commune": "Vezin-le-Coquet",
+    "population": "6234",
+    "nb_locaux": "2849",
+    "nb_adresses_locaux": "1636"
+  },
+  {
+    "code_commune": "35363",
+    "nom_commune": "Pont-Péan",
+    "population": "4389",
+    "nb_locaux": "2092",
+    "nb_adresses_locaux": "1314"
+  }
+]

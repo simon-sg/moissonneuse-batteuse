@@ -1,0 +1,5 @@
+code,statut,nom,region,departement,perimetre,echelon,typeService,sousTypeService,email,adresse
+035U01,true,Unité de contrôle Est 35,Bretagne,Ille-et-Vilaine,Infra-départemental,Départemental,Service de contrôle,Unité de contrôle,ddets-uc1-1@ille-et-vilaine.gouv.fr,3 bis Avenue de Belle Fontaine 35517 Cesson-Sévigné
+035U02,true,Unité de contrôle Nord 35,Bretagne,Ille-et-Vilaine,Infra-départemental,Départemental,Service de contrôle,Unité de contrôle,ddets-uc2-1@ille-et-vilaine.gouv.fr,3 bis Avenue de Belle Fontaine 35517 Cesson-Sévigné
+035U03,true,Unité de contrôle Ouest 35,Bretagne,Ille-et-Vilaine,Infra-départemental,Départemental,Service de contrôle,Unité de contrôle,,3 bis Avenue de Belle Fontaine 35517 Cesson-Sévigné
+DR-BRETAGNE-CTRL,true,Unité régionale d'appui et de contrôle de la DREETS Bretagne,Bretagne,,Régional,Régional,Service de contrôle,Unité de contrôle régionale,dreets-bret.poleT@dreets.gouv.fr,3 BisAvenue de Belle Fontaine 35517 CESSON-SÉVIGNÉ

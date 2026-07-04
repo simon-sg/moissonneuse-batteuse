@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title></title>
+<script>(function(){try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<style>
+:root{--bg:#f5f6f8;--card:#fff;--txt:#1c2733;--muted:#667;--accent:#0b6e99;--bord:#e2e6ea;
+      --avert-bg:#fff8e1;--avert-bord:#ffe082;--avert-txt:#6d4c00;
+      --geo-bg:#eaf4fb;--geo-hover:#d4ecf7;--stripe:#fafbfc;--row-hover:#eef6fb;
+      --resizer:rgba(11,110,153,.35);--td-bord:#f0f2f4}
+:root[data-theme="dark"]{--bg:#10151b;--card:#1a222b;--txt:#dbe2e8;--muted:#8996a3;--accent:#4fb3da;--bord:#29323c;
+      --avert-bg:#3a2f10;--avert-bord:#6b5418;--avert-txt:#e8c96a;
+      --geo-bg:#16303c;--geo-hover:#1d3f4d;--stripe:#161d24;--row-hover:#17242c;
+      --resizer:rgba(79,179,218,.35);--td-bord:#232c35}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#10151b;--card:#1a222b;--txt:#dbe2e8;--muted:#8996a3;--accent:#4fb3da;--bord:#29323c;
+      --avert-bg:#3a2f10;--avert-bord:#6b5418;--avert-txt:#e8c96a;
+      --geo-bg:#16303c;--geo-hover:#1d3f4d;--stripe:#161d24;--row-hover:#17242c;
+      --resizer:rgba(79,179,218,.35);--td-bord:#232c35}
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+     background:var(--bg);color:var(--txt);display:flex;flex-direction:column;height:100vh}
+header{background:var(--card);border-bottom:1px solid var(--bord);padding:10px 16px;
+       display:flex;flex-wrap:wrap;gap:10px;align-items:center;flex-shrink:0}
+h1{font-size:.9rem;font-weight:600;flex:1;min-width:150px;
+   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#filtre{padding:7px 11px;font-size:.9rem;border:1px solid var(--bord);
+        border-radius:6px;width:220px;background:var(--card);color:var(--txt)}
+#info{color:var(--muted);font-size:.82rem;white-space:nowrap}
+#theme-toggle{background:none;border:1px solid var(--bord);border-radius:6px;padding:5px 10px;
+              cursor:pointer;font-size:.9rem;line-height:1;color:var(--txt);flex-shrink:0}
+#theme-toggle:hover{background:var(--bg)}
+.avert{background:var(--avert-bg);border-bottom:1px solid var(--avert-bord);padding:5px 16px;
+       font-size:.8rem;color:var(--avert-txt);flex-shrink:0}
+.wrap{flex:1;overflow:auto}
+table{border-collapse:collapse;font-size:.82rem;table-layout:fixed}
+thead{position:sticky;top:0;z-index:2;background:var(--card);box-shadow:0 1px 0 var(--bord)}
+th{padding:8px 12px;text-align:left;cursor:pointer;user-select:none;color:var(--muted);font-weight:600;
+   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative}
+th:hover{background:var(--bg);color:var(--txt)}
+th.asc::after{content:" ↑";color:var(--accent)}
+th.desc::after{content:" ↓";color:var(--accent)}
+th.geo{color:var(--accent);background:var(--geo-bg)}
+th.geo:hover{background:var(--geo-hover)}
+th.trad{text-decoration:underline dotted;text-decoration-color:var(--accent);text-underline-offset:3px}
+td{padding:0;border-bottom:1px solid var(--td-bord)}
+td div{padding:5px 12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+td div a{color:var(--accent);text-decoration:none}
+td div a:hover{text-decoration:underline}
+tr:nth-child(even) td{background:var(--stripe)}
+tr:hover td{background:var(--row-hover)}
+.resizer{position:absolute;right:0;top:0;width:5px;height:100%;cursor:col-resize;z-index:1}
+.resizer:hover,.resizer.active{background:var(--resizer)}
+</style>
+</head>
+<body>
+<header>
+  <h1 id="titre"></h1>
+  <input id="filtre" type="search" placeholder="Filtrer toutes les colonnes…">
+  <span id="info"></span>
+  <button id="theme-toggle" title="Basculer thème clair/sombre" aria-label="Basculer thème clair/sombre">🌙</button>
+</header>
+<div id="avert" class="avert" style="display:none"></div>
+<div class="wrap"><table id="t"><colgroup id="cols"></colgroup><thead id="thead"></thead><tbody id="tbody"></tbody></table></div>
+<script id="d" type="application/json">{"nom": "classe-dpe-fg-de-par-iris-rennesmetropole.csv", "champs_geo": ["Code IRIS"], "dictionnaire": {}, "entetes": ["Code IRIS", "Résidences Principales", "Résidences Principales classe F ou G", "Résidences Principales classe D ou E"], "lignes": [["352380208", "2255.0", "164.0", "1216.0"], ["352380401", "864.0", "153.0", "469.0"], ["351390000", "2089.0", "146.0", "807.0"], ["350390000", "767.0", "73.0", "340.0"], ["352380205", "1265.0", "144.0", "705.0"], ["350320000", "1754.0", "124.0", "644.0"], ["352380305", "1510.0", "122.0", "679.0"], ["352380302", "1488.0", "73.0", "1103.0"], ["351310000", "2019.0", "144.0", "674.0"], ["352380606", "1418.0", "83.0", "644.0"], ["350510103", "1626.0", "87.0", "909.0"], ["350470106", "621.0", "49.0", "195.0"], ["352380501", "1197.0", "97.0", "678.0"], ["352380603", "1863.0", "48.0", "795.0"], ["352380510", "84.0", "21.0", "48.0"], ["352380504", "1807.0", "128.0", "974.0"], ["350470103", "801.0", "34.0", "425.0"], ["352380507", "783.0", "51.0", "274.0"], ["350510204", "1179.0", "49.0", "826.0"], ["352380803", "1425.0", "135.0", "767.0"], ["352380705", "1471.0", "18.0", "307.0"], ["352380702", "1399.0", "133.0", "725.0"], ["352380708", "1466.0", "105.0", "643.0"], ["350510201", "103.0", "15.0", "45.0"], ["350590000", "1889.0", "36.0", "763.0"], ["350550101", "1752.0", "31.0", "762.0"], ["352380806", "1569.0", "231.0", "888.0"], ["352381002", "959.0", "26.0", "463.0"], ["350650000", "926.0", "46.0", "475.0"], ["352380904", "1491.0", "14.0", "634.0"], ["352381103", "861.0", "24.0", "643.0"], ["352381005", "917.0", "21.0", "410.0"], ["352380901", "2187.0", "98.0", "1094.0"], ["350660103", "41.0", "8.0", "23.0"], ["352381008", "120.0", "26.0", "63.0"], ["351800000", "301.0", "43.0", "164.0"], ["353340103", "1375.0", "15.0", "315.0"], ["350800000", "888.0", "83.0", "323.0"], ["352400101", "942.0", "145.0", "402.0"], ["351960102", "758.0", "85.0", "323.0"], ["353520102", "1183.0", "34.0", "446.0"], ["352381109", "826.0", "11.0", "496.0"], ["352040000", "1329.0", "109.0", "661.0"], ["352381203", "835.0", "26.0", "484.0"], ["352381206", "1020.0", "189.0", "500.0"], ["352381106", "833.0", "38.0", "417.0"], ["352100101", "2768.0", "79.0", "777.0"], ["352100105", "737.0", "67.0", "441.0"], ["353630000", "1833.0", "68.0", "726.0"], ["352060102", "1717.0", "68.0", "670.0"], ["352500000", "943.0", "64.0", "324.0"], ["352660000", "1445.0", "43.0", "476.0"], ["352380101", "1704.0", "270.0", "1242.0"], ["352780103", "1218.0", "84.0", "452.0"], ["352380203", "1266.0", "93.0", "777.0"], ["350240101", "2325.0", "62.0", "526.0"], ["352810101", "2724.0", "81.0", "1122.0"], ["350240104", "929.0", "54.0", "431.0"], ["352380107", "1211.0", "21.0", "516.0"], ["352380104", "1514.0", "202.0", "1010.0"], ["352380110", "1601.0", "48.0", "802.0"], ["352380206", "1482.0", "104.0", "750.0"], ["352380303", "1159.0", "189.0", "749.0"], ["352380402", "2221.0", "155.0", "894.0"], ["352380209", "2175.0", "115.0", "969.0"], ["352380306", "1328.0", "45.0", "691.0"], ["352380601", "1867.0", "102.0", "956.0"], ["350470101", "1569.0", "76.0", "755.0"], ["352380604", "1380.0", "7.0", "560.0"], ["352380607", "249.0", "3.0", "5.0"], ["350510101", "1867.0", "96.0", "681.0"], ["350470104", "3400.0", "109.0", "754.0"], ["352380505", "1318.0", "100.0", "530.0"], ["352380508", "1619.0", "4.0", "533.0"], ["352380502", "905.0", "53.0", "503.0"], ["350510104", "32.0", "11.0", "5.0"], ["352380703", "1135.0", "117.0", "649.0"], ["352380804", "1191.0", "183.0", "570.0"], ["352380807", "1004.0", "114.0", "603.0"], ["350550102", "2342.0", "21.0", "531.0"], ["350510202", "539.0", "61.0", "268.0"], ["353150000", "568.0", "69.0", "259.0"], ["352380801", "1172.0", "147.0", "580.0"], ["352380706", "1670.0", "113.0", "672.0"], ["350660101", "1239.0", "45.0", "454.0"], ["351890000", "1591.0", "84.0", "684.0"], ["352381003", "1339.0", "77.0", "547.0"], ["352381006", "942.0", "119.0", "498.0"], ["352381101", "708.0", "37.0", "352.0"], ["353340101", "1376.0", "70.0", "544.0"], ["352380905", "108.0", "11.0", "70.0"], ["352380902", "2756.0", "181.0", "869.0"], ["350660104", "336.0", "6.0", "50.0"], ["352400102", "1177.0", "49.0", "406.0"], ["350810000", "331.0", "21.0", "157.0"], ["352381107", "917.0", "7.0", "263.0"], ["351960103", "1022.0", "92.0", "362.0"], ["350880000", "1368.0", "100.0", "615.0"], ["353510000", "532.0", "38.0", "350.0"], ["352381201", "1002.0", "33.0", "712.0"], ["352381207", "889.0", "59.0", "556.0"], ["352381104", "830.0", "60.0", "423.0"], ["353520103", "1075.0", "15.0", "573.0"], ["352381204", "1051.0", "44.0", "847.0"], ["352100102", "803.0", "48.0", "416.0"], ["352450000", "1611.0", "190.0", "832.0"], ["352750000", "2171.0", "198.0", "761.0"], ["350010101", "1124.0", "105.0", "716.0"], ["352380201", "1787.0", "78.0", "908.0"], ["352380102", "1039.0", "278.0", "627.0"], ["352810201", "2915.0", "41.0", "743.0"], ["350240102", "753.0", "21.0", "258.0"], ["352380108", "1202.0", "80.0", "645.0"], ["352780101", "2164.0", "57.0", "443.0"], ["352380105", "1488.0", "152.0", "949.0"], ["350220000", "316.0", "92.0", "155.0"], ["352380403", "78.0", "6.0", "66.0"], ["352380207", "2101.0", "107.0", "1060.0"], ["352380204", "1178.0", "199.0", "707.0"], ["352380301", "2697.0", "116.0", "1334.0"], ["352380304", "1646.0", "118.0", "756.0"], ["352380307", "15.0", "7.0", "5.0"], ["351440000", "410.0", "41.0", "227.0"], ["350470102", "1093.0", "167.0", "455.0"], ["350470105", "1372.0", "84.0", "553.0"], ["352380602", "1535.0", "111.0", "856.0"], ["352380506", "861.0", "15.0", "369.0"], ["352380605", "1044.0", "68.0", "442.0"], ["350510102", "2194.0", "107.0", "627.0"], ["352380509", "1210.0", "41.0", "839.0"], ["352380503", "806.0", "15.0", "491.0"], ["350580000", "458.0", "62.0", "220.0"], ["352380707", "869.0", "70.0", "423.0"], ["352380701", "1602.0", "150.0", "1068.0"], ["350510203", "593.0", "17.0", "460.0"], ["352380805", "985.0", "108.0", "426.0"], ["350510105", "272.0", "23.0", "156.0"], ["350550103", "693.0", "7.0", "328.0"], ["352380808", "1784.0", "203.0", "999.0"], ["352380704", "86.0", "5.0", "53.0"], ["352380802", "1046.0", "79.0", "710.0"], ["352381004", "1162.0", "31.0", "490.0"], ["352381102", "1061.0", "27.0", "361.0"], ["353340102", "781.0", "38.0", "539.0"], ["350660102", "2360.0", "35.0", "1277.0"], ["352381007", "3451.0", "12.0", "468.0"], ["352380903", "3019.0", "128.0", "850.0"], ["352381001", "2267.0", "95.0", "1074.0"], ["353520101", "1285.0", "79.0", "538.0"], ["352400103", "1829.0", "24.0", "453.0"], ["351960101", "1674.0", "110.0", "582.0"], ["352381205", "1412.0", "40.0", "830.0"], ["352060101", "1519.0", "115.0", "783.0"], ["350790000", "920.0", "38.0", "463.0"], ["352381202", "986.0", "15.0", "443.0"], ["350760000", "1774.0", "140.0", "784.0"], ["352381105", "706.0", "68.0", "390.0"], ["353530000", "2341.0", "164.0", "933.0"], ["352381108", "718.0", "", "377.0"], ["352160000", "649.0", "19.0", "227.0"], ["352080000", "2132.0", "175.0", "930.0"], ["352100103", "658.0", "35.0", "282.0"], ["350010102", "1748.0", "45.0", "463.0"], ["350240103", "1300.0", "64.0", "558.0"], ["352380103", "1015.0", "309.0", "617.0"], ["352380202", "1825.0", "199.0", "869.0"], ["352810202", "918.0", "90.0", "300.0"], ["352780102", "867.0", "12.0", "476.0"], ["352380106", "1134.0", "59.0", "767.0"], ["351200000", "2293.0", "95.0", "829.0"], ["352380109", "1106.0", "134.0", "672.0"]], "tronque": false, "nb_total": 171}</script>
+<script>
+(function(){
+  const btn = document.getElementById("theme-toggle");
+  function effectif(){
+    return document.documentElement.getAttribute("data-theme") ||
+      (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  }
+  function majIcone(){ btn.textContent = effectif() === "dark" ? "☀️" : "🌙"; }
+  btn.addEventListener("click", () => {
+    const suivant = effectif() === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", suivant);
+    try { localStorage.setItem("theme", suivant); } catch(e) {}
+    majIcone();
+  });
+  majIcone();
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+    if (!document.documentElement.getAttribute("data-theme")) majIcone();
+  });
+})();
+
+const D=JSON.parse(document.getElementById("d").textContent);
+const tbl=document.getElementById("t"),wrap=document.querySelector(".wrap");
+const nCols=D.entetes.length;
+const wrapW=wrap.clientWidth||800;
+const colW=Math.max(80,Math.floor(Math.max(wrapW,nCols*160)/nCols));
+tbl.style.width=Math.max(wrapW,nCols*160)+"px";
+document.getElementById("cols").innerHTML=D.entetes.map(()=>`<col style="width:${colW}px">`).join("");
+document.title=D.nom;document.getElementById("titre").textContent=D.nom;
+if(D.tronque){const a=document.getElementById("avert");a.style.display="";
+  a.textContent=`Prévisualisation : ${D.lignes.length.toLocaleString("fr")} premières lignes sur ${D.nb_total.toLocaleString("fr")} au total.`;}
+const geo=new Set(D.champs_geo||[]);
+const DICO=D.dictionnaire||{};
+let sc=-1,asc=true,q="";
+function esc(s){return String(s??"").replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function cell(v){const s=String(v??"").trim();return /^https?:\/\/\S+$/.test(s)?`<a href="${esc(s)}" target="_blank" rel="noopener">${esc(s)}</a>`:esc(v);}
+function rendu(){
+  let rows=D.lignes;
+  if(q){const f=q.toLowerCase();rows=rows.filter(r=>r.some(v=>String(v??"").toLowerCase().includes(f)));}
+  if(sc>=0){const col=sc,up=asc;rows=[...rows].sort((a,b)=>{
+    const va=a[col]??"",vb=b[col]??"",na=+va,nb=+vb;
+    return(!isNaN(na)&&!isNaN(nb))?(up?na-nb:nb-na):(up?String(va).localeCompare(String(vb),"fr"):String(vb).localeCompare(String(va),"fr"));
+  });}
+  const th=D.entetes.map((h,i)=>{
+    const trad=DICO[h];
+    const cls=[sc===i?(asc?"asc":"desc"):"",geo.has(h)?"geo":"",trad?"trad":""].filter(Boolean).join(" ");
+    const tip=trad?` title="${esc(h)}"`:"";
+    return`<th class="${cls}"${tip}>${esc(trad||h)}<div class="resizer"></div></th>`;
+  }).join("");
+  document.getElementById("thead").innerHTML=`<tr>${th}</tr>`;
+  document.getElementById("tbody").innerHTML=rows.map(r=>`<tr>${r.map(v=>`<td><div title="${esc(v)}">${cell(v)}</div></td>`).join("")}</tr>`).join("");
+  const n=rows.length,tot=D.lignes.length;
+  document.getElementById("info").textContent=n<tot
+    ?`${n.toLocaleString("fr")} / ${tot.toLocaleString("fr")} lignes`
+    :`${n.toLocaleString("fr")} ligne${n>1?"s":""}`;
+}
+// Sort via delegation — ignore clicks that start on the resizer handle
+tbl.addEventListener("click",e=>{
+  if(e.target.closest(".resizer"))return;
+  const th=e.target.closest("th");
+  if(!th)return;
+  const i=th.cellIndex;sc===i?asc=!asc:(sc=i,asc=true);rendu();
+});
+// Column resize
+tbl.addEventListener("mousedown",e=>{
+  const rz=e.target.closest(".resizer");
+  if(!rz)return;
+  e.preventDefault();
+  const th=rz.parentElement,idx=th.cellIndex;
+  const cols=document.querySelectorAll("#cols col");
+  const startX=e.clientX,startW=th.offsetWidth;
+  rz.classList.add("active");
+  document.body.style.cursor="col-resize";
+  function onMove(e){
+    const w=Math.max(40,startW+(e.clientX-startX));
+    cols[idx].style.width=w+"px";
+    tbl.style.width=Array.from(cols).reduce((s,c)=>s+(parseInt(c.style.width)||colW),0)+"px";
+  }
+  function onUp(){
+    rz.classList.remove("active");
+    document.body.style.cursor="";
+    document.removeEventListener("mousemove",onMove);
+    document.removeEventListener("mouseup",onUp);
+  }
+  document.addEventListener("mousemove",onMove);
+  document.addEventListener("mouseup",onUp);
+});
+document.getElementById("filtre").addEventListener("input",e=>{q=e.target.value;rendu();});
+rendu();
+</script>
+</body>
+</html>

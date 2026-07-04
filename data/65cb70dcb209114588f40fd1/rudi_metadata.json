@@ -1,0 +1,82 @@
+{
+  "local_id": "09a1421e-bdad-534f-8867-25cbe6da9b0b",
+  "resource_title": "Voitures par énergie et par commune - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Voitures par énergie et par commune — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/65cb70dcb209114588f40fd1\n\nD'après le jeu https://www.data.gouv.fr/fr/datasets/voitures-particulieres-immatriculees-par-commune-et-par-type-de-recharge/#/resources\n-> format parquet"
+    }
+  ],
+  "theme": "environment",
+  "keywords": [
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "icem7"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "3e4ec3e5-c842-556c-920e-efe7551f34af",
+      "media_type": "FILE",
+      "media_name": "ore-velec-13-02-2024parquet-rennesmetropole.csv",
+      "media_caption": "ore-velec-13-02-2024.parquet — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "6d6e342c-b7ed-5879-8d58-02ee5e8abd99",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://www.data.gouv.fr/datasets/65cb70dcb209114588f40fd1",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2024-02-13T00:00:00Z",
+    "updated": "2024-02-13T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "CUSTOM",
+      "custom_licence_label": [
+        {
+          "lang": "fr",
+          "text": "notspecified"
+        }
+      ],
+      "custom_licence_uri": "https://www.data.gouv.fr/datasets/65cb70dcb209114588f40fd1"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2024-02-13T00:00:00Z",
+      "updated": "2024-02-13T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/65cb70dcb209114588f40fd1"
+  }
+}

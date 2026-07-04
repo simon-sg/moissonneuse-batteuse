@@ -1,0 +1,93 @@
+{
+  "local_id": "cf50908b-b16b-56d5-936a-0a88a47e5399",
+  "resource_title": "Production Annuelle de Biométhane par site raccordé au réseau de transport et de distribution - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Production Annuelle de Biométhane par site raccordé au réseau de transport et de distribution — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/6453d2da22781241a3a0842c\n\nCe jeu de données présente les valeurs définitives des productions de biométhane des sites raccordés au réseau de NaTran, de Teréga et des distributeurs et ELD .\n\nLes données sont agrégées de manière annuelle et en GWh [PCS](https://opendata.reseaux-energies.fr/pages/glossaire/ \"https://opendata.reseaux-energies.fr/pages/glossaire/\") 0°C.\n\nCes données sont élaborées à partir des équipements de comptage. \n\nCe jeu de données est mis à jour annuellement. Il est publié dans le respect des règles relatives à la protection des Informations Commercialement Sensibles. \n\nUne question sur ces données ? n'hésitez pas à utiliser notre [formulaire de contact](https://odre.opendatasoft.com/pages/contactv2/)"
+    }
+  ],
+  "theme": "environment",
+  "keywords": [
+    "article-179",
+    "biogaz",
+    "carte",
+    "enr",
+    "production",
+    "territoires-et-regions",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Open Data Réseaux Énergies"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "832f1373-014a-5203-81ff-11ee4171e5d1",
+      "media_type": "FILE",
+      "media_name": "production-annuelle-de-biomethane-par-site-raccord-rennesmetropole.csv",
+      "media_caption": "production-annuelle-de-biomethane-par-site-raccorde-au-reseau-de-transport-et-de.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "63238fd3-8658-5f5d-9eac-7ec3e91b67f6",
+      "media_type": "FILE",
+      "media_name": "production-annuelle-de-biomethane-par-site-raccord-rennesmetropole.json",
+      "media_caption": "production-annuelle-de-biomethane-par-site-raccorde-au-reseau-de-transport-et-de.csv — données filtrées sur Rennes Métropole (JSON)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "9f7f7ae6-1460-520b-af4e-a2690fe2972a",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://odre.opendatasoft.com/api/explore/v2.1/catalog/datasets/production-annuelle-de-biomethane-par-site-raccorde-au-reseau-de-transport-et-de/exports/csv?use_labels=true",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2026-06-06T00:00:00Z",
+    "updated": "2026-06-06T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2026-06-06T00:00:00Z",
+      "updated": "2026-06-06T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/6453d2da22781241a3a0842c"
+  }
+}

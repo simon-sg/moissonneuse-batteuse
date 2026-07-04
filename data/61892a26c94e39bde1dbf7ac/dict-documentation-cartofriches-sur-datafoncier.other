@@ -1,0 +1,502 @@
+
+<!DOCTYPE html>
+<html lang="fr" data-fr-scheme="system">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport"
+              content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel="stylesheet" href="/static/dsfr/dsfr/dsfr.min.css">
+        <link rel="stylesheet" href="/static/dsfr/utility/utility.css">
+        <!-- Icones DSRF -->
+        <meta name="theme-color" content="#000091">
+        <!-- Défini la couleur de thème du navigateur (Safari/Android) -->
+        <link rel="apple-touch-icon"
+              href="/static/dsfr/favicon/apple-touch-icon.png">
+        <!-- 180×180 -->
+        <link rel="icon"
+              href="/static/dsfr/favicon/favicon.svg"
+              type="image/svg+xml">
+        <link rel="shortcut icon"
+              href="/static/dsfr/favicon/favicon.ico"
+              type="image/x-icon">
+        <!-- 32×32 -->
+        <link rel="manifest"
+              href="/static/dsfr/favicon/manifest.webmanifest"
+              crossorigin="use-credentials">
+        <link rel="stylesheet"
+              href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/agate.min.css">
+        <!-- Modifier les chemins relatifs des favicons en fonction de la structure du projet -->
+        <!-- Dans le fichier manifest.webmanifest aussi, modifier les chemins vers les images -->
+        <title>Documentation Datafoncier</title>
+        <!-- Matomo -->
+        <script>
+    var _paq = window._paq = window._paq || [];
+    /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+    _paq.push(['trackPageView']);
+    _paq.push(['enableLinkTracking']);
+    (function () {
+      var u = "//stats.cerema.fr/";
+      _paq.push(['setTrackerUrl', u + 'matomo.php']);
+      _paq.push(['setSiteId', '12']);
+      var d = document, g = d.createElement('script'), s = d.getElementsByTagName('script')[0];
+      g.async = true; g.src = u + 'matomo.js'; s.parentNode.insertBefore(g, s);
+    })();
+        </script>
+        <!-- End Matomo Code -->
+    </head>
+    <body>
+        
+<header role="banner" class="fr-header">
+    <div class="fr-header__body">
+        <div class="fr-container">
+            <div class="fr-header__body-row">
+                <div class="fr-header__brand fr-enlarge-link">
+                    <div class="fr-header__brand-top">
+                        <div class="fr-header__logo">
+                            <p class="fr-logo">
+                                République
+                                <br>
+                                Française
+                            </p>
+                        </div>
+                        <div class="fr-header__operator">
+                            <img class="fr-responsive-img"
+                                 style="width:12rem;
+                                        max-width:12.5rem"
+                                 src="/static/img/logoCerema.svg"
+                                 alt="Cerema">
+                            <!-- L’alternative de l’image (attribut alt) doit impérativement être renseignée et reprendre le texte visible dans l’image -->
+                        </div>
+                        <div class="fr-header__navbar">
+                            <button class="fr-btn--search fr-btn"
+                                    data-fr-opened="false"
+                                    aria-controls="modal-575"
+                                    id="button-576"
+                                    title="Rechercher">Rechercher</button>
+                            <button class="fr-btn--menu fr-btn"
+                                    data-fr-opened="false"
+                                    aria-controls="modal-577"
+                                    aria-haspopup="menu"
+                                    id="button-578"
+                                    title="Menu">Menu</button>
+                        </div>
+                    </div>
+                    <div class="fr-header__service">
+                        <a href="/" title="Documentation Datafoncier">
+                            <p class="fr-header__service-title">Documentation Datafoncier</p>
+                        </a>
+                        <p class="fr-header__service-tagline">Toutes les ressources sur les données foncières</p>
+                    </div>
+                </div>
+                <div class="fr-header__tools">
+                    <div class="fr-header__tools-links">
+                        <ul class="fr-btns-group">
+                            <li>
+                                <a class="fr-btn fr-icon-add-circle-line"
+                                   href="https://datafoncier.cerema.fr">Datafoncier</a>
+                            </li>
+                            <li>
+                                <a class="fr-btn fr-icon-add-circle-line"
+                                   href="https://apidf-preprod.cerema.fr">
+                                    API Données foncières
+                                    <p class="fr-badge fr-badge--sm">beta</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="fr-header__search fr-modal" id="modal-575">
+                        <div class="fr-container fr-container-lg--fluid">
+                            <button class="fr-btn--close fr-btn" aria-controls="modal-575" title="Fermer">Fermer</button>
+                            <form action="/doc/search/">
+                                <input type="hidden" name="csrfmiddlewaretoken" value="dmnYyEnhwoP4G4ollIcG2dPcc6Ec7yWiFEdpPFhfTVOOxxdxlose1IXI1t08H703">
+                                <div class="fr-search-bar" id="search-574" role="search">
+                                    <label class="fr-label" for="search">Rechercher</label>
+                                    <input class="fr-input"
+                                           placeholder="Rechercher"
+                                           type="search"
+                                           id="q"
+                                           name="q">
+                                    <button class="fr-btn" title="Rechercher">Rechercher</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="fr-header__menu fr-modal"
+         id="modal-577"
+         aria-labelledby="button-578">
+        <div class="fr-container">
+            <button class="fr-btn--close fr-btn" aria-controls="modal-577" title="Fermer">Fermer</button>
+            <div class="fr-header__menu-links"></div>
+            <nav class="fr-nav"
+                 id="navigation-581"
+                 role="navigation"
+                 aria-label="Menu principal">
+                <ul class="fr-nav__list">
+                    
+                        <li class="fr-nav__item">
+                            <a class="fr-nav__link"
+                               href="/doc/ff/"
+                               target="_self"
+                               >Fichiers fonciers</a>
+                        </li>
+                    
+                        <li class="fr-nav__item">
+                            <a class="fr-nav__link"
+                               href="/doc/fiche_descriptive/dv3f"
+                               target="_self"
+                               >DV3F</a>
+                        </li>
+                    
+                        <li class="fr-nav__item">
+                            <a class="fr-nav__link"
+                               href="/doc/fiche_descriptive/lovac"
+                               target="_self"
+                               >Lovac</a>
+                        </li>
+                    
+                        <li class="fr-nav__item">
+                            <a class="fr-nav__link"
+                               href="/doc/rfp/"
+                               target="_self"
+                               >RFP</a>
+                        </li>
+                    
+                        <li class="fr-nav__item">
+                            <a class="fr-nav__link"
+                               href="/doc/fiche_descriptive/coproff"
+                               target="_self"
+                               >CoproFF</a>
+                        </li>
+                    
+                        <li class="fr-nav__item">
+                            <a class="fr-nav__link"
+                               href="/doc/fiche_descriptive/fusac"
+                               target="_self"
+                               >Fusac</a>
+                        </li>
+                    
+                        <li class="fr-nav__item">
+                            <a class="fr-nav__link"
+                               href="/doc/indiclogt/"
+                               target="_self"
+                               >Indicateurs Logement</a>
+                        </li>
+                    
+                        <li class="fr-nav__item">
+                            <a class="fr-nav__link"
+                               href="/doc/friches/"
+                               target="_self"
+                               aria-current="page">Cartofriches</a>
+                        </li>
+                    
+                        <li class="fr-nav__item">
+                            <a class="fr-nav__link"
+                               href="/doc/fiche_descriptive/conso-enaf"
+                               target="_self"
+                               >Consommation ENAF</a>
+                        </li>
+                    
+                    <li class="fr-nav__item" style="margin-left: auto;">
+                        <a class="fr-nav__link" href="/usage/" target="_self"><span class="fr-icon-edit-box-line" aria-hidden="true"></span> Usages</a>
+                    </li>
+                </ul>
+                
+                    <ul class="fr-nav__list">
+                        
+                        <li class="fr-nav__item">
+                            <a class="fr-nav__link"
+                               href="/doc/guide/friches"
+                               target="_self"
+                               >Guide - Prise en main</a>
+                        </li>
+                        <li class="fr-nav__item">
+                            <a class="fr-nav__link"
+                               href="/doc/friches/?v=0"
+                               target="_self"
+                               aria-current="page">Dictionnaire</a>
+                        </li>
+                        
+                            <li class="fr-nav__item">
+                                <button class="fr-nav__btn"
+                                        aria-expanded="false"
+                                        aria-controls="menu-millesime"
+                                        aria-current="true">
+                                    <p class="fr-badge fr-badge--sm fr-badge--blue-ecume">Avril 2026</p>
+                                </button>
+                                <div class="fr-collapse fr-menu" id="menu-millesime">
+                                    <ul class="fr-menu__list">
+                                        
+                                            <li>
+                                                <a class="fr-nav__link"
+                                                   href="?v=0"
+                                                   target="_self"
+                                                   aria-current="page">Avril 2026</a>
+                                            </li>
+                                        
+                                    </ul>
+                                </div>
+                            </li>
+                        
+                    </ul>
+                
+            </nav>
+        </div>
+    </div>
+</header>
+
+        
+    <div class="fr-container">
+        <div class="fr-grid-row">
+            <div class="fr-col-9 fr-mt-10v">
+                <h1>
+                    <span class="fr-icon-table-fill fr-icon--lg" aria-hidden="true"></span> Cartofriches
+                </h1>
+                <h5>Inventaire national des friches</h5>
+            </div>
+            <div class="fr-col-3  fr-mt-10v" style="text-align: right;">
+                <span class="fr-icon-book-2-fill" aria-hidden="true"></span> <a href="/doc/guide/friches"><b>Guide
+                Cartofriches</b></a>
+            </div>
+        </div>
+        
+
+
+        
+        
+            <div class="fr-grid-row fr-mt-6v">
+                <div class="fr-col">
+                    <div class="fr-table fr-table--bordered fr-table--layout-fixed fr-table--blue-ecume">
+                        <!-- beige-gris-galet"> -->
+                        <table>
+                            <caption><span class="fr-icon-layout-grid-line" aria-hidden="true"></span> tables
+                                principales
+                            </caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col" style="width: 20%;">Nom</th>
+                                    <th scope="col">Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                
+                                    <tr>
+                                        <td>
+                                            <a class="fr-link" href="/doc/friches/Cartofriches">Cartofriches</a>
+                                        </td>
+                                        <td>table des friches inventoriées par Cartofriches</td>
+                                    </tr>
+                                
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        
+    </div>
+
+        
+<div class="fr-follow">
+    <div class="fr-container">
+        <div class="fr-grid-row">
+            <div class="fr-col-12">
+                <div class="fr-follow__social">
+                    <h2 class="fr-h5">
+                        Rejoignez la communauté Datafoncier
+                        d'<a href="https://www.expertises-territoires.fr/jcms/pl1_96966/fr/datafoncier">Expertises Territoires</a>
+                        <br>
+                        pour échanger et partager votre expérience des données foncières.
+                    </h2>
+                    <ul class="fr-btns-group">
+                        <li>
+                            <a href="https://www.expertises-territoires.fr/jcms/pl1_96966/fr/datafoncier"
+                               style="background-image: none">
+                                <img src="/static/img/home/expertise_territoire.png">
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<footer class="fr-footer" role="contentinfo" id="footer">
+    <div class="fr-container">
+        <div class="fr-footer__body">
+            <div class="fr-footer__brand fr-enlarge-link">
+                <p class="fr-logo">
+                    République
+                    <br>
+                    Française
+                </p>
+                <a class="fr-footer__brand-link"
+                   href="/"
+                   title="Cerema - République Française">
+                    <img class="fr-footer__logo"
+                         style="width:14.5rem"
+                         src="/static/img/logoCerema.svg"
+                         alt="Cerema" />
+                    <!-- L’alternative de l’image (attribut alt) doit impérativement être renseignée et reprendre le texte visible dans l’image -->
+                </a>
+            </div>
+            <div class="fr-footer__content">
+                <p class="fr-footer__content-desc">
+                    Ce site est édité par le Cerema pour le compte du MTE. Il contribue,
+                    par ses publications, sa veille et son action, à soutenir l’action publique dans le secteur des
+                    données foncières.
+                    <br>
+                    Tous les contenus proposés sont sous licence Creative Commons BY-NC-SA
+                </p>
+                <ul class="fr-footer__content-list">
+                    <li class="fr-footer__content-item">
+                        <a class="fr-footer__content-link"
+                           target="_blank"
+                           href="https://www.cerema.fr">cerema.fr</a>
+                    </li>
+                    <li class="fr-footer__content-item">
+                        <a class="fr-footer__content-link"
+                           target="_blank"
+                           href="https://www.ecologie.gouv.fr">ecologie.gouv.fr</a>
+                    </li>
+                    <li class="fr-footer__content-item">
+                        <a class="fr-footer__content-link"
+                           target="_blank"
+                           href="https://data.gouv.fr">data.gouv.fr</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="fr-footer__bottom">
+            <ul class="fr-footer__bottom-list">
+                <li class="fr-footer__bottom-item">
+                    <a class="fr-footer__bottom-link"
+                       href="/doc/mentions-legales/#accessibilite">Accessibilité :
+                    partiellement conforme</a>
+                </li>
+                <li class="fr-footer__bottom-item">
+                    <a class="fr-footer__bottom-link" href="/doc/mentions-legales/">Mentions légales</a>
+                </li>
+                <li class="fr-footer__bottom-item">
+                    <a class="fr-footer__bottom-link"
+                       href="/doc/mentions-legales/#gestions-cookies">Gestion des cookies</a>
+                </li>
+                <li class="fr-footer__bottom-item">
+                    <button class="fr-footer__bottom-link fr-icon-theme-fill fr-btn--icon-left"
+                            aria-controls="fr-theme-modal"
+                            data-fr-opened="false">Paramètres d'affichage</button>
+                </li>
+            </ul>
+        </div>
+    </div>
+</footer>
+
+        <dialog id="fr-theme-modal"
+                class="fr-modal"
+                role="dialog"
+                aria-labelledby="fr-theme-modal-title">
+            <div class="fr-container fr-container--fluid fr-container-md">
+                <div class="fr-grid-row fr-grid-row--center">
+                    <div class="fr-col-12 fr-col-md-6 fr-col-lg-4">
+                        <div class="fr-modal__body">
+                            <div class="fr-modal__header">
+                                <button class="fr-btn--close fr-btn"
+                                        aria-controls="fr-theme-modal"
+                                        id="button-5622"
+                                        title="Fermer">Fermer</button>
+                            </div>
+                            <div class="fr-modal__content">
+                                <h1 id="fr-theme-modal-title" class="fr-modal__title">Paramètres d’affichage</h1>
+                                <div id="fr-display" class="fr-display">
+                                    <fieldset class="fr-fieldset" id="display-fieldset">
+                                        <legend class="fr-fieldset__legend--regular fr-fieldset__legend"
+                                                id="display-fieldset-legend">
+                                            Choisissez un thème pour personnaliser l’apparence du site.
+                                        </legend>
+                                        <div class="fr-fieldset__element">
+                                            <div class="fr-radio-group fr-radio-rich">
+                                                <input value="light"
+                                                       type="radio"
+                                                       id="fr-radios-theme-light"
+                                                       name="fr-radios-theme">
+                                                <label class="fr-label" for="fr-radios-theme-light">Thème clair</label>
+                                                <div class="fr-radio-rich__img">
+                                                    <svg aria-hidden="true"
+                                                         class="fr-artwork"
+                                                         viewBox="0 0 80 80"
+                                                         width="80px"
+                                                         height="80px">
+                                                        <use class="fr-artwork-decorative" href="/static/dsrf/artwork/light.svg%23artwork-decorative"></use>
+                                                        <use class="fr-artwork-minor" href="/static/dsrf/artwork/light.svg%23artwork-minor"></use>
+                                                        <use class="fr-artwork-major" href="/static/dsrf/artwork/light.svg%23artwork-major"></use>
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="fr-fieldset__element">
+                                            <div class="fr-radio-group fr-radio-rich">
+                                                <input value="dark"
+                                                       type="radio"
+                                                       id="fr-radios-theme-dark"
+                                                       name="fr-radios-theme">
+                                                <label class="fr-label" for="fr-radios-theme-dark">Thème sombre</label>
+                                                <div class="fr-radio-rich__img">
+                                                    <svg aria-hidden="true"
+                                                         class="fr-artwork"
+                                                         viewBox="0 0 80 80"
+                                                         width="80px"
+                                                         height="80px">
+                                                        <use class="fr-artwork-decorative" href="/static/dsrf/artwork/dark.svg%23artwork-decorative"></use>
+                                                        <use class="fr-artwork-minor" href="/static/dsrf/artwork/dark.svg%23artwork-minor"></use>
+                                                        <use class="fr-artwork-major" href="/static/dsrf/artwork/dark.svg%23artwork-major"></use>
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="fr-fieldset__element">
+                                            <div class="fr-radio-group fr-radio-rich">
+                                                <input value="system"
+                                                       type="radio"
+                                                       id="fr-radios-theme-system"
+                                                       name="fr-radios-theme">
+                                                <label class="fr-label" for="fr-radios-theme-system">
+                                                    Système
+                                                    <span class="fr-hint-text">Utilise les paramètres système</span>
+                                                </label>
+                                                <div class="fr-radio-rich__img">
+                                                    <svg aria-hidden="true"
+                                                         class="fr-artwork"
+                                                         viewBox="0 0 80 80"
+                                                         width="80px"
+                                                         height="80px">
+                                                        <use class="fr-artwork-decorative" href="/static/dsrf/artwork/system.svg%23artwork-decorative"></use>
+                                                        <use class="fr-artwork-minor" href="/static/dsrf/artwork/system.svg%23artwork-minor"></use>
+                                                        <use class="fr-artwork-major" href="/static/dsrf/artwork/system.svg%23artwork-major"></use>
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </dialog>
+        <script src="https://code.jquery.com/jquery-3.6.1.min.js"
+                integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ="
+                crossorigin="anonymous"></script>
+        <!-- Script en version es6 module et nomodule pour les navigateurs le ne supportant pas -->
+        <script type="module" src="/static/dsfr/dsfr/dsfr.module.min.js"></script>
+        <script type="text/javascript"
+                nomodule
+                src="/static/dsfr/dsfr/dsfr.nomodule.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script>
+    </body>
+    
+    
+</html>

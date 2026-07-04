@@ -1,0 +1,94 @@
+{
+  "local_id": "b64e9b52-b9cc-5481-ae36-faf65cab0161",
+  "resource_title": "Recensement de la population - Fichiers détail : Logements ordinaires - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Recensement de la population - Fichiers détail : Logements ordinaires — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/653668616ffc5fc0becb52b4\n\nDonnées localisées à la commune et à l'IRIS décrivant les caractéristiques des logements et celles des ménages qui les occupent.\nLe fichier national logements ordinaires est disponible au format Parquet.\n\n**Champ** : logements ordinaires.\n\n**[Lien vers le fichier détail des individus localisés au canton-ou-ville](https://www.data.gouv.fr/fr/datasets/recensement-de-la-population-fichiers-detail-individus-localises-au-canton-ou-ville/)**\n\n**[Retrouvez toute la documentation sur insee.fr](https://www.insee.fr/fr/statistiques/8205966)**"
+    }
+  ],
+  "theme": "housing",
+  "keywords": [
+    "logements",
+    "recensement",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Institut national de la statistique et des études économiques (Insee)"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "c090eee7-c060-53aa-b6e2-0466368a4c51",
+      "media_type": "FILE",
+      "media_name": "fd-logemt-2021parquet-rennesmetropole.csv",
+      "media_caption": "fd-logemt-2021.parquet — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "8c562f1a-495c-57da-8d0a-1b25039d70d8",
+      "media_type": "FILE",
+      "media_name": "fd-logemt-2020parquet-rennesmetropole.csv",
+      "media_caption": "fd-logemt-2020.parquet — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "5e6d0d99-eb56-5b9a-ae88-c8b30ccf2d63",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://static.data.gouv.fr/resources/recensement-de-la-population-fichiers-detail-logements-ordinaires-en-2020-1/20250212-094253/dictionnaire-variables-logemt-2021.csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2023-10-23T00:00:00Z",
+    "updated": "2025-02-12T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "CUSTOM",
+      "custom_licence_label": [
+        {
+          "lang": "fr",
+          "text": "notspecified"
+        }
+      ],
+      "custom_licence_uri": "https://www.data.gouv.fr/datasets/653668616ffc5fc0becb52b4"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2023-10-23T00:00:00Z",
+      "updated": "2025-02-12T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/653668616ffc5fc0becb52b4"
+  }
+}

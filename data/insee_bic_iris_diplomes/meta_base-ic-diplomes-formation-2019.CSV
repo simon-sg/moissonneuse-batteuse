@@ -1,0 +1,43 @@
+﻿COD_VAR;LIB_VAR;LIB_VAR_LONG;COD_MOD;LIB_MOD;TYPE_VAR;LONG_VAR
+COM;Commune ou ARM;Code du département suivi du numéro de commune ou du numéro d'arrondissement municipal pour Paris Lyon et Marseille;;;CHAR;5
+TYP_IRIS;Type d'IRIS;Type d'IRIS : habitat (H), activité (A), divers (D), Autre (Z);;;CHAR;1
+MODIF_IRIS;Modification de l'IRIS;Type de modification de l'IRIS;;;CHAR;1
+LAB_IRIS;Label de l'IRIS;Label de qualité de l'IRIS;;;CHAR;1
+P19_POP0205;Pop 2-5 ans en 2019 (princ);Nombre de personnes de 2 à 5 ans;;;NUM;17
+P19_POP0610;Pop 6-10 ans en 2019 (princ);Nombre de personnes de 6 à 10 ans;;;NUM;17
+P19_POP1114;Pop 11-14 ans en 2019 (princ);Nombre de personnes de 11 à 14 ans;;;NUM;17
+P19_POP1517;Pop 15-17 ans en 2019 (princ);Nombre de personnes de 15 à 17 ans;;;NUM;17
+P19_POP1824;Pop 18-24 ans en 2019 (princ);Nombre de personnes de 18 à 24 ans;;;NUM;17
+P19_POP2529;Pop 25-29 ans en 2019 (princ);Nombre de personnes de 25 à 29 ans;;;NUM;17
+P19_POP30P;Pop 30 ans ou plus en 2019 (princ);Nombre de personnes de 30 ans ou plus;;;NUM;17
+P19_SCOL0205;Pop scolarisée 2-5 ans en 2019 (princ);Nombre de personnes scolarisées de 2 à 5 ans;;;NUM;17
+P19_SCOL0610;Pop scolarisée 6-10 ans en 2019 (princ);Nombre de personnes scolarisées de 6 à 10 ans;;;NUM;17
+P19_SCOL1114;Pop scolarisée 11-14 ans en 2019 (princ);Nombre de personnes scolarisées de 11 à 14 ans;;;NUM;17
+P19_SCOL1517;Pop scolarisée 15-17 ans en 2019 (princ);Nombre de personnes scolarisées de 15 à 17 ans;;;NUM;17
+P19_SCOL1824;Pop scolarisée 18-24 ans en 2019 (princ);Nombre de personnes scolarisées de 18 à 24 ans;;;NUM;17
+P19_SCOL2529;Pop scolarisée 25-29 ans en 2019 (princ);Nombre de personnes scolarisées de 25 à 29 ans;;;NUM;17
+P19_SCOL30P;Pop scolarisée 30 ans ou plus en 2019 (princ);Nombre de personnes scolarisées de 30 ans ou plus;;;NUM;17
+P19_NSCOL15P;Pop 15 ans ou plus non scolarisée en 2019 (princ);Nombre de personnes non scolarisées de 15 ans ou plus;;;NUM;17
+P19_NSCOL15P_DIPLMIN;Pop 15 ans ou plus non scol. Sans diplôme ou CEP en 2019 (princ);Nombre de personnes non scolarisées de 15 ans ou plus titulaires d'aucun diplôme ou au plus un CEP;;;NUM;17
+P19_NSCOL15P_BEPC;Pop 15 ans ou plus non scol. BEPC, brevet des collèges, DNB en 2019 (princ);Nombre de personnes non scolarisées de 15 ans ou plus titulaires d'un BEPC, brevet des collèges, DNB;;;NUM;17
+P19_NSCOL15P_CAPBEP;Pop 15 ans ou plus non scol. CAP-BEP ou équiv. en 2019 (princ);Nombre de personnes non scolarisées de 15 ans ou plus titulaires d'un CAP, d'un BEP ou équivalent;;;NUM;17
+P19_NSCOL15P_BAC;Pop 15 ans ou plus non scol. Bac, brevet pro. ou équiv. en 2019 (princ);Nombre de personnes non scolarisées de 15 ans ou plus titulaires d'un Baccalauréat, brevet professionnel ou équivalent;;;NUM;17
+P19_NSCOL15P_SUP2;Pop 15 ans ou plus non scol. Enseignement sup de niveau bac + 2 en 2019 (princ);Nombre de personnes non scolarisées de 15 ans ou plus titulaires d'un diplôme de l'enseignement supérieur de niveau Bac + 2;;;NUM;17
+P19_NSCOL15P_SUP34;Pop 15 ans ou plus non scol. Enseignement sup de niveau bac + 3 ou 4 en 2019 (princ);Nombre de personnes non scolarisées de 15 ans ou plus titulaires d'un diplôme de l'enseignement supérieur de niveau Bac + 3 ou Bac + 4;;;NUM;17
+P19_NSCOL15P_SUP5;Pop 15 ans ou plus non scol. Enseignement sup de niveau bac + 5 ou plus en 2019 (princ);Nombre de personnes non scolarisées de 15 ans ou plus titulaires d'un diplôme de l'enseignement supérieur de niveau Bac + 5 ou plus;;;NUM;17
+P19_HNSCOL15P;Hommes 15 ans ou plus non scolarisée en 2019 (princ);Nombre de hommes non scolarisées de 15 ans ou plus;;;NUM;17
+P19_HNSCOL15P_DIPLMIN;Hommes 15 ans ou plus non scol. Sans diplôme ou CEP en 2019 (princ);Nombre de hommes non scolarisées de 15 ans ou plus titulaires d'aucun diplôme ou au plus un CEP;;;NUM;17
+P19_HNSCOL15P_BEPC;Hommes 15 ans ou plus non scol. BEPC, brevet des collèges, DNB en 2019 (princ);Nombre de hommes non scolarisées de 15 ans ou plus titulaires d'un BEPC, brevet des collèges, DNB;;;NUM;17
+P19_HNSCOL15P_CAPBEP;Hommes 15 ans ou plus non scol. CAP-BEP ou équiv. en 2019 (princ);Nombre de hommes non scolarisées de 15 ans ou plus titulaires d'un CAP, d'un BEP ou équivalent;;;NUM;17
+P19_HNSCOL15P_BAC;Hommes 15 ans ou plus non scol. Bac, brevet pro. ou équiv. en 2019 (princ);Nombre de hommes non scolarisées de 15 ans ou plus titulaires d'un Baccalauréat, brevet professionnel ou équivalent;;;NUM;17
+P19_HNSCOL15P_SUP2;Hommes 15 ans ou plus non scol. Enseignement sup de niveau bac + 2 en 2019 (princ);Nombre de hommes non scolarisées de 15 ans ou plus titulaires d'un diplôme de l'enseignement supérieur de niveau Bac + 2;;;NUM;17
+P19_HNSCOL15P_SUP34;Hommes 15 ans ou plus non scol. Enseignement sup de niveau bac + 3 ou 4 en 2019 (princ);Nombre de hommes non scolarisées de 15 ans ou plus titulaires d'un diplôme de l'enseignement supérieur de niveau Bac + 3 ou Bac + 4;;;NUM;17
+P19_HNSCOL15P_SUP5;Hommes 15 ans ou plus non scol. Enseignement sup de niveau bac + 5 ou plus en 2019 (princ);Nombre de hommes non scolarisées de 15 ans ou plus titulaires d'un diplôme de l'enseignement supérieur de niveau Bac + 5 ou plus;;;NUM;17
+P19_FNSCOL15P;Femmes 15 ans ou plus non scolarisée en 2019 (princ);Nombre de femmes non scolarisées de 15 ans ou plus;;;NUM;17
+P19_FNSCOL15P_DIPLMIN;Femmes 15 ans ou plus non scol. Sans diplôme ou CEP en 2019 (princ);Nombre de femmes non scolarisées de 15 ans ou plus titulaires d'aucun diplôme ou au plus un CEP;;;NUM;17
+P19_FNSCOL15P_BEPC;Femmes 15 ans ou plus non scol. BEPC, brevet des collèges, DNB en 2019 (princ);Nombre de femmes non scolarisées de 15 ans ou plus titulaires d'un BEPC, brevet des collèges, DNB;;;NUM;17
+P19_FNSCOL15P_CAPBEP;Femmes 15 ans ou plus non scol. CAP-BEP ou équiv. en 2019 (princ);Nombre de femmes non scolarisées de 15 ans ou plus titulaires d'un CAP, d'un BEP ou équivalent;;;NUM;17
+P19_FNSCOL15P_BAC;Femmes 15 ans ou plus non scol. Bac, brevet pro. ou équiv. en 2019 (princ);Nombre de femmes non scolarisées de 15 ans ou plus titulaires d'un Baccalauréat, brevet professionnel ou équivalent;;;NUM;17
+P19_FNSCOL15P_SUP2;Femmes 15 ans ou plus non scol. Enseignement sup de niveau bac + 2 en 2019 (princ);Nombre de femmes non scolarisées de 15 ans ou plus titulaires d'un diplôme de l'enseignement supérieur de niveau Bac + 2;;;NUM;17
+P19_FNSCOL15P_SUP34;Femmes 15 ans ou plus non scol. Enseignement sup de niveau bac + 3 ou 4 en 2019 (princ);Nombre de femmes non scolarisées de 15 ans ou plus titulaires d'un diplôme de l'enseignement supérieur de niveau Bac + 3 ou Bac + 4;;;NUM;17
+P19_FNSCOL15P_SUP5;Femmes 15 ans ou plus non scol. Enseignement sup de niveau bac + 5 ou plus en 2019 (princ);Nombre de femmes non scolarisées de 15 ans ou plus titulaires d'un diplôme de l'enseignement supérieur de niveau Bac + 5 ou plus;;;NUM;17

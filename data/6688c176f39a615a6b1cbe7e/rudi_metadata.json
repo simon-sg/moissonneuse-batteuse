@@ -1,0 +1,92 @@
+{
+  "local_id": "8f3cfdb3-fd07-54a8-a046-dc8524d723fb",
+  "resource_title": "Label 100% EAC - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Label 100% EAC — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/6688c176f39a615a6b1cbe7e\n\nLancé en 2021 par le Haut Conseil de l’éducation artistique et culturelle (HCEAC), le label 100% EAC reconnaît l’engagement d’un territoire en faveur de la **généralisation de l’éducation artistique et culturelle (EAC)**.  \n\n\nDécerné pour une durée de 5 ans renouvelables, ce label valorise **les collectivités et les intercommunalités** qui proposent une éducation artistique et culturelle à l’ensemble des jeunes de leur territoire, de la petite enfance à l’âge adulte. Accompagné d’outils méthodologiques permettant d’élaborer un état des lieux et une stratégie, il aide à renforcer la cohérence de l‘action, fédérer les acteurs, mobiliser d’autres partenaires, pérenniser et développer les dispositifs.   \n\n\nLes ministres de la culture et de l’éducation nationale, qui co-président le HCEAC, ont confié aux préfets et aux recteurs l’attribution de ce label, après avis des services déconcentrés des deux ministères.\n\nDès la première session en 2022, 79 territoires, répartis dans toutes les régions, ont été labellisés 100% EAC ; 78 (dont deux d’outre-mer) l’ont été en 2023. \n\nA l'issue des deux premiers appels à candidature, **157 territoires sont labellisés 100% EAC.**\n\n**NB :**  \n\\- La carte indique les surfaces des départements, ceux-ci peuvent inclure une ou plusieurs collectivités labellisées, dans ce cas les flèches permettent de toutes les visualiser**.**  \n\\- Les données concernant les partenariats et les dispositifs ne sont valables que l’année de labellisation, puisqu’ils peuvent évoluer dans le temps****.****  \n  \nPour en savoir plus : <https://www.culture.gouv.fr/catalogue-des-demarches-et-subventions/appels-a-projets-candidatures/Label-100-EAC>\n\n![](https://www.culture.gouv.fr/var/culture/storage/images/_aliases/medium/7/8/1/1/3651187-1-fre-FR/01028b98c8a3-Logo-Label-100-pour-cent-EAC.jpg)"
+    }
+  ],
+  "theme": "culture",
+  "keywords": [
+    "culture",
+    "eac",
+    "education-artistique-et-culturelle",
+    "ministeredelaculture",
+    "organisations",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Ministère de la Culture"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "4490ad0f-d56a-5a8f-81ca-01f84872c1d1",
+      "media_type": "FILE",
+      "media_name": "label-100-eac-rennesmetropole.csv",
+      "media_caption": "label-100-eac.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "402a3ec4-bf0d-5fde-a4f0-9e858d93ee0b",
+      "media_type": "FILE",
+      "media_name": "label-100-eac-rennesmetropole.json",
+      "media_caption": "label-100-eac.csv — données filtrées sur Rennes Métropole (JSON)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "f21793f1-a59b-5452-b292-fae95126c153",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://static.data.gouv.fr/resources/label-100-eac/20250827-135645/label-100-eac.csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2024-07-06T00:00:00Z",
+    "updated": "2025-10-23T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2024-07-06T00:00:00Z",
+      "updated": "2025-10-23T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/6688c176f39a615a6b1cbe7e"
+  }
+}

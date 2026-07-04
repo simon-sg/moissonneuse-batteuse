@@ -1,0 +1,90 @@
+{
+  "local_id": "add67c29-fdb7-53e4-83ca-c3275924651d",
+  "resource_title": "300 contaminants dans nos nappes - jeux de données des valeurs seuils et mesures (2016-2023) - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "300 contaminants dans nos nappes - jeux de données des valeurs seuils et mesures (2016-2023) — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/664b8965046a55256845a214\n\nLe Monde publie les jeux de données produits dans le cadre de son enquête [\"300 contaminants dans nos nappes : polluant par polluant, notre analyse des eaux souterraines en France\"](https://www.lemonde.fr/les-decodeurs/visuel/2024/05/15/300-contaminants-dans-nos-nappes-polluant-par-polluant-notre-analyse-des-eaux-souterraines-en-france_6233361_4355770.html).\n\nVous trouverez trois jeux de données au format csv :\n\n- ```liste_contaminants``` : les 300 paramètres que nous avons analysés, assortis de leur typologie par famille d'usage et de leur valeur seuil le cas échéant.\n- ```dataset_carte``` : données agrégées pour [notre cartographie](https://www.lemonde.fr/les-decodeurs/article/2024/05/15/explorez-notre-carte-inedite-de-la-pollution-des-eaux-souterraines-en-france_6233388_4355770.html) de la pollution des eaux souterraines en France.\n- ```dataset_entier``` : l'intégralité de nos données (paramètres recherchés, quantifications, dépassements des valeurs seuils, mesures, dates...)\n\nCes données sont librement réutilisables à condition de faire référence au Monde et à [cette page](https://www.lemonde.fr/les-decodeurs/article/2024/05/15/comment-le-monde-a-cartographie-la-pollution-des-eaux-souterraines_6233362_4355770.html), et de nous en informer aux adresses sanchez[@]lemonde[.]fr et aubert[@]lemonde[.]fr.\n\nNos analyses couvrent la période 2016-2023 (inclus), pour près de 24700 stations de contrôle réparties sur l'ensemble du territoire français. Elles sont issues d'une extraction de données réalisée sur le [portail d'accès aux données sur les eaux souterraines](https://ades.eaufrance.fr/) le 16 avril 2023.\n\nNotre méthodologie [est disponible ici](https://www.lemonde.fr/les-decodeurs/article/2024/05/15/comment-le-monde-a-cartographie-la-pollution-des-eaux-souterraines_6233362_4355770.html).\n\nPour obtenir les données relatives à la qualité des masses d'eau, issues du cycle de surveillance européen 2016-2021, rendez-vous sur le site de notre collaboration transfrontalière [\"Under the surface\"](https://europeanwaters.eu/map-database/)."
+    }
+  ],
+  "theme": "environment",
+  "keywords": [
+    "cartographie",
+    "data-journalisme",
+    "eaux-souterraines",
+    "metabolites",
+    "nappes",
+    "nitrates",
+    "normes-de-qualite-environnementale",
+    "pesticides",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Le Monde"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "5a421c5d-f059-5690-aa1b-4b03c69b0685",
+      "media_type": "FILE",
+      "media_name": "dataset-carte-rennesmetropole.csv",
+      "media_caption": "dataset-carte.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "5bed403b-9b90-577a-9a6e-c648d0d44bef",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://static.data.gouv.fr/resources/300-contaminants-dans-nos-nappes-jeux-de-donnees-des-valeurs-seuils-et-mesures-2016-2023/20240520-175037/liste-contaminants.csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2024-05-20T00:00:00Z",
+    "updated": "2026-01-13T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "CUSTOM",
+      "custom_licence_label": [
+        {
+          "lang": "fr",
+          "text": "notspecified"
+        }
+      ],
+      "custom_licence_uri": "https://www.data.gouv.fr/datasets/664b8965046a55256845a214"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2024-05-20T00:00:00Z",
+      "updated": "2026-01-13T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/664b8965046a55256845a214"
+  }
+}

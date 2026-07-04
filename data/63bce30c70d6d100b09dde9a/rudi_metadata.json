@@ -1,0 +1,90 @@
+{
+  "local_id": "cf8fc153-c456-52c0-bc38-cda014c87313",
+  "resource_title": "Indices de position sociale des lycées (2016-2021) - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Indices de position sociale des lycées (2016-2021) — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/63bce30c70d6d100b09dde9a\n\nL’indice de position sociale (IPS) permet d'appréhender le statut social des élèves à partir des professions et catégories sociales (PCS) de leurs parents. Pour chaque PCS, la valeur numérique de l’IPS correspond à un résumé quantitatif d’un ensemble d’attributs socio-économiques et culturels liés à la réussite scolaire.\n\nConcrètement, pour déterminer les valeurs associées à chaque PCS, nous avons considéré la moyenne pondérée de caractéristiques telles que les diplômes, les pratiques culturelles, les conditions matérielles, le capital culturel et l’implication des parents dans la scolarité. Cette méthodologie statistique est décrite dans l’article de Rocher (2016) et s’appuie sur une méthode d’analyse de données (analyse des correspondances multiples) réalisée à partir du panel de la DEPP d’élèves entrés en sixième en 2007. Les valeurs de référence de l’IPS sont disponibles pour chaque PCS et pour chaque croisement de PCS (mère-père), cf. Rocher (2016) (table de passage disponible en pièce jointe ci-dessous).  \n\n\nAinsi, dès lors que les PCS des parents ont été recueillies, il suffit d'appliquer les valeurs de référence de l’IPS. Le niveau social d'un établissement scolaire est apprécié à travers le calcul de la moyenne des IPS des élèves qui y sont scolarisés.\n\nIl convient de rappeler que, comme tout indice synthétique, il s’agit d’un résumé simplifié de la réalité, qui ne peut rendre compte à lui seul de la complexité de la situation socio-économique et culturelle des élèves accueillis dans un établissement. \n\nEnfin, l’IPS étant basé sur les PCS déclarées par les familles et enregistrées par les établissements, il est soumis à une certaine marge d’erreur : ainsi, il est conseillé de ne pas sur-interpréter des différences de 3 points ou moins concernant les IPS moyens des établissements.\n\nL’indice d’hétérogénéité sociale d’un établissement correspond à l’écart-type de l’indice de position sociale (IPS) de ses élèves. Plus il est élevé, plus le profil social des élèves est diversifié. Cet indice est calculé depuis la rentrée 2019, uniquement pour les établissements du second degré.\n\n**_Champ_**\n\nLe fichier fournit l’IPS moyen par établissement ainsi que l’écart-type des IPS de ses élèves pour lycées de France sous tutelle de l’Éducation Nationale, publics et privés sous contrat, calculés à partir des données de la rentrée N et pour les élèves du second cycle uniquement. \n\nDans le fichier mis à disposition, chaque ligne correspond à un lycée pour une année scolaire donnée. \n\nL’IPS moyen de chaque établissement est décliné pour les élèves de la voie générale et technologique uniquement, pour les élèves de la voie professionnelle uniquement, et pour l’ensemble des élèves du second cycle. L’écart-type des IPS des élèves est décliné pour les élèves de la voie générale et technologique uniquement et pour les élèves de la voie professionnelle uniquement.\n\n**_Référence_**\n\nRocher, T. (2016). Construction d’un indice de position sociale des élèves. _Éducation & formations_, DEPP, 90, pp.5-27.\n\nDauphant F., Evain F., Guillerm M., Simon C., Rocher T. (2023), L’indice de position sociale (IPS) : un outil statistique pour décrire les inégalités sociales entre établissements. _Note d’information de la Depp n°23.16._\n\nEn savoir plus sur l’indice de position sociale : [ https://www.education.gouv.fr/l-indice-de-position-sociale-ips-357755](https://www.education.gouv.fr/l-indice-de-position-sociale-ips-357755)"
+    }
+  ],
+  "theme": "education",
+  "keywords": [
+    "eleves",
+    "etablissements-dont-ips",
+    "lycees",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Ministères de l'Éducation nationale"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "045a284f-677d-5220-bdde-815673a21ccb",
+      "media_type": "FILE",
+      "media_name": "fr-en-ips-lycees-rennesmetropole.csv",
+      "media_caption": "fr-en-ips_lycees.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "85be9e1c-c6d0-5f1b-80a3-7a5d177ceafd",
+      "media_type": "FILE",
+      "media_name": "fr-en-ips-lycees-rennesmetropole.json",
+      "media_caption": "fr-en-ips_lycees.csv — données filtrées sur Rennes Métropole (JSON)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "b3bc6c2c-295e-52d8-a6ee-4c81e0816f1a",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://data.education.gouv.fr/api/explore/v2.1/catalog/datasets/fr-en-ips_lycees/exports/csv?use_labels=true",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2023-03-14T00:00:00Z",
+    "updated": "2024-05-24T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2023-03-14T00:00:00Z",
+      "updated": "2024-05-24T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/63bce30c70d6d100b09dde9a"
+  }
+}

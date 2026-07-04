@@ -1,0 +1,89 @@
+{
+  "local_id": "0c638fb7-830c-5689-a0f2-d6dbc46f4239",
+  "resource_title": "Nuits de la lecture 2022 - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Nuits de la lecture 2022 — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/6308455a35e36b025049e2dc\n\nLa 6e édition des Nuits de la lecture du 20 au 23 janvier 2022."
+    }
+  ],
+  "theme": "culture",
+  "keywords": [
+    "culture",
+    "ministeredelaculture",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Ministère de la Culture"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "c4ec0b25-2925-5c70-800b-7fea43c260b4",
+      "media_type": "FILE",
+      "media_name": "nuits-de-la-lecture-2022-rennesmetropole.csv",
+      "media_caption": "nuits-de-la-lecture-2022.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "9b41f82d-b7c0-5a5f-9063-776ae61993fe",
+      "media_type": "FILE",
+      "media_name": "nuits-de-la-lecture-2022-rennesmetropole.json",
+      "media_caption": "nuits-de-la-lecture-2022.csv — données filtrées sur Rennes Métropole (JSON)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "5cb0c42d-ebdf-540f-a89a-bd7bd524af4e",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://static.data.gouv.fr/resources/nuits-de-la-lecture-2022/20250827-133021/nuits-de-la-lecture-2022.csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2022-08-26T00:00:00Z",
+    "updated": "2025-10-23T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2022-08-26T00:00:00Z",
+      "updated": "2025-10-23T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/6308455a35e36b025049e2dc"
+  }
+}

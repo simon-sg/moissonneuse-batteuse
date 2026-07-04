@@ -1,0 +1,82 @@
+{
+  "local_id": "a8909dad-a03d-5210-a958-0a09f399b59f",
+  "resource_title": "Base SIRENE des établissements 2024 géolocalisée - geoparquet - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Base SIRENE des établissements 2024 géolocalisée - geoparquet — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/6597e4bbbecab41da48717c7\n\nBase Sirene geolocalisée d'après la version d'Etalab : https://www.data.gouv.fr/fr/datasets/base-sirene-des-etablissements-siret-geolocalisee-avec-la-base-dadresse-nationale-ban/, convertie en geoparquet,\ntriée par code commune puis Siret"
+    }
+  ],
+  "theme": "economy",
+  "keywords": [
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "icem7"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "77f064ee-6cca-5c52-8016-99e0c209b3eb",
+      "media_type": "FILE",
+      "media_name": "sirene2024-geoparquet-rennesmetropole.csv",
+      "media_caption": "sirene2024-geo.parquet — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "6cc3625d-e2f5-51ea-8584-eb7245c79a73",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://www.data.gouv.fr/datasets/6597e4bbbecab41da48717c7",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2024-01-05T00:00:00Z",
+    "updated": "2024-01-24T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "CUSTOM",
+      "custom_licence_label": [
+        {
+          "lang": "fr",
+          "text": "notspecified"
+        }
+      ],
+      "custom_licence_uri": "https://www.data.gouv.fr/datasets/6597e4bbbecab41da48717c7"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2024-01-05T00:00:00Z",
+      "updated": "2024-01-24T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/6597e4bbbecab41da48717c7"
+  }
+}

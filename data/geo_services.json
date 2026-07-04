@@ -1,40 +1,1168 @@
 [
   {
-    "id": "geobretagne_communes",
-    "type": "wfs",
-    "url": "https://geobretagne.fr/geoserver/ign/wfs",
+    "id": "66631d4b67b5b112fafd0f8e",
+    "type": "wms",
+    "url": "http://geoservices.brgm.fr/geologie",
     "couches": [
-      "ign:commune_metro"
+      "GEOSERVICES_GEOLOGIE",
+      "GEOLOGIE",
+      "SCAN_F_GEOL1M",
+      "SCAN_F_GEOL250",
+      "SCAN_D_GEOL50",
+      "GEOLOGIE_OUTRE_MER",
+      "SCAN_F_GEOL50_CATALOG",
+      "SCAN_F_GEOL250_CATALOG",
+      "SCAN_H_GEOL50",
+      "SCAN_H_GEOL50_PERIMETRE"
     ],
-    "titre": "Communes — Rennes Métropole (IGN via Géobretagne)",
-    "producteur": "IGN / Géobretagne",
-    "dossier": "geobretagne_communes_test",
-    "theme": "location"
+    "titre": "Bases gravimétriques",
+    "producteur": "Bureau de Recherches Géologiques et Minières",
+    "dossier": "66631d4b67b5b112fafd0f8e",
+    "theme": "environment"
   },
   {
-    "id": "geobretagne_cyclable",
+    "id": "6729ea0c4fc557c93d0c8cec",
     "type": "wfs",
-    "url": "https://geobretagne.fr/geoserver/osm/wfs",
+    "url": "https://data.atmo-france.org/geoserver/emissions/ows",
     "couches": [
-      "osm:amenagement_cyclable"
+      "emissions:emissions_dpt",
+      "emissions:emissions_epci",
+      "emissions:emissions_regions"
     ],
-    "titre": "Aménagements cyclables (OSM via Géobretagne)",
-    "producteur": "OpenStreetMap / Géobretagne",
-    "dossier": "geobretagne_cyclable_test",
-    "theme": "transportation"
-  },
-  {
-    "id": "6149984aaa16348605e10d85",
-    "type": "wfs",
-    "url": "https://data.atmo-france.org/geoserver/alrt/ows",
-    "couches": [
-      "alrt:alrt",
-      "alrt:alrt3j",
-      "alrt:national_alrt3j"
-    ],
-    "titre": "Episodes de pollution prévus ou constatés (WFS)",
+    "titre": "Données émissions (polluants de l'air et gaz à effet de serre) à l'échelle de la région et de l'établissement public de coopération intercommunale (EPCI)",
     "producteur": "Atmo France",
-    "dossier": "6149984aaa16348605e10d85",
+    "dossier": "6729ea0c4fc557c93d0c8cec",
+    "theme": "environment"
+  },
+  {
+    "id": "58d8d8a0c751df17537c66be",
+    "type": "wfs",
+    "url": "https://data.geopf.fr/wfs/ows?layer=RPG.LATEST:codes_cultures",
+    "couches": [
+      "OCS-GERS_BDD_LAMB93_2016:oscge_gers_32_2016",
+      "OCS-GERS_BDD_LAMB93_2019:oscge_gers_32_2019",
+      "IGNF_GEODESIE:site-rbf",
+      "IGNF_GEODESIE:site-rdf",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:canton",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_epci"
+    ],
+    "titre": "RPG",
+    "producteur": "Institut national de l'information géographique et forestière",
+    "dossier": "58d8d8a0c751df17537c66be",
+    "theme": "environment"
+  },
+  {
+    "id": "61489f5ae64c7f138f1b2e15",
+    "type": "wfs",
+    "url": "https://data.geopf.fr/wfs/ows",
+    "couches": [
+      "OCS-GERS_BDD_LAMB93_2016:oscge_gers_32_2016",
+      "OCS-GERS_BDD_LAMB93_2019:oscge_gers_32_2019",
+      "IGNF_GEODESIE:site-rbf",
+      "IGNF_GEODESIE:site-rdf",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:canton",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_epci"
+    ],
+    "titre": "RGE ALTI®",
+    "producteur": "Institut national de l'information géographique et forestière",
+    "dossier": "61489f5ae64c7f138f1b2e15",
+    "theme": "environment"
+  },
+  {
+    "id": "55424b64c751df766fa7b26f",
+    "type": "wfs",
+    "url": "https://data.geopf.fr/wfs/ows",
+    "couches": [
+      "OCS-GERS_BDD_LAMB93_2016:oscge_gers_32_2016",
+      "OCS-GERS_BDD_LAMB93_2019:oscge_gers_32_2019",
+      "IGNF_GEODESIE:site-rbf",
+      "IGNF_GEODESIE:site-rdf",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:canton",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_epci"
+    ],
+    "titre": "Contours... IRIS®",
+    "producteur": "Institut national de l'information géographique et forestière",
+    "dossier": "55424b64c751df766fa7b26f",
+    "theme": "environment"
+  },
+  {
+    "id": "61489fb42de14040f348fa0c",
+    "type": "wfs",
+    "url": "https://data.geopf.fr/wfs/ows",
+    "couches": [
+      "OCS-GERS_BDD_LAMB93_2016:oscge_gers_32_2016",
+      "OCS-GERS_BDD_LAMB93_2019:oscge_gers_32_2019",
+      "IGNF_GEODESIE:site-rbf",
+      "IGNF_GEODESIE:site-rdf",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:canton",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_epci"
+    ],
+    "titre": "Courbes de niveau",
+    "producteur": "Institut national de l'information géographique et forestière",
+    "dossier": "61489fb42de14040f348fa0c",
+    "theme": "environment"
+  },
+  {
+    "id": "61489da4b77d1697d00d2feb",
+    "type": "wfs",
+    "url": "https://data.geopf.fr/wfs/ows",
+    "couches": [
+      "OCS-GERS_BDD_LAMB93_2016:oscge_gers_32_2016",
+      "OCS-GERS_BDD_LAMB93_2019:oscge_gers_32_2019",
+      "IGNF_GEODESIE:site-rbf",
+      "IGNF_GEODESIE:site-rdf",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:canton",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_epci"
+    ],
+    "titre": "BD Forêt®",
+    "producteur": "Institut national de l'information géographique et forestière",
+    "dossier": "61489da4b77d1697d00d2feb",
+    "theme": "environment"
+  },
+  {
+    "id": "61488c8c6c3e156d4c83f979",
+    "type": "wms",
+    "url": "https://data.geopf.fr/wms-r/wms",
+    "couches": [
+      "ADEME_EPCI_lineaire-haie-a-stock",
+      "ADEME_EPCI_lineaire-haie-preleve-par-an",
+      "ADEME_EPCI_lineaire-haie-preleve-totalement-par-an",
+      "ADEME_EPCI_lineaire-haie-total",
+      "ADEME_EPCI_volume-bois-de-haie-preleve-par-an",
+      "ADEME_EPCI_volume-bois-de-haie-preleve-totalement-par-an",
+      "ADEME_EPCI_volume-bois-de-haie-sur-pied",
+      "ADEME_KM2_lineaire-haie-a-stock",
+      "ADEME_KM2_lineaire-haie-preleve-par-an",
+      "ADEME_KM2_lineaire-haie-preleve-totalement-par-an"
+    ],
+    "titre": "Plan IGN",
+    "producteur": "Institut national de l'information géographique et forestière",
+    "dossier": "61488c8c6c3e156d4c83f979",
+    "theme": "environment"
+  },
+  {
+    "id": "594b8736c751df067609049c",
+    "type": "wfs",
+    "url": "https://data.geopf.fr/wfs/ows",
+    "couches": [
+      "OCS-GERS_BDD_LAMB93_2016:oscge_gers_32_2016",
+      "OCS-GERS_BDD_LAMB93_2019:oscge_gers_32_2019",
+      "IGNF_GEODESIE:site-rbf",
+      "IGNF_GEODESIE:site-rdf",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:canton",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_epci"
+    ],
+    "titre": "BD ORTHO®",
+    "producteur": "Institut national de l'information géographique et forestière",
+    "dossier": "594b8736c751df067609049c",
+    "theme": "environment"
+  },
+  {
+    "id": "675871bd6e60265b46ab356e",
+    "type": "wfs",
+    "url": "https://data.geopf.fr/wfs/ows",
+    "couches": [
+      "OCS-GERS_BDD_LAMB93_2016:oscge_gers_32_2016",
+      "OCS-GERS_BDD_LAMB93_2019:oscge_gers_32_2019",
+      "IGNF_GEODESIE:site-rbf",
+      "IGNF_GEODESIE:site-rdf",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:canton",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_epci"
+    ],
+    "titre": "MNT LiDAR HD",
+    "producteur": "Institut national de l'information géographique et forestière",
+    "dossier": "675871bd6e60265b46ab356e",
+    "theme": "environment"
+  },
+  {
+    "id": "61489e33b77d1697d00d2fec",
+    "type": "wfs",
+    "url": "https://data.geopf.fr/wfs/ows",
+    "couches": [
+      "OCS-GERS_BDD_LAMB93_2016:oscge_gers_32_2016",
+      "OCS-GERS_BDD_LAMB93_2019:oscge_gers_32_2019",
+      "IGNF_GEODESIE:site-rbf",
+      "IGNF_GEODESIE:site-rdf",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:canton",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_epci"
+    ],
+    "titre": "Iris...GE",
+    "producteur": "Institut national de l'information géographique et forestière",
+    "dossier": "61489e33b77d1697d00d2fec",
+    "theme": "environment"
+  },
+  {
+    "id": "61489f2f2de14040f348fa0b",
+    "type": "wfs",
+    "url": "https://data.geopf.fr/wfs/ows",
+    "couches": [
+      "OCS-GERS_BDD_LAMB93_2016:oscge_gers_32_2016",
+      "OCS-GERS_BDD_LAMB93_2019:oscge_gers_32_2019",
+      "IGNF_GEODESIE:site-rbf",
+      "IGNF_GEODESIE:site-rdf",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:canton",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_epci"
+    ],
+    "titre": "Parcellaire Express (PCI)",
+    "producteur": "Institut national de l'information géographique et forestière",
+    "dossier": "61489f2f2de14040f348fa0b",
+    "theme": "environment"
+  },
+  {
+    "id": "64228ff07451b8c93651ae80",
+    "type": "wfs",
+    "url": "https://data.geopf.fr/wfs/ows",
+    "couches": [
+      "OCS-GERS_BDD_LAMB93_2016:oscge_gers_32_2016",
+      "OCS-GERS_BDD_LAMB93_2019:oscge_gers_32_2019",
+      "IGNF_GEODESIE:site-rbf",
+      "IGNF_GEODESIE:site-rdf",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:canton",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_epci"
+    ],
+    "titre": "DEBROUSSAILLEMENT",
+    "producteur": "Institut national de l'information géographique et forestière",
+    "dossier": "64228ff07451b8c93651ae80",
+    "theme": "environment"
+  },
+  {
+    "id": "61489d7b10f0970dc5fca48f",
+    "type": "wfs",
+    "url": "https://data.geopf.fr/wfs/ows",
+    "couches": [
+      "OCS-GERS_BDD_LAMB93_2016:oscge_gers_32_2016",
+      "OCS-GERS_BDD_LAMB93_2019:oscge_gers_32_2019",
+      "IGNF_GEODESIE:site-rbf",
+      "IGNF_GEODESIE:site-rdf",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:canton",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_epci"
+    ],
+    "titre": "BD ORTHO® Historique",
+    "producteur": "Institut national de l'information géographique et forestière",
+    "dossier": "61489d7b10f0970dc5fca48f",
+    "theme": "environment"
+  },
+  {
+    "id": "66631f6d5ff38efa62d385ac",
+    "type": "wfs",
+    "url": "https://mapsref.brgm.fr/wxs/georisques/georisques_dl",
+    "couches": [
+      "ms:ETAT_AV_PPR",
+      "ms:ETAT_AV_TRI",
+      "ms:InstallationsClassees",
+      "ms:InstallationsClassees_France",
+      "ms:InstallationsClassees_Antilles",
+      "ms:InstallationsClassees_Reunion",
+      "ms:InstallationsClassees_Guyane",
+      "ms:InstallationsClassees_Mayotte",
+      "ms:parcs",
+      "ms:aerogenerateurs"
+    ],
+    "titre": "Installations classées pour la protection de l'environnement (ICPE) - France métropolitaine et DROM",
+    "producteur": "Bureau de Recherches Géologiques et Minières",
+    "dossier": "66631f6d5ff38efa62d385ac",
+    "theme": "environment"
+  },
+  {
+    "id": "675871c26e60265b46ab3576",
+    "type": "wfs",
+    "url": "https://data.geopf.fr/wfs/ows",
+    "couches": [
+      "OCS-GERS_BDD_LAMB93_2016:oscge_gers_32_2016",
+      "OCS-GERS_BDD_LAMB93_2019:oscge_gers_32_2019",
+      "IGNF_GEODESIE:site-rbf",
+      "IGNF_GEODESIE:site-rdf",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:canton",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_epci"
+    ],
+    "titre": "MNS LiDAR HD",
+    "producteur": "Institut national de l'information géographique et forestière",
+    "dossier": "675871c26e60265b46ab3576",
+    "theme": "environment"
+  },
+  {
+    "id": "675871bd6e60265b46ab356f",
+    "type": "wfs",
+    "url": "https://data.geopf.fr/wfs/ows",
+    "couches": [
+      "OCS-GERS_BDD_LAMB93_2016:oscge_gers_32_2016",
+      "OCS-GERS_BDD_LAMB93_2019:oscge_gers_32_2019",
+      "IGNF_GEODESIE:site-rbf",
+      "IGNF_GEODESIE:site-rdf",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:canton",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_epci"
+    ],
+    "titre": "MNH LiDAR HD",
+    "producteur": "Institut national de l'information géographique et forestière",
+    "dossier": "675871bd6e60265b46ab356f",
+    "theme": "environment"
+  },
+  {
+    "id": "61489e9abb9cf97a555d4add",
+    "type": "wfs",
+    "url": "https://data.geopf.fr/wfs/ows",
+    "couches": [
+      "OCS-GERS_BDD_LAMB93_2016:oscge_gers_32_2016",
+      "OCS-GERS_BDD_LAMB93_2019:oscge_gers_32_2019",
+      "IGNF_GEODESIE:site-rbf",
+      "IGNF_GEODESIE:site-rdf",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:canton",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_epci"
+    ],
+    "titre": "BD Carto® Etat-Major",
+    "producteur": "Institut national de l'information géographique et forestière",
+    "dossier": "61489e9abb9cf97a555d4add",
+    "theme": "environment"
+  },
+  {
+    "id": "675871b66e60265b46ab3566",
+    "type": "wfs",
+    "url": "https://data.geopf.fr/wfs/ows",
+    "couches": [
+      "OCS-GERS_BDD_LAMB93_2016:oscge_gers_32_2016",
+      "OCS-GERS_BDD_LAMB93_2019:oscge_gers_32_2019",
+      "IGNF_GEODESIE:site-rbf",
+      "IGNF_GEODESIE:site-rdf",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:canton",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_epci"
+    ],
+    "titre": "BD PARCELLAIRE®",
+    "producteur": "Institut national de l'information géographique et forestière",
+    "dossier": "675871b66e60265b46ab3566",
+    "theme": "environment"
+  },
+  {
+    "id": "61489083dc4223219e50cc35",
+    "type": "wfs",
+    "url": "https://data.geopf.fr/wfs/ows",
+    "couches": [
+      "OCS-GERS_BDD_LAMB93_2016:oscge_gers_32_2016",
+      "OCS-GERS_BDD_LAMB93_2019:oscge_gers_32_2019",
+      "IGNF_GEODESIE:site-rbf",
+      "IGNF_GEODESIE:site-rdf",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:canton",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_epci"
+    ],
+    "titre": "BD TOPO®",
+    "producteur": "Institut national de l'information géographique et forestière",
+    "dossier": "61489083dc4223219e50cc35",
+    "theme": "environment"
+  },
+  {
+    "id": "675871b46e60265b46ab3562",
+    "type": "wfs",
+    "url": "https://data.geopf.fr/wfs/ows",
+    "couches": [
+      "OCS-GERS_BDD_LAMB93_2016:oscge_gers_32_2016",
+      "OCS-GERS_BDD_LAMB93_2019:oscge_gers_32_2019",
+      "IGNF_GEODESIE:site-rbf",
+      "IGNF_GEODESIE:site-rdf",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:canton",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_epci"
+    ],
+    "titre": "BD CARTO®",
+    "producteur": "Institut national de l'information géographique et forestière",
+    "dossier": "675871b46e60265b46ab3562",
+    "theme": "environment"
+  },
+  {
+    "id": "675871b56e60265b46ab3563",
+    "type": "wfs",
+    "url": "https://data.geopf.fr/wfs/ows",
+    "couches": [
+      "OCS-GERS_BDD_LAMB93_2016:oscge_gers_32_2016",
+      "OCS-GERS_BDD_LAMB93_2019:oscge_gers_32_2019",
+      "IGNF_GEODESIE:site-rbf",
+      "IGNF_GEODESIE:site-rdf",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:canton",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_epci"
+    ],
+    "titre": "BAN PLUS",
+    "producteur": "Institut national de l'information géographique et forestière",
+    "dossier": "675871b56e60265b46ab3563",
+    "theme": "environment"
+  },
+  {
+    "id": "675871b56e60265b46ab3564",
+    "type": "wfs",
+    "url": "https://data.geopf.fr/wfs/ows",
+    "couches": [
+      "OCS-GERS_BDD_LAMB93_2016:oscge_gers_32_2016",
+      "OCS-GERS_BDD_LAMB93_2019:oscge_gers_32_2019",
+      "IGNF_GEODESIE:site-rbf",
+      "IGNF_GEODESIE:site-rdf",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:canton",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_epci"
+    ],
+    "titre": "BD HAIE",
+    "producteur": "Institut national de l'information géographique et forestière",
+    "dossier": "675871b56e60265b46ab3564",
+    "theme": "environment"
+  },
+  {
+    "id": "675871b86e60265b46ab3569",
+    "type": "wfs",
+    "url": "https://data.geopf.fr/wfs/ows",
+    "couches": [
+      "OCS-GERS_BDD_LAMB93_2016:oscge_gers_32_2016",
+      "OCS-GERS_BDD_LAMB93_2019:oscge_gers_32_2019",
+      "IGNF_GEODESIE:site-rbf",
+      "IGNF_GEODESIE:site-rdf",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:canton",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_epci"
+    ],
+    "titre": "GEODESIE ET NIVELLEMENT",
+    "producteur": "Institut national de l'information géographique et forestière",
+    "dossier": "675871b86e60265b46ab3569",
+    "theme": "environment"
+  },
+  {
+    "id": "698bc8a497a2da2f01ecceb2",
+    "type": "wfs",
+    "url": "https://data.geopf.fr/wfs/ows",
+    "couches": [
+      "OCS-GERS_BDD_LAMB93_2016:oscge_gers_32_2016",
+      "OCS-GERS_BDD_LAMB93_2019:oscge_gers_32_2019",
+      "IGNF_GEODESIE:site-rbf",
+      "IGNF_GEODESIE:site-rdf",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:canton",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_epci"
+    ],
+    "titre": "Accessibilité physique des forêts",
+    "producteur": "Institut national de l'information géographique et forestière",
+    "dossier": "698bc8a497a2da2f01ecceb2",
+    "theme": "environment"
+  },
+  {
+    "id": "6840e009772e99e8132f176e",
+    "type": "wfs",
+    "url": "https://data.geopf.fr/wfs/ows",
+    "couches": [
+      "OCS-GERS_BDD_LAMB93_2016:oscge_gers_32_2016",
+      "OCS-GERS_BDD_LAMB93_2019:oscge_gers_32_2019",
+      "IGNF_GEODESIE:site-rbf",
+      "IGNF_GEODESIE:site-rdf",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:canton",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_epci"
+    ],
+    "titre": "INPE",
+    "producteur": "Institut national de l'information géographique et forestière",
+    "dossier": "6840e009772e99e8132f176e",
+    "theme": "environment"
+  },
+  {
+    "id": "675871b46e60265b46ab3560",
+    "type": "wfs",
+    "url": "https://data.geopf.fr/wfs/ows",
+    "couches": [
+      "OCS-GERS_BDD_LAMB93_2016:oscge_gers_32_2016",
+      "OCS-GERS_BDD_LAMB93_2019:oscge_gers_32_2019",
+      "IGNF_GEODESIE:site-rbf",
+      "IGNF_GEODESIE:site-rdf",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:canton",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_epci"
+    ],
+    "titre": "BCAE",
+    "producteur": "Institut national de l'information géographique et forestière",
+    "dossier": "675871b46e60265b46ab3560",
+    "theme": "environment"
+  },
+  {
+    "id": "68e6fbfaf4ecea48ee902273",
+    "type": "wfs",
+    "url": "https://geobretagne.fr/geoserver/dreal_b/wfs",
+    "couches": [
+      "dreal_b:ae_annotation_edit",
+      "dreal_b:route_accidents_mortels",
+      "dreal_b:N2000_Action",
+      "dreal_b:l_agences_urbanisme",
+      "dreal_b:aire_alimentation_captages_prioritaires",
+      "dreal_b:l_aires_attraction_villes_communes",
+      "dreal_b:geophyteau_depassement_pnec_par_station",
+      "dreal_b:l_article_302_5_cch",
+      "dreal_b:hydrometrie_archives_qmj",
+      "dreal_b:APB_polygones"
+    ],
+    "titre": "Sites inscrits en Bretagne",
+    "producteur": "Direction régionale de l'environnement, de l'aménagement et du logement de Bretagne",
+    "dossier": "68e6fbfaf4ecea48ee902273",
+    "theme": "environment"
+  },
+  {
+    "id": "6917c533b6998ec1d07b95f5",
+    "type": "wfs",
+    "url": "https://data.geopf.fr/wfs/ows",
+    "couches": [
+      "OCS-GERS_BDD_LAMB93_2016:oscge_gers_32_2016",
+      "OCS-GERS_BDD_LAMB93_2019:oscge_gers_32_2019",
+      "IGNF_GEODESIE:site-rbf",
+      "IGNF_GEODESIE:site-rdf",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:canton",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_epci"
+    ],
+    "titre": "VOIRIE DGF",
+    "producteur": "Institut national de l'information géographique et forestière",
+    "dossier": "6917c533b6998ec1d07b95f5",
+    "theme": "environment"
+  },
+  {
+    "id": "675871c26e60265b46ab3578",
+    "type": "wfs",
+    "url": "https://data.geopf.fr/wfs/ows",
+    "couches": [
+      "OCS-GERS_BDD_LAMB93_2016:oscge_gers_32_2016",
+      "OCS-GERS_BDD_LAMB93_2019:oscge_gers_32_2019",
+      "IGNF_GEODESIE:site-rbf",
+      "IGNF_GEODESIE:site-rdf",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:canton",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_epci"
+    ],
+    "titre": "ORTHO SAT",
+    "producteur": "Institut national de l'information géographique et forestière",
+    "dossier": "675871c26e60265b46ab3578",
+    "theme": "environment"
+  },
+  {
+    "id": "68cbc440df952493fcc0bd17",
+    "type": "wfs",
+    "url": "https://geobretagne.fr/geoserver/dreal_b/wfs",
+    "couches": [
+      "dreal_b:ae_annotation_edit",
+      "dreal_b:route_accidents_mortels",
+      "dreal_b:N2000_Action",
+      "dreal_b:l_agences_urbanisme",
+      "dreal_b:aire_alimentation_captages_prioritaires",
+      "dreal_b:l_aires_attraction_villes_communes",
+      "dreal_b:geophyteau_depassement_pnec_par_station",
+      "dreal_b:l_article_302_5_cch",
+      "dreal_b:hydrometrie_archives_qmj",
+      "dreal_b:APB_polygones"
+    ],
+    "titre": "Périmètres associés aux mesures Plan d'Action Régional nitrates en Bretagne",
+    "producteur": "Direction régionale de l'environnement, de l'aménagement et du logement de Bretagne",
+    "dossier": "68cbc440df952493fcc0bd17",
+    "theme": "environment"
+  },
+  {
+    "id": "68cbc45bdf952493fcc0bd59",
+    "type": "wfs",
+    "url": "https://geobretagne.fr/geoserver/dreal_b/wfs",
+    "couches": [
+      "dreal_b:ae_annotation_edit",
+      "dreal_b:route_accidents_mortels",
+      "dreal_b:N2000_Action",
+      "dreal_b:l_agences_urbanisme",
+      "dreal_b:aire_alimentation_captages_prioritaires",
+      "dreal_b:l_aires_attraction_villes_communes",
+      "dreal_b:geophyteau_depassement_pnec_par_station",
+      "dreal_b:l_article_302_5_cch",
+      "dreal_b:hydrometrie_archives_qmj",
+      "dreal_b:APB_polygones"
+    ],
+    "titre": "Sites classés en Bretagne",
+    "producteur": "Direction régionale de l'environnement, de l'aménagement et du logement de Bretagne",
+    "dossier": "68cbc45bdf952493fcc0bd59",
+    "theme": "environment"
+  },
+  {
+    "id": "68cbc422df952493fcc0bcca",
+    "type": "wfs",
+    "url": "https://geobretagne.fr/geoserver/dreal_b/wfs",
+    "couches": [
+      "dreal_b:ae_annotation_edit",
+      "dreal_b:route_accidents_mortels",
+      "dreal_b:N2000_Action",
+      "dreal_b:l_agences_urbanisme",
+      "dreal_b:aire_alimentation_captages_prioritaires",
+      "dreal_b:l_aires_attraction_villes_communes",
+      "dreal_b:geophyteau_depassement_pnec_par_station",
+      "dreal_b:l_article_302_5_cch",
+      "dreal_b:hydrometrie_archives_qmj",
+      "dreal_b:APB_polygones"
+    ],
+    "titre": "Biens inscrits au patrimoine mondial de l'UNESCO en Bretagne",
+    "producteur": "Direction régionale de l'environnement, de l'aménagement et du logement de Bretagne",
+    "dossier": "68cbc422df952493fcc0bcca",
+    "theme": "environment"
+  },
+  {
+    "id": "684004262f9592aab088e179",
+    "type": "wfs",
+    "url": "https://ows.region-bretagne.fr/geoserver/rb/wfs",
+    "couches": [
+      "rb:batiment_region_accessibilite",
+      "rb:site_region_accessibilite",
+      "rb:accompagnement_digitalisation",
+      "rb:aire_retournement_vn",
+      "rb:points_lumineux",
+      "rb:pratique_eclairage",
+      "rb:zone_frayere_56",
+      "rb:administration",
+      "rb:maison_eclusiere_aap",
+      "rb:arbre_vn"
+    ],
+    "titre": "Bassin versant de Bretagne (version région Bretagne)",
+    "producteur": "Région Bretagne",
+    "dossier": "684004262f9592aab088e179",
+    "theme": "environment"
+  },
+  {
+    "id": "68cbc458df952493fcc0bd53",
+    "type": "wfs",
+    "url": "https://geobretagne.fr/geoserver/dreal_b/wfs",
+    "couches": [
+      "dreal_b:ae_annotation_edit",
+      "dreal_b:route_accidents_mortels",
+      "dreal_b:N2000_Action",
+      "dreal_b:l_agences_urbanisme",
+      "dreal_b:aire_alimentation_captages_prioritaires",
+      "dreal_b:l_aires_attraction_villes_communes",
+      "dreal_b:geophyteau_depassement_pnec_par_station",
+      "dreal_b:l_article_302_5_cch",
+      "dreal_b:hydrometrie_archives_qmj",
+      "dreal_b:APB_polygones"
+    ],
+    "titre": "Météo-France : données SIM",
+    "producteur": "Direction régionale de l'environnement, de l'aménagement et du logement de Bretagne",
+    "dossier": "68cbc458df952493fcc0bd53",
+    "theme": "environment"
+  },
+  {
+    "id": "6149925a2ff0ab6cebdd6fe8",
+    "type": "wfs",
+    "url": "https://data.atmo-france.org/geoserver/ind/ows",
+    "couches": [
+      "ind:ind_atmo",
+      "ind:ind_atmo_2021",
+      "ind:ind_atmo_partition_week",
+      "ind:ind_atmo_tile"
+    ],
+    "titre": "Indice de la qualité de l'air quotidien par commune - indice ATMO",
+    "producteur": "Atmo France",
+    "dossier": "6149925a2ff0ab6cebdd6fe8",
+    "theme": "environment"
+  },
+  {
+    "id": "5808de39c751df1e0679df72",
+    "type": "wfs",
+    "url": "https://data.geopf.fr/wfs/ows",
+    "couches": [
+      "OCS-GERS_BDD_LAMB93_2016:oscge_gers_32_2016",
+      "OCS-GERS_BDD_LAMB93_2019:oscge_gers_32_2019",
+      "IGNF_GEODESIE:site-rbf",
+      "IGNF_GEODESIE:site-rdf",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:canton",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_epci"
+    ],
+    "titre": "ADMIN EXPRESS, ADMIN EXPRESS COG, ADMIN EXPRESS COG CARTO, ADMIN EXPRESS COG CARTO PE, ADMIN EXPRESS COG CARTO PLUS PE",
+    "producteur": "Institut national de l'information géographique et forestière",
+    "dossier": "5808de39c751df1e0679df72",
+    "theme": "environment"
+  },
+  {
+    "id": "68cbc451df952493fcc0bd42",
+    "type": "wfs",
+    "url": "https://geobretagne.fr/geoserver/dreal_b/gemapi_competence_epci/wfs",
+    "couches": [
+      "dreal_b:gemapi_competence_epci"
+    ],
+    "titre": "La compétence GEMAPI exercée par les EPCI en Bretagne",
+    "producteur": "Direction régionale de l'environnement, de l'aménagement et du logement de Bretagne",
+    "dossier": "68cbc451df952493fcc0bd42",
+    "theme": "environment"
+  },
+  {
+    "id": "6878513cdda4ce4c0434b382",
+    "type": "wfs",
+    "url": "https://ows.region-bretagne.fr/geoserver/rb/wfs",
+    "couches": [
+      "rb:batiment_region_accessibilite",
+      "rb:site_region_accessibilite",
+      "rb:accompagnement_digitalisation",
+      "rb:aire_retournement_vn",
+      "rb:points_lumineux",
+      "rb:pratique_eclairage",
+      "rb:zone_frayere_56",
+      "rb:administration",
+      "rb:maison_eclusiere_aap",
+      "rb:arbre_vn"
+    ],
+    "titre": "Dispositif sur les revenus localisés sociaux et fiscaux par EPCI en Bretagne",
+    "producteur": "Région Bretagne",
+    "dossier": "6878513cdda4ce4c0434b382",
+    "theme": "environment"
+  },
+  {
+    "id": "684004142f9592aab088e143",
+    "type": "wfs",
+    "url": "https://ows.region-bretagne.fr/geoserver/rb/wfs",
+    "couches": [
+      "rb:batiment_region_accessibilite",
+      "rb:site_region_accessibilite",
+      "rb:accompagnement_digitalisation",
+      "rb:aire_retournement_vn",
+      "rb:points_lumineux",
+      "rb:pratique_eclairage",
+      "rb:zone_frayere_56",
+      "rb:administration",
+      "rb:maison_eclusiere_aap",
+      "rb:arbre_vn"
+    ],
+    "titre": "EPCI de Bretagne au 1er janvier 2016",
+    "producteur": "Région Bretagne",
+    "dossier": "684004142f9592aab088e143",
+    "theme": "environment"
+  },
+  {
+    "id": "68cbc422df952493fcc0bccb",
+    "type": "wfs",
+    "url": "https://geobretagne.fr/geoserver/dreal_b/wfs",
+    "couches": [
+      "dreal_b:ae_annotation_edit",
+      "dreal_b:route_accidents_mortels",
+      "dreal_b:N2000_Action",
+      "dreal_b:l_agences_urbanisme",
+      "dreal_b:aire_alimentation_captages_prioritaires",
+      "dreal_b:l_aires_attraction_villes_communes",
+      "dreal_b:geophyteau_depassement_pnec_par_station",
+      "dreal_b:l_article_302_5_cch",
+      "dreal_b:hydrometrie_archives_qmj",
+      "dreal_b:APB_polygones"
+    ],
+    "titre": "Consommation d'espaces NAF des EPCI en Bretagne période 2011-2021",
+    "producteur": "Direction régionale de l'environnement, de l'aménagement et du logement de Bretagne",
+    "dossier": "68cbc422df952493fcc0bccb",
+    "theme": "environment"
+  },
+  {
+    "id": "688796df0fae895e18ee54ed",
+    "type": "wfs",
+    "url": "https://geobretagne.fr/geoserver/megalis/wfs",
+    "couches": [
+      "megalis:zdep_fin_travaux",
+      "megalis:ZAMII_bzh",
+      "megalis:fibre_donnees_maj",
+      "megalis:services_organisme",
+      "megalis:referents_services_megalis",
+      "megalis:salles_visioconference",
+      "megalis:psd_sro_bzh",
+      "megalis:voronoi_simple",
+      "megalis:psd_zasro_bzh",
+      "megalis:znra_med_bzh"
+    ],
+    "titre": "Suivi des adresses du Projet Bretagne Très Haut Débit (BTHD)",
+    "producteur": "Mégalis Bretagne",
+    "dossier": "688796df0fae895e18ee54ed",
+    "theme": "environment"
+  },
+  {
+    "id": "684004122f9592aab088e13f",
+    "type": "wfs",
+    "url": "https://ows.region-bretagne.fr/geoserver/rb/wfs",
+    "couches": [
+      "rb:batiment_region_accessibilite",
+      "rb:site_region_accessibilite",
+      "rb:accompagnement_digitalisation",
+      "rb:aire_retournement_vn",
+      "rb:points_lumineux",
+      "rb:pratique_eclairage",
+      "rb:zone_frayere_56",
+      "rb:administration",
+      "rb:maison_eclusiere_aap",
+      "rb:arbre_vn"
+    ],
+    "titre": "Base Sirene des entreprises et de leurs établissements en Bretagne",
+    "producteur": "Région Bretagne",
+    "dossier": "684004122f9592aab088e13f",
+    "theme": "environment"
+  },
+  {
+    "id": "691e0de40379dac5d0a376ad",
+    "type": "wfs",
+    "url": "https://data.geopf.fr/wfs",
+    "couches": [
+      "OCS-GERS_BDD_LAMB93_2016:oscge_gers_32_2016",
+      "OCS-GERS_BDD_LAMB93_2019:oscge_gers_32_2019",
+      "IGNF_GEODESIE:site-rbf",
+      "IGNF_GEODESIE:site-rdf",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:canton",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_epci"
+    ],
+    "titre": "Site des espaces protégés du Conservatoire du littoral",
+    "producteur": "Cerema",
+    "dossier": "691e0de40379dac5d0a376ad",
+    "theme": "environment"
+  },
+  {
+    "id": "691e0de20379dac5d0a376aa",
+    "type": "wfs",
+    "url": "https://data.geopf.fr/wfs",
+    "couches": [
+      "OCS-GERS_BDD_LAMB93_2016:oscge_gers_32_2016",
+      "OCS-GERS_BDD_LAMB93_2019:oscge_gers_32_2019",
+      "IGNF_GEODESIE:site-rbf",
+      "IGNF_GEODESIE:site-rdf",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:canton",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_epci"
+    ],
+    "titre": "Espaces protégés du Conservatoire du littoral",
+    "producteur": "Cerema",
+    "dossier": "691e0de20379dac5d0a376aa",
+    "theme": "environment"
+  },
+  {
+    "id": "5863714388ee3863df3f4e5d",
+    "type": "wfs",
+    "url": "https://data.geopf.fr/wfs/ows",
+    "couches": [
+      "OCS-GERS_BDD_LAMB93_2016:oscge_gers_32_2016",
+      "OCS-GERS_BDD_LAMB93_2019:oscge_gers_32_2019",
+      "IGNF_GEODESIE:site-rbf",
+      "IGNF_GEODESIE:site-rdf",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:canton",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_epci"
+    ],
+    "titre": "CORINE Land Cover - Occupation des sols en France",
+    "producteur": "Ministère de la Transition écologique",
+    "dossier": "5863714388ee3863df3f4e5d",
+    "theme": "environment"
+  },
+  {
+    "id": "67cf7d21f404f8137f24f7ac",
+    "type": "wfs",
+    "url": "https://data.geopf.fr/wfs",
+    "couches": [
+      "OCS-GERS_BDD_LAMB93_2016:oscge_gers_32_2016",
+      "OCS-GERS_BDD_LAMB93_2019:oscge_gers_32_2019",
+      "IGNF_GEODESIE:site-rbf",
+      "IGNF_GEODESIE:site-rdf",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:canton",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_epci"
+    ],
+    "titre": "CARTOS VEGETATION DROM",
+    "producteur": "Institut national de l'information géographique et forestière",
+    "dossier": "67cf7d21f404f8137f24f7ac",
+    "theme": "environment"
+  },
+  {
+    "id": "691facccd038b6521b002eb7",
+    "type": "wfs",
+    "url": "https://geobretagne.fr/geoserver/dreal_b/wfs",
+    "couches": [
+      "dreal_b:ae_annotation_edit",
+      "dreal_b:route_accidents_mortels",
+      "dreal_b:N2000_Action",
+      "dreal_b:l_agences_urbanisme",
+      "dreal_b:aire_alimentation_captages_prioritaires",
+      "dreal_b:l_aires_attraction_villes_communes",
+      "dreal_b:geophyteau_depassement_pnec_par_station",
+      "dreal_b:l_article_302_5_cch",
+      "dreal_b:hydrometrie_archives_qmj",
+      "dreal_b:APB_polygones"
+    ],
+    "titre": "Zones d'Actions Renforcées du 7ème programme d'action \"Directive Nitrates\" en Bretagne",
+    "producteur": "Direction régionale de l'environnement, de l'aménagement et du logement de Bretagne",
+    "dossier": "691facccd038b6521b002eb7",
+    "theme": "environment"
+  },
+  {
+    "id": "684004222f9592aab088e16c",
+    "type": "wfs",
+    "url": "https://ows.region-bretagne.fr/geoserver/rb/wfs",
+    "couches": [
+      "rb:batiment_region_accessibilite",
+      "rb:site_region_accessibilite",
+      "rb:accompagnement_digitalisation",
+      "rb:aire_retournement_vn",
+      "rb:points_lumineux",
+      "rb:pratique_eclairage",
+      "rb:zone_frayere_56",
+      "rb:administration",
+      "rb:maison_eclusiere_aap",
+      "rb:arbre_vn"
+    ],
+    "titre": "Fichier localisé des rémunérations et de l’emploi salarié - Caractéristiques des établissements",
+    "producteur": "Région Bretagne",
+    "dossier": "684004222f9592aab088e16c",
+    "theme": "environment"
+  },
+  {
+    "id": "68cbc43bdf952493fcc0bd0b",
+    "type": "wfs",
+    "url": "https://geobretagne.fr/geoserver/dreal_b/wfs",
+    "couches": [
+      "dreal_b:ae_annotation_edit",
+      "dreal_b:route_accidents_mortels",
+      "dreal_b:N2000_Action",
+      "dreal_b:l_agences_urbanisme",
+      "dreal_b:aire_alimentation_captages_prioritaires",
+      "dreal_b:l_aires_attraction_villes_communes",
+      "dreal_b:geophyteau_depassement_pnec_par_station",
+      "dreal_b:l_article_302_5_cch",
+      "dreal_b:hydrometrie_archives_qmj",
+      "dreal_b:APB_polygones"
+    ],
+    "titre": "Zonage 1,2,3 en Bretagne",
+    "producteur": "Direction régionale de l'environnement, de l'aménagement et du logement de Bretagne",
+    "dossier": "68cbc43bdf952493fcc0bd0b",
+    "theme": "environment"
+  },
+  {
+    "id": "68cbc44adf952493fcc0bd30",
+    "type": "wfs",
+    "url": "https://geobretagne.fr/geoserver/dreal_b/l_zonage_abc/wfs",
+    "couches": [
+      "dreal_b:l_zonage_abc"
+    ],
+    "titre": "Zonage ABC en Bretagne",
+    "producteur": "Direction régionale de l'environnement, de l'aménagement et du logement de Bretagne",
+    "dossier": "68cbc44adf952493fcc0bd30",
+    "theme": "environment"
+  },
+  {
+    "id": "684be73d7dd2fdcc07ae0252",
+    "type": "wfs",
+    "url": "https://wxs.ofb.fr/geoserver/habitat/ows",
+    "couches": [
+      "habitat:us_met_amp_naveco_3857",
+      "habitat:eco_med_n2000_dhff_fr9402018_algues_aamp_ln_3857",
+      "habitat:eco_france_abc_communal_3857_20250611",
+      "habitat:eco_france_abc_intercommunal_3857_20250611",
+      "habitat:eco_bzh_pdl_bv_me_surface_qualifies_20240220_3857",
+      "habitat:eco_med_occ_cp_hp2021simpl_pol_3857",
+      "habitat:eco_gua_habitats_substrats_bt_uag_pol_3857",
+      "habitat:eco_med_pnmcca_saintflorent_biocenoses2020_ofb_pol_3857",
+      "habitat:eco_med_paca_cm_hab_v2025comp_ofb_pol_3857",
+      "habitat:eco_med_paca_cm_sandro_bioc_simpl_ofb_pol_3857"
+    ],
+    "titre": "Cartographie de synthèse des habitats particuliers de la façade atlantique et Manche-Mer du Nord",
+    "producteur": "Office Français de la Biodiversité",
+    "dossier": "684be73d7dd2fdcc07ae0252",
+    "theme": "environment"
+  },
+  {
+    "id": "684004152f9592aab088e146",
+    "type": "wfs",
+    "url": "https://ows.region-bretagne.fr/geoserver/rb/wfs",
+    "couches": [
+      "rb:batiment_region_accessibilite",
+      "rb:site_region_accessibilite",
+      "rb:accompagnement_digitalisation",
+      "rb:aire_retournement_vn",
+      "rb:points_lumineux",
+      "rb:pratique_eclairage",
+      "rb:zone_frayere_56",
+      "rb:administration",
+      "rb:maison_eclusiere_aap",
+      "rb:arbre_vn"
+    ],
+    "titre": "Assemblage des feuilles du cadastre napoléonien en Bretagne",
+    "producteur": "Région Bretagne",
+    "dossier": "684004152f9592aab088e146",
+    "theme": "environment"
+  },
+  {
+    "id": "691facc9d038b6521b002eb6",
+    "type": "wfs",
+    "url": "https://geobretagne.fr/geoserver/dreal_b/wfs",
+    "couches": [
+      "dreal_b:ae_annotation_edit",
+      "dreal_b:route_accidents_mortels",
+      "dreal_b:N2000_Action",
+      "dreal_b:l_agences_urbanisme",
+      "dreal_b:aire_alimentation_captages_prioritaires",
+      "dreal_b:l_aires_attraction_villes_communes",
+      "dreal_b:geophyteau_depassement_pnec_par_station",
+      "dreal_b:l_article_302_5_cch",
+      "dreal_b:hydrometrie_archives_qmj",
+      "dreal_b:APB_polygones"
+    ],
+    "titre": "Zones en excédent structurel du 7ème programme d'action \"Directive Nitrates\" en Bretagne",
+    "producteur": "Direction régionale de l'environnement, de l'aménagement et du logement de Bretagne",
+    "dossier": "691facc9d038b6521b002eb6",
+    "theme": "environment"
+  },
+  {
+    "id": "684004252f9592aab088e175",
+    "type": "wfs",
+    "url": "https://ows.region-bretagne.fr/geoserver/rb/wfs",
+    "couches": [
+      "rb:batiment_region_accessibilite",
+      "rb:site_region_accessibilite",
+      "rb:accompagnement_digitalisation",
+      "rb:aire_retournement_vn",
+      "rb:points_lumineux",
+      "rb:pratique_eclairage",
+      "rb:zone_frayere_56",
+      "rb:administration",
+      "rb:maison_eclusiere_aap",
+      "rb:arbre_vn"
+    ],
+    "titre": "Point d'accueil Pass Création en Bretagne",
+    "producteur": "Région Bretagne",
+    "dossier": "684004252f9592aab088e175",
+    "theme": "environment"
+  },
+  {
+    "id": "655b12122591e7a83414199e",
+    "type": "wfs",
+    "url": "https://data.geopf.fr/wfs/ows",
+    "couches": [
+      "OCS-GERS_BDD_LAMB93_2016:oscge_gers_32_2016",
+      "OCS-GERS_BDD_LAMB93_2019:oscge_gers_32_2019",
+      "IGNF_GEODESIE:site-rbf",
+      "IGNF_GEODESIE:site-rdf",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:canton",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement_municipal",
+      "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_epci"
+    ],
+    "titre": "Nuages de points LiDAR HD",
+    "producteur": "Institut national de l'information géographique et forestière",
+    "dossier": "655b12122591e7a83414199e",
+    "theme": "environment"
+  },
+  {
+    "id": "684be7407dd2fdcc07ae0259",
+    "type": "wfs",
+    "url": "https://wxs.ofb.fr/geoserver/habitat/ows",
+    "couches": [
+      "habitat:us_met_amp_naveco_3857",
+      "habitat:eco_med_n2000_dhff_fr9402018_algues_aamp_ln_3857",
+      "habitat:eco_france_abc_communal_3857_20250611",
+      "habitat:eco_france_abc_intercommunal_3857_20250611",
+      "habitat:eco_bzh_pdl_bv_me_surface_qualifies_20240220_3857",
+      "habitat:eco_med_occ_cp_hp2021simpl_pol_3857",
+      "habitat:eco_gua_habitats_substrats_bt_uag_pol_3857",
+      "habitat:eco_med_pnmcca_saintflorent_biocenoses2020_ofb_pol_3857",
+      "habitat:eco_med_paca_cm_hab_v2025comp_ofb_pol_3857",
+      "habitat:eco_med_paca_cm_sandro_bioc_simpl_ofb_pol_3857"
+    ],
+    "titre": "Cartographie des zones de présence globale du Tétras-Lyre dans les Alpes françaises (2024) [polygones]",
+    "producteur": "Office Français de la Biodiversité",
+    "dossier": "684be7407dd2fdcc07ae0259",
     "theme": "environment"
   }
 ]

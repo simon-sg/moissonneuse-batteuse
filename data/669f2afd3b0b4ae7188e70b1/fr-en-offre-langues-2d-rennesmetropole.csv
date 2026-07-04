@@ -1,0 +1,305 @@
+UAI,Libellé,Adresse,Enseignements,Langues,Code departement,Département,Code region,Région,Code academie,Académie,Commune,Type d'établissement,Position,Secteur de l'établissement
+0351906G,Collège Bourgchevreuil,1 boulevard des Metairies,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Cesson-Sévigné,Collège,"48.11950506421491, -1.6005197238771154",Public
+0351906G,Collège Bourgchevreuil,1 boulevard des Metairies,LV2,Chinois,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Cesson-Sévigné,Collège,"48.11950506421491, -1.6005197238771154",Public
+0352319F,Collège Saint-Gabriel,59 avenue le Brix,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Pacé,Collège,"48.15345837379055, -1.7723000917146485",Privé
+0352319F,Collège Saint-Gabriel,59 avenue le Brix,LV2,Chinois,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Pacé,Collège,"48.15345837379055, -1.7723000917146485",Privé
+0353006C,Collège Léontine Dolivet,99 rue de la Chalotais,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Cesson-Sévigné,Collège,"48.12960422275401, -1.5973038324695294",Privé
+0353006C,Collège Léontine Dolivet,99 rue de la Chalotais,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Cesson-Sévigné,Collège,"48.12960422275401, -1.5973038324695294",Privé
+0350852L,Collège Saint-Joseph,22 avenue de la Mare Guesclin,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Saint-Erblon,Collège,"48.02520405429156, -1.745639588615377",Privé
+0352069J,Collège Saint-Vincent Providence,57 rue de Paris,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.11363570912166, -1.6651100452186143",Privé
+0350895H,Collège Rosa Parks,10 rue de Gascogne,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.121201797651814, -1.7146799912092223",Public
+0352541X,Collège Théodore Monod,Chemin de Seiche,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Vern-sur-Seiche,Collège,"48.04268888855317, -1.6105197686960293",Public
+0350759K,Collège Échange,30 rue de Dinan,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.115879734200085, -1.6834300763512902",Public
+0350759K,Collège Échange,30 rue de Dinan,LV2,Turc,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.115879734200085, -1.6834300763512902",Public
+0350026N,Lycée Jean Macé,10 rue Jean Macé,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.11708078639708, -1.6702996079259038",Public
+0352030S,Collège Morvan Lebesque,34 avenue Beausejour,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Mordelles,Collège,"48.07273530878959, -1.840130398044565",Public
+0352030S,Collège Morvan Lebesque,34 avenue Beausejour,LV2,Italien,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Mordelles,Collège,"48.07273530878959, -1.840130398044565",Public
+0350836U,Collège Saint-Martin - Quartier Sainte-Geneviève,14 D rue Guinguene,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.099055736554845, -1.6854604057056215",Privé
+0351852Y,Collège de Fontenay,35 rue Antoine Châtel,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Chartres-de-Bretagne,Collège,"48.0415527618465, -1.6978431215445224",Public
+0352070K,Collège Assomption,18 boulevard Painleve,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.122379250771374, -1.6589194034352441",Privé
+0352070K,Collège Assomption,18 boulevard Painleve,LV2,Japonais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.122379250771374, -1.6589194034352441",Privé
+0352274G,Collège Françoise Dolto,53 avenue le Brix,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Pacé,Collège,"48.15269869519049, -1.7712695048918636",Public
+0353083L,"Collège Saint-Paul (annexe du collège Saint-Joseph, Bruz)",22 avenue de la Mare Guesclin,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Saint-Erblon,Collège,,Privé
+0353083L,"Collège Saint-Paul (annexe du collège Saint-Joseph, Bruz)",22 avenue de la Mare Guesclin,LV2,Chinois,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Saint-Erblon,Collège,,Privé
+0353083L,"Collège Saint-Paul (annexe du collège Saint-Joseph, Bruz)",22 avenue de la Mare Guesclin,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Saint-Erblon,Collège,,Privé
+0350783L,Lycée Saint-Martin - quartier Sainte-Geneviève,14 D rue Ginguené,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.099055736554845, -1.6854604057056215",Privé
+0350783L,Lycée Saint-Martin - quartier Sainte-Geneviève,14 D rue Ginguené,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.099055736554845, -1.6854604057056215",Privé
+0352009U,Lycée Victor et Hélène Basch,15 avenue Charles Tillon,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.126584334179064, -1.6893397892166615",Public
+0350030T,Lycée polyvalent Pierre Mendès France,34 rue Bahon Rault,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.13456382981909, -1.6824696947334972",Public
+0350700W,Lycée agricole Théodore Monod,55 avenue de la Bouvardière,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Le Rheu,Lycée,"48.09938946437969, -1.8092498270455981",Public
+0350700W,Lycée agricole Théodore Monod,55 avenue de la Bouvardière,LV1,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Le Rheu,Lycée,"48.09938946437969, -1.8092498270455981",Public
+0352686E,Lycée Anita Conti,Esplanade Anita Conti,LV1,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Bruz,Lycée,"48.03334269031083, -1.733614089815954",Public
+0352686E,Lycée Anita Conti,Esplanade Anita Conti,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Bruz,Lycée,"48.03334269031083, -1.733614089815954",Public
+0350028R,Lycée Bréquigny,7 avenue Georges Graff,LV2,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.08457249925098, -1.688419551002567",Public
+0350028R,Lycée Bréquigny,7 avenue Georges Graff,LV2,Turc,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.08457249925098, -1.688419551002567",Public
+0350734H,Collège les Chalais,25 avenue du Canada,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.0850336808838, -1.6798204949066526",Public
+0350734H,Collège les Chalais,25 avenue du Canada,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.0850336808838, -1.6798204949066526",Public
+0350734H,Collège les Chalais,25 avenue du Canada,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.0850336808838, -1.6798204949066526",Public
+0350734H,Collège les Chalais,25 avenue du Canada,LV2,Italien,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.0850336808838, -1.6798204949066526",Public
+0350027P,Collège les Gayeulles,140 boulevard de Vitre,LV2,Italien,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.12537928586194, -1.6499493581762867",Public
+0352691K,Collège Andrée Récipon,6 rue de Pont Péan,LV2,Italien,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Orgères,Collège,"48.002837465005314, -1.6687005114684557",Public
+0350874K,Collège Saint-Yves,3 rue Jeanne d'Arc,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Mordelles,Collège,"48.073796023393825, -1.8519406433123715",Privé
+0351851X,Collège la Binquenais,40 boulevard Oscar Leroux,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.091110812924576, -1.6634066069978006",Public
+0350801F,Lycée Jean-Paul II,2 rue Antoine de St Exupéry,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Saint-Grégoire,Lycée,"48.15986449029303, -1.6749995885276903",Privé
+0350029S,Lycée Joliot Curie,144 boulevard de Vitré,LV2,Arabe,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.125687227428486, -1.6481306020702366",Public
+0350029S,Lycée Joliot Curie,144 boulevard de Vitré,LV2,Italien,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.125687227428486, -1.6481306020702366",Public
+0352972R,Collège Saint-Louis - La Hublais,Avenue de la Hublais,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Cesson-Sévigné,Collège,"48.1178507231933, -1.6165857137560533",Privé
+0352972R,Collège Saint-Louis - La Hublais,Avenue de la Hublais,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Cesson-Sévigné,Collège,"48.1178507231933, -1.6165857137560533",Privé
+0351796M,Collège Émile Zola,2 avenue Janvier,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.106629422819154, -1.6731696810760333",Public
+0351796M,Collège Émile Zola,2 avenue Janvier,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.106629422819154, -1.6731696810760333",Public
+0350797B,Lycée polyvalent Jeanne d'Arc,61 rue la Fontaine,LV1,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.11924524245059, -1.6540806074427075",Privé
+0350710G,Lycée Chateaubriand,136 boulevard de Vitré,LCA,Latin,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.1233633632789, -1.6494796949846533",Public
+0350839X,Collège Saint-Hélier,7 rue Frère Salomon,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.10323527620077, -1.6604394705236643",Privé
+0352071L,Collège Joséphine Bakhita,29 boulevard Emile Combes,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.09384402862993, -1.6672943520074563",Privé
+0350760L,Collège Cleunay,26 rue Andrée Récipon,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.098814254968495, -1.709250420726049",Public
+0350760L,Collège Cleunay,26 rue Andrée Récipon,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.098814254968495, -1.709250420726049",Public
+0351638R,Collège Anne de Bretagne,15 rue Martenot,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.11327142418572, -1.6719805345060357",Public
+0351638R,Collège Anne de Bretagne,15 rue Martenot,LV2,Russe,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.11327142418572, -1.6719805345060357",Public
+0350776D,Lycée polyvalent Saint-Vincent Providence,57 rue de Paris,LV1,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.11372195398317, -1.663820040947764",Privé
+0350776D,Lycée polyvalent Saint-Vincent Providence,57 rue de Paris,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.11372195398317, -1.663820040947764",Privé
+0350793X,Lycée polyvalent Frédéric Ozanam,99 rue de la Chalotais,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Cesson-Sévigné,Lycée,"48.12999050182102, -1.598099543380704",Privé
+0352341E,Lycée Saint-Joseph,3 avenue Alphonse Legault,LCA,Latin,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Bruz,Lycée,"48.02503125665702, -1.7455206077313452",Privé
+0352341E,Lycée Saint-Joseph,3 avenue Alphonse Legault,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Bruz,Lycée,"48.02503125665702, -1.7455206077313452",Privé
+0352341E,Lycée Saint-Joseph,3 avenue Alphonse Legault,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Bruz,Lycée,"48.02503125665702, -1.7455206077313452",Privé
+0352341E,Lycée Saint-Joseph,3 avenue Alphonse Legault,LV2,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Bruz,Lycée,"48.02503125665702, -1.7455206077313452",Privé
+0351926D,Centre médical et pédagogique,41 avenue des Buttes de Coësmes,LV1,Anglais,,Ille-et-Vilaine,,Bretagne,,Rennes,Rennes,Collège,"48.12377332117261, -1.6379061902003618",
+0351926D,Centre médical et pédagogique,41 avenue des Buttes de Coësmes,LV2,Espagnol,,Ille-et-Vilaine,,Bretagne,,Rennes,Rennes,Collège,"48.12377332117261, -1.6379061902003618",
+0352319F,Collège Saint-Gabriel,59 avenue le Brix,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Pacé,Collège,"48.15345837379055, -1.7723000917146485",Privé
+0350913C,Collège Clotilde Vautier,8 B rue de la Motte Brulon,LV2,Chinois,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.126256483139166, -1.6679296130380918",Public
+0350692M,Unité pédagogique Robert Desnos CHU de Rennes,"2 rue Henri le Guilloux, CHU Rennes",LV1,Anglais,,Ille-et-Vilaine,,Bretagne,,Rennes,Rennes,Collège,"48.12102302769111, -1.6945019883472654",
+0350835T,Collège La Tour d'Auvergne La Salle,6 rue de la Santé,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.10870279883151, -1.6857804410226962",Privé
+0350852L,Collège Saint-Joseph,22 avenue de la Mare Guesclin,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Saint-Erblon,Collège,"48.02520405429156, -1.745639588615377",Privé
+0352069J,Collège Saint-Vincent Providence,57 rue de Paris,LV2,Italien,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.11363570912166, -1.6651100452186143",Privé
+0352069J,Collège Saint-Vincent Providence,57 rue de Paris,LV2,Russe,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.11363570912166, -1.6651100452186143",Privé
+0350033W,Collège les Ormeaux,30 rue des Ormeaux,LV2,Italien,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.098650278359116, -1.6697994008226291",Public
+0352686E,Lycée Anita Conti,Esplanade Anita Conti,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Bruz,Lycée,"48.03334269031083, -1.733614089815954",Public
+0350028R,Lycée Bréquigny,7 avenue Georges Graff,LCA,Latin,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.08457249925098, -1.688419551002567",Public
+0350028R,Lycée Bréquigny,7 avenue Georges Graff,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.08457249925098, -1.688419551002567",Public
+0352070K,Collège Assomption,18 boulevard Painleve,LV2,Italien,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.122379250771374, -1.6589194034352441",Privé
+0350836U,Collège Saint-Martin - Quartier Sainte-Geneviève,14 D rue Guinguene,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.099055736554845, -1.6854604057056215",Privé
+0352260S,Collège François Truffaut,Rue de la Rabine,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Betton,Collège,"48.17632035698209, -1.6508804172478202",Public
+0352260S,Collège François Truffaut,Rue de la Rabine,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Betton,Collège,"48.17632035698209, -1.6508804172478202",Public
+0300037C,Collège Jean Vilar,Avenue de Sabatot,LV1,Anglais,30,Gard,76,Occitanie,11,Montpellier,Saint-Gilles,Collège,"43.685516150351695, 4.434667601331774",Public
+0350781J,Collège Notre-Dame du Vieux cours,19 boulevard de la Liberté,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.106415392837775, -1.6787187617227946",Privé
+0350057X,Collège Jacques Prévert,Rue René Cutte,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Romillé,Collège,"48.219106849799665, -1.894700191160429",Public
+0350780H,Collège Immaculée,2 rue Antoine de Saint Exupéry,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Saint-Grégoire,Collège,"48.159927985198166, -1.675580497757275",Privé
+0350780H,Collège Immaculée,2 rue Antoine de Saint Exupéry,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Saint-Grégoire,Collège,"48.159927985198166, -1.675580497757275",Privé
+0352589Z,Collège Jean Moulin,"Place Léopold Sédar Senghor, Saint Jacques de la Lande",LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Saint-Jacques-de-la-Lande,Collège,"48.076712992313155, -1.7144093290210372",Public
+0352589Z,Collège Jean Moulin,"Place Léopold Sédar Senghor, Saint Jacques de la Lande",LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Saint-Jacques-de-la-Lande,Collège,"48.076712992313155, -1.7144093290210372",Public
+0352959B,Collège Marie Curie,5 rue de la Buterne,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Laille,Collège,"47.98208062263773, -1.7140524721419692",Public
+0352959B,Collège Marie Curie,5 rue de la Buterne,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Laille,Collège,"47.98208062263773, -1.7140524721419692",Public
+0350965J,Collège le Landry,29 avenue de Cork,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.09753788927972, -1.6489805465114107",Public
+0350710G,Lycée Chateaubriand,136 boulevard de Vitré,LV1,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.1233633632789, -1.6494796949846533",Public
+0350024L,Lycée Émile Zola,2 avenue Janvier,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.106629422819154, -1.6731696810760333",Public
+0350024L,Lycée Émile Zola,2 avenue Janvier,LV2,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.106629422819154, -1.6731696810760333",Public
+0350024L,Lycée Émile Zola,2 avenue Janvier,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.106629422819154, -1.6731696810760333",Public
+0352304P,Lycée Sévigné,2 rue de la Chalotais,LCA,Latin,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Cesson-Sévigné,Lycée,"48.1160991960509, -1.5991704230501025",Public
+0351907H,Lycée René Descartes,14 Chemin de Ronde,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.08839581314323, -1.642879342483228",Public
+0351907H,Lycée René Descartes,14 Chemin de Ronde,LV2,Italien,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.08839581314323, -1.642879342483228",Public
+0351907H,Lycée René Descartes,14 Chemin de Ronde,LV2,Japonais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.08839581314323, -1.642879342483228",Public
+0350777E,Lycée Saint-Martin - quartier Sainte-Anne,31 rue d'Antrain,LCA,Latin,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.1166293748915, -1.6791295723203956",Privé
+0350777E,Lycée Saint-Martin - quartier Sainte-Anne,31 rue d'Antrain,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.1166293748915, -1.6791295723203956",Privé
+0350777E,Lycée Saint-Martin - quartier Sainte-Anne,31 rue d'Antrain,LV2,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.1166293748915, -1.6791295723203956",Privé
+0350793X,Lycée polyvalent Frédéric Ozanam,99 rue de la Chalotais,LCA,Latin,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Cesson-Sévigné,Lycée,"48.12999050182102, -1.598099543380704",Privé
+0350801F,Lycée Jean-Paul II,2 rue Antoine de St Exupéry,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Saint-Grégoire,Lycée,"48.15986449029303, -1.6749995885276903",Privé
+0350801F,Lycée Jean-Paul II,2 rue Antoine de St Exupéry,LV2,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Saint-Grégoire,Lycée,"48.15986449029303, -1.6749995885276903",Privé
+0350801F,Lycée Jean-Paul II,2 rue Antoine de St Exupéry,LV2,Italien,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Saint-Grégoire,Lycée,"48.15986449029303, -1.6749995885276903",Privé
+0350029S,Lycée Joliot Curie,144 boulevard de Vitré,LCA,Latin,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.125687227428486, -1.6481306020702366",Public
+0350029S,Lycée Joliot Curie,144 boulevard de Vitré,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.125687227428486, -1.6481306020702366",Public
+0350029S,Lycée Joliot Curie,144 boulevard de Vitré,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.125687227428486, -1.6481306020702366",Public
+0352009U,Lycée Victor et Hélène Basch,15 avenue Charles Tillon,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.126584334179064, -1.6893397892166615",Public
+0352009U,Lycée Victor et Hélène Basch,15 avenue Charles Tillon,LV2,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.126584334179064, -1.6893397892166615",Public
+0350778F,Lycée la Mennais,18 boulevard Painlevé,LV2,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.122379250771374, -1.6589194034352441",Privé
+0351047Y,Lycée Saint-Exupéry de Rennes - The Land,Rue Fernand Robert,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.131899007420806, -1.7111699381214776",Privé
+0351047Y,Lycée Saint-Exupéry de Rennes - The Land,Rue Fernand Robert,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.131899007420806, -1.7111699381214776",Privé
+0350030T,Lycée polyvalent Pierre Mendès France,34 rue Bahon Rault,LV1,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.13456382981909, -1.6824696947334972",Public
+0350030T,Lycée polyvalent Pierre Mendès France,34 rue Bahon Rault,LV2,Chinois,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.13456382981909, -1.6824696947334972",Public
+0351847T,Collège Georges Brassens,Rue Georges Brassens,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Le Rheu,Collège,"48.099666673032004, -1.7998499599513993",Public
+0350797B,Lycée polyvalent Jeanne d'Arc,61 rue la Fontaine,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.11924524245059, -1.6540806074427075",Privé
+0350797B,Lycée polyvalent Jeanne d'Arc,61 rue la Fontaine,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.11924524245059, -1.6540806074427075",Privé
+0352867B,Lycée général Théodore Monod,55 avenue de la Bouvardière,LV1,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Le Rheu,Lycée,"48.09957406339709, -1.8084604571139695",Public
+0352867B,Lycée général Théodore Monod,55 avenue de la Bouvardière,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Le Rheu,Lycée,"48.09957406339709, -1.8084604571139695",Public
+0352867B,Lycée général Théodore Monod,55 avenue de la Bouvardière,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Le Rheu,Lycée,"48.09957406339709, -1.8084604571139695",Public
+0352867B,Lycée général Théodore Monod,55 avenue de la Bouvardière,LV2,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Le Rheu,Lycée,"48.09957406339709, -1.8084604571139695",Public
+0350026N,Lycée Jean Macé,10 rue Jean Macé,LV2,Breton,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.11708078639708, -1.6702996079259038",Public
+0350801F,Lycée Jean-Paul II,2 rue Antoine de St Exupéry,LV1,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Saint-Grégoire,Lycée,"48.15986449029303, -1.6749995885276903",Privé
+0350029S,Lycée Joliot Curie,144 boulevard de Vitré,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.125687227428486, -1.6481306020702366",Public
+0350783L,Lycée Saint-Martin - quartier Sainte-Geneviève,14 D rue Ginguené,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.099055736554845, -1.6854604057056215",Privé
+0350783L,Lycée Saint-Martin - quartier Sainte-Geneviève,14 D rue Ginguené,LV2,Italien,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.099055736554845, -1.6854604057056215",Privé
+0352009U,Lycée Victor et Hélène Basch,15 avenue Charles Tillon,LV2,Italien,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.126584334179064, -1.6893397892166615",Public
+0350778F,Lycée la Mennais,18 boulevard Painlevé,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.122379250771374, -1.6589194034352441",Privé
+0350778F,Lycée la Mennais,18 boulevard Painlevé,LV2,Italien,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.122379250771374, -1.6589194034352441",Privé
+0350795Z,Lycée de La Salle,5 rue de la Motte-Brûlon,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.125360297739775, -1.6686393691236225",Privé
+0350795Z,Lycée de La Salle,5 rue de la Motte-Brûlon,LV2,Italien,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.125360297739775, -1.6686393691236225",Privé
+0350028R,Lycée Bréquigny,7 avenue Georges Graff,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.08457249925098, -1.688419551002567",Public
+0350028R,Lycée Bréquigny,7 avenue Georges Graff,LV2,Italien,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.08457249925098, -1.688419551002567",Public
+0352341E,Lycée Saint-Joseph,3 avenue Alphonse Legault,LCA,Grec,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Bruz,Lycée,"48.02503125665702, -1.7455206077313452",Privé
+0351906G,Collège Bourgchevreuil,1 boulevard des Metairies,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Cesson-Sévigné,Collège,"48.11950506421491, -1.6005197238771154",Public
+0350913C,Collège Clotilde Vautier,8 B rue de la Motte Brulon,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.126256483139166, -1.6679296130380918",Public
+0350692M,Unité pédagogique Robert Desnos CHU de Rennes,"2 rue Henri le Guilloux, CHU Rennes",LV2,Espagnol,,Ille-et-Vilaine,,Bretagne,,Rennes,Rennes,Collège,"48.12102302769111, -1.6945019883472654",
+0350835T,Collège La Tour d'Auvergne La Salle,6 rue de la Santé,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.10870279883151, -1.6857804410226962",Privé
+0350852L,Collège Saint-Joseph,22 avenue de la Mare Guesclin,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Saint-Erblon,Collège,"48.02520405429156, -1.745639588615377",Privé
+0352260S,Collège François Truffaut,Rue de la Rabine,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Betton,Collège,"48.17632035698209, -1.6508804172478202",Public
+0300037C,Collège Jean Vilar,Avenue de Sabatot,LV2,Allemand,30,Gard,76,Occitanie,11,Montpellier,Saint-Gilles,Collège,"43.685516150351695, 4.434667601331774",Public
+0352691K,Collège Andrée Récipon,6 rue de Pont Péan,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Orgères,Collège,"48.002837465005314, -1.6687005114684557",Public
+0350874K,Collège Saint-Yves,3 rue Jeanne d'Arc,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Mordelles,Collège,"48.073796023393825, -1.8519406433123715",Privé
+0350700W,Lycée agricole Théodore Monod,55 avenue de la Bouvardière,LV2,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Le Rheu,Lycée,"48.09938946437969, -1.8092498270455981",Public
+0351907H,Lycée René Descartes,14 Chemin de Ronde,LV1,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.08839581314323, -1.642879342483228",Public
+0350777E,Lycée Saint-Martin - quartier Sainte-Anne,31 rue d'Antrain,LCA,Grec,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.1166293748915, -1.6791295723203956",Privé
+0350777E,Lycée Saint-Martin - quartier Sainte-Anne,31 rue d'Antrain,LV1,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.1166293748915, -1.6791295723203956",Privé
+0350777E,Lycée Saint-Martin - quartier Sainte-Anne,31 rue d'Antrain,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.1166293748915, -1.6791295723203956",Privé
+0350777E,Lycée Saint-Martin - quartier Sainte-Anne,31 rue d'Antrain,LV2,Chinois,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.1166293748915, -1.6791295723203956",Privé
+0350777E,Lycée Saint-Martin - quartier Sainte-Anne,31 rue d'Antrain,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.1166293748915, -1.6791295723203956",Privé
+0350776D,Lycée polyvalent Saint-Vincent Providence,57 rue de Paris,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.11372195398317, -1.663820040947764",Privé
+0350776D,Lycée polyvalent Saint-Vincent Providence,57 rue de Paris,LV2,Russe,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.11372195398317, -1.663820040947764",Privé
+0350793X,Lycée polyvalent Frédéric Ozanam,99 rue de la Chalotais,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Cesson-Sévigné,Lycée,"48.12999050182102, -1.598099543380704",Privé
+0350793X,Lycée polyvalent Frédéric Ozanam,99 rue de la Chalotais,LV2,Italien,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Cesson-Sévigné,Lycée,"48.12999050182102, -1.598099543380704",Privé
+0352589Z,Collège Jean Moulin,"Place Léopold Sédar Senghor, Saint Jacques de la Lande",LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Saint-Jacques-de-la-Lande,Collège,"48.076712992313155, -1.7144093290210372",Public
+0352959B,Collège Marie Curie,5 rue de la Buterne,LV2,Italien,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Laille,Collège,"47.98208062263773, -1.7140524721419692",Public
+0351796M,Collège Émile Zola,2 avenue Janvier,LV2,Italien,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.106629422819154, -1.6731696810760333",Public
+0352867B,Lycée général Théodore Monod,55 avenue de la Bouvardière,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Le Rheu,Lycée,"48.09957406339709, -1.8084604571139695",Public
+0350026N,Lycée Jean Macé,10 rue Jean Macé,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.11708078639708, -1.6702996079259038",Public
+0350026N,Lycée Jean Macé,10 rue Jean Macé,LV2,Italien,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.11708078639708, -1.6702996079259038",Public
+0352030S,Collège Morvan Lebesque,34 avenue Beausejour,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Mordelles,Collège,"48.07273530878959, -1.840130398044565",Public
+0352030S,Collège Morvan Lebesque,34 avenue Beausejour,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Mordelles,Collège,"48.07273530878959, -1.840130398044565",Public
+0350895H,Collège Rosa Parks,10 rue de Gascogne,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.121201797651814, -1.7146799912092223",Public
+0352541X,Collège Théodore Monod,Chemin de Seiche,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Vern-sur-Seiche,Collège,"48.04268888855317, -1.6105197686960293",Public
+0350759K,Collège Échange,30 rue de Dinan,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.115879734200085, -1.6834300763512902",Public
+0351926D,Centre médical et pédagogique,41 avenue des Buttes de Coësmes,LV1,Allemand,,Ille-et-Vilaine,,Bretagne,,Rennes,Rennes,Collège,"48.12377332117261, -1.6379061902003618",
+0351926D,Centre médical et pédagogique,41 avenue des Buttes de Coësmes,LV2,Anglais,,Ille-et-Vilaine,,Bretagne,,Rennes,Rennes,Collège,"48.12377332117261, -1.6379061902003618",
+0351852Y,Collège de Fontenay,35 rue Antoine Châtel,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Chartres-de-Bretagne,Collège,"48.0415527618465, -1.6978431215445224",Public
+0351796M,Collège Émile Zola,2 avenue Janvier,LV2,Chinois,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.106629422819154, -1.6731696810760333",Public
+0351847T,Collège Georges Brassens,Rue Georges Brassens,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Le Rheu,Collège,"48.099666673032004, -1.7998499599513993",Public
+0350965J,Collège le Landry,29 avenue de Cork,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.09753788927972, -1.6489805465114107",Public
+0350797B,Lycée polyvalent Jeanne d'Arc,61 rue la Fontaine,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.11924524245059, -1.6540806074427075",Privé
+0350797B,Lycée polyvalent Jeanne d'Arc,61 rue la Fontaine,LV2,Chinois,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.11924524245059, -1.6540806074427075",Privé
+0350710G,Lycée Chateaubriand,136 boulevard de Vitré,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.1233633632789, -1.6494796949846533",Public
+0350024L,Lycée Émile Zola,2 avenue Janvier,LCA,Grec,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.106629422819154, -1.6731696810760333",Public
+0350024L,Lycée Émile Zola,2 avenue Janvier,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.106629422819154, -1.6731696810760333",Public
+0350024L,Lycée Émile Zola,2 avenue Janvier,LV2,Chinois,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.106629422819154, -1.6731696810760333",Public
+0350024L,Lycée Émile Zola,2 avenue Janvier,LV2,Italien,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.106629422819154, -1.6731696810760333",Public
+0351851X,Collège la Binquenais,40 boulevard Oscar Leroux,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.091110812924576, -1.6634066069978006",Public
+0351851X,Collège la Binquenais,40 boulevard Oscar Leroux,LV2,Chinois,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.091110812924576, -1.6634066069978006",Public
+0351851X,Collège la Binquenais,40 boulevard Oscar Leroux,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.091110812924576, -1.6634066069978006",Public
+0352274G,Collège Françoise Dolto,53 avenue le Brix,LV2,Italien,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Pacé,Collège,"48.15269869519049, -1.7712695048918636",Public
+0352070K,Collège Assomption,18 boulevard Painleve,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.122379250771374, -1.6589194034352441",Privé
+0350836U,Collège Saint-Martin - Quartier Sainte-Geneviève,14 D rue Guinguene,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.099055736554845, -1.6854604057056215",Privé
+0350965J,Collège le Landry,29 avenue de Cork,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.09753788927972, -1.6489805465114107",Public
+0350797B,Lycée polyvalent Jeanne d'Arc,61 rue la Fontaine,LV2,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.11924524245059, -1.6540806074427075",Privé
+0350797B,Lycée polyvalent Jeanne d'Arc,61 rue la Fontaine,LV2,Italien,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.11924524245059, -1.6540806074427075",Privé
+0352867B,Lycée général Théodore Monod,55 avenue de la Bouvardière,LV2,Italien,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Le Rheu,Lycée,"48.09957406339709, -1.8084604571139695",Public
+0350026N,Lycée Jean Macé,10 rue Jean Macé,LCA,Latin,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.11708078639708, -1.6702996079259038",Public
+0350026N,Lycée Jean Macé,10 rue Jean Macé,LV1,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.11708078639708, -1.6702996079259038",Public
+0350026N,Lycée Jean Macé,10 rue Jean Macé,LV1,Russe,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.11708078639708, -1.6702996079259038",Public
+0350026N,Lycée Jean Macé,10 rue Jean Macé,LV2,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.11708078639708, -1.6702996079259038",Public
+0350836U,Collège Saint-Martin - Quartier Sainte-Geneviève,14 D rue Guinguene,LV2,Italien,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.099055736554845, -1.6854604057056215",Privé
+0351851X,Collège la Binquenais,40 boulevard Oscar Leroux,LV2,Italien,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.091110812924576, -1.6634066069978006",Public
+0350780H,Collège Immaculée,2 rue Antoine de Saint Exupéry,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Saint-Grégoire,Collège,"48.159927985198166, -1.675580497757275",Privé
+0350780H,Collège Immaculée,2 rue Antoine de Saint Exupéry,LV2,Italien,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Saint-Grégoire,Collège,"48.159927985198166, -1.675580497757275",Privé
+0351852Y,Collège de Fontenay,35 rue Antoine Châtel,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Chartres-de-Bretagne,Collège,"48.0415527618465, -1.6978431215445224",Public
+0351852Y,Collège de Fontenay,35 rue Antoine Châtel,LV2,Italien,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Chartres-de-Bretagne,Collège,"48.0415527618465, -1.6978431215445224",Public
+0352274G,Collège Françoise Dolto,53 avenue le Brix,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Pacé,Collège,"48.15269869519049, -1.7712695048918636",Public
+0352070K,Collège Assomption,18 boulevard Painleve,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.122379250771374, -1.6589194034352441",Privé
+0351906G,Collège Bourgchevreuil,1 boulevard des Metairies,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Cesson-Sévigné,Collège,"48.11950506421491, -1.6005197238771154",Public
+0351906G,Collège Bourgchevreuil,1 boulevard des Metairies,LV2,Italien,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Cesson-Sévigné,Collège,"48.11950506421491, -1.6005197238771154",Public
+0350913C,Collège Clotilde Vautier,8 B rue de la Motte Brulon,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.126256483139166, -1.6679296130380918",Public
+0350913C,Collège Clotilde Vautier,8 B rue de la Motte Brulon,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.126256483139166, -1.6679296130380918",Public
+0353006C,Collège Léontine Dolivet,99 rue de la Chalotais,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Cesson-Sévigné,Collège,"48.12960422275401, -1.5973038324695294",Privé
+0350835T,Collège La Tour d'Auvergne La Salle,6 rue de la Santé,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.10870279883151, -1.6857804410226962",Privé
+0352069J,Collège Saint-Vincent Providence,57 rue de Paris,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.11363570912166, -1.6651100452186143",Privé
+0350895H,Collège Rosa Parks,10 rue de Gascogne,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.121201797651814, -1.7146799912092223",Public
+0350033W,Collège les Ormeaux,30 rue des Ormeaux,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.098650278359116, -1.6697994008226291",Public
+0350033W,Collège les Ormeaux,30 rue des Ormeaux,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.098650278359116, -1.6697994008226291",Public
+0350033W,Collège les Ormeaux,30 rue des Ormeaux,LV2,Chinois,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.098650278359116, -1.6697994008226291",Public
+0352260S,Collège François Truffaut,Rue de la Rabine,LV2,Italien,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Betton,Collège,"48.17632035698209, -1.6508804172478202",Public
+0352541X,Collège Théodore Monod,Chemin de Seiche,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Vern-sur-Seiche,Collège,"48.04268888855317, -1.6105197686960293",Public
+0350759K,Collège Échange,30 rue de Dinan,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.115879734200085, -1.6834300763512902",Public
+0350759K,Collège Échange,30 rue de Dinan,LV2,Italien,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.115879734200085, -1.6834300763512902",Public
+0350801F,Lycée Jean-Paul II,2 rue Antoine de St Exupéry,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Saint-Grégoire,Lycée,"48.15986449029303, -1.6749995885276903",Privé
+0350783L,Lycée Saint-Martin - quartier Sainte-Geneviève,14 D rue Ginguené,LV2,Portugais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.099055736554845, -1.6854604057056215",Privé
+0352009U,Lycée Victor et Hélène Basch,15 avenue Charles Tillon,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.126584334179064, -1.6893397892166615",Public
+0350778F,Lycée la Mennais,18 boulevard Painlevé,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.122379250771374, -1.6589194034352441",Privé
+0350030T,Lycée polyvalent Pierre Mendès France,34 rue Bahon Rault,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.13456382981909, -1.6824696947334972",Public
+0350795Z,Lycée de La Salle,5 rue de la Motte-Brûlon,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.125360297739775, -1.6686393691236225",Privé
+0350700W,Lycée agricole Théodore Monod,55 avenue de la Bouvardière,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Le Rheu,Lycée,"48.09938946437969, -1.8092498270455981",Public
+0352686E,Lycée Anita Conti,Esplanade Anita Conti,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Bruz,Lycée,"48.03334269031083, -1.733614089815954",Public
+0352341E,Lycée Saint-Joseph,3 avenue Alphonse Legault,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Bruz,Lycée,"48.02503125665702, -1.7455206077313452",Privé
+0351926D,Centre médical et pédagogique,41 avenue des Buttes de Coësmes,LV2,Allemand,,Ille-et-Vilaine,,Bretagne,,Rennes,Rennes,Collège,"48.12377332117261, -1.6379061902003618",
+0353083L,"Collège Saint-Paul (annexe du collège Saint-Joseph, Bruz)",22 avenue de la Mare Guesclin,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Saint-Erblon,Collège,,Privé
+0351847T,Collège Georges Brassens,Rue Georges Brassens,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Le Rheu,Collège,"48.099666673032004, -1.7998499599513993",Public
+0351847T,Collège Georges Brassens,Rue Georges Brassens,LV2,Italien,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Le Rheu,Collège,"48.099666673032004, -1.7998499599513993",Public
+0350710G,Lycée Chateaubriand,136 boulevard de Vitré,LV2,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.1233633632789, -1.6494796949846533",Public
+0350710G,Lycée Chateaubriand,136 boulevard de Vitré,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.1233633632789, -1.6494796949846533",Public
+0350710G,Lycée Chateaubriand,136 boulevard de Vitré,LV2,Italien,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.1233633632789, -1.6494796949846533",Public
+0350024L,Lycée Émile Zola,2 avenue Janvier,LV2,Turc,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.106629422819154, -1.6731696810760333",Public
+0352304P,Lycée Sévigné,2 rue de la Chalotais,LV1,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Cesson-Sévigné,Lycée,"48.1160991960509, -1.5991704230501025",Public
+0352304P,Lycée Sévigné,2 rue de la Chalotais,LV2,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Cesson-Sévigné,Lycée,"48.1160991960509, -1.5991704230501025",Public
+0352304P,Lycée Sévigné,2 rue de la Chalotais,LV2,Chinois,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Cesson-Sévigné,Lycée,"48.1160991960509, -1.5991704230501025",Public
+0352304P,Lycée Sévigné,2 rue de la Chalotais,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Cesson-Sévigné,Lycée,"48.1160991960509, -1.5991704230501025",Public
+0300037C,Collège Jean Vilar,Avenue de Sabatot,LV2,Italien,30,Gard,76,Occitanie,11,Montpellier,Saint-Gilles,Collège,"43.685516150351695, 4.434667601331774",Public
+0350027P,Collège les Gayeulles,140 boulevard de Vitre,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.12537928586194, -1.6499493581762867",Public
+0350781J,Collège Notre-Dame du Vieux cours,19 boulevard de la Liberté,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.106415392837775, -1.6787187617227946",Privé
+0350781J,Collège Notre-Dame du Vieux cours,19 boulevard de la Liberté,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.106415392837775, -1.6787187617227946",Privé
+0350963G,Collège les Hautes Ourmes,7 avenue de Pologne,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.08946765302947, -1.649410128522291",Public
+0350963G,Collège les Hautes Ourmes,7 avenue de Pologne,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.08946765302947, -1.649410128522291",Public
+0352691K,Collège Andrée Récipon,6 rue de Pont Péan,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Orgères,Collège,"48.002837465005314, -1.6687005114684557",Public
+0352071L,Collège Joséphine Bakhita,29 boulevard Emile Combes,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.09384402862993, -1.6672943520074563",Privé
+0351638R,Collège Anne de Bretagne,15 rue Martenot,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.11327142418572, -1.6719805345060357",Public
+0351638R,Collège Anne de Bretagne,15 rue Martenot,LV2,Italien,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.11327142418572, -1.6719805345060357",Public
+0351907H,Lycée René Descartes,14 Chemin de Ronde,LV1,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.08839581314323, -1.642879342483228",Public
+0350776D,Lycée polyvalent Saint-Vincent Providence,57 rue de Paris,LCA,Latin,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.11372195398317, -1.663820040947764",Privé
+0350776D,Lycée polyvalent Saint-Vincent Providence,57 rue de Paris,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.11372195398317, -1.663820040947764",Privé
+0300037C,Collège Jean Vilar,Avenue de Sabatot,LV2,Espagnol,30,Gard,76,Occitanie,11,Montpellier,Saint-Gilles,Collège,"43.685516150351695, 4.434667601331774",Public
+0350839X,Collège Saint-Hélier,7 rue Frère Salomon,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.10323527620077, -1.6604394705236643",Privé
+0350839X,Collège Saint-Hélier,7 rue Frère Salomon,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.10323527620077, -1.6604394705236643",Privé
+0350027P,Collège les Gayeulles,140 boulevard de Vitre,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.12537928586194, -1.6499493581762867",Public
+0350027P,Collège les Gayeulles,140 boulevard de Vitre,LV2,Arabe,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.12537928586194, -1.6499493581762867",Public
+0350027P,Collège les Gayeulles,140 boulevard de Vitre,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.12537928586194, -1.6499493581762867",Public
+0350963G,Collège les Hautes Ourmes,7 avenue de Pologne,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.08946765302947, -1.649410128522291",Public
+0352691K,Collège Andrée Récipon,6 rue de Pont Péan,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Orgères,Collège,"48.002837465005314, -1.6687005114684557",Public
+0350760L,Collège Cleunay,26 rue Andrée Récipon,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.098814254968495, -1.709250420726049",Public
+0350874K,Collège Saint-Yves,3 rue Jeanne d'Arc,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Mordelles,Collège,"48.073796023393825, -1.8519406433123715",Privé
+0352959B,Collège Marie Curie,5 rue de la Buterne,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Laille,Collège,"47.98208062263773, -1.7140524721419692",Public
+0351796M,Collège Émile Zola,2 avenue Janvier,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.106629422819154, -1.6731696810760333",Public
+0350002M,Collège Pierre Brossolette,18 rue Théodore Botrel,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Bruz,Collège,"48.021013875335434, -1.7441403383784257",Public
+0350002M,Collège Pierre Brossolette,18 rue Théodore Botrel,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Bruz,Collège,"48.021013875335434, -1.7441403383784257",Public
+0350002M,Collège Pierre Brossolette,18 rue Théodore Botrel,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Bruz,Collège,"48.021013875335434, -1.7441403383784257",Public
+0350026N,Lycée Jean Macé,10 rue Jean Macé,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.11708078639708, -1.6702996079259038",Public
+0351907H,Lycée René Descartes,14 Chemin de Ronde,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.08839581314323, -1.642879342483228",Public
+0351907H,Lycée René Descartes,14 Chemin de Ronde,LV2,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.08839581314323, -1.642879342483228",Public
+0351907H,Lycée René Descartes,14 Chemin de Ronde,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.08839581314323, -1.642879342483228",Public
+0350776D,Lycée polyvalent Saint-Vincent Providence,57 rue de Paris,LV2,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.11372195398317, -1.663820040947764",Privé
+0350776D,Lycée polyvalent Saint-Vincent Providence,57 rue de Paris,LV2,Italien,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.11372195398317, -1.663820040947764",Privé
+0350793X,Lycée polyvalent Frédéric Ozanam,99 rue de la Chalotais,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Cesson-Sévigné,Lycée,"48.12999050182102, -1.598099543380704",Privé
+0352071L,Collège Joséphine Bakhita,29 boulevard Emile Combes,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.09384402862993, -1.6672943520074563",Privé
+0350057X,Collège Jacques Prévert,Rue René Cutte,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Romillé,Collège,"48.219106849799665, -1.894700191160429",Public
+0350057X,Collège Jacques Prévert,Rue René Cutte,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Romillé,Collège,"48.219106849799665, -1.894700191160429",Public
+0351638R,Collège Anne de Bretagne,15 rue Martenot,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.11327142418572, -1.6719805345060357",Public
+0350710G,Lycée Chateaubriand,136 boulevard de Vitré,LCA,Grec,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.1233633632789, -1.6494796949846533",Public
+0350710G,Lycée Chateaubriand,136 boulevard de Vitré,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.1233633632789, -1.6494796949846533",Public
+0350710G,Lycée Chateaubriand,136 boulevard de Vitré,LV2,Arabe,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.1233633632789, -1.6494796949846533",Public
+0350024L,Lycée Émile Zola,2 avenue Janvier,LCA,Latin,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.106629422819154, -1.6731696810760333",Public
+0352304P,Lycée Sévigné,2 rue de la Chalotais,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Cesson-Sévigné,Lycée,"48.1160991960509, -1.5991704230501025",Public
+0352304P,Lycée Sévigné,2 rue de la Chalotais,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Cesson-Sévigné,Lycée,"48.1160991960509, -1.5991704230501025",Public
+0352304P,Lycée Sévigné,2 rue de la Chalotais,LV2,Italien,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Cesson-Sévigné,Lycée,"48.1160991960509, -1.5991704230501025",Public
+0352274G,Collège Françoise Dolto,53 avenue le Brix,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Pacé,Collège,"48.15269869519049, -1.7712695048918636",Public
+0352319F,Collège Saint-Gabriel,59 avenue le Brix,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Pacé,Collège,"48.15345837379055, -1.7723000917146485",Privé
+0350835T,Collège La Tour d'Auvergne La Salle,6 rue de la Santé,LV2,Chinois,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.10870279883151, -1.6857804410226962",Privé
+0352069J,Collège Saint-Vincent Providence,57 rue de Paris,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.11363570912166, -1.6651100452186143",Privé
+0350033W,Collège les Ormeaux,30 rue des Ormeaux,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Collège,"48.098650278359116, -1.6697994008226291",Public
+0350801F,Lycée Jean-Paul II,2 rue Antoine de St Exupéry,LCA,Latin,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Saint-Grégoire,Lycée,"48.15986449029303, -1.6749995885276903",Privé
+0350029S,Lycée Joliot Curie,144 boulevard de Vitré,LV1,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.125687227428486, -1.6481306020702366",Public
+0350029S,Lycée Joliot Curie,144 boulevard de Vitré,LV2,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.125687227428486, -1.6481306020702366",Public
+0350783L,Lycée Saint-Martin - quartier Sainte-Geneviève,14 D rue Ginguené,LCA,Latin,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.099055736554845, -1.6854604057056215",Privé
+0350778F,Lycée la Mennais,18 boulevard Painlevé,LCA,Latin,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.122379250771374, -1.6589194034352441",Privé
+0350778F,Lycée la Mennais,18 boulevard Painlevé,LV1,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.122379250771374, -1.6589194034352441",Privé
+0350778F,Lycée la Mennais,18 boulevard Painlevé,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.122379250771374, -1.6589194034352441",Privé
+0350030T,Lycée polyvalent Pierre Mendès France,34 rue Bahon Rault,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.13456382981909, -1.6824696947334972",Public
+0350795Z,Lycée de La Salle,5 rue de la Motte-Brûlon,LV2,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.125360297739775, -1.6686393691236225",Privé
+0350700W,Lycée agricole Théodore Monod,55 avenue de la Bouvardière,LV2,Espagnol,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Le Rheu,Lycée,"48.09938946437969, -1.8092498270455981",Public
+0350700W,Lycée agricole Théodore Monod,55 avenue de la Bouvardière,LV2,Italien,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Le Rheu,Lycée,"48.09938946437969, -1.8092498270455981",Public
+0352686E,Lycée Anita Conti,Esplanade Anita Conti,LCA,Latin,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Bruz,Lycée,"48.03334269031083, -1.733614089815954",Public
+0352686E,Lycée Anita Conti,Esplanade Anita Conti,LV2,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Bruz,Lycée,"48.03334269031083, -1.733614089815954",Public
+0352686E,Lycée Anita Conti,Esplanade Anita Conti,LV2,Italien,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Bruz,Lycée,"48.03334269031083, -1.733614089815954",Public
+0350028R,Lycée Bréquigny,7 avenue Georges Graff,LV1,Anglais,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Rennes,Lycée,"48.08457249925098, -1.688419551002567",Public
+0352341E,Lycée Saint-Joseph,3 avenue Alphonse Legault,LV1,Allemand,35,Ille-et-Vilaine,53,Bretagne,14,Rennes,Bruz,Lycée,"48.02503125665702, -1.7455206077313452",Privé

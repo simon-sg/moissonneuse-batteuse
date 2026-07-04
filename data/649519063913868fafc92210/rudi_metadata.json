@@ -1,0 +1,95 @@
+{
+  "local_id": "63f59442-b5cf-53f6-b4e8-52005eb0a2fd",
+  "resource_title": "Effectifs des élèves en voie professionnelle ou BTS - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Effectifs des élèves en voie professionnelle ou BTS — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/649519063913868fafc92210\n\nCe jeu de données contient les effectifs des élèves en voie professionnelle ou BTS par niveau, sexe et lycée professionnel observés au début du mois d’octobre chaque année.  \n  \nDernière observation le 01/10/2025.  \n  \nDepuis 2020, les académies de Caen et de Rouen constituent l’académie de Normandie. Les données sont présentées selon ce découpage afin d’en faciliter la lecture.  \n  \nPour en savoir plus :\n\n[Dieusaert P., Juzdzewski L., Leduc A., Miconnet N., 2025, \"Les effectifs dans le second degré : 5,621 millions d’élèves scolarisés à la rentrée 2025\", Note d'Information, n° 25-59, DEPP.  \n](https://www.education.gouv.fr/depp/les-effectifs-dans-le-second-degre-5621-millions-d-eleves-scolarises-la-rentree-2025-467609)<https://doi.org/10.48464/ni-25-59>[  \n](https://www.education.gouv.fr/depp/les-effectifs-dans-le-second-degre-5621-millions-d-eleves-scolarises-la-rentree-2025-467609)\n\n[Les formations professionnelles en lycée par spécialité, ](https://rers.depp.education.fr/2025/tableau/04_EL2D/08_FORMPROSPE)_[RERS 2025](https://rers.depp.education.fr/2025/tableau/04_EL2D/08_FORMPROSPE)_[ Fiche 4.08](https://rers.depp.education.fr/2025/tableau/04_EL2D/08_FORMPROSPE)"
+    }
+  ],
+  "theme": "education",
+  "keywords": [
+    "2nd-degre",
+    "effectif-scolaire",
+    "eleve",
+    "eleves-etudiants-et-apprentis",
+    "etablissement-prive-sous-contrat",
+    "etablissement-public",
+    "lycee-professionnel",
+    "rentree-scolaire",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Ministères de l'Éducation nationale"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "0aff2893-b029-517c-917a-80c305538473",
+      "media_type": "FILE",
+      "media_name": "fr-en-lycee-pro-effectifs-niveau-sexe-mef-rennesmetropole.csv",
+      "media_caption": "fr-en-lycee_pro-effectifs-niveau-sexe-mef.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "68aa94d9-e7d5-5b67-b275-71247bfcc0ec",
+      "media_type": "FILE",
+      "media_name": "fr-en-lycee-pro-effectifs-niveau-sexe-mef-rennesmetropole.json",
+      "media_caption": "fr-en-lycee_pro-effectifs-niveau-sexe-mef.csv — données filtrées sur Rennes Métropole (JSON)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "1dae3a31-46a8-5a0e-a5b4-0df35cbba542",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://data.education.gouv.fr/api/explore/v2.1/catalog/datasets/fr-en-lycee_pro-effectifs-niveau-sexe-mef/exports/csv?use_labels=true",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2023-05-31T00:00:00Z",
+    "updated": "2026-06-10T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2023-05-31T00:00:00Z",
+      "updated": "2026-06-10T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/649519063913868fafc92210"
+  }
+}

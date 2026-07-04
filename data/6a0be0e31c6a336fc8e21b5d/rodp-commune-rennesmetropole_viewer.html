@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title></title>
+<script>(function(){try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<style>
+:root{--bg:#f5f6f8;--card:#fff;--txt:#1c2733;--muted:#667;--accent:#0b6e99;--bord:#e2e6ea;
+      --avert-bg:#fff8e1;--avert-bord:#ffe082;--avert-txt:#6d4c00;
+      --geo-bg:#eaf4fb;--geo-hover:#d4ecf7;--stripe:#fafbfc;--row-hover:#eef6fb;
+      --resizer:rgba(11,110,153,.35);--td-bord:#f0f2f4}
+:root[data-theme="dark"]{--bg:#10151b;--card:#1a222b;--txt:#dbe2e8;--muted:#8996a3;--accent:#4fb3da;--bord:#29323c;
+      --avert-bg:#3a2f10;--avert-bord:#6b5418;--avert-txt:#e8c96a;
+      --geo-bg:#16303c;--geo-hover:#1d3f4d;--stripe:#161d24;--row-hover:#17242c;
+      --resizer:rgba(79,179,218,.35);--td-bord:#232c35}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#10151b;--card:#1a222b;--txt:#dbe2e8;--muted:#8996a3;--accent:#4fb3da;--bord:#29323c;
+      --avert-bg:#3a2f10;--avert-bord:#6b5418;--avert-txt:#e8c96a;
+      --geo-bg:#16303c;--geo-hover:#1d3f4d;--stripe:#161d24;--row-hover:#17242c;
+      --resizer:rgba(79,179,218,.35);--td-bord:#232c35}
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+     background:var(--bg);color:var(--txt);display:flex;flex-direction:column;height:100vh}
+header{background:var(--card);border-bottom:1px solid var(--bord);padding:10px 16px;
+       display:flex;flex-wrap:wrap;gap:10px;align-items:center;flex-shrink:0}
+h1{font-size:.9rem;font-weight:600;flex:1;min-width:150px;
+   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#filtre{padding:7px 11px;font-size:.9rem;border:1px solid var(--bord);
+        border-radius:6px;width:220px;background:var(--card);color:var(--txt)}
+#info{color:var(--muted);font-size:.82rem;white-space:nowrap}
+#theme-toggle{background:none;border:1px solid var(--bord);border-radius:6px;padding:5px 10px;
+              cursor:pointer;font-size:.9rem;line-height:1;color:var(--txt);flex-shrink:0}
+#theme-toggle:hover{background:var(--bg)}
+.avert{background:var(--avert-bg);border-bottom:1px solid var(--avert-bord);padding:5px 16px;
+       font-size:.8rem;color:var(--avert-txt);flex-shrink:0}
+.wrap{flex:1;overflow:auto}
+table{border-collapse:collapse;font-size:.82rem;table-layout:fixed}
+thead{position:sticky;top:0;z-index:2;background:var(--card);box-shadow:0 1px 0 var(--bord)}
+th{padding:8px 12px;text-align:left;cursor:pointer;user-select:none;color:var(--muted);font-weight:600;
+   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative}
+th:hover{background:var(--bg);color:var(--txt)}
+th.asc::after{content:" ↑";color:var(--accent)}
+th.desc::after{content:" ↓";color:var(--accent)}
+th.geo{color:var(--accent);background:var(--geo-bg)}
+th.geo:hover{background:var(--geo-hover)}
+th.trad{text-decoration:underline dotted;text-decoration-color:var(--accent);text-underline-offset:3px}
+td{padding:0;border-bottom:1px solid var(--td-bord)}
+td div{padding:5px 12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+td div a{color:var(--accent);text-decoration:none}
+td div a:hover{text-decoration:underline}
+tr:nth-child(even) td{background:var(--stripe)}
+tr:hover td{background:var(--row-hover)}
+.resizer{position:absolute;right:0;top:0;width:5px;height:100%;cursor:col-resize;z-index:1}
+.resizer:hover,.resizer.active{background:var(--resizer)}
+</style>
+</head>
+<body>
+<header>
+  <h1 id="titre"></h1>
+  <input id="filtre" type="search" placeholder="Filtrer toutes les colonnes…">
+  <span id="info"></span>
+  <button id="theme-toggle" title="Basculer thème clair/sombre" aria-label="Basculer thème clair/sombre">🌙</button>
+</header>
+<div id="avert" class="avert" style="display:none"></div>
+<div class="wrap"><table id="t"><colgroup id="cols"></colgroup><thead id="thead"></thead><tbody id="tbody"></tbody></table></div>
+<script id="d" type="application/json">{"nom": "rodp-commune-rennesmetropole.csv", "champs_geo": ["Nom commune", "Code Insee commune"], "dictionnaire": {}, "entetes": ["Année", "Code Insee commune", "Nom commune", "Type", "Indice", "Longueur (m)", "Montant RODP (€)", "geom", "centroid"], "lignes": [["2026", "35189", "Montgermont", "Commune", "1.45", "36.0", "147.0", "{\"coordinates\": [[[[-1.725103151, 48.144206383], [-1.724510204, 48.144835022], [-1.724053118, 48.145657429], [-1.72392115, 48.148156094], [-1.723820543, 48.148642394], [-1.723478943, 48.149024773], [-", "48.154003362, -1.717025903"], ["2026", "35055", "Chantepie", "Commune", "1.45", "3.0", "145.0", "{\"coordinates\": [[[[-1.56872203, 48.092689656], [-1.56823927, 48.092194611], [-1.56815682, 48.091863404], [-1.568463592, 48.091194405], [-1.568690726, 48.090973769], [-1.568854016, 48.090248142], [-1.", "48.082025954, -1.603860104"], ["2025", "35204", "Nouvoitou", "Commune", "1.43", "53.0", "146.0", "{\"coordinates\": [[[[-1.552202619, 48.007367707], [-1.552052856, 48.007500605], [-1.551990746, 48.008059176], [-1.550985512, 48.010084792], [-1.552526762, 48.010620937], [-1.553422766, 48.010652034], [", "48.030580726, -1.552345417"], ["2025", "35055", "Chantepie", "Commune", "1.43", "3.0", "143.0", "{\"coordinates\": [[[[-1.56872203, 48.092689656], [-1.56823927, 48.092194611], [-1.56815682, 48.091863404], [-1.568463592, 48.091194405], [-1.568690726, 48.090973769], [-1.568854016, 48.090248142], [-1.", "48.082025954, -1.603860104"], ["2025", "35206", "Noyal-Châtillon-sur-Seiche", "Commune", "1.43", "99.0", "148.0", "{\"coordinates\": [[[[-1.699510372, 48.062706877], [-1.699296058, 48.063079631], [-1.697011441, 48.070908143], [-1.697728434, 48.074057182], [-1.697939753, 48.075920182], [-1.698543239, 48.076595625], [", "48.052319673, -1.662727758"], ["2025", "35066", "Chartres-de-Bretagne", "Commune", "1.43", "15.0", "144.0", "{\"coordinates\": [[[[-1.728097825, 48.058545144], [-1.727662037, 48.059085522], [-1.727095081, 48.059106501], [-1.72606068, 48.059313933], [-1.724497684, 48.059926619], [-1.723246134, 48.060262643], [-", "48.044923921, -1.706450766"], ["2025", "35189", "Montgermont", "Commune", "1.43", "36.0", "145.0", "{\"coordinates\": [[[[-1.725103151, 48.144206383], [-1.724510204, 48.144835022], [-1.724053118, 48.145657429], [-1.72392115, 48.148156094], [-1.723820543, 48.148642394], [-1.723478943, 48.149024773], [-", "48.154003362, -1.717025903"], ["2025", "35051", "Cesson-Sévigné", "Commune", "1.43", "11.0", "144.0", "{\"coordinates\": [[[[-1.556389663, 48.098540548], [-1.55661947, 48.097975519], [-1.556789223, 48.097977964], [-1.558159402, 48.096095178], [-1.559302222, 48.095679571], [-1.559598255, 48.095367956], [-", "48.120399976, -1.597246318"], ["2025", "35196", "Mordelles", "Commune", "1.43", "136.0", "150.0", "{\"coordinates\": [[[[-1.875744319, 48.071307335], [-1.87648561, 48.071395626], [-1.877586502, 48.071867508], [-1.878732736, 48.073923396], [-1.880139505, 48.073933583], [-1.880828743, 48.073836476], [-", "48.08591693, -1.842665024"], ["2025", "35281", "Saint-Jacques-de-la-Lande", "Commune", "1.43", "71.0", "147.0", "{\"coordinates\": [[[[-1.759274681, 48.071721201], [-1.758622955, 48.072176674], [-1.757572121, 48.072711385], [-1.757052115, 48.073270605], [-1.755519741, 48.074389101], [-1.753067178, 48.076928544], [", "48.076118522, -1.72255839"], ["2025", "35250", "Saint-Armel", "Commune", "1.43", "40.0", "145.0", "{\"coordinates\": [[[[-1.594533256, 48.029909473], [-1.593859467, 48.029872699], [-1.593137787, 48.029377167], [-1.592258426, 48.029031114], [-1.591727057, 48.029024823], [-1.591068116, 48.029391288], [", "48.013354267, -1.580563454"], ["2024", "35051", "Cesson-Sévigné", "Commune", "1.42", "11.0", "143.0", "{\"coordinates\": [[[[-1.556389663, 48.098540548], [-1.55661947, 48.097975519], [-1.556789223, 48.097977964], [-1.558159402, 48.096095178], [-1.559302222, 48.095679571], [-1.559598255, 48.095367956], [-", "48.120399976, -1.597246318"], ["2026", "35204", "Nouvoitou", "Commune", "1.45", "53.0", "148.0", "{\"coordinates\": [[[[-1.552202619, 48.007367707], [-1.552052856, 48.007500605], [-1.551990746, 48.008059176], [-1.550985512, 48.010084792], [-1.552526762, 48.010620937], [-1.553422766, 48.010652034], [", "48.030580726, -1.552345417"], ["2026", "35210", "Pacé", "Commune", "1.45", "90.0", "150.0", "{\"coordinates\": [[[[-1.725103151, 48.144206383], [-1.725947215, 48.143569473], [-1.727306325, 48.142216883], [-1.728362691, 48.140071433], [-1.727528714, 48.13927106], [-1.728192537, 48.139209269], [-", "48.152674555, -1.777329663"], ["2026", "35240", "Le Rheu", "Commune", "1.45", "20.0", "146.0", "{\"coordinates\": [[[[-1.759274681, 48.071721201], [-1.759565593, 48.071919486], [-1.759748389, 48.072351126], [-1.76029091, 48.072863774], [-1.761002001, 48.07299277], [-1.760809502, 48.073424266], [-1", "48.097273894, -1.781007693"], ["2026", "35131", "L'Hermitage", "Commune", "1.45", "23.0", "146.0", "{\"coordinates\": [[[[-1.828232577, 48.139816715], [-1.827077657, 48.139677421], [-1.826544657, 48.138886091], [-1.825333642, 48.138884306], [-1.824744551, 48.139085126], [-1.824404815, 48.139052159], [", "48.122105723, -1.816343476"], ["2026", "35132", "Hirel", "Commune", "1.45", "20.0", "146.0", "{\"coordinates\": [[[[-1.80812956, 48.564052457], [-1.809941278, 48.572804719], [-1.809498802, 48.572881205], [-1.809647541, 48.576598081], [-1.808809055, 48.576740155], [-1.808634253, 48.578148604], [-", "48.593520287, -1.809074158"], ["2026", "35196", "Mordelles", "Commune", "1.45", "136.0", "152.0", "{\"coordinates\": [[[[-1.875744319, 48.071307335], [-1.87648561, 48.071395626], [-1.877586502, 48.071867508], [-1.878732736, 48.073923396], [-1.880139505, 48.073933583], [-1.880828743, 48.073836476], [-", "48.08591693, -1.842665024"], ["2026", "35032", "Bourgbarré", "Commune", "1.45", "91.0", "150.0", "{\"coordinates\": [[[[-1.618128536, 48.012257127], [-1.616222111, 48.011871373], [-1.615755854, 48.01193205], [-1.613929977, 48.012623926], [-1.611235406, 48.012489878], [-1.605265612, 48.012511174], [-", "47.988624621, -1.622400821"], ["2026", "35047", "Bruz", "Commune", "1.45", "67.0", "148.0", "{\"coordinates\": [[[[-1.70842048, 48.02392111], [-1.709329984, 48.023616036], [-1.709650133, 48.02327236], [-1.710176238, 48.023144005], [-1.710572507, 48.023413904], [-1.711005239, 48.023323543], [-1.", "48.025912616, -1.748505157"], ["2026", "35066", "Chartres-de-Bretagne", "Commune", "1.45", "15.0", "146.0", "{\"coordinates\": [[[[-1.728097825, 48.058545144], [-1.727662037, 48.059085522], [-1.727095081, 48.059106501], [-1.72606068, 48.059313933], [-1.724497684, 48.059926619], [-1.723246134, 48.060262643], [-", "48.044923921, -1.706450766"], ["2026", "35080", "Cintré", "Commune", "1.45", "22.0", "146.0", "{\"coordinates\": [[[[-1.917032862, 48.113216943], [-1.916527306, 48.114496673], [-1.918442134, 48.114817923], [-1.918004172, 48.115204063], [-1.91606023, 48.116349104], [-1.915489851, 48.116846247], [-", "48.108592205, -1.885947357"], ["2025", "35139", "Laillé", "Commune", "1.43", "47.0", "145.0", "{\"coordinates\": [[[[-1.71912181, 48.007320736], [-1.718839585, 48.007274371], [-1.718153084, 48.006867401], [-1.717810242, 48.007150717], [-1.717354997, 48.006881407], [-1.716274821, 48.005961039], [-", "47.967023004, -1.713940651"], ["2025", "35363", "Pont-Péan", "Commune", "1.43", "17.0", "144.0", "{\"coordinates\": [[[[-1.71912181, 48.007320736], [-1.71889589, 48.007694921], [-1.718415989, 48.007902605], [-1.718218505, 48.008339654], [-1.71941114, 48.008893081], [-1.719324297, 48.00974219], [-1.7", "48.010947119, -1.696373362"], ["2025", "35210", "Pacé", "Commune", "1.43", "90.0", "148.0", "{\"coordinates\": [[[[-1.725103151, 48.144206383], [-1.725947215, 48.143569473], [-1.727306325, 48.142216883], [-1.728362691, 48.140071433], [-1.727528714, 48.13927106], [-1.728192537, 48.139209269], [-", "48.152674555, -1.777329663"], ["2025", "35278", "Saint-Grégoire", "Commune", "1.43", "37.0", "145.0", "{\"coordinates\": [[[[-1.723865048, 48.182008682], [-1.722531801, 48.182729125], [-1.719137466, 48.184201792], [-1.718008114, 48.182426127], [-1.717699876, 48.182144598], [-1.716932306, 48.182469161], [", "48.158493325, -1.685339705"], ["2024", "35189", "Montgermont", "Commune", "1.42", "36.0", "144.0", "{\"coordinates\": [[[[-1.725103151, 48.144206383], [-1.724510204, 48.144835022], [-1.724053118, 48.145657429], [-1.72392115, 48.148156094], [-1.723820543, 48.148642394], [-1.723478943, 48.149024773], [-", "48.154003362, -1.717025903"], ["2024", "35032", "Bourgbarré", "Commune", "1.42", "91.0", "147.0", "{\"coordinates\": [[[[-1.618128536, 48.012257127], [-1.616222111, 48.011871373], [-1.615755854, 48.01193205], [-1.613929977, 48.012623926], [-1.611235406, 48.012489878], [-1.605265612, 48.012511174], [-", "47.988624621, -1.622400821"], ["2024", "35055", "Chantepie", "Commune", "1.42", "3.0", "142.0", "{\"coordinates\": [[[[-1.56872203, 48.092689656], [-1.56823927, 48.092194611], [-1.56815682, 48.091863404], [-1.568463592, 48.091194405], [-1.568690726, 48.090973769], [-1.568854016, 48.090248142], [-1.", "48.082025954, -1.603860104"], ["2024", "35352", "Vern-sur-Seiche", "Commune", "1.42", "17.0", "143.0", "{\"coordinates\": [[[[-1.600418427, 48.014952754], [-1.601406228, 48.01495646], [-1.602066341, 48.012798729], [-1.602937013, 48.012769146], [-1.605265612, 48.012511174], [-1.611235406, 48.012489878], [-", "48.052832924, -1.605159507"], ["2024", "35210", "Pacé", "Commune", "1.42", "90.0", "146.0", "{\"coordinates\": [[[[-1.725103151, 48.144206383], [-1.725947215, 48.143569473], [-1.727306325, 48.142216883], [-1.728362691, 48.140071433], [-1.727528714, 48.13927106], [-1.728192537, 48.139209269], [-", "48.152674555, -1.777329663"], ["2024", "35238", "Rennes", "Commune", "1.42", "150.0", "149.0", "{\"coordinates\": [[[[-1.739866548, 48.131333894], [-1.739419997, 48.132029755], [-1.73863755, 48.133769486], [-1.738238469, 48.133824299], [-1.737885674, 48.135040125], [-1.736507403, 48.134823302], [-", "48.111679995, -1.681867912"], ["2026", "35206", "Noyal-Châtillon-sur-Seiche", "Commune", "1.45", "99.0", "150.0", "{\"coordinates\": [[[[-1.699510372, 48.062706877], [-1.699296058, 48.063079631], [-1.697011441, 48.070908143], [-1.697728434, 48.074057182], [-1.697939753, 48.075920182], [-1.698543239, 48.076595625], [", "48.052319673, -1.662727758"], ["2026", "35278", "Saint-Grégoire", "Commune", "1.45", "37.0", "147.0", "{\"coordinates\": [[[[-1.723865048, 48.182008682], [-1.722531801, 48.182729125], [-1.719137466, 48.184201792], [-1.718008114, 48.182426127], [-1.717699876, 48.182144598], [-1.716932306, 48.182469161], [", "48.158493325, -1.685339705"], ["2026", "35281", "Saint-Jacques-de-la-Lande", "Commune", "1.45", "71.0", "149.0", "{\"coordinates\": [[[[-1.759274681, 48.071721201], [-1.758622955, 48.072176674], [-1.757572121, 48.072711385], [-1.757052115, 48.073270605], [-1.755519741, 48.074389101], [-1.753067178, 48.076928544], [", "48.076118522, -1.72255839"], ["2026", "35250", "Saint-Armel", "Commune", "1.45", "40.0", "147.0", "{\"coordinates\": [[[[-1.594533256, 48.029909473], [-1.593859467, 48.029872699], [-1.593137787, 48.029377167], [-1.592258426, 48.029031114], [-1.591727057, 48.029024823], [-1.591068116, 48.029391288], [", "48.013354267, -1.580563454"], ["2026", "35352", "Vern-sur-Seiche", "Commune", "1.45", "17.0", "146.0", "{\"coordinates\": [[[[-1.600418427, 48.014952754], [-1.601406228, 48.01495646], [-1.602066341, 48.012798729], [-1.602937013, 48.012769146], [-1.605265612, 48.012511174], [-1.611235406, 48.012489878], [-", "48.052832924, -1.605159507"], ["2026", "35238", "Rennes", "Commune", "1.45", "150.0", "153.0", "{\"coordinates\": [[[[-1.739866548, 48.131333894], [-1.739419997, 48.132029755], [-1.73863755, 48.133769486], [-1.738238469, 48.133824299], [-1.737885674, 48.135040125], [-1.736507403, 48.134823302], [-", "48.111679995, -1.681867912"], ["2026", "35051", "Cesson-Sévigné", "Commune", "1.45", "11.0", "146.0", "{\"coordinates\": [[[[-1.556389663, 48.098540548], [-1.55661947, 48.097975519], [-1.556789223, 48.097977964], [-1.558159402, 48.096095178], [-1.559302222, 48.095679571], [-1.559598255, 48.095367956], [-", "48.120399976, -1.597246318"], ["2026", "35079", "Chevaigné", "Commune", "1.45", "6.0", "145.0", "{\"coordinates\": [[[[-1.634334514, 48.253915876], [-1.633205701, 48.253741147], [-1.631812523, 48.253337929], [-1.632034454, 48.252700112], [-1.632414565, 48.252372449], [-1.632773661, 48.251775215], [", "48.224444237, -1.636306229"]], "tronque": false, "nb_total": 40}</script>
+<script>
+(function(){
+  const btn = document.getElementById("theme-toggle");
+  function effectif(){
+    return document.documentElement.getAttribute("data-theme") ||
+      (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  }
+  function majIcone(){ btn.textContent = effectif() === "dark" ? "☀️" : "🌙"; }
+  btn.addEventListener("click", () => {
+    const suivant = effectif() === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", suivant);
+    try { localStorage.setItem("theme", suivant); } catch(e) {}
+    majIcone();
+  });
+  majIcone();
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+    if (!document.documentElement.getAttribute("data-theme")) majIcone();
+  });
+})();
+
+const D=JSON.parse(document.getElementById("d").textContent);
+const tbl=document.getElementById("t"),wrap=document.querySelector(".wrap");
+const nCols=D.entetes.length;
+const wrapW=wrap.clientWidth||800;
+const colW=Math.max(80,Math.floor(Math.max(wrapW,nCols*160)/nCols));
+tbl.style.width=Math.max(wrapW,nCols*160)+"px";
+document.getElementById("cols").innerHTML=D.entetes.map(()=>`<col style="width:${colW}px">`).join("");
+document.title=D.nom;document.getElementById("titre").textContent=D.nom;
+if(D.tronque){const a=document.getElementById("avert");a.style.display="";
+  a.textContent=`Prévisualisation : ${D.lignes.length.toLocaleString("fr")} premières lignes sur ${D.nb_total.toLocaleString("fr")} au total.`;}
+const geo=new Set(D.champs_geo||[]);
+const DICO=D.dictionnaire||{};
+let sc=-1,asc=true,q="";
+function esc(s){return String(s??"").replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function cell(v){const s=String(v??"").trim();return /^https?:\/\/\S+$/.test(s)?`<a href="${esc(s)}" target="_blank" rel="noopener">${esc(s)}</a>`:esc(v);}
+function rendu(){
+  let rows=D.lignes;
+  if(q){const f=q.toLowerCase();rows=rows.filter(r=>r.some(v=>String(v??"").toLowerCase().includes(f)));}
+  if(sc>=0){const col=sc,up=asc;rows=[...rows].sort((a,b)=>{
+    const va=a[col]??"",vb=b[col]??"",na=+va,nb=+vb;
+    return(!isNaN(na)&&!isNaN(nb))?(up?na-nb:nb-na):(up?String(va).localeCompare(String(vb),"fr"):String(vb).localeCompare(String(va),"fr"));
+  });}
+  const th=D.entetes.map((h,i)=>{
+    const trad=DICO[h];
+    const cls=[sc===i?(asc?"asc":"desc"):"",geo.has(h)?"geo":"",trad?"trad":""].filter(Boolean).join(" ");
+    const tip=trad?` title="${esc(h)}"`:"";
+    return`<th class="${cls}"${tip}>${esc(trad||h)}<div class="resizer"></div></th>`;
+  }).join("");
+  document.getElementById("thead").innerHTML=`<tr>${th}</tr>`;
+  document.getElementById("tbody").innerHTML=rows.map(r=>`<tr>${r.map(v=>`<td><div title="${esc(v)}">${cell(v)}</div></td>`).join("")}</tr>`).join("");
+  const n=rows.length,tot=D.lignes.length;
+  document.getElementById("info").textContent=n<tot
+    ?`${n.toLocaleString("fr")} / ${tot.toLocaleString("fr")} lignes`
+    :`${n.toLocaleString("fr")} ligne${n>1?"s":""}`;
+}
+// Sort via delegation — ignore clicks that start on the resizer handle
+tbl.addEventListener("click",e=>{
+  if(e.target.closest(".resizer"))return;
+  const th=e.target.closest("th");
+  if(!th)return;
+  const i=th.cellIndex;sc===i?asc=!asc:(sc=i,asc=true);rendu();
+});
+// Column resize
+tbl.addEventListener("mousedown",e=>{
+  const rz=e.target.closest(".resizer");
+  if(!rz)return;
+  e.preventDefault();
+  const th=rz.parentElement,idx=th.cellIndex;
+  const cols=document.querySelectorAll("#cols col");
+  const startX=e.clientX,startW=th.offsetWidth;
+  rz.classList.add("active");
+  document.body.style.cursor="col-resize";
+  function onMove(e){
+    const w=Math.max(40,startW+(e.clientX-startX));
+    cols[idx].style.width=w+"px";
+    tbl.style.width=Array.from(cols).reduce((s,c)=>s+(parseInt(c.style.width)||colW),0)+"px";
+  }
+  function onUp(){
+    rz.classList.remove("active");
+    document.body.style.cursor="";
+    document.removeEventListener("mousemove",onMove);
+    document.removeEventListener("mouseup",onUp);
+  }
+  document.addEventListener("mousemove",onMove);
+  document.addEventListener("mouseup",onUp);
+});
+document.getElementById("filtre").addEventListener("input",e=>{q=e.target.value;rendu();});
+rendu();
+</script>
+</body>
+</html>

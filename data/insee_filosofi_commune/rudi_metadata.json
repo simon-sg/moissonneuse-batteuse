@@ -1,0 +1,82 @@
+{
+  "local_id": "47448fe6-729b-5957-89e9-a7384a4e9324",
+  "resource_title": "Revenus, pauvreté et niveau de vie — communes et EPCI (Filosofi) — Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Revenus, pauvreté et niveau de vie — communes et EPCI (Filosofi) — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Données INSEE filtrées sur Rennes Métropole.\n\nSource : https://www.insee.fr/fr/statistiques/7756729\n\nJeu de données du thème « social », produit par Institut national de la statistique et des études économiques (Insee), limité aux communes de Rennes Métropole. Les enregistrements comportent les champs suivants : GEO, GEO_OBJECT, FILOSOFI_MEASURE, UNIT_MEASURE, UNIT_MULT, CONF_STATUS, OBS_STATUS, TIME_PERIOD (+1 autres champs)."
+    }
+  ],
+  "theme": "society",
+  "keywords": [
+    "insee",
+    "rennes métropole",
+    "filosofi-commune"
+  ],
+  "producer": {
+    "organization_name": "Institut national de la statistique et des études économiques (Insee)"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "d0102ac9-7e12-542b-afcb-12dcae814658",
+      "media_type": "FILE",
+      "media_name": "ds-filosofi-cc-data-rennesmetropole.csv",
+      "media_caption": "ds-filosofi-cc-data-rennesmetropole.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "b97ff292-0ce1-5695-8f03-7761710a23dc",
+      "media_type": "FILE",
+      "media_name": "DS_FILOSOFI_CC_metadata.csv",
+      "media_caption": "Dictionnaire des variables — DS_FILOSOFI_CC_metadata.csv (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "57e8e907-268d-5768-aa2f-6ecb92031c10",
+      "media_type": "SERVICE",
+      "media_name": "source-insee",
+      "media_caption": "Publication complète (France entière) sur insee.fr",
+      "connector": {
+        "url": "https://www.insee.fr/fr/statistiques/fichier/7756729/base-cc-filosofi-2021-geo2025_csv.zip",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {},
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_source": "https://www.insee.fr/fr/statistiques/7756729"
+  }
+}

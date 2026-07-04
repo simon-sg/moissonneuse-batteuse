@@ -1,0 +1,108 @@
+{
+  "local_id": "02d480d7-56e8-5cdd-8d34-f7a36276427b",
+  "resource_title": "Réexposition des données Finess - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Réexposition des données Finess — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/67e43007cd5e91b9fdcbc7b3\n\nA partir des jeux de données Finess publiés mensuellement par [Ministère de la Santé](https://www.data.gouv.fr/organizations/ministere-des-solidarites-et-de-la-sante/), l'équipe de data.gouv.fr propose une nouvelle façon d'accéder aux données, sous la forme de fichiers uniques et restructurés. Vous pouvez retrouver la documentation ainsi que l'ensemble des précautions liées aux données dans les descriptions des jeux de données d'origine. Pour toute question concernant le contenu des données, nous vous invitons à poser vos questions sur les jeux de données sources. Les données sont identiques aux données d'origine, seule la structure est retravaillée.\n\nLes données sont mises à jour automatiquement lorsque les données sources le sont, et le [code de mise à jour est ouvert](https://github.com/datagouv/datagouvfr_data_pipelines/tree/main/data_processing/sante/finess). Les données sont disponibles aux formats csv et parquet (cf l'onglet \"Téléchargement\" des ressources).\n\nLes jeux de données sources sont :\n- [établissements](https://www.data.gouv.fr/datasets/finess-extraction-du-fichier-des-etablissements/)\n- [entités juridiques](https://www.data.gouv.fr/datasets/finess-extraction-des-entites-juridiques/)\n- [autorisations d'activités de soin](https://www.data.gouv.fr/datasets/finess-extraction-des-autorisations-dactivites-de-soins/)\n- [équipements sociaux et médico-sociaux](https://www.data.gouv.fr/datasets/finess-extraction-des-equipements-sociaux-et-medico-sociaux/)\n- [équipements matériels lourds](https://www.data.gouv.fr/datasets/finess-extraction-des-equipements-materiels-lourds/)\n- [disciplines d'enseignement](https://www.data.gouv.fr/datasets/finess-extraction-des-disciplines-denseignement/)"
+    }
+  ],
+  "theme": "health",
+  "keywords": [
+    "finess",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "data.gouv.fr"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "8cd93504-e595-5332-8a7a-cded51684328",
+      "media_type": "FILE",
+      "media_name": "etablissements-au-02-07-2026-rennesmetropole.csv",
+      "media_caption": "Etablissements au 02-07-2026 — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "7b109b90-4774-5c55-b193-a71cacf739ce",
+      "media_type": "FILE",
+      "media_name": "equipements-sociaux-et-medico-sociaux-au-02-07-202-rennesmetropole.csv",
+      "media_caption": "Equipements sociaux et médico-sociaux au 02-07-2026 — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "249504b1-19bb-5631-bff1-92d29dbed4bb",
+      "media_type": "FILE",
+      "media_name": "autorisations-dactivites-de-soin-au-02-07-2026-rennesmetropole.csv",
+      "media_caption": "Autorisations d'activités de soin au 02-07-2026 — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "cc144704-31a9-59de-bd64-f4022855488d",
+      "media_type": "FILE",
+      "media_name": "disciplines-denseignement-au-02-07-2026-rennesmetropole.csv",
+      "media_caption": "Disciplines d'enseignement au 02-07-2026 — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "1071a9a7-1353-5a54-b303-f7ee449b571e",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://data-pipeline-open.s3.sbg.io.cloud.ovh.net/finess/finess_etablissements.csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2025-03-26T00:00:00Z",
+    "updated": "2026-07-02T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2025-03-26T00:00:00Z",
+      "updated": "2026-07-02T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/67e43007cd5e91b9fdcbc7b3"
+  }
+}

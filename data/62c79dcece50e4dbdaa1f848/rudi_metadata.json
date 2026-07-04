@@ -1,0 +1,95 @@
+{
+  "local_id": "76ca490b-f73d-577f-a97b-3040b09a6950",
+  "resource_title": "Patrimoine immobilier des opérateurs de l’Enseignement supérieur - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Patrimoine immobilier des opérateurs de l’Enseignement supérieur — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/62c79dcece50e4dbdaa1f848\n\nCe jeu de données est issu d’une extraction du module du système d’information immobilier de l’État opéré par la direction générale de l’Enseignement supérieur et de l’Insertion professionnelle (DGESIP) du ministère de l’Enseignement supérieur et de la Recherche. Les terrains ne sont pas couverts par ce jeu de données. Les informations sont renseignées par les établissements d’enseignement supérieur et couvrent tous les aspects relatifs aux bâtiments (identification, localisation, propriété, accessibilité, énergie, etc.). Ces informations concernent :\n\n  * les éléments d’identification,\n\n  * les caractéristiques du bâtiment,\n\n\n\n\n\n\n  * la surface,\n\n\n\n  * l’accessibilité,\n\n  * la performance énergétique\n\n  * et la localisation.\n\n\n\n\nLes données restituées ici sont le reflet de l’état du système d’information source.\n\nLes identifiants et polygones RNB sont issus du Référentiel National des Bâtiments : https://rnb.beta.gouv.fr/"
+    }
+  ],
+  "theme": "education",
+  "keywords": [
+    "academie",
+    "accessibilite",
+    "bati",
+    "batiment",
+    "bibliotheque",
+    "commune",
+    "coordonnees-geographiques",
+    "departement",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Ministère de l'Enseignement supérieur, de la Recherche et de l'Espace"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "ffe809b0-1a70-51b9-b3c4-232e5c0c5d68",
+      "media_type": "FILE",
+      "media_name": "fr-esr-patrimoine-immobilier-des-operateurs-de-l-e-rennesmetropole.csv",
+      "media_caption": "fr-esr-patrimoine-immobilier-des-operateurs-de-l-enseignement-superieur.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "32d3c2fa-a651-5bb0-b36b-906dcf1857ac",
+      "media_type": "FILE",
+      "media_name": "fr-esr-patrimoine-immobilier-des-operateurs-de-l-e-rennesmetropole.json",
+      "media_caption": "fr-esr-patrimoine-immobilier-des-operateurs-de-l-enseignement-superieur.csv — données filtrées sur Rennes Métropole (JSON)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "cd0f823c-16a4-516b-a02c-c623c9db3890",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://data.enseignementsup-recherche.gouv.fr/api/explore/v2.1/catalog/datasets/fr-esr-patrimoine-immobilier-des-operateurs-de-l-enseignement-superieur/exports/csv?use_labels=true",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2022-07-07T00:00:00Z",
+    "updated": "2026-07-03T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2022-07-07T00:00:00Z",
+      "updated": "2026-07-03T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/62c79dcece50e4dbdaa1f848"
+  }
+}

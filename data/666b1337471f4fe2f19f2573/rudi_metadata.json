@@ -1,0 +1,79 @@
+{
+  "local_id": "7619099e-7b6a-59a8-87db-f7a84b24e81d",
+  "resource_title": "Résultats des élections européennes du 9 juin 2024  - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Résultats des élections européennes du 9 juin 2024  — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/666b1337471f4fe2f19f2573\n\nVous trouverez ci-après les résultats définitifs des élections européennes qui se sont tenues le 9 juin 2024, tels que proclamés par la commission nationale de recensement général des votes, le mercredi 12 juin 2024."
+    }
+  ],
+  "theme": "citizenship",
+  "keywords": [
+    "elections",
+    "elections-europeennes",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Ministère de l'intérieur"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "9cc4fb76-7b9d-54af-889a-269452862d7e",
+      "media_type": "FILE",
+      "media_name": "resultats-definitifs-par-commune-rennesmetropole.csv",
+      "media_caption": "resultats-definitifs-par-commune.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "5cfefdbc-56d2-5e1a-bc73-d7c7647778b7",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://static.data.gouv.fr/resources/resultats-des-elections-europeennes-du-9-juin-2024/20240613-154915/resultats-definitifs-par-region.csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2024-06-13T00:00:00Z",
+    "updated": "2024-06-13T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2024-06-13T00:00:00Z",
+      "updated": "2024-06-13T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/666b1337471f4fe2f19f2573"
+  }
+}

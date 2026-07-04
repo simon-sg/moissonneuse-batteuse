@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title></title>
+<script>(function(){try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<style>
+:root{--bg:#f5f6f8;--card:#fff;--txt:#1c2733;--muted:#667;--accent:#0b6e99;--bord:#e2e6ea;
+      --avert-bg:#fff8e1;--avert-bord:#ffe082;--avert-txt:#6d4c00;
+      --geo-bg:#eaf4fb;--geo-hover:#d4ecf7;--stripe:#fafbfc;--row-hover:#eef6fb;
+      --resizer:rgba(11,110,153,.35);--td-bord:#f0f2f4}
+:root[data-theme="dark"]{--bg:#10151b;--card:#1a222b;--txt:#dbe2e8;--muted:#8996a3;--accent:#4fb3da;--bord:#29323c;
+      --avert-bg:#3a2f10;--avert-bord:#6b5418;--avert-txt:#e8c96a;
+      --geo-bg:#16303c;--geo-hover:#1d3f4d;--stripe:#161d24;--row-hover:#17242c;
+      --resizer:rgba(79,179,218,.35);--td-bord:#232c35}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#10151b;--card:#1a222b;--txt:#dbe2e8;--muted:#8996a3;--accent:#4fb3da;--bord:#29323c;
+      --avert-bg:#3a2f10;--avert-bord:#6b5418;--avert-txt:#e8c96a;
+      --geo-bg:#16303c;--geo-hover:#1d3f4d;--stripe:#161d24;--row-hover:#17242c;
+      --resizer:rgba(79,179,218,.35);--td-bord:#232c35}
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+     background:var(--bg);color:var(--txt);display:flex;flex-direction:column;height:100vh}
+header{background:var(--card);border-bottom:1px solid var(--bord);padding:10px 16px;
+       display:flex;flex-wrap:wrap;gap:10px;align-items:center;flex-shrink:0}
+h1{font-size:.9rem;font-weight:600;flex:1;min-width:150px;
+   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#filtre{padding:7px 11px;font-size:.9rem;border:1px solid var(--bord);
+        border-radius:6px;width:220px;background:var(--card);color:var(--txt)}
+#info{color:var(--muted);font-size:.82rem;white-space:nowrap}
+#theme-toggle{background:none;border:1px solid var(--bord);border-radius:6px;padding:5px 10px;
+              cursor:pointer;font-size:.9rem;line-height:1;color:var(--txt);flex-shrink:0}
+#theme-toggle:hover{background:var(--bg)}
+.avert{background:var(--avert-bg);border-bottom:1px solid var(--avert-bord);padding:5px 16px;
+       font-size:.8rem;color:var(--avert-txt);flex-shrink:0}
+.wrap{flex:1;overflow:auto}
+table{border-collapse:collapse;font-size:.82rem;table-layout:fixed}
+thead{position:sticky;top:0;z-index:2;background:var(--card);box-shadow:0 1px 0 var(--bord)}
+th{padding:8px 12px;text-align:left;cursor:pointer;user-select:none;color:var(--muted);font-weight:600;
+   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative}
+th:hover{background:var(--bg);color:var(--txt)}
+th.asc::after{content:" ↑";color:var(--accent)}
+th.desc::after{content:" ↓";color:var(--accent)}
+th.geo{color:var(--accent);background:var(--geo-bg)}
+th.geo:hover{background:var(--geo-hover)}
+th.trad{text-decoration:underline dotted;text-decoration-color:var(--accent);text-underline-offset:3px}
+td{padding:0;border-bottom:1px solid var(--td-bord)}
+td div{padding:5px 12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+td div a{color:var(--accent);text-decoration:none}
+td div a:hover{text-decoration:underline}
+tr:nth-child(even) td{background:var(--stripe)}
+tr:hover td{background:var(--row-hover)}
+.resizer{position:absolute;right:0;top:0;width:5px;height:100%;cursor:col-resize;z-index:1}
+.resizer:hover,.resizer.active{background:var(--resizer)}
+</style>
+</head>
+<body>
+<header>
+  <h1 id="titre"></h1>
+  <input id="filtre" type="search" placeholder="Filtrer toutes les colonnes…">
+  <span id="info"></span>
+  <button id="theme-toggle" title="Basculer thème clair/sombre" aria-label="Basculer thème clair/sombre">🌙</button>
+</header>
+<div id="avert" class="avert" style="display:none"></div>
+<div class="wrap"><table id="t"><colgroup id="cols"></colgroup><thead id="thead"></thead><tbody id="tbody"></tbody></table></div>
+<script id="d" type="application/json">{"nom": "nuit-des-musees-2019-def-rennesmetropole.csv", "champs_geo": ["Ville"], "dictionnaire": {}, "entetes": ["Identifiant", "Slug", "Lien URL", "Titre (fr)", "Titre (en)", "Titre (es)", "Description (fr)", "Description (en)", "Description (es)", "Description longue (fr)", "Description longue (en)", "Description longue (es)", "Détail des conditions (fr)", "Détail des conditions (en)", "Détail des conditions (es)", "Mots clés (fr)", "Mots clés (en)", "Mots clés (es)", "Description longue - HTML (fr)", "Description longue - HTML (en)", "Description longue - HTML (es)", "Dernière mise à jour", "Résumé horaires (fr)", "Résumé horaires (en)", "Résumé horaires (es)", "Première date", "Première ouverture", "Première fermeture", "Dernière date", "Dernière ouverture", "Dernière fermeture", "Horaires détaillés", "Lien d'inscription", "Code d'accessibilité", "Accessibilité (fr)", "Accessibilité (en)", "Accessibilité (es)", "Identifiant du lieu", "Coordonnées géographiques", "Nom du lieu", "Adresse", "Code postal", "Ville", "Département", "Région", "Pays", "Site web du lieu", "Liens du lieu", "Tags du lieu", "Description du lieu (fr)", "Description du lieu (en)", "Description du lieu (es)", "Accès / Itinéraire (fr)", "Accès / Itinéraire (en)", "Accès / Itinéraire (es)", "Tags", "Age minimum", "Age maximum", "Agenda d'origine (uid)", "Catégorie", "Arrondissement", "Code INSEE", "Nom du pays (fr)", "Tag groups", "Registration", "timings_end", "label_multivalued", "value_multi"], "lignes": [["28251625", "contes-et-recits-avec-xavier-leseche-et-gael-rolland", "https://openagenda.com/ndm-2019/event/contes-et-recits-avec-xavier-leseche-et-gael-rolland", "Contes et récits avec Xavier Lesèche et Gaël Rolland", "Tales and narratives with Xavier Lesèche and Gaël Rolland", "Cuentos y cuentos con Xavier Lesèche y Gaël Rolland", "- Contes et récits avec Xavier Lesèche et Gaël Rolland  Pour ces deux voyageurs en imaginaire, la Vilaine est un chemin qui marche.", "*   Tales and narratives with Xavier Lesèche and Gaël Rolland Pour these two travellers in imagination, the Naughty boy is a path(way) which walks(works).", "*   Cuentos y cuentos con Xavier Lesèche y Gaël Rolland Pour estos dos viajeros en imaginario, el Feo es un camino que anda.", "\\- Contes et récits avec Xavier Lesèche et Gaël RollandPour ces deux voyageurs en imaginaire, la Vilaine est un chemin qui marche. Elle leur a mis l'eau à la bouche, pour nous embarquer entre deux riv", "- Tales and narratives with Xavier Lesèche and Gaël RollandFor these two travellers in imagination, the Naughty boy is a path(way) which walks(works). She(It) made the mouth water to them, to load us ", "- Cuentos y cuentos con Xavier Lesèche y Gaël RollandPara estos dos viajeros en imaginario, el Feo es un camino que anda. Ella les puso el agua en la boca, para embarcarnos entre dos orillas, de cuent", "", "", "", "", "", "", "<p>- Contes et récits avec Xavier Lesèche et Gaël Rolland<\/p><p><\/p><p>Pour ces deux voyageurs en imaginaire, la Vilaine est un chemin qui marche. Elle leur a mis l'eau à la bouche, pour nous embarque", "<ul><li>Tales and narratives with Xavier Lesèche and Gaël Rolland<br />For these two travellers in imagination, the Naughty boy is a path(way) which walks(works). She(It) made the mouth water to them,", "<ul><li>Cuentos y cuentos con Xavier Lesèche y Gaël Rolland<br />Para estos dos viajeros en imaginario, el Feo es un camino que anda. Ella les puso el agua en la boca, para embarcarnos entre dos orill", "2019-05-13T15:37:18+02:00", "Samedi 18 mai 2019, 20h30", "Saturday 18 May 2019, 20:30", "", "2019-05-18", "20:30", "23:30", "2019-05-18", "20:30", "23:30", "{\"start\": \"2019-05-18T18:30:00.000Z\", \"end\": \"2019-05-18T21:30:00.000Z\"}", "", "", "", "", "", "70558847", "48.07768,-1.664944", "Écomusée du pays de rennes", "La Bintinais Route de Châtillon-sur-Seiche, Rennes, Ille et Vilaine, Bretagne", "35230", "Rennes", "Ille-et-Vilaine", "Bretagne", "fr", "http://www.ecomusee-rennes-metropole.fr", "", "Château, hôtel urbain, palais, manoir;Arts décoratifs;Sciences et techniques;Musée de France", "L'Écomusée du pays de Rennes œuvre depuis 1987 pour la collecte, la préservation et la diffusion du patrimoine du pays de Rennes, dans toutes ses dimensions. Il est composé d'un grand musée permanent,", "", "", "PIÉTONS • En sortant du métro à la station Triangle, partir à gauche le long de l’avenue des Pays Bas. • Après le pont qui enjambe la rocade, tourner à droite après l’abribus. • Traverser le parking e", "", "", "Spectacle / concert;Gratuit", "", "99", "57079962", "", "", "35238", "France (Métropole)", "[{\"access\": \"public\", \"tags\": [{\"id\": 52779, \"schemaOptionId\": \"2921.7\", \"slug\": \"spectacle-concert\", \"label\": \"Spectacle / concert\"}], \"name\": \"Types d'\\u00e9v\\u00e9nement\", \"slug\": \"types-devenement", "", "2019-05-18T21:30:00.000Z", "Spectacle / concert;Gratuit", ""], ["3818665", "visites-de-lexposition-vilaine-sous-langle-des-crues", "https://openagenda.com/ndm-2019/event/visites-de-lexposition-vilaine-sous-langle-des-crues", "Visites de l'exposition Vilaine : Sous l'angle des crues", "Visits of Naughty(Ugly) exhibition(exposure): Under the angle of floods", "Visitas de la exposición Fea: Bajo el ángulo de las crecidas", "Visites commentées de l'exposition \"Vilaine, une histoire d'eaux avec deux spécialistes des crues", "Visits commented by exhibition(exposure) \"Naughty(Ugly), a history(story) of waters with two specialists of floods", "Visitas comentadas de la exposición \"Fea, una historia de aguas con dos especialistas en las crecidas", "\\- Sous l'angle des cruesVisites commentées de l'exposition \"Vilaine, une histoire d'eaux avec deux spécialistes des crues : Sébastien Barron, chargé de mission \"Prévention des inondations\" à l'EPTB V", "- Under the angle of floodsVisits commented by exhibition(exposure) \"Naughty(Ugly), a history(story) of waters with two specialists of floods: Sébastien Barron, project leader(representative) \"Flood c", "- Bajo el ángulo de las crecidasVisitas comentadas de la exposición \"Fea, una historia de aguas con dos especialistas en las crecidas: Sébastien Barron, encargado de misión \"Prevención de las inundaci", "", "", "", "", "", "", "<p>- Sous l'angle des crues<\/p><p><\/p><p>Visites commentées de l'exposition \"Vilaine, une histoire d'eaux avec deux spécialistes des crues : Sébastien Barron, chargé de mission \"Prévention des inondat", "<ul><li>Under the angle of floods<br />Visits commented by exhibition(exposure) \"Naughty(Ugly), a history(story) of waters with two specialists of floods: Sébastien Barron, project leader(representati", "<ul><li>Bajo el ángulo de las crecidas<br />Visitas comentadas de la exposición \"Fea, una historia de aguas con dos especialistas en las crecidas: Sébastien Barron, encargado de misión \"Prevención de ", "2019-05-13T15:35:19+02:00", "Samedi 18 mai 2019, 20h30", "Saturday 18 May 2019, 20:30", "", "2019-05-18", "20:30", "23:30", "2019-05-18", "20:30", "23:30", "{\"start\": \"2019-05-18T18:30:00.000Z\", \"end\": \"2019-05-18T21:30:00.000Z\"}", "", "", "", "", "", "70558847", "48.07768,-1.664944", "Écomusée du pays de rennes", "La Bintinais Route de Châtillon-sur-Seiche, Rennes, Ille et Vilaine, Bretagne", "35230", "Rennes", "Ille-et-Vilaine", "Bretagne", "fr", "http://www.ecomusee-rennes-metropole.fr", "", "Château, hôtel urbain, palais, manoir;Arts décoratifs;Sciences et techniques;Musée de France", "L'Écomusée du pays de Rennes œuvre depuis 1987 pour la collecte, la préservation et la diffusion du patrimoine du pays de Rennes, dans toutes ses dimensions. Il est composé d'un grand musée permanent,", "", "", "PIÉTONS • En sortant du métro à la station Triangle, partir à gauche le long de l’avenue des Pays Bas. • Après le pont qui enjambe la rocade, tourner à droite après l’abribus. • Traverser le parking e", "", "", "Visite commentée / conférence / lecture;Gratuit", "", "99", "57079962", "", "", "35238", "France (Métropole)", "[{\"access\": \"public\", \"tags\": [{\"id\": 52781, \"schemaOptionId\": \"2921.9\", \"slug\": \"visite-commentee-conference-lecture\", \"label\": \"Visite comment\\u00e9e / conf\\u00e9rence / lecture\"}], \"name\": \"Types d", "", "2019-05-18T21:30:00.000Z", "Visite commentée / conférence / lecture;Gratuit", ""]], "tronque": false, "nb_total": 2}</script>
+<script>
+(function(){
+  const btn = document.getElementById("theme-toggle");
+  function effectif(){
+    return document.documentElement.getAttribute("data-theme") ||
+      (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  }
+  function majIcone(){ btn.textContent = effectif() === "dark" ? "☀️" : "🌙"; }
+  btn.addEventListener("click", () => {
+    const suivant = effectif() === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", suivant);
+    try { localStorage.setItem("theme", suivant); } catch(e) {}
+    majIcone();
+  });
+  majIcone();
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+    if (!document.documentElement.getAttribute("data-theme")) majIcone();
+  });
+})();
+
+const D=JSON.parse(document.getElementById("d").textContent);
+const tbl=document.getElementById("t"),wrap=document.querySelector(".wrap");
+const nCols=D.entetes.length;
+const wrapW=wrap.clientWidth||800;
+const colW=Math.max(80,Math.floor(Math.max(wrapW,nCols*160)/nCols));
+tbl.style.width=Math.max(wrapW,nCols*160)+"px";
+document.getElementById("cols").innerHTML=D.entetes.map(()=>`<col style="width:${colW}px">`).join("");
+document.title=D.nom;document.getElementById("titre").textContent=D.nom;
+if(D.tronque){const a=document.getElementById("avert");a.style.display="";
+  a.textContent=`Prévisualisation : ${D.lignes.length.toLocaleString("fr")} premières lignes sur ${D.nb_total.toLocaleString("fr")} au total.`;}
+const geo=new Set(D.champs_geo||[]);
+const DICO=D.dictionnaire||{};
+let sc=-1,asc=true,q="";
+function esc(s){return String(s??"").replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function cell(v){const s=String(v??"").trim();return /^https?:\/\/\S+$/.test(s)?`<a href="${esc(s)}" target="_blank" rel="noopener">${esc(s)}</a>`:esc(v);}
+function rendu(){
+  let rows=D.lignes;
+  if(q){const f=q.toLowerCase();rows=rows.filter(r=>r.some(v=>String(v??"").toLowerCase().includes(f)));}
+  if(sc>=0){const col=sc,up=asc;rows=[...rows].sort((a,b)=>{
+    const va=a[col]??"",vb=b[col]??"",na=+va,nb=+vb;
+    return(!isNaN(na)&&!isNaN(nb))?(up?na-nb:nb-na):(up?String(va).localeCompare(String(vb),"fr"):String(vb).localeCompare(String(va),"fr"));
+  });}
+  const th=D.entetes.map((h,i)=>{
+    const trad=DICO[h];
+    const cls=[sc===i?(asc?"asc":"desc"):"",geo.has(h)?"geo":"",trad?"trad":""].filter(Boolean).join(" ");
+    const tip=trad?` title="${esc(h)}"`:"";
+    return`<th class="${cls}"${tip}>${esc(trad||h)}<div class="resizer"></div></th>`;
+  }).join("");
+  document.getElementById("thead").innerHTML=`<tr>${th}</tr>`;
+  document.getElementById("tbody").innerHTML=rows.map(r=>`<tr>${r.map(v=>`<td><div title="${esc(v)}">${cell(v)}</div></td>`).join("")}</tr>`).join("");
+  const n=rows.length,tot=D.lignes.length;
+  document.getElementById("info").textContent=n<tot
+    ?`${n.toLocaleString("fr")} / ${tot.toLocaleString("fr")} lignes`
+    :`${n.toLocaleString("fr")} ligne${n>1?"s":""}`;
+}
+// Sort via delegation — ignore clicks that start on the resizer handle
+tbl.addEventListener("click",e=>{
+  if(e.target.closest(".resizer"))return;
+  const th=e.target.closest("th");
+  if(!th)return;
+  const i=th.cellIndex;sc===i?asc=!asc:(sc=i,asc=true);rendu();
+});
+// Column resize
+tbl.addEventListener("mousedown",e=>{
+  const rz=e.target.closest(".resizer");
+  if(!rz)return;
+  e.preventDefault();
+  const th=rz.parentElement,idx=th.cellIndex;
+  const cols=document.querySelectorAll("#cols col");
+  const startX=e.clientX,startW=th.offsetWidth;
+  rz.classList.add("active");
+  document.body.style.cursor="col-resize";
+  function onMove(e){
+    const w=Math.max(40,startW+(e.clientX-startX));
+    cols[idx].style.width=w+"px";
+    tbl.style.width=Array.from(cols).reduce((s,c)=>s+(parseInt(c.style.width)||colW),0)+"px";
+  }
+  function onUp(){
+    rz.classList.remove("active");
+    document.body.style.cursor="";
+    document.removeEventListener("mousemove",onMove);
+    document.removeEventListener("mouseup",onUp);
+  }
+  document.addEventListener("mousemove",onMove);
+  document.addEventListener("mouseup",onUp);
+});
+document.getElementById("filtre").addEventListener("input",e=>{q=e.target.value;rendu();});
+rendu();
+</script>
+</body>
+</html>

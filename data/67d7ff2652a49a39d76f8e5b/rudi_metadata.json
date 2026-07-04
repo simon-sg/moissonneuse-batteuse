@@ -1,0 +1,100 @@
+{
+  "local_id": "a37df6cb-a849-5481-a1b7-c33871eb1715",
+  "resource_title": "Nombre de stations de transports en commun pour 1000 habitants selon le type de réseau - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Nombre de stations de transports en commun pour 1000 habitants selon le type de réseau — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/67d7ff2652a49a39d76f8e5b\n\nL’indicateur représente le nombre de stations de transports en commun disponibles sur le territoire rapporté au nombre d’habitants (pour 1000) selon le type de réseau : bus, tramway, métro, train, autres."
+    }
+  ],
+  "theme": "transportation",
+  "keywords": [
+    "ecospheres-indicateurs",
+    "ecospheres-indicateurs-enjeu-attenuation-climat",
+    "ecospheres-indicateurs-levier-transports-en-commun",
+    "ecospheres-indicateurs-maille-commune",
+    "ecospheres-indicateurs-maille-departement",
+    "ecospheres-indicateurs-maille-epci",
+    "ecospheres-indicateurs-maille-region",
+    "ecospheres-indicateurs-producteur-divers-operateurs-collectivites-aom",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Ecolab"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "3642f1a3-0f2f-590f-9033-ab355729975c",
+      "media_type": "FILE",
+      "media_name": "nombre-de-stations-de-transports-en-commun-pour-10-rennesmetropole.csv",
+      "media_caption": "Nombre de stations de transports en commun pour 1000 habitants selon le type de réseau - commune — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "8850d41f-8528-5d96-977e-f5703442ee1c",
+      "media_type": "FILE",
+      "media_name": "dict-description-des-champs.csv",
+      "media_caption": "Dictionnaire des variables — Description des champs",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "163f9ac8-5bd6-5aa4-91de-47cd67a5c837",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://static.data.gouv.fr/resources/nombre-de-stations-de-transports-en-commun-pour-1000-habitants-selon-le-type-de-reseau/20260325-015647/description-des-champs.csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2025-03-17T00:00:00Z",
+    "updated": "2026-07-04T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "CUSTOM",
+      "custom_licence_label": [
+        {
+          "lang": "fr",
+          "text": "fr-lo"
+        }
+      ],
+      "custom_licence_uri": "https://www.data.gouv.fr/datasets/67d7ff2652a49a39d76f8e5b"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2025-03-17T00:00:00Z",
+      "updated": "2026-07-04T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/67d7ff2652a49a39d76f8e5b"
+  }
+}

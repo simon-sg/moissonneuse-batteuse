@@ -1,0 +1,82 @@
+{
+  "local_id": "e19f4f82-70c7-5d63-9da9-1b0cd282f951",
+  "resource_title": "Cinémas adhérents au SCARE - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Cinémas adhérents au SCARE — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/67c88900be91c074bbb4f00f\n\nCe jeu de donnée recense les cinémas adhérents au SCARE (Syndicat des Cinémas d'Art, de Répertoire et d'Essai), avec des informations sur leur capacité, leur situation géographique et leur statut Art et Essai.\n"
+    }
+  ],
+  "theme": "culture",
+  "keywords": [
+    "art-et-essai",
+    "cinema",
+    "culture-tourisme",
+    "industrie-du-cinema",
+    "salles-de-cinema",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Syndicat des Cinémas d'Art, de Répertoire et d'Essai"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "2843d83f-ca19-58ae-ba1c-155040c6757f",
+      "media_type": "FILE",
+      "media_name": "cinemas-adh-scare-2024-rennesmetropole.csv",
+      "media_caption": "cinemas-adh-scare-2024.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "3193f0a7-a3d1-5d31-9566-77a5bbaeb4e8",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://static.data.gouv.fr/resources/cinemas-adherents-au-scare/20250305-172521/cinemas-adh-scare-2024.csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2025-03-05T00:00:00Z",
+    "updated": "2025-03-05T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2025-03-05T00:00:00Z",
+      "updated": "2025-03-05T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/67c88900be91c074bbb4f00f"
+  }
+}

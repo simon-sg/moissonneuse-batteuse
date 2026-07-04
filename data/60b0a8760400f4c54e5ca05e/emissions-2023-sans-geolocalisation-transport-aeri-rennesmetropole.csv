@@ -1,0 +1,6 @@
+seqe_id,account_holder_name,installation_name,parent_company,latitude,longitude,address1,address2,city,zip_code,country,main_activity_type_code,year,emissions,main_activity
+185,ENERSUD,ENERSUD - Rennes,ENERSUD,0,0,8 avenue Henri Fréville,NA,Rennes,35000,FR,20,2023,29249,Combustion of fuels
+179,PEUGEOT CITROEN RENNES SNC,PEUGEOT CITROEN RENNES SNC,PEUGEOT CITROEN RENNES SNC,0,0,Route de Nantes,NA,Chartres de Bretagne,35131,FR,20,2023,14363,Combustion of fuels
+193,En'Rnov,En'Rnov,ENGIE ENERGIE SERVICES,0,0,22 Avenue Charles Tillon,NA,Rennes,35000,FR,20,2023,29737,Combustion of fuels
+204059,SOCIETE LAITIERE DE L'HERMITAGE,SOCIETE LAITIERE DE L'HERMITAGE,SOCIETE LAITIERE DE L'HERMITAGE,NA,NA,SOCIETE LAITIERE DE L'HERMITAGE,Place de la Gare,L'HERMITAGE,35590,FR,20,2023,5415,Combustion of fuels
+215180,COGELYO OUEST,Cogelyo Ouest enceinte Citroen,ENGIE,NA,NA,"PSA LA JANAIS, Route de Nantes",NA,Chartres de Bretagne,35131,FR,20,2023,4821,Combustion of fuels

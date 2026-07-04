@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title></title>
+<script>(function(){try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<style>
+:root{--bg:#f5f6f8;--card:#fff;--txt:#1c2733;--muted:#667;--accent:#0b6e99;--bord:#e2e6ea;
+      --avert-bg:#fff8e1;--avert-bord:#ffe082;--avert-txt:#6d4c00;
+      --geo-bg:#eaf4fb;--geo-hover:#d4ecf7;--stripe:#fafbfc;--row-hover:#eef6fb;
+      --resizer:rgba(11,110,153,.35);--td-bord:#f0f2f4}
+:root[data-theme="dark"]{--bg:#10151b;--card:#1a222b;--txt:#dbe2e8;--muted:#8996a3;--accent:#4fb3da;--bord:#29323c;
+      --avert-bg:#3a2f10;--avert-bord:#6b5418;--avert-txt:#e8c96a;
+      --geo-bg:#16303c;--geo-hover:#1d3f4d;--stripe:#161d24;--row-hover:#17242c;
+      --resizer:rgba(79,179,218,.35);--td-bord:#232c35}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#10151b;--card:#1a222b;--txt:#dbe2e8;--muted:#8996a3;--accent:#4fb3da;--bord:#29323c;
+      --avert-bg:#3a2f10;--avert-bord:#6b5418;--avert-txt:#e8c96a;
+      --geo-bg:#16303c;--geo-hover:#1d3f4d;--stripe:#161d24;--row-hover:#17242c;
+      --resizer:rgba(79,179,218,.35);--td-bord:#232c35}
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+     background:var(--bg);color:var(--txt);display:flex;flex-direction:column;height:100vh}
+header{background:var(--card);border-bottom:1px solid var(--bord);padding:10px 16px;
+       display:flex;flex-wrap:wrap;gap:10px;align-items:center;flex-shrink:0}
+h1{font-size:.9rem;font-weight:600;flex:1;min-width:150px;
+   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#filtre{padding:7px 11px;font-size:.9rem;border:1px solid var(--bord);
+        border-radius:6px;width:220px;background:var(--card);color:var(--txt)}
+#info{color:var(--muted);font-size:.82rem;white-space:nowrap}
+#theme-toggle{background:none;border:1px solid var(--bord);border-radius:6px;padding:5px 10px;
+              cursor:pointer;font-size:.9rem;line-height:1;color:var(--txt);flex-shrink:0}
+#theme-toggle:hover{background:var(--bg)}
+.avert{background:var(--avert-bg);border-bottom:1px solid var(--avert-bord);padding:5px 16px;
+       font-size:.8rem;color:var(--avert-txt);flex-shrink:0}
+.wrap{flex:1;overflow:auto}
+table{border-collapse:collapse;font-size:.82rem;table-layout:fixed}
+thead{position:sticky;top:0;z-index:2;background:var(--card);box-shadow:0 1px 0 var(--bord)}
+th{padding:8px 12px;text-align:left;cursor:pointer;user-select:none;color:var(--muted);font-weight:600;
+   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative}
+th:hover{background:var(--bg);color:var(--txt)}
+th.asc::after{content:" ↑";color:var(--accent)}
+th.desc::after{content:" ↓";color:var(--accent)}
+th.geo{color:var(--accent);background:var(--geo-bg)}
+th.geo:hover{background:var(--geo-hover)}
+th.trad{text-decoration:underline dotted;text-decoration-color:var(--accent);text-underline-offset:3px}
+td{padding:0;border-bottom:1px solid var(--td-bord)}
+td div{padding:5px 12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+td div a{color:var(--accent);text-decoration:none}
+td div a:hover{text-decoration:underline}
+tr:nth-child(even) td{background:var(--stripe)}
+tr:hover td{background:var(--row-hover)}
+.resizer{position:absolute;right:0;top:0;width:5px;height:100%;cursor:col-resize;z-index:1}
+.resizer:hover,.resizer.active{background:var(--resizer)}
+</style>
+</head>
+<body>
+<header>
+  <h1 id="titre"></h1>
+  <input id="filtre" type="search" placeholder="Filtrer toutes les colonnes…">
+  <span id="info"></span>
+  <button id="theme-toggle" title="Basculer thème clair/sombre" aria-label="Basculer thème clair/sombre">🌙</button>
+</header>
+<div id="avert" class="avert" style="display:none"></div>
+<div class="wrap"><table id="t"><colgroup id="cols"></colgroup><thead id="thead"></thead><tbody id="tbody"></tbody></table></div>
+<script id="d" type="application/json">{"nom": "indicateurs-par-commune-csv-rennesmetropole.csv", "champs_geo": ["nom_commune", "code_insee"], "dictionnaire": {}, "entetes": ["code_insee", "nom_commune", "code_departement", "nom_region", "population", "evolution_population_5ans_pct", "prix_m2_median_eur", "prix_m2_median_maison_eur", "prix_m2_median_appartement_eur", "nb_transactions_dvf", "evolution_prix_5ans_pct", "pct_dpe_a_b", "ips_ecoles_moyen", "couverture_fibre_pct", "pct_surface_icpe", "pct_surface_seveso", "ppr_inondation_pct", "apl_medecin_consult_an_hab", "taxe_fonciere_taux_pct", "taxe_fonciere_eur_m2_an", "pct_passoires_dpe"], "lignes": [["35001", "Acigné", "35", "Bretagne", "7051", "3.7", "3106.1", "", "3114.7", "25", "1.8", "13.2", "127.7", "97.4", "2.7", "", "1.0", "3.8", "40.1", "5.2", "3.1"], ["35022", "Bécherel", "35", "Bretagne", "706", "2.5", "1534.8", "", "", "2", "0.6", "3.4", "105.6", "94.3", "1.3", "", "", "3.1", "42.4", "5.8", "12.2"], ["35024", "Betton", "35", "Bretagne", "12959", "13.1", "3421.1", "3191.2", "3419.7", "53", "1.0", "14.7", "127.5", "96.3", "2.2", "", "1.0", "3.6", "45.8", "5.4", "2.5"], ["35032", "Bourgbarré", "35", "Bretagne", "4646", "14.9", "2650.0", "2613.9", "2557.8", "17", "5.8", "22.2", "122.3", "99.6", "3.5", "", "1.0", "3.6", "45.9", "5.7", "3.6"], ["35039", "Brécé", "35", "Bretagne", "2191", "1.7", "2837.5", "", "2222.2", "8", "8.0", "27.3", "114.3", "94.0", "4.3", "", "1.0", "4.6", "40.7", "4.9", "4.4"], ["35047", "Bruz", "35", "Bretagne", "20118", "8.6", "3281.2", "3214.3", "3142.7", "79", "-4.3", "11.2", "124.7", "98.4", "2.5", "", "1.0", "3.9", "47.4", "5.5", "3.4"], ["35051", "Cesson-Sévigné", "35", "Bretagne", "18212", "2.0", "3863.6", "3733.0", "3880.1", "87", "33.9", "13.2", "137.9", "94.2", "3.9", "", "1.0", "4.9", "37.1", "3.5", "4.2"], ["35055", "Chantepie", "35", "Bretagne", "10391", "-1.4", "3121.0", "3304.9", "3198.4", "47", "3.4", "11.7", "116.3", "96.5", "3.2", "", "", "7.0", "43.1", "5.3", "1.1"], ["35058", "Chapelle-Chaussée", "35", "Bretagne", "1323", "3.0", "1942.0", "", "", "3", "-4.8", "12.0", "112.2", "96.3", "3.1", "", "", "3.5", "42.2", "5.5", "8.2"], ["35059", "Chapelle-des-Fougeretz", "35", "Bretagne", "4696", "-4.1", "3250.8", "3157.4", "2502.5", "30", "-9.2", "23.5", "127.2", "95.8", "3.3", "", "", "3.9", "43.9", "6.2", "2.9"], ["35065", "Chapelle-Thouarault", "35", "Bretagne", "2294", "4.4", "2178.1", "2034.9", "", "9", "-14.2", "27.2", "109.3", "97.2", "2.5", "", "1.0", "3.4", "42.0", "5.1", "2.9"], ["35066", "Chartres-de-Bretagne", "35", "Bretagne", "8377", "8.7", "3046.9", "4069.0", "3026.8", "51", "31.5", "15.5", "118.5", "98.9", "3.5", "", "1.0", "4.1", "37.5", "3.8", "1.8"], ["35076", "Chavagne", "35", "Bretagne", "4476", "12.9", "2747.9", "3504.7", "3002.2", "19", "-3.4", "16.4", "114.5", "95.0", "3.5", "", "1.0", "4.4", "41.1", "5.2", "6.1"], ["35079", "Chevaigné", "35", "Bretagne", "2414", "6.9", "2432.6", "1944.4", "", "10", "-4.7", "12.5", "128.3", "97.1", "2.8", "", "1.0", "3.7", "46.7", "6.7", "5.6"], ["35080", "Cintré", "35", "Bretagne", "2600", "11.3", "2400.1", "2261.0", "", "12", "15.8", "25.1", "114.5", "98.4", "2.4", "", "1.0", "3.2", "45.6", "5.9", "4.8"], ["35081", "Clayes", "35", "Bretagne", "969", "9.2", "2469.6", "2803.5", "", "3", "-0.1", "21.1", "113.4", "98.7", "2.8", "", "1.0", "4.1", "43.0", "5.4", "6.4"], ["35088", "Corps-Nuds", "35", "Bretagne", "3621", "8.8", "3353.7", "", "", "6", "52.7", "17.1", "117.5", "99.9", "2.5", "", "1.0", "3.4", "43.5", "5.7", "3.9"], ["35120", "Gévezé", "35", "Bretagne", "6000", "13.7", "2794.1", "3044.1", "3405.9", "20", "22.8", "15.4", "125.6", "94.3", "2.9", "", "1.0", "3.8", "43.5", "5.5", "1.9"], ["35131", "Hermitage", "35", "Bretagne", "4767", "8.6", "2518.9", "1666.7", "2864.8", "23", "-4.3", "11.9", "114.0", "97.9", "4.4", "2.0", "1.0", "4.2", "37.7", "4.3", "2.9"], ["35132", "Hirel", "35", "Bretagne", "1415", "0.4", "2611.4", "", "", "6", "16.3", "16.3", "90.3", "99.1", "1.6", "", "1.0", "2.1", "37.6", "4.2", "17.3"], ["35135", "Irodouër", "35", "Bretagne", "2318", "1.6", "2238.6", "1284.7", "", "4", "0.6", "14.1", "105.7", "81.3", "2.3", "", "", "3.2", "41.8", "4.5", "11.7"], ["35136", "Janzé", "35", "Bretagne", "8744", "3.4", "2525.8", "", "2597.7", "47", "42.0", "15.2", "113.2", "27.2", "2.7", "1.0", "1.0", "3.4", "41.6", "5.4", "8.5"], ["35139", "Laillé", "35", "Bretagne", "5276", "0.8", "2737.6", "2897.5", "", "34", "5.9", "17.6", "128.2", "99.5", "3.4", "", "1.0", "3.5", "47.0", "5.5", "4.0"], ["35144", "Langan", "35", "Bretagne", "1094", "13.4", "3887.2", "", "", "2", "-4.2", "49.7", "109.1", "94.8", "2.6", "", "", "3.4", "39.6", "5.0", "6.3"], ["35150", "Lécousse", "35", "Bretagne", "3423", "3.6", "2788.1", "2677.9", "", "15", "16.7", "22.4", "106.9", "96.4", "3.3", "", "", "2.7", "40.2", "4.7", "6.4"], ["35160", "Loutehel", "35", "Bretagne", "245", "-9.4", "1270.3", "", "", "3", "2.5", "12.5", "", "0.0", "2.1", "", "", "3.7", "45.0", "6.0", "27.1"], ["35170", "Mecé", "35", "Bretagne", "621", "0.5", "", "", "", "", "5.1", "13.2", "", "2.1", "2.4", "", "", "2.2", "41.6", "4.7", "14.5"], ["35180", "Miniac-sous-Bécherel", "35", "Bretagne", "812", "4.0", "2031.2", "", "", "3", "-15.3", "12.5", "", "94.8", "4.2", "", "", "3.1", "42.1", "5.4", "5.7"], ["35189", "Montgermont", "35", "Bretagne", "3760", "12.0", "3407.4", "", "", "15", "-13.7", "9.3", "126.6", "98.2", "2.9", "", "", "7.2", "38.0", "4.2", "3.7"], ["35190", "Monthault", "35", "Bretagne", "254", "-9.9", "1536.0", "", "", "1", "14.2", "26.7", "", "100.0", "3.1", "", "", "1.3", "37.4", "4.5", "20.0"], ["35196", "Mordelles", "35", "Bretagne", "7783", "4.6", "3022.8", "3404.3", "2914.9", "52", "22.3", "15.6", "112.4", "98.9", "2.5", "", "1.0", "4.1", "41.5", "4.6", "4.7"], ["35200", "Moutiers", "35", "Bretagne", "936", "-2.7", "1410.5", "", "", "4", "28.7", "5.8", "95.9", "93.9", "4.1", "", "1.0", "2.9", "38.0", "4.2", "9.3"], ["35204", "Nouvoitou", "35", "Bretagne", "3613", "17.8", "2568.3", "2621.8", "2930.0", "8", "10.0", "20.4", "117.7", "99.2", "2.5", "", "1.0", "3.1", "43.4", "5.0", "2.9"], ["35206", "Noyal-Châtillon-sur-Seiche", "35", "Bretagne", "7713", "10.3", "3188.1", "3390.8", "3032.5", "30", "10.2", "9.1", "116.2", "99.7", "3.1", "", "1.0", "3.6", "45.8", "6.8", "2.2"], ["35208", "Orgères", "35", "Bretagne", "5535", "21.7", "2611.9", "2886.6", "2775.6", "14", "4.5", "13.0", "117.3", "100.0", "2.2", "", "", "3.9", "42.0", "5.1", "2.9"], ["35210", "Pacé", "35", "Bretagne", "12257", "1.3", "3333.3", "3055.6", "3355.4", "53", "4.7", "13.9", "130.8", "97.0", "3.2", "", "1.0", "6.2", "39.1", "4.9", "4.0"], ["35216", "Parthenay-de-Bretagne", "35", "Bretagne", "1819", "7.0", "2661.0", "2364.9", "", "3", "-3.6", "5.2", "117.8", "98.5", "2.7", "", "", "3.7", "43.3", "4.9", "1.1"], ["35230", "Poilley", "35", "Bretagne", "371", "-4.2", "1176.5", "", "", "1", "-18.0", "26.1", "", "98.1", "4.8", "", "", "2.1", "38.0", "3.3", "26.2"], ["35235", "Rannée", "35", "Bretagne", "1104", "-3.7", "1452.2", "", "", "6", "27.1", "10.1", "91.2", "91.1", "2.3", "", "", "3.0", "38.2", "4.2", "15.5"], ["35238", "Rennes", "35", "Bretagne", "229178", "4.1", "3886.6", "4393.7", "3702.7", "1268", "-6.0", "10.7", "113.1", "96.1", "6.5", "", "1.0", "4.8", "47.7", "7.3", "5.7"], ["35240", "Rheu", "35", "Bretagne", "9771", "11.2", "3051.7", "3094.7", "2857.4", "73", "61.0", "14.6", "120.3", "94.9", "5.0", "", "1.0", "4.5", "45.6", "5.9", "2.5"], ["35245", "Romillé", "35", "Bretagne", "4196", "5.9", "2594.6", "", "2622.9", "18", "21.3", "20.7", "116.2", "94.1", "2.6", "", "", "3.3", "42.0", "4.7", "4.5"], ["35250", "Saint-Armel", "35", "Bretagne", "2312", "21.5", "2739.4", "", "2884.2", "10", "17.0", "23.0", "111.4", "99.8", "2.9", "", "1.0", "4.0", "49.3", "6.5", "2.6"], ["35266", "Saint-Erblon", "35", "Bretagne", "3542", "18.5", "3001.7", "", "2859.8", "14", "31.9", "23.3", "122.1", "99.1", "2.1", "", "1.0", "4.5", "40.9", "5.4", "1.3"], ["35275", "Saint-Gilles", "35", "Bretagne", "5473", "14.6", "3211.0", "2277.1", "3210.2", "17", "22.2", "6.9", "120.6", "96.9", "3.4", "", "1.0", "4.9", "39.5", "5.0", "4.1"], ["35278", "Saint-Grégoire", "35", "Bretagne", "10206", "3.3", "3821.8", "13703.7", "3517.9", "39", "11.8", "12.7", "133.5", "96.9", "4.8", "", "1.0", "7.3", "39.5", "4.7", "3.0"], ["35281", "Saint-Jacques-de-la-Lande", "35", "Bretagne", "13782", "5.7", "3106.1", "2798.5", "3205.3", "65", "4.4", "7.0", "100.9", "97.9", "6.3", "2.0", "1.0", "6.8", "43.9", "5.7", "2.0"], ["35310", "Saint-Sauveur-des-Landes", "35", "Bretagne", "1577", "2.6", "2090.1", "", "", "5", "29.8", "9.4", "106.4", "94.7", "3.7", "", "", "4.2", "38.5", "4.8", "5.0"], ["35315", "Saint-Sulpice-la-Forêt", "35", "Bretagne", "1539", "15.1", "2580.7", "2500.0", "", "8", "8.0", "20.3", "132.3", "99.4", "1.5", "", "", "3.8", "52.4", "6.2", "8.0"], ["35334", "Thorigné-Fouillard", "35", "Bretagne", "8782", "1.9", "3100.2", "3412.0", "3212.2", "31", "6.8", "19.1", "132.0", "95.6", "1.7", "", "1.0", "5.3", "42.7", "5.3", "3.6"], ["35351", "Verger", "35", "Bretagne", "1445", "-1.8", "2167.5", "2029.8", "", "4", "6.5", "27.5", "110.5", "99.0", "2.9", "", "", "3.2", "46.4", "6.5", "5.3"], ["35352", "Vern-sur-Seiche", "35", "Bretagne", "8384", "4.3", "3041.6", "2785.7", "2875.4", "24", "6.0", "12.2", "121.1", "98.0", "3.9", "2.0", "1.0", "4.8", "43.0", "6.0", "3.0"], ["35353", "Vezin-le-Coquet", "35", "Bretagne", "6411", "12.2", "3076.9", "3108.1", "3276.8", "41", "24.5", "32.7", "117.3", "94.2", "6.5", "", "1.0", "6.6", "42.8", "5.1", "5.0"], ["35363", "Pont-Péan", "35", "Bretagne", "4442", "2.6", "2864.6", "", "2987.2", "23", "-11.4", "16.2", "116.7", "98.5", "2.2", "", "1.0", "4.4", "44.9", "6.5", "3.1"]], "tronque": false, "nb_total": 54}</script>
+<script>
+(function(){
+  const btn = document.getElementById("theme-toggle");
+  function effectif(){
+    return document.documentElement.getAttribute("data-theme") ||
+      (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  }
+  function majIcone(){ btn.textContent = effectif() === "dark" ? "☀️" : "🌙"; }
+  btn.addEventListener("click", () => {
+    const suivant = effectif() === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", suivant);
+    try { localStorage.setItem("theme", suivant); } catch(e) {}
+    majIcone();
+  });
+  majIcone();
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+    if (!document.documentElement.getAttribute("data-theme")) majIcone();
+  });
+})();
+
+const D=JSON.parse(document.getElementById("d").textContent);
+const tbl=document.getElementById("t"),wrap=document.querySelector(".wrap");
+const nCols=D.entetes.length;
+const wrapW=wrap.clientWidth||800;
+const colW=Math.max(80,Math.floor(Math.max(wrapW,nCols*160)/nCols));
+tbl.style.width=Math.max(wrapW,nCols*160)+"px";
+document.getElementById("cols").innerHTML=D.entetes.map(()=>`<col style="width:${colW}px">`).join("");
+document.title=D.nom;document.getElementById("titre").textContent=D.nom;
+if(D.tronque){const a=document.getElementById("avert");a.style.display="";
+  a.textContent=`Prévisualisation : ${D.lignes.length.toLocaleString("fr")} premières lignes sur ${D.nb_total.toLocaleString("fr")} au total.`;}
+const geo=new Set(D.champs_geo||[]);
+const DICO=D.dictionnaire||{};
+let sc=-1,asc=true,q="";
+function esc(s){return String(s??"").replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function cell(v){const s=String(v??"").trim();return /^https?:\/\/\S+$/.test(s)?`<a href="${esc(s)}" target="_blank" rel="noopener">${esc(s)}</a>`:esc(v);}
+function rendu(){
+  let rows=D.lignes;
+  if(q){const f=q.toLowerCase();rows=rows.filter(r=>r.some(v=>String(v??"").toLowerCase().includes(f)));}
+  if(sc>=0){const col=sc,up=asc;rows=[...rows].sort((a,b)=>{
+    const va=a[col]??"",vb=b[col]??"",na=+va,nb=+vb;
+    return(!isNaN(na)&&!isNaN(nb))?(up?na-nb:nb-na):(up?String(va).localeCompare(String(vb),"fr"):String(vb).localeCompare(String(va),"fr"));
+  });}
+  const th=D.entetes.map((h,i)=>{
+    const trad=DICO[h];
+    const cls=[sc===i?(asc?"asc":"desc"):"",geo.has(h)?"geo":"",trad?"trad":""].filter(Boolean).join(" ");
+    const tip=trad?` title="${esc(h)}"`:"";
+    return`<th class="${cls}"${tip}>${esc(trad||h)}<div class="resizer"></div></th>`;
+  }).join("");
+  document.getElementById("thead").innerHTML=`<tr>${th}</tr>`;
+  document.getElementById("tbody").innerHTML=rows.map(r=>`<tr>${r.map(v=>`<td><div title="${esc(v)}">${cell(v)}</div></td>`).join("")}</tr>`).join("");
+  const n=rows.length,tot=D.lignes.length;
+  document.getElementById("info").textContent=n<tot
+    ?`${n.toLocaleString("fr")} / ${tot.toLocaleString("fr")} lignes`
+    :`${n.toLocaleString("fr")} ligne${n>1?"s":""}`;
+}
+// Sort via delegation — ignore clicks that start on the resizer handle
+tbl.addEventListener("click",e=>{
+  if(e.target.closest(".resizer"))return;
+  const th=e.target.closest("th");
+  if(!th)return;
+  const i=th.cellIndex;sc===i?asc=!asc:(sc=i,asc=true);rendu();
+});
+// Column resize
+tbl.addEventListener("mousedown",e=>{
+  const rz=e.target.closest(".resizer");
+  if(!rz)return;
+  e.preventDefault();
+  const th=rz.parentElement,idx=th.cellIndex;
+  const cols=document.querySelectorAll("#cols col");
+  const startX=e.clientX,startW=th.offsetWidth;
+  rz.classList.add("active");
+  document.body.style.cursor="col-resize";
+  function onMove(e){
+    const w=Math.max(40,startW+(e.clientX-startX));
+    cols[idx].style.width=w+"px";
+    tbl.style.width=Array.from(cols).reduce((s,c)=>s+(parseInt(c.style.width)||colW),0)+"px";
+  }
+  function onUp(){
+    rz.classList.remove("active");
+    document.body.style.cursor="";
+    document.removeEventListener("mousemove",onMove);
+    document.removeEventListener("mouseup",onUp);
+  }
+  document.addEventListener("mousemove",onMove);
+  document.addEventListener("mouseup",onUp);
+});
+document.getElementById("filtre").addEventListener("input",e=>{q=e.target.value;rendu();});
+rendu();
+</script>
+</body>
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title></title>
+<script>(function(){try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<style>
+:root{--bg:#f5f6f8;--card:#fff;--txt:#1c2733;--muted:#667;--accent:#0b6e99;--bord:#e2e6ea;
+      --avert-bg:#fff8e1;--avert-bord:#ffe082;--avert-txt:#6d4c00;
+      --geo-bg:#eaf4fb;--geo-hover:#d4ecf7;--stripe:#fafbfc;--row-hover:#eef6fb;
+      --resizer:rgba(11,110,153,.35);--td-bord:#f0f2f4}
+:root[data-theme="dark"]{--bg:#10151b;--card:#1a222b;--txt:#dbe2e8;--muted:#8996a3;--accent:#4fb3da;--bord:#29323c;
+      --avert-bg:#3a2f10;--avert-bord:#6b5418;--avert-txt:#e8c96a;
+      --geo-bg:#16303c;--geo-hover:#1d3f4d;--stripe:#161d24;--row-hover:#17242c;
+      --resizer:rgba(79,179,218,.35);--td-bord:#232c35}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#10151b;--card:#1a222b;--txt:#dbe2e8;--muted:#8996a3;--accent:#4fb3da;--bord:#29323c;
+      --avert-bg:#3a2f10;--avert-bord:#6b5418;--avert-txt:#e8c96a;
+      --geo-bg:#16303c;--geo-hover:#1d3f4d;--stripe:#161d24;--row-hover:#17242c;
+      --resizer:rgba(79,179,218,.35);--td-bord:#232c35}
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+     background:var(--bg);color:var(--txt);display:flex;flex-direction:column;height:100vh}
+header{background:var(--card);border-bottom:1px solid var(--bord);padding:10px 16px;
+       display:flex;flex-wrap:wrap;gap:10px;align-items:center;flex-shrink:0}
+h1{font-size:.9rem;font-weight:600;flex:1;min-width:150px;
+   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#filtre{padding:7px 11px;font-size:.9rem;border:1px solid var(--bord);
+        border-radius:6px;width:220px;background:var(--card);color:var(--txt)}
+#info{color:var(--muted);font-size:.82rem;white-space:nowrap}
+#theme-toggle{background:none;border:1px solid var(--bord);border-radius:6px;padding:5px 10px;
+              cursor:pointer;font-size:.9rem;line-height:1;color:var(--txt);flex-shrink:0}
+#theme-toggle:hover{background:var(--bg)}
+.avert{background:var(--avert-bg);border-bottom:1px solid var(--avert-bord);padding:5px 16px;
+       font-size:.8rem;color:var(--avert-txt);flex-shrink:0}
+.wrap{flex:1;overflow:auto}
+table{border-collapse:collapse;font-size:.82rem;table-layout:fixed}
+thead{position:sticky;top:0;z-index:2;background:var(--card);box-shadow:0 1px 0 var(--bord)}
+th{padding:8px 12px;text-align:left;cursor:pointer;user-select:none;color:var(--muted);font-weight:600;
+   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative}
+th:hover{background:var(--bg);color:var(--txt)}
+th.asc::after{content:" ↑";color:var(--accent)}
+th.desc::after{content:" ↓";color:var(--accent)}
+th.geo{color:var(--accent);background:var(--geo-bg)}
+th.geo:hover{background:var(--geo-hover)}
+th.trad{text-decoration:underline dotted;text-decoration-color:var(--accent);text-underline-offset:3px}
+td{padding:0;border-bottom:1px solid var(--td-bord)}
+td div{padding:5px 12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+td div a{color:var(--accent);text-decoration:none}
+td div a:hover{text-decoration:underline}
+tr:nth-child(even) td{background:var(--stripe)}
+tr:hover td{background:var(--row-hover)}
+.resizer{position:absolute;right:0;top:0;width:5px;height:100%;cursor:col-resize;z-index:1}
+.resizer:hover,.resizer.active{background:var(--resizer)}
+</style>
+</head>
+<body>
+<header>
+  <h1 id="titre"></h1>
+  <input id="filtre" type="search" placeholder="Filtrer toutes les colonnes…">
+  <span id="info"></span>
+  <button id="theme-toggle" title="Basculer thème clair/sombre" aria-label="Basculer thème clair/sombre">🌙</button>
+</header>
+<div id="avert" class="avert" style="display:none"></div>
+<div class="wrap"><table id="t"><colgroup id="cols"></colgroup><thead id="thead"></thead><tbody id="tbody"></tbody></table></div>
+<script id="d" type="application/json">{"nom": "nombre-de-flux-domicile-travail-commune-rennesmetropole.csv", "champs_geo": ["libelle_commune", "geocode_commune"], "dictionnaire": {"date_mesure": "Dimension temporelle de la mesure. La date fait référence  à une période écoulée et non un instant précis.", "geocode_commune": "Code officiel géographique communal selon les données de l'INSEE du 1er janvier de l'année en cours. https://www.insee.fr/fr/information/7671844", "libelle_commune": "Libellé de la commune selon la nomenclature de l'INSEE. https://www.insee.fr/fr/information/7671844", "geocode_epci": "Code officiel géographique à l'échelle de l'EPCI selon les données de l'INSEE du 1er janvier de l'année en cours. https://www.insee.fr/fr/information/2510634", "libelle_epci": "Libellé de l'EPCI selon la nomenclature de l'INSEE. https://www.insee.fr/fr/information/2510634", "geocode_departement": "Code officiel géographique départemental selon les données de l'INSEE du 1er janvier de l'année en cours. https://www.insee.fr/fr/information/2560452", "libelle_departement": "Libellé du département selon la nomenclature de l'INSEE. https://www.insee.fr/fr/information/2560452", "geocode_region": "Code officiel géographique régional selon les données de l'INSEE du 1er janvier de l'année en cours. https://www.insee.fr/fr/information/2560452", "libelle_region": "Libellé de la région selon la nomenclature de l'INSEE. https://www.insee.fr/fr/information/2560452", "sens_flux": "Sens du flux domicile-travail (entrant, sortant, interne)", "valeur": "Valeur de l'indicateur en nb : Nombre de flux domicile-travail"}, "entetes": ["date_mesure", "geocode_commune", "libelle_commune", "sens_flux", "valeur"], "lignes": [["2022-01-01T00:00:00.000", "35204", "Nouvoitou", "sortant", "1543.1956904808424"], ["2022-01-01T00:00:00.000", "35216", "Parthenay-de-Bretagne", "entrant", "100.80230914473636"], ["2022-01-01T00:00:00.000", "35180", "Miniac-sous-Bécherel", "interne", "80.97416973699323"], ["2022-01-01T00:00:00.000", "35136", "Janzé", "sortant", "2840.3776722090283"], ["2022-01-01T00:00:00.000", "35353", "Vezin-le-Coquet", "entrant", "1736.6407319837642"], ["2022-01-01T00:00:00.000", "35310", "Saint-Sauveur-des-Landes", "entrant", "950.3452395728823"], ["2022-01-01T00:00:00.000", "35281", "Saint-Jacques-de-la-Lande", "interne", "1356.2075484599286"], ["2022-01-01T00:00:00.000", "35352", "Vern-sur-Seiche", "entrant", "4300.874656135099"], ["2022-01-01T00:00:00.000", "35240", "Le Rheu", "entrant", "4890.404333791258"], ["2022-01-01T00:00:00.000", "35250", "Saint-Armel", "sortant", "935.1037277669673"], ["2022-01-01T00:00:00.000", "35081", "Clayes", "sortant", "425.7844611591052"], ["2022-01-01T00:00:00.000", "35039", "Brécé", "entrant", "957.4210818606929"], ["2022-01-01T00:00:00.000", "35206", "Noyal-Châtillon-sur-Seiche", "sortant", "3122.8359795382253"], ["2022-01-01T00:00:00.000", "35315", "Saint-Sulpice-la-Forêt", "entrant", "143.55787252595235"], ["2022-01-01T00:00:00.000", "35139", "Laillé", "entrant", "1154.0247926189236"], ["2022-01-01T00:00:00.000", "35047", "Bruz", "interne", "2562.5926094087704"], ["2022-01-01T00:00:00.000", "35136", "Janzé", "entrant", "2166.801701852984"], ["2022-01-01T00:00:00.000", "35334", "Thorigné-Fouillard", "entrant", "1713.8908879086166"], ["2022-01-01T00:00:00.000", "35204", "Nouvoitou", "interne", "200.51355177445575"], ["2022-01-01T00:00:00.000", "35150", "Lécousse", "interne", "274.51136264079264"], ["2022-01-01T00:00:00.000", "35088", "Corps-Nuds", "interne", "261.61733692883234"], ["2022-01-01T00:00:00.000", "35200", "Moutiers", "sortant", "345.45698924731164"], ["2022-01-01T00:00:00.000", "35275", "Saint-Gilles", "entrant", "1275.4724326566964"], ["2022-01-01T00:00:00.000", "35144", "Langan", "interne", "72.1815472259693"], ["2022-01-01T00:00:00.000", "35001", "Acigné", "entrant", "1523.3199735285623"], ["2022-01-01T00:00:00.000", "35139", "Laillé", "sortant", "2049.6539253990513"], ["2022-01-01T00:00:00.000", "35144", "Langan", "sortant", "477.50824518579265"], ["2022-01-01T00:00:00.000", "35351", "Le Verger", "entrant", "75.55247784093261"], ["2022-01-01T00:00:00.000", "35250", "Saint-Armel", "entrant", "320.07836213440777"], ["2022-01-01T00:00:00.000", "35315", "Saint-Sulpice-la-Forêt", "interne", "60.0771704180064"], ["2022-01-01T00:00:00.000", "35022", "Bécherel", "entrant", "249.48781480976223"], ["2022-01-01T00:00:00.000", "35131", "L'Hermitage", "entrant", "1600.0065796839772"], ["2022-01-01T00:00:00.000", "35120", "Gévezé", "interne", "308.7974359993798"], ["2022-01-01T00:00:00.000", "35196", "Mordelles", "entrant", "1880.111572405867"], ["2022-01-01T00:00:00.000", "35200", "Moutiers", "interne", "111.90860215053758"], ["2022-01-01T00:00:00.000", "35051", "Cesson-Sévigné", "sortant", "5207.544494618086"], ["2022-01-01T00:00:00.000", "35275", "Saint-Gilles", "interne", "498.9185291822879"], ["2022-01-01T00:00:00.000", "35079", "Chevaigné", "sortant", "1119.1009988900364"], ["2022-01-01T00:00:00.000", "35352", "Vern-sur-Seiche", "sortant", "3047.8089635734677"], ["2022-01-01T00:00:00.000", "35024", "Betton", "interne", "934.7733180000448"], ["2022-01-01T00:00:00.000", "35278", "Saint-Grégoire", "entrant", "10817.518543040293"], ["2022-01-01T00:00:00.000", "35208", "Orgères", "sortant", "2269.000059084152"], ["2022-01-01T00:00:00.000", "35250", "Saint-Armel", "interne", "117.56579676682563"], ["2022-01-01T00:00:00.000", "35160", "Loutehel", "sortant", "87.09228446832927"], ["2022-01-01T00:00:00.000", "35081", "Clayes", "interne", "31.48712768842768"], ["2022-01-01T00:00:00.000", "35131", "L'Hermitage", "interne", "380.38449814605127"], ["2022-01-01T00:00:00.000", "35208", "Orgères", "entrant", "750.1946389320939"], ["2022-01-01T00:00:00.000", "35081", "Clayes", "entrant", "42.76281682104815"], ["2022-01-01T00:00:00.000", "35352", "Vern-sur-Seiche", "interne", "695.0615867039278"], ["2022-01-01T00:00:00.000", "35278", "Saint-Grégoire", "interne", "957.6743159407846"], ["2022-01-01T00:00:00.000", "35204", "Nouvoitou", "entrant", "326.64573493169985"], ["2022-01-01T00:00:00.000", "35132", "Hirel", "entrant", "81.55882088054648"], ["2022-01-01T00:00:00.000", "35065", "La Chapelle-Thouarault", "interne", "80.7884882294409"], ["2022-01-01T00:00:00.000", "35076", "Chavagne", "interne", "335.4083497447787"], ["2022-01-01T00:00:00.000", "35281", "Saint-Jacques-de-la-Lande", "sortant", "5428.5919920321785"], ["2022-01-01T00:00:00.000", "35170", "Mecé", "interne", "24.70549672877347"], ["2022-01-01T00:00:00.000", "35022", "Bécherel", "interne", "67.54711903756808"], ["2022-01-01T00:00:00.000", "35238", "Rennes", "sortant", "31950.787180487074"], ["2022-01-01T00:00:00.000", "35135", "Irodouër", "entrant", "96.62182334952433"], ["2022-01-01T00:00:00.000", "35079", "Chevaigné", "entrant", "131.76417660736706"], ["2022-01-01T00:00:00.000", "35210", "Pacé", "entrant", "4560.694782514181"], ["2022-01-01T00:00:00.000", "35136", "Janzé", "interne", "1021.9287410926373"], ["2022-01-01T00:00:00.000", "35189", "Montgermont", "sortant", "1436.8545805621388"], ["2022-01-01T00:00:00.000", "35132", "Hirel", "sortant", "536.5576211774235"], ["2022-01-01T00:00:00.000", "35024", "Betton", "entrant", "2340.30411078266"], ["2022-01-01T00:00:00.000", "35351", "Le Verger", "interne", "74.74158129502406"], ["2022-01-01T00:00:00.000", "35210", "Pacé", "interne", "1148.1112161323883"], ["2022-01-01T00:00:00.000", "35240", "Le Rheu", "sortant", "3691.212676794133"], ["2022-01-01T00:00:00.000", "35235", "Rannée", "entrant", "58.461934265615845"], ["2022-01-01T00:00:00.000", "35065", "La Chapelle-Thouarault", "sortant", "887.4881098113409"], ["2022-01-01T00:00:00.000", "35275", "Saint-Gilles", "sortant", "2188.479001776829"], ["2022-01-01T00:00:00.000", "35180", "Miniac-sous-Bécherel", "sortant", "327.73926086446545"], ["2022-01-01T00:00:00.000", "35170", "Mecé", "sortant", "232.180200618715"], ["2022-01-01T00:00:00.000", "35353", "Vezin-le-Coquet", "interne", "229.49311294765823"], ["2022-01-01T00:00:00.000", "35206", "Noyal-Châtillon-sur-Seiche", "interne", "693.3070597565534"], ["2022-01-01T00:00:00.000", "35132", "Hirel", "interne", "80.13340540585592"], ["2022-01-01T00:00:00.000", "35047", "Bruz", "sortant", "6135.761304762892"], ["2022-01-01T00:00:00.000", "35135", "Irodouër", "sortant", "1004.598151276945"], ["2022-01-01T00:00:00.000", "35196", "Mordelles", "interne", "551.6519480519485"], ["2022-01-01T00:00:00.000", "35160", "Loutehel", "interne", "9.39514884675161"], ["2022-01-01T00:00:00.000", "35190", "Monthault", "interne", "31.09127479913385"], ["2022-01-01T00:00:00.000", "35351", "Le Verger", "sortant", "639.2162274451535"], ["2022-01-01T00:00:00.000", "35266", "Saint-Erblon", "interne", "173.9344017428037"], ["2022-01-01T00:00:00.000", "35055", "Chantepie", "entrant", "4745.461538129584"], ["2022-01-01T00:00:00.000", "35065", "La Chapelle-Thouarault", "entrant", "92.44038965849005"], ["2022-01-01T00:00:00.000", "35066", "Chartres-de-Bretagne", "sortant", "3188.7205077517597"], ["2022-01-01T00:00:00.000", "35150", "Lécousse", "sortant", "1070.9327870255302"], ["2022-01-01T00:00:00.000", "35310", "Saint-Sauveur-des-Landes", "sortant", "556.185133745653"], ["2022-01-01T00:00:00.000", "35353", "Vezin-le-Coquet", "sortant", "2085.4049586776846"], ["2022-01-01T00:00:00.000", "35039", "Brécé", "sortant", "954.0748028638762"], ["2022-01-01T00:00:00.000", "35200", "Moutiers", "entrant", "74.32595285895493"], ["2022-01-01T00:00:00.000", "35059", "La Chapelle-des-Fougeretz", "sortant", "1751.564865768668"], ["2022-01-01T00:00:00.000", "35001", "Acigné", "interne", "555.4838709677417"], ["2022-01-01T00:00:00.000", "35135", "Irodouër", "interne", "87.90424715231838"], ["2022-01-01T00:00:00.000", "35363", "Pont-Péan", "interne", "223.67784374264778"], ["2022-01-01T00:00:00.000", "35055", "Chantepie", "interne", "929.8428052583522"], ["2022-01-01T00:00:00.000", "35080", "Cintré", "entrant", "114.50635182583405"], ["2022-01-01T00:00:00.000", "35076", "Chavagne", "entrant", "503.4322049095537"], ["2022-01-01T00:00:00.000", "35066", "Chartres-de-Bretagne", "interne", "878.934106407571"], ["2022-01-01T00:00:00.000", "35055", "Chantepie", "sortant", "3749.831760703591"], ["2022-01-01T00:00:00.000", "35180", "Miniac-sous-Bécherel", "entrant", "24.916737258375072"], ["2022-01-01T00:00:00.000", "35139", "Laillé", "interne", "305.7431083248734"], ["2022-01-01T00:00:00.000", "35066", "Chartres-de-Bretagne", "entrant", "5174.858568318939"], ["2022-01-01T00:00:00.000", "35363", "Pont-Péan", "sortant", "1863.101375472155"], ["2022-01-01T00:00:00.000", "35245", "Romillé", "sortant", "1737.0895712733814"], ["2022-01-01T00:00:00.000", "35047", "Bruz", "entrant", "9035.684114379377"], ["2022-01-01T00:00:00.000", "35208", "Orgères", "interne", "326.4333889599236"], ["2022-01-01T00:00:00.000", "35196", "Mordelles", "sortant", "2929.085714285717"], ["2022-01-01T00:00:00.000", "35032", "Bourgbarré", "sortant", "2003.2871136337433"], ["2022-01-01T00:00:00.000", "35189", "Montgermont", "entrant", "1176.236478731542"], ["2022-01-01T00:00:00.000", "35266", "Saint-Erblon", "entrant", "603.983719117345"], ["2022-01-01T00:00:00.000", "35001", "Acigné", "sortant", "2747.414956011729"], ["2022-01-01T00:00:00.000", "35022", "Bécherel", "sortant", "166.8076612509989"], ["2022-01-01T00:00:00.000", "35076", "Chavagne", "sortant", "1795.0384760227967"], ["2022-01-01T00:00:00.000", "35080", "Cintré", "sortant", "1157.324973337154"], ["2022-01-01T00:00:00.000", "35210", "Pacé", "sortant", "4377.96720798327"], ["2022-01-01T00:00:00.000", "35266", "Saint-Erblon", "sortant", "1548.1314749740002"], ["2022-01-01T00:00:00.000", "35160", "Loutehel", "entrant", "0.0"], ["2022-01-01T00:00:00.000", "35170", "Mecé", "entrant", "0.0"], ["2022-01-01T00:00:00.000", "35051", "Cesson-Sévigné", "entrant", "23136.799177514047"], ["2022-01-01T00:00:00.000", "35315", "Saint-Sulpice-la-Forêt", "sortant", "595.7652733118969"], ["2022-01-01T00:00:00.000", "35032", "Bourgbarré", "interne", "324.24984977982496"], ["2022-01-01T00:00:00.000", "35245", "Romillé", "entrant", "422.4187401509708"], ["2022-01-01T00:00:00.000", "35058", "La Chapelle-Chaussée", "sortant", "550.8900253276475"], ["2022-01-01T00:00:00.000", "35206", "Noyal-Châtillon-sur-Seiche", "entrant", "3344.384004260137"], ["2022-01-01T00:00:00.000", "35235", "Rannée", "interne", "83.25384579343765"], ["2022-01-01T00:00:00.000", "35131", "L'Hermitage", "sortant", "1598.9517271681527"], ["2022-01-01T00:00:00.000", "35310", "Saint-Sauveur-des-Landes", "interne", "83.51031236549828"], ["2022-01-01T00:00:00.000", "35363", "Pont-Péan", "entrant", "305.2237462505159"], ["2022-01-01T00:00:00.000", "35024", "Betton", "sortant", "4937.495029247833"], ["2022-01-01T00:00:00.000", "35216", "Parthenay-de-Bretagne", "sortant", "841.2373786259038"], ["2022-01-01T00:00:00.000", "35051", "Cesson-Sévigné", "interne", "2747.1478503558246"], ["2022-01-01T00:00:00.000", "35080", "Cintré", "interne", "115.12811854626207"], ["2022-01-01T00:00:00.000", "35032", "Bourgbarré", "entrant", "1212.6254108413088"], ["2022-01-01T00:00:00.000", "35230", "Poilley", "interne", "63.44091685011492"], ["2022-01-01T00:00:00.000", "35058", "La Chapelle-Chaussée", "entrant", "37.54526404558491"], ["2022-01-01T00:00:00.000", "35281", "Saint-Jacques-de-la-Lande", "entrant", "9362.084076468755"], ["2022-01-01T00:00:00.000", "35334", "Thorigné-Fouillard", "interne", "518.6518392660116"], ["2022-01-01T00:00:00.000", "35245", "Romillé", "interne", "338.02905018656054"], ["2022-01-01T00:00:00.000", "35216", "Parthenay-de-Bretagne", "interne", "80.83926799067218"], ["2022-01-01T00:00:00.000", "35190", "Monthault", "sortant", "69.71746354027646"], ["2022-01-01T00:00:00.000", "35150", "Lécousse", "entrant", "1037.9804540247223"], ["2022-01-01T00:00:00.000", "35088", "Corps-Nuds", "entrant", "552.0411681897015"], ["2022-01-01T00:00:00.000", "35235", "Rannée", "sortant", "434.42515084723243"], ["2022-01-01T00:00:00.000", "35039", "Brécé", "interne", "127.90465672386271"], ["2022-01-01T00:00:00.000", "35079", "Chevaigné", "interne", "96.37185497455047"], ["2022-01-01T00:00:00.000", "35278", "Saint-Grégoire", "sortant", "3485.1369326225063"], ["2022-01-01T00:00:00.000", "35120", "Gévezé", "sortant", "2501.8963848268218"], ["2022-01-01T00:00:00.000", "35238", "Rennes", "entrant", "89384.15755727733"], ["2022-01-01T00:00:00.000", "35144", "Langan", "entrant", "49.94164902653317"], ["2022-01-01T00:00:00.000", "35120", "Gévezé", "entrant", "437.384256505139"], ["2022-01-01T00:00:00.000", "35059", "La Chapelle-des-Fougeretz", "entrant", "1103.1474400327763"], ["2022-01-01T00:00:00.000", "35230", "Poilley", "entrant", "106.31068954440542"], ["2022-01-01T00:00:00.000", "35059", "La Chapelle-des-Fougeretz", "interne", "219.45480472014657"], ["2022-01-01T00:00:00.000", "35240", "Le Rheu", "interne", "1218.75851231011"], ["2022-01-01T00:00:00.000", "35190", "Monthault", "entrant", "18.51240168014741"], ["2022-01-01T00:00:00.000", "35189", "Montgermont", "interne", "157.70622129175635"], ["2022-01-01T00:00:00.000", "35058", "La Chapelle-Chaussée", "interne", "68.34790389530481"], ["2022-01-01T00:00:00.000", "35238", "Rennes", "interne", "65036.43508323472"], ["2022-01-01T00:00:00.000", "35088", "Corps-Nuds", "sortant", "1430.3594524971193"], ["2022-01-01T00:00:00.000", "35230", "Poilley", "sortant", "139.5077651125104"], ["2022-01-01T00:00:00.000", "35334", "Thorigné-Fouillard", "sortant", "3324.697485830943"]], "tronque": false, "nb_total": 162}</script>
+<script>
+(function(){
+  const btn = document.getElementById("theme-toggle");
+  function effectif(){
+    return document.documentElement.getAttribute("data-theme") ||
+      (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  }
+  function majIcone(){ btn.textContent = effectif() === "dark" ? "☀️" : "🌙"; }
+  btn.addEventListener("click", () => {
+    const suivant = effectif() === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", suivant);
+    try { localStorage.setItem("theme", suivant); } catch(e) {}
+    majIcone();
+  });
+  majIcone();
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+    if (!document.documentElement.getAttribute("data-theme")) majIcone();
+  });
+})();
+
+const D=JSON.parse(document.getElementById("d").textContent);
+const tbl=document.getElementById("t"),wrap=document.querySelector(".wrap");
+const nCols=D.entetes.length;
+const wrapW=wrap.clientWidth||800;
+const colW=Math.max(80,Math.floor(Math.max(wrapW,nCols*160)/nCols));
+tbl.style.width=Math.max(wrapW,nCols*160)+"px";
+document.getElementById("cols").innerHTML=D.entetes.map(()=>`<col style="width:${colW}px">`).join("");
+document.title=D.nom;document.getElementById("titre").textContent=D.nom;
+if(D.tronque){const a=document.getElementById("avert");a.style.display="";
+  a.textContent=`Prévisualisation : ${D.lignes.length.toLocaleString("fr")} premières lignes sur ${D.nb_total.toLocaleString("fr")} au total.`;}
+const geo=new Set(D.champs_geo||[]);
+const DICO=D.dictionnaire||{};
+let sc=-1,asc=true,q="";
+function esc(s){return String(s??"").replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function cell(v){const s=String(v??"").trim();return /^https?:\/\/\S+$/.test(s)?`<a href="${esc(s)}" target="_blank" rel="noopener">${esc(s)}</a>`:esc(v);}
+function rendu(){
+  let rows=D.lignes;
+  if(q){const f=q.toLowerCase();rows=rows.filter(r=>r.some(v=>String(v??"").toLowerCase().includes(f)));}
+  if(sc>=0){const col=sc,up=asc;rows=[...rows].sort((a,b)=>{
+    const va=a[col]??"",vb=b[col]??"",na=+va,nb=+vb;
+    return(!isNaN(na)&&!isNaN(nb))?(up?na-nb:nb-na):(up?String(va).localeCompare(String(vb),"fr"):String(vb).localeCompare(String(va),"fr"));
+  });}
+  const th=D.entetes.map((h,i)=>{
+    const trad=DICO[h];
+    const cls=[sc===i?(asc?"asc":"desc"):"",geo.has(h)?"geo":"",trad?"trad":""].filter(Boolean).join(" ");
+    const tip=trad?` title="${esc(h)}"`:"";
+    return`<th class="${cls}"${tip}>${esc(trad||h)}<div class="resizer"></div></th>`;
+  }).join("");
+  document.getElementById("thead").innerHTML=`<tr>${th}</tr>`;
+  document.getElementById("tbody").innerHTML=rows.map(r=>`<tr>${r.map(v=>`<td><div title="${esc(v)}">${cell(v)}</div></td>`).join("")}</tr>`).join("");
+  const n=rows.length,tot=D.lignes.length;
+  document.getElementById("info").textContent=n<tot
+    ?`${n.toLocaleString("fr")} / ${tot.toLocaleString("fr")} lignes`
+    :`${n.toLocaleString("fr")} ligne${n>1?"s":""}`;
+}
+// Sort via delegation — ignore clicks that start on the resizer handle
+tbl.addEventListener("click",e=>{
+  if(e.target.closest(".resizer"))return;
+  const th=e.target.closest("th");
+  if(!th)return;
+  const i=th.cellIndex;sc===i?asc=!asc:(sc=i,asc=true);rendu();
+});
+// Column resize
+tbl.addEventListener("mousedown",e=>{
+  const rz=e.target.closest(".resizer");
+  if(!rz)return;
+  e.preventDefault();
+  const th=rz.parentElement,idx=th.cellIndex;
+  const cols=document.querySelectorAll("#cols col");
+  const startX=e.clientX,startW=th.offsetWidth;
+  rz.classList.add("active");
+  document.body.style.cursor="col-resize";
+  function onMove(e){
+    const w=Math.max(40,startW+(e.clientX-startX));
+    cols[idx].style.width=w+"px";
+    tbl.style.width=Array.from(cols).reduce((s,c)=>s+(parseInt(c.style.width)||colW),0)+"px";
+  }
+  function onUp(){
+    rz.classList.remove("active");
+    document.body.style.cursor="";
+    document.removeEventListener("mousemove",onMove);
+    document.removeEventListener("mouseup",onUp);
+  }
+  document.addEventListener("mousemove",onMove);
+  document.addEventListener("mouseup",onUp);
+});
+document.getElementById("filtre").addEventListener("input",e=>{q=e.target.value;rendu();});
+rendu();
+</script>
+</body>
+</html>

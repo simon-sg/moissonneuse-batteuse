@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title></title>
+<script>(function(){try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<style>
+:root{--bg:#f5f6f8;--card:#fff;--txt:#1c2733;--muted:#667;--accent:#0b6e99;--bord:#e2e6ea;
+      --avert-bg:#fff8e1;--avert-bord:#ffe082;--avert-txt:#6d4c00;
+      --geo-bg:#eaf4fb;--geo-hover:#d4ecf7;--stripe:#fafbfc;--row-hover:#eef6fb;
+      --resizer:rgba(11,110,153,.35);--td-bord:#f0f2f4}
+:root[data-theme="dark"]{--bg:#10151b;--card:#1a222b;--txt:#dbe2e8;--muted:#8996a3;--accent:#4fb3da;--bord:#29323c;
+      --avert-bg:#3a2f10;--avert-bord:#6b5418;--avert-txt:#e8c96a;
+      --geo-bg:#16303c;--geo-hover:#1d3f4d;--stripe:#161d24;--row-hover:#17242c;
+      --resizer:rgba(79,179,218,.35);--td-bord:#232c35}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#10151b;--card:#1a222b;--txt:#dbe2e8;--muted:#8996a3;--accent:#4fb3da;--bord:#29323c;
+      --avert-bg:#3a2f10;--avert-bord:#6b5418;--avert-txt:#e8c96a;
+      --geo-bg:#16303c;--geo-hover:#1d3f4d;--stripe:#161d24;--row-hover:#17242c;
+      --resizer:rgba(79,179,218,.35);--td-bord:#232c35}
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+     background:var(--bg);color:var(--txt);display:flex;flex-direction:column;height:100vh}
+header{background:var(--card);border-bottom:1px solid var(--bord);padding:10px 16px;
+       display:flex;flex-wrap:wrap;gap:10px;align-items:center;flex-shrink:0}
+h1{font-size:.9rem;font-weight:600;flex:1;min-width:150px;
+   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#filtre{padding:7px 11px;font-size:.9rem;border:1px solid var(--bord);
+        border-radius:6px;width:220px;background:var(--card);color:var(--txt)}
+#info{color:var(--muted);font-size:.82rem;white-space:nowrap}
+#theme-toggle{background:none;border:1px solid var(--bord);border-radius:6px;padding:5px 10px;
+              cursor:pointer;font-size:.9rem;line-height:1;color:var(--txt);flex-shrink:0}
+#theme-toggle:hover{background:var(--bg)}
+.avert{background:var(--avert-bg);border-bottom:1px solid var(--avert-bord);padding:5px 16px;
+       font-size:.8rem;color:var(--avert-txt);flex-shrink:0}
+.wrap{flex:1;overflow:auto}
+table{border-collapse:collapse;font-size:.82rem;table-layout:fixed}
+thead{position:sticky;top:0;z-index:2;background:var(--card);box-shadow:0 1px 0 var(--bord)}
+th{padding:8px 12px;text-align:left;cursor:pointer;user-select:none;color:var(--muted);font-weight:600;
+   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative}
+th:hover{background:var(--bg);color:var(--txt)}
+th.asc::after{content:" ↑";color:var(--accent)}
+th.desc::after{content:" ↓";color:var(--accent)}
+th.geo{color:var(--accent);background:var(--geo-bg)}
+th.geo:hover{background:var(--geo-hover)}
+th.trad{text-decoration:underline dotted;text-decoration-color:var(--accent);text-underline-offset:3px}
+td{padding:0;border-bottom:1px solid var(--td-bord)}
+td div{padding:5px 12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+td div a{color:var(--accent);text-decoration:none}
+td div a:hover{text-decoration:underline}
+tr:nth-child(even) td{background:var(--stripe)}
+tr:hover td{background:var(--row-hover)}
+.resizer{position:absolute;right:0;top:0;width:5px;height:100%;cursor:col-resize;z-index:1}
+.resizer:hover,.resizer.active{background:var(--resizer)}
+</style>
+</head>
+<body>
+<header>
+  <h1 id="titre"></h1>
+  <input id="filtre" type="search" placeholder="Filtrer toutes les colonnes…">
+  <span id="info"></span>
+  <button id="theme-toggle" title="Basculer thème clair/sombre" aria-label="Basculer thème clair/sombre">🌙</button>
+</header>
+<div id="avert" class="avert" style="display:none"></div>
+<div class="wrap"><table id="t"><colgroup id="cols"></colgroup><thead id="thead"></thead><tbody id="tbody"></tbody></table></div>
+<script id="d" type="application/json">{"nom": "nuit-des-musees-2023-rennesmetropole.csv", "champs_geo": ["Ville", "Code postal", "Code INSEE"], "dictionnaire": {}, "entetes": ["Identifiant", "URL canonique", "Titre", "Description", "Description longue", "Détail des conditions", "Mots clés", "Dernière mise à jour", "Résumé horaires", "Première date - Début", "Première date - Fin", "Dernière date - Début", "Dernière date - Fin", "Horaires détaillés", "Code d'accessibilité", "Accessibilité", "Identifiant du lieu", "Coordonnées géographiques", "Nom du lieu", "Adresse", "Arrondissement", "Code INSEE", "Code postal", "Ville", "Région", "Département", "Pays", "Téléphone du lieu", "Site web du lieu", "Liens du lieu", "Tags du lieu", "Description du lieu", "Accès / Itinéraire", "Lien d'accès en ligne", "Age minimum", "Age maximum", "Catégorie", "Nom du pays", "Liens additionnels"], "lignes": [["32187619", "https://openagenda.com/ndm/events/la-vie-en-photographie-avec-mathieu-pernot", "La vie en photographie, avec Mathieu Pernot", "Événement des Champs Libres", "À partir de ses propres clichés, d’objets  et d’images choisis dans les collections du Musée de Bretagne, le photographe Mathieu Pernot invite les visiteurs à plonger dans l’âge d’or du métier de phot", "", "nuitdesmusées", "2023-05-13T04:02:31+02:00", "Samedi 13 mai, 15h30, 20h15, 21h30", "2023-05-13T15:30:00+02:00", "2023-05-13T16:15:00+02:00", "2023-05-13T21:30:00+02:00", "2023-05-13T22:15:00+02:00", "[{\"begin\": \"2023-05-13T15:30:00+02:00\", \"end\": \"2023-05-13T16:15:00+02:00\"}, {\"begin\": \"2023-05-13T20:15:00+02:00\", \"end\": \"2023-05-13T21:00:00+02:00\"}, {\"begin\": \"2023-05-13T21:30:00+02:00\", \"end\": \"", "", "", "15244163", "48.105139, -1.674686", "Musée de Bretagne", "Les Champs Libres - 10 cours des Alliés - 35000 RENNES", "Centre", "35238", "35000", "Rennes", "Bretagne", "Ille-et-Vilaine", "FR", "", "", "", "", "Musée de Bretagne", "", "", "", "", "", "France (Métropole)", ""], ["44402163", "https://openagenda.com/ndm/events/le-studio-photo", "Le studio photo", "Événement des Champs Libres", "Immortalisez votre portrait en costume et posture du début du 20e siècle dans un décor de la même époque (à quelques détails près).", "", "nuitdesmusées", "2023-05-13T04:02:14+02:00", "Samedi 13 mai, 14h30, 20h00", "2023-05-13T14:30:00+02:00", "2023-05-13T17:30:00+02:00", "2023-05-13T20:00:00+02:00", "2023-05-13T23:30:00+02:00", "[{\"begin\": \"2023-05-13T14:30:00+02:00\", \"end\": \"2023-05-13T17:30:00+02:00\"}, {\"begin\": \"2023-05-13T20:00:00+02:00\", \"end\": \"2023-05-13T23:30:00+02:00\"}]", "", "", "90140630", "48.105139, -1.674686", "Hall", "Les Champs Libres - 10 cours des Alliés - 35000 RENNES", "Centre", "35238", "35000", "Rennes", "Bretagne", "Ille-et-Vilaine", "FR", "", "", "", "", "Les Champs Libres", "", "", "", "", "", "France (Métropole)", ""], ["41147067", "https://openagenda.com/ndm/events/visite-flash-antoine-coysevox", "Visite flash Antoine Coysevox", "Nuit européenne des musées 2023", "Découvrez les oeuvres d'Antoine Coysevox dans la collection permanente du musée tout au long de la soirée", "gratuit - entrée libre", "", "2023-05-09T15:36:47+02:00", "Samedi 13 mai, 20h00", "2023-05-13T20:00:00+02:00", "2023-05-13T23:30:00+02:00", "2023-05-13T20:00:00+02:00", "2023-05-13T23:30:00+02:00", "[{\"begin\": \"2023-05-13T20:00:00+02:00\", \"end\": \"2023-05-13T23:30:00+02:00\"}]", "", "", "92374440", "48.109598, -1.674803", "Musée des Beaux-Arts", "20 quai Emile Zola, 35000 Rennes", "", "35238", "35000", "Rennes", "Bretagne", "Ille-et-Vilaine", "FR", "02 23 62 17 45", "http://www.mbar.org", "", "Museum of Arts;Musée de France", "Situé en centre ville, le musée des Beaux-Arts de Rennes présente des collections riches et variées : objets antiques et extra-européens, tableaux du XVIème au XXème siècle (Véronèse, Rubens, La Tour,", "Parking : Kléber Métro : République Bus arrêt \"Musée beaux-arts : 4, 6, 40, 64, 67 Bus arrêt \"Lycée Zola\" : 54, 55, 56 Vélo STAR : station avenue Janvier", "", "", "", "", "France (Métropole)", ""], ["93625500", "https://openagenda.com/ndm/events/visite-flash-cabinet-de-curiosites", "Visite flash Cabinet de curiosités", "Nuit européenne des musées 2023", "Découvrez le cabinet de Christophe Paul de Robien tout au long de la soirée", "gratuit - entrée libre", "", "2023-05-09T15:37:32+02:00", "Samedi 13 mai, 20h30", "2023-05-13T20:30:00+02:00", "2023-05-13T23:30:00+02:00", "2023-05-13T20:30:00+02:00", "2023-05-13T23:30:00+02:00", "[{\"begin\": \"2023-05-13T20:30:00+02:00\", \"end\": \"2023-05-13T23:30:00+02:00\"}]", "", "", "92374440", "48.109598, -1.674803", "Musée des Beaux-Arts", "20 quai Emile Zola, 35000 Rennes", "", "35238", "35000", "Rennes", "Bretagne", "Ille-et-Vilaine", "FR", "02 23 62 17 45", "http://www.mbar.org", "", "Museum of Arts;Musée de France", "Situé en centre ville, le musée des Beaux-Arts de Rennes présente des collections riches et variées : objets antiques et extra-européens, tableaux du XVIème au XXème siècle (Véronèse, Rubens, La Tour,", "Parking : Kléber Métro : République Bus arrêt \"Musée beaux-arts : 4, 6, 40, 64, 67 Bus arrêt \"Lycée Zola\" : 54, 55, 56 Vélo STAR : station avenue Janvier", "", "", "", "", "France (Métropole)", ""], ["65933728", "https://openagenda.com/ndm/events/visite-des-reserves-du-musee-7382729", "Visite des réserves du musée", "Événement des Champs Libres", "500 000 objets sont conservés dans les sous-sols des Champs Libres. De la réserve des textiles aux arts graphiques, en passant par l’orfèvrerie, découvrez ces espaces habituellement fermés au public.", "", "nuitdesmusées", "2023-05-13T04:02:11+02:00", "Samedi 13 mai, 20h30, 21h30, 22h30", "2023-05-13T20:30:00+02:00", "2023-05-13T21:10:00+02:00", "2023-05-13T22:30:00+02:00", "2023-05-13T23:10:00+02:00", "[{\"begin\": \"2023-05-13T20:30:00+02:00\", \"end\": \"2023-05-13T21:10:00+02:00\"}, {\"begin\": \"2023-05-13T21:30:00+02:00\", \"end\": \"2023-05-13T22:10:00+02:00\"}, {\"begin\": \"2023-05-13T22:30:00+02:00\", \"end\": \"", "", "", "90140630", "48.105139, -1.674686", "Hall", "Les Champs Libres - 10 cours des Alliés - 35000 RENNES", "Centre", "35238", "35000", "Rennes", "Bretagne", "Ille-et-Vilaine", "FR", "", "", "", "", "Les Champs Libres", "", "", "", "", "", "France (Métropole)", ""], ["54320799", "https://openagenda.com/ndm/events/atelier-de-conservation-photographique", "Atelier de conservation photographique", "Événement des Champs Libres", "Comment le musée préserve ses négatifs photographiques ? Pour le savoir, participez à un atelier découverte des techniques de la conservation préventive. À partir de 10 ans (enfants accompagnés).", "", "nuitdesmusées", "2023-05-13T04:02:17+02:00", "Samedi 13 mai, 20h30, 21h30", "2023-05-13T20:30:00+02:00", "2023-05-13T21:15:00+02:00", "2023-05-13T21:30:00+02:00", "2023-05-13T22:15:00+02:00", "[{\"begin\": \"2023-05-13T20:30:00+02:00\", \"end\": \"2023-05-13T21:15:00+02:00\"}, {\"begin\": \"2023-05-13T21:30:00+02:00\", \"end\": \"2023-05-13T22:15:00+02:00\"}]", "", "", "6449399", "48.105139, -1.674686", "Musée de Bretagne - Centre de documentation", "Les Champs Libres - 10 cours des Alliés - 35000 RENNES", "Centre", "35238", "35000", "Rennes", "Bretagne", "Ille-et-Vilaine", "FR", "", "", "", "", "Musée de Bretagne", "", "", "", "", "", "France (Métropole)", ""], ["81047262", "https://openagenda.com/ndm/events/visite-des-collections-de-luniversite-de-rennes-campus-beaulieu", "Visite des collections de l’Université de Rennes - campus Beaulieu", "Nuit européenne des musées 2023", "Dans le cadre de la Nuit européenne des Musées samedi 13 mai 2023, découvrez les collections scientifiques de l’Université de Rennes sur le campus de Beaulieu.<br />Pour découvrir ces collections, nou", "", "", "2023-05-11T13:00:58+02:00", "Samedi 13 mai, 13h30, 14h45, 16h00", "2023-05-13T13:30:00+02:00", "2023-05-13T14:30:00+02:00", "2023-05-13T16:00:00+02:00", "2023-05-13T19:00:00+02:00", "[{\"begin\": \"2023-05-13T13:30:00+02:00\", \"end\": \"2023-05-13T14:30:00+02:00\"}, {\"begin\": \"2023-05-13T14:45:00+02:00\", \"end\": \"2023-05-13T15:45:00+02:00\"}, {\"begin\": \"2023-05-13T16:00:00+02:00\", \"end\": \"", "mi", "handicap moteur", "91710916", "48.113882, -1.636404", "Université de Rennes - campus Beaulieu", "263 avenue du général leclerc, 35 000 rennes", "Jeanne d'Arc - Longs Champs - Beaulieu", "35238", "35042", "Rennes", "Bretagne", "Ille-et-Vilaine", "FR", "", "https://culture.univ-rennes.fr/actualites/visiter-les-collections", "", "Sciences et techniques;Art moderne et contemporain", "", "", "", "", "", "", "France (Métropole)", "[{\"link\": \"https://www.billetweb.fr/visites-nuit-des-musees\"}, {\"link\": \"https://culture.univ-rennes1.fr/le-patrimoine-universitaire\"}]"], ["84958785", "https://openagenda.com/ndm/events/les-secrets-de-la-restauration-des-photographies", "Les secrets de la restauration des photographies", "Événement des Champs Libres", "La conservation-restauration de photographies est une activité mystérieuse que l’on confond parfois avec la retouche. Pas d’ordinateur ici, mais des photographies originales, des outils, des protocole", "", "nuitdesmusées", "2023-05-13T04:02:19+02:00", "Samedi 13 mai, 14h00, 20h00", "2023-05-13T14:00:00+02:00", "2023-05-13T18:00:00+02:00", "2023-05-13T20:00:00+02:00", "2023-05-13T23:59:00+02:00", "[{\"begin\": \"2023-05-13T14:00:00+02:00\", \"end\": \"2023-05-13T18:00:00+02:00\"}, {\"begin\": \"2023-05-13T20:00:00+02:00\", \"end\": \"2023-05-13T23:59:00+02:00\"}]", "", "", "15244163", "48.105139, -1.674686", "Musée de Bretagne", "Les Champs Libres - 10 cours des Alliés - 35000 RENNES", "Centre", "35238", "35000", "Rennes", "Bretagne", "Ille-et-Vilaine", "FR", "", "", "", "", "Musée de Bretagne", "", "", "", "", "", "France (Métropole)", ""], ["93607468", "https://openagenda.com/ndm/events/quand-les-femmes-font-danser-le-monde-dj-wonderbraz", "Quand les femmes font danser le monde - DJ Wonderbraz", "Événement des Champs Libres", "Des polyphonies de sons mixés, associés à un kaléidoscope d'images qui n'arrête pas. Wonderbraz nous donne à voir les femmes qui font danser les 5 continents, le poing levé. Haïtiennes, Algériennes, É", "", "nuitdesmusées", "2023-05-13T04:02:07+02:00", "Samedi 13 mai, 22h30", "2023-05-13T22:30:00+02:00", "2023-05-13T23:45:00+02:00", "2023-05-13T22:30:00+02:00", "2023-05-13T23:45:00+02:00", "[{\"begin\": \"2023-05-13T22:30:00+02:00\", \"end\": \"2023-05-13T23:45:00+02:00\"}]", "", "", "90140630", "48.105139, -1.674686", "Hall", "Les Champs Libres - 10 cours des Alliés - 35000 RENNES", "Centre", "35238", "35000", "Rennes", "Bretagne", "Ille-et-Vilaine", "FR", "", "", "", "", "Les Champs Libres", "", "", "", "", "", "France (Métropole)", ""], ["87289116", "https://openagenda.com/ndm/events/les-incontournables-du-musee-717464", "Les incontournables du musée", "Événement des Champs Libres", "Connaissez-vous la déesse du Menez Hom ? Savez-vous pourquoi la monnaie frappée par Anne de Bretagne s’appelle une cadière ? Qu’est-ce que la révolte des Sardinières ? Découverte ou redécouverte de l’", "", "nuitdesmusées", "2023-05-13T04:02:23+02:00", "Samedi 13 mai, 20h15", "2023-05-13T20:15:00+02:00", "2023-05-13T22:30:00+02:00", "2023-05-13T20:15:00+02:00", "2023-05-13T22:30:00+02:00", "[{\"begin\": \"2023-05-13T20:15:00+02:00\", \"end\": \"2023-05-13T22:30:00+02:00\"}]", "", "", "15244163", "48.105139, -1.674686", "Musée de Bretagne", "Les Champs Libres - 10 cours des Alliés - 35000 RENNES", "Centre", "35238", "35000", "Rennes", "Bretagne", "Ille-et-Vilaine", "FR", "", "", "", "", "Musée de Bretagne", "", "", "", "", "", "France (Métropole)", ""], ["46758159", "https://openagenda.com/ndm/events/visite-flash-archeologie", "Visite flash Archéologie", "Nuit européenne des musées 2023", "Découvrez la section archéologique tout au long de la soirée", "gratuit - entrée libre", "", "2023-05-09T15:36:50+02:00", "Samedi 13 mai, 20h00", "2023-05-13T20:00:00+02:00", "2023-05-13T23:30:00+02:00", "2023-05-13T20:00:00+02:00", "2023-05-13T23:30:00+02:00", "[{\"begin\": \"2023-05-13T20:00:00+02:00\", \"end\": \"2023-05-13T23:30:00+02:00\"}]", "", "", "92374440", "48.109598, -1.674803", "Musée des Beaux-Arts", "20 quai Emile Zola, 35000 Rennes", "", "35238", "35000", "Rennes", "Bretagne", "Ille-et-Vilaine", "FR", "02 23 62 17 45", "http://www.mbar.org", "", "Museum of Arts;Musée de France", "Situé en centre ville, le musée des Beaux-Arts de Rennes présente des collections riches et variées : objets antiques et extra-européens, tableaux du XVIème au XXème siècle (Véronèse, Rubens, La Tour,", "Parking : Kléber Métro : République Bus arrêt \"Musée beaux-arts : 4, 6, 40, 64, 67 Bus arrêt \"Lycée Zola\" : 54, 55, 56 Vélo STAR : station avenue Janvier", "", "", "", "", "France (Métropole)", ""], ["45482813", "https://openagenda.com/ndm/events/fox-boy-au-musee", "Fox-Boy au musée", "Événement des Champs Libres", "L'auteur de bande-dessinée, Laurent Lefeuvre, passe la soirée au musée pour travailler à un nouvel album de son héros, Fox-Boy. Déambulant dans les espaces, les photographiant, dessinant les visiteurs", "", "nuitdesmusées", "2023-05-13T04:02:26+02:00", "Samedi 13 mai, 20h00", "2023-05-13T20:00:00+02:00", "2023-05-14T00:00:00+02:00", "2023-05-13T20:00:00+02:00", "2023-05-14T00:00:00+02:00", "[{\"begin\": \"2023-05-13T20:00:00+02:00\", \"end\": \"2023-05-14T00:00:00+02:00\"}]", "", "", "15244163", "48.105139, -1.674686", "Musée de Bretagne", "Les Champs Libres - 10 cours des Alliés - 35000 RENNES", "Centre", "35238", "35000", "Rennes", "Bretagne", "Ille-et-Vilaine", "FR", "", "", "", "", "Musée de Bretagne", "", "", "", "", "", "France (Métropole)", ""], ["82524612", "https://openagenda.com/ndm/events/visite-flash-matrimoine", "Visite flash Matrimoine", "Nuit européenne des musées 2023", "Découvrez les oeuvres des artistes femmes dans la collection permanente du musée tout au long de la soirée", "gratuit - entrée libre", "", "2023-05-09T15:36:54+02:00", "Samedi 13 mai, 20h00", "2023-05-13T20:00:00+02:00", "2023-05-13T23:30:00+02:00", "2023-05-13T20:00:00+02:00", "2023-05-13T23:30:00+02:00", "[{\"begin\": \"2023-05-13T20:00:00+02:00\", \"end\": \"2023-05-13T23:30:00+02:00\"}]", "", "", "92374440", "48.109598, -1.674803", "Musée des Beaux-Arts", "20 quai Emile Zola, 35000 Rennes", "", "35238", "35000", "Rennes", "Bretagne", "Ille-et-Vilaine", "FR", "02 23 62 17 45", "http://www.mbar.org", "", "Museum of Arts;Musée de France", "Situé en centre ville, le musée des Beaux-Arts de Rennes présente des collections riches et variées : objets antiques et extra-européens, tableaux du XVIème au XXème siècle (Véronèse, Rubens, La Tour,", "Parking : Kléber Métro : République Bus arrêt \"Musée beaux-arts : 4, 6, 40, 64, 67 Bus arrêt \"Lycée Zola\" : 54, 55, 56 Vélo STAR : station avenue Janvier", "", "", "", "", "France (Métropole)", ""], ["75757060", "https://openagenda.com/ndm/events/le-cri-cest-la-vie-ou-gueulomaton", "Gueulomaton", "Événement des Champs Libres", "Dans un photomaton, on paye pour prendre des photos ; dans un gueulomaton, on crie pour prendre des photos. Loin des clichés arrangés et autres selfies parfaits, criez à pleins poumons pour déclencher", "", "nuitdesmusées", "2023-05-13T04:02:22+02:00", "Samedi 13 mai, 20h00", "2023-05-13T20:00:00+02:00", "2023-05-14T00:00:00+02:00", "2023-05-13T20:00:00+02:00", "2023-05-14T00:00:00+02:00", "[{\"begin\": \"2023-05-13T20:00:00+02:00\", \"end\": \"2023-05-14T00:00:00+02:00\"}]", "", "", "15244163", "48.105139, -1.674686", "Musée de Bretagne", "Les Champs Libres - 10 cours des Alliés - 35000 RENNES", "Centre", "35238", "35000", "Rennes", "Bretagne", "Ille-et-Vilaine", "FR", "", "", "", "", "Musée de Bretagne", "", "", "", "", "", "France (Métropole)", ""], ["88401198", "https://openagenda.com/ndm/events/rallye-photo-5208527", "Rallye photo", "Événement des Champs Libres", "Aidez le photographe du musée à retrouver un objet mystérieux. Il a caché des indices dans tout le musée en prenant soin de photographier chaque cachette, hélas il a trop zoomé. À vous de jouer, en ch", "", "nuitdesmusées", "2023-05-13T04:02:21+02:00", "Samedi 13 mai, 20h00", "2023-05-13T20:00:00+02:00", "2023-05-13T22:30:00+02:00", "2023-05-13T20:00:00+02:00", "2023-05-13T22:30:00+02:00", "[{\"begin\": \"2023-05-13T20:00:00+02:00\", \"end\": \"2023-05-13T22:30:00+02:00\"}]", "", "", "15244163", "48.105139, -1.674686", "Musée de Bretagne", "Les Champs Libres - 10 cours des Alliés - 35000 RENNES", "Centre", "35238", "35000", "Rennes", "Bretagne", "Ille-et-Vilaine", "FR", "", "", "", "", "Musée de Bretagne", "", "", "", "", "", "France (Métropole)", ""], ["94722907", "https://openagenda.com/ndm/events/ou-sont-les-femmes-au-musee", "Où sont les femmes au musée ?", "Événement des Champs Libres", "Pendant plusieurs mois, des élèves de terminale du lycée Saint-Martin Sainte-Geneviève ont travaillé sur les objets de l’exposition permanente. Elles proposent leur regard sur le matrimoine breton à t", "", "nuitdesmusées", "2023-05-13T04:02:28+02:00", "Samedi 13 mai, 20h00", "2023-05-13T20:00:00+02:00", "2023-05-13T22:00:00+02:00", "2023-05-13T20:00:00+02:00", "2023-05-13T22:00:00+02:00", "[{\"begin\": \"2023-05-13T20:00:00+02:00\", \"end\": \"2023-05-13T22:00:00+02:00\"}]", "", "", "15244163", "48.105139, -1.674686", "Musée de Bretagne", "Les Champs Libres - 10 cours des Alliés - 35000 RENNES", "Centre", "35238", "35000", "Rennes", "Bretagne", "Ille-et-Vilaine", "FR", "", "", "", "", "Musée de Bretagne", "", "", "", "", "", "France (Métropole)", ""], ["5051763", "https://openagenda.com/ndm/events/visite-flash-art-contemporain", "Visite flash Art contemporain", "Nuit européenne des musées 2023", "Découvrez les oeuvres contemporaines dans la collection permanente du musée tout au long de la soirée", "gratuit - entrée libre", "", "2023-05-09T15:36:44+02:00", "Samedi 13 mai, 20h00", "2023-05-13T20:00:00+02:00", "2023-05-13T23:30:00+02:00", "2023-05-13T20:00:00+02:00", "2023-05-13T23:30:00+02:00", "[{\"begin\": \"2023-05-13T20:00:00+02:00\", \"end\": \"2023-05-13T23:30:00+02:00\"}]", "", "", "92374440", "48.109598, -1.674803", "Musée des Beaux-Arts", "20 quai Emile Zola, 35000 Rennes", "", "35238", "35000", "Rennes", "Bretagne", "Ille-et-Vilaine", "FR", "02 23 62 17 45", "http://www.mbar.org", "", "Museum of Arts;Musée de France", "Situé en centre ville, le musée des Beaux-Arts de Rennes présente des collections riches et variées : objets antiques et extra-européens, tableaux du XVIème au XXème siècle (Véronèse, Rubens, La Tour,", "Parking : Kléber Métro : République Bus arrêt \"Musée beaux-arts : 4, 6, 40, 64, 67 Bus arrêt \"Lycée Zola\" : 54, 55, 56 Vélo STAR : station avenue Janvier", "", "", "", "", "France (Métropole)", ""], ["1069252", "https://openagenda.com/ndm/events/visite-flash-marcelle-cahn", "Visite flash Marcelle Cahn", "Nuit européenne des musées 2023", "Découvrez l'exposition Marcelle Cahn tout au long de la soirée", "gratuit - entrée libre", "", "2023-05-09T15:36:36+02:00", "Samedi 13 mai, 20h00", "2023-05-13T20:00:00+02:00", "2023-05-13T23:55:00+02:00", "2023-05-13T20:00:00+02:00", "2023-05-13T23:55:00+02:00", "[{\"begin\": \"2023-05-13T20:00:00+02:00\", \"end\": \"2023-05-13T23:55:00+02:00\"}]", "", "", "92374440", "48.109598, -1.674803", "Musée des Beaux-Arts", "20 quai Emile Zola, 35000 Rennes", "", "35238", "35000", "Rennes", "Bretagne", "Ille-et-Vilaine", "FR", "02 23 62 17 45", "http://www.mbar.org", "", "Museum of Arts;Musée de France", "Situé en centre ville, le musée des Beaux-Arts de Rennes présente des collections riches et variées : objets antiques et extra-européens, tableaux du XVIème au XXème siècle (Véronèse, Rubens, La Tour,", "Parking : Kléber Métro : République Bus arrêt \"Musée beaux-arts : 4, 6, 40, 64, 67 Bus arrêt \"Lycée Zola\" : 54, 55, 56 Vélo STAR : station avenue Janvier", "", "", "", "", "France (Métropole)", ""]], "tronque": false, "nb_total": 18}</script>
+<script>
+(function(){
+  const btn = document.getElementById("theme-toggle");
+  function effectif(){
+    return document.documentElement.getAttribute("data-theme") ||
+      (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  }
+  function majIcone(){ btn.textContent = effectif() === "dark" ? "☀️" : "🌙"; }
+  btn.addEventListener("click", () => {
+    const suivant = effectif() === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", suivant);
+    try { localStorage.setItem("theme", suivant); } catch(e) {}
+    majIcone();
+  });
+  majIcone();
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+    if (!document.documentElement.getAttribute("data-theme")) majIcone();
+  });
+})();
+
+const D=JSON.parse(document.getElementById("d").textContent);
+const tbl=document.getElementById("t"),wrap=document.querySelector(".wrap");
+const nCols=D.entetes.length;
+const wrapW=wrap.clientWidth||800;
+const colW=Math.max(80,Math.floor(Math.max(wrapW,nCols*160)/nCols));
+tbl.style.width=Math.max(wrapW,nCols*160)+"px";
+document.getElementById("cols").innerHTML=D.entetes.map(()=>`<col style="width:${colW}px">`).join("");
+document.title=D.nom;document.getElementById("titre").textContent=D.nom;
+if(D.tronque){const a=document.getElementById("avert");a.style.display="";
+  a.textContent=`Prévisualisation : ${D.lignes.length.toLocaleString("fr")} premières lignes sur ${D.nb_total.toLocaleString("fr")} au total.`;}
+const geo=new Set(D.champs_geo||[]);
+const DICO=D.dictionnaire||{};
+let sc=-1,asc=true,q="";
+function esc(s){return String(s??"").replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function cell(v){const s=String(v??"").trim();return /^https?:\/\/\S+$/.test(s)?`<a href="${esc(s)}" target="_blank" rel="noopener">${esc(s)}</a>`:esc(v);}
+function rendu(){
+  let rows=D.lignes;
+  if(q){const f=q.toLowerCase();rows=rows.filter(r=>r.some(v=>String(v??"").toLowerCase().includes(f)));}
+  if(sc>=0){const col=sc,up=asc;rows=[...rows].sort((a,b)=>{
+    const va=a[col]??"",vb=b[col]??"",na=+va,nb=+vb;
+    return(!isNaN(na)&&!isNaN(nb))?(up?na-nb:nb-na):(up?String(va).localeCompare(String(vb),"fr"):String(vb).localeCompare(String(va),"fr"));
+  });}
+  const th=D.entetes.map((h,i)=>{
+    const trad=DICO[h];
+    const cls=[sc===i?(asc?"asc":"desc"):"",geo.has(h)?"geo":"",trad?"trad":""].filter(Boolean).join(" ");
+    const tip=trad?` title="${esc(h)}"`:"";
+    return`<th class="${cls}"${tip}>${esc(trad||h)}<div class="resizer"></div></th>`;
+  }).join("");
+  document.getElementById("thead").innerHTML=`<tr>${th}</tr>`;
+  document.getElementById("tbody").innerHTML=rows.map(r=>`<tr>${r.map(v=>`<td><div title="${esc(v)}">${cell(v)}</div></td>`).join("")}</tr>`).join("");
+  const n=rows.length,tot=D.lignes.length;
+  document.getElementById("info").textContent=n<tot
+    ?`${n.toLocaleString("fr")} / ${tot.toLocaleString("fr")} lignes`
+    :`${n.toLocaleString("fr")} ligne${n>1?"s":""}`;
+}
+// Sort via delegation — ignore clicks that start on the resizer handle
+tbl.addEventListener("click",e=>{
+  if(e.target.closest(".resizer"))return;
+  const th=e.target.closest("th");
+  if(!th)return;
+  const i=th.cellIndex;sc===i?asc=!asc:(sc=i,asc=true);rendu();
+});
+// Column resize
+tbl.addEventListener("mousedown",e=>{
+  const rz=e.target.closest(".resizer");
+  if(!rz)return;
+  e.preventDefault();
+  const th=rz.parentElement,idx=th.cellIndex;
+  const cols=document.querySelectorAll("#cols col");
+  const startX=e.clientX,startW=th.offsetWidth;
+  rz.classList.add("active");
+  document.body.style.cursor="col-resize";
+  function onMove(e){
+    const w=Math.max(40,startW+(e.clientX-startX));
+    cols[idx].style.width=w+"px";
+    tbl.style.width=Array.from(cols).reduce((s,c)=>s+(parseInt(c.style.width)||colW),0)+"px";
+  }
+  function onUp(){
+    rz.classList.remove("active");
+    document.body.style.cursor="";
+    document.removeEventListener("mousemove",onMove);
+    document.removeEventListener("mouseup",onUp);
+  }
+  document.addEventListener("mousemove",onMove);
+  document.addEventListener("mouseup",onUp);
+});
+document.getElementById("filtre").addEventListener("input",e=>{q=e.target.value;rendu();});
+rendu();
+</script>
+</body>
+</html>

@@ -1,0 +1,493 @@
+{
+  "local_id": "fd5ea1c3-7ef6-577e-9de3-6314a896de62",
+  "resource_title": "Annuaire des avocats de France - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Annuaire des avocats de France — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/6357de8624b187e5486cbef3\n\n### 1. **Description générale**\n\nCe jeu de données contient l’annuaire national des avocats établit par le Conseil national des barreaux en application des dispositions de l’article 21-1, alinéa 2 de la loi n° 71-1130 du 31 décembre 1971 en vigueur. \n\nLe Conseil national des barreaux (« CNB ») est l’établissement d’utilité publique chargé de représenter la profession d’avocat notamment auprès des pouvoirs publics. \n\nDans le cadre sa mission de service public relative à l’organisation de la profession réglementée d’avocat, il lui a été confié la tâche de constituer et rendre accessible la liste des avocats inscrits au tableau d’un barreau.\n\nL’annuaire national établit la liste de tous les avocats inscrits au tableau d’un barreau et qui exerce la profession d’avocat en France. \nL’annuaire national rassemble ainsi les données de l’ensemble des 164 barreaux français. Il est établi et mis à jour sur la base des informations que l’ensemble des 164 barreaux transmettent sous leur responsabilité au CNB. \n\nIl est une photographie à un instant T de la profession, dont la composition est par essence mouvante. Chaque jour des demandes d’inscription sont présentées dans les barreaux (entrées) mais également des demandes d’omission ou de cessation d’activité (sorties). Toute demande fait l’objet d’un examen par les barreaux et d’une décision du Conseil de l’Ordre concerné qui, _in fine_, alimente l’annuaire national du CNB.  \n\nCe jeu de données est diffusé sous licence ouverte Etalab 2.0.\n\n\n### 2. **La description du format des fichiers**\n\nLe jeu de caractères pris en charge est l’ASCII étendu ANSI. Le fichier, au format CSV (comma separated value), est nommé annuaire-avocats-aaaammjj.CSV, où aaaammjj est la date d’export du fichier.\n \nLe fichier est constitué d’enregistrements, le séparateur d’enregistrement est le retour chariot (CR+LF). \n\nLes enregistrements sont constitués de champs, le séparateur de champs est le point-virgule (;).\n\nLa première ligne du fichier contient les informations globales relatives à l’exportation de l’annuaire de référence.\n\n### 3. **La fréquence de mise à jour**\n\nLe contenu de l’annuaire national est mis à jour chaque mois. \n\n### 4. **Description du modèle de données**\n\nLe modèle de données est constitué de la manière suivante :\n\nOrdre\tDescriptif\t\t\t\t\tType\tTaille  Attribut\n0\tNom du Barreau\t\t\t\t\tCHAINE (50)\tNomBarreau\t\n1\tNom de l'avocat\t\t\t\t\tCHAINE (127)\tavNom\n2\tPrénom de l'avocat\t\t\t\tCHAINE (127)\tavPrenom\n3\tRaison sociale de la structure d'exercice\tCHAINE (127)\tcbRaisonSociale\n4\tSIREN de la structure d'exercice\t\tCHAINE (9)\tcbSiretSiren\n5\tAdresse ligne 1 de la structure d'exercice\tCHAINE (50)\tcbAdresse1\n6\tAdresse ligne 2 de la structure d'exercice\tCHAINE (50)\tcbAdresse2\n7\tCode de la structure d'exercice\t\t\tCHAINE (5)\tcbCp\n8\tVille de la structure d'exercice\t\tCHAINE (2)\tcbVille\n9\tSpécialité 1 de l'avocat\t\t\tCHAINE (127)\tspLibelle1\n10\tSpécialité 2 de l'avocat\t\t\tCHAINE (127)\tspLibelle2\n11\tSpécialité 3 de l'avocat\t\t\tCHAINE (127)\tspLibelle3\n12\tDate de prise de serment de l'avocat\t\tCHAINE (8)\tacDateSerment\n13\tLangue(s) parlée(s) par l'avocat                CHAINE (127)\tavLang\n\n\n> Note : La dénomination des barreaux présents dans cette liste n’est qu’informative. En effet tout nom de barreau peut être amené à changer suivant une délibération du Conseil de l’Ordre (ex : le barreau de Bourg-en-Bresse devient, à la suite de la délibération de son Conseil de l’Ordre le 06/10/2009, le « Barreau de l’Ain ». De même, à la suite de la décision de son Conseil de l’Ordre du 01/10/2009, le barreau de Rodez devient le « Barreau de l’Aveyron »).\n> "
+    }
+  ],
+  "theme": "environment",
+  "keywords": [
+    "annuaire",
+    "avocats",
+    "barreau",
+    "barreaux",
+    "conseil-de-lordre",
+    "national",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Conseil national des barreaux"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "f09d56dd-1699-5bc2-8c58-adea1d162d68",
+      "media_type": "FILE",
+      "media_name": "annuaire-avocats-20260615-rennesmetropole.csv",
+      "media_caption": "annuaire-avocats-20260615.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "73036ec3-b8e7-5882-96d7-d2b11c7634dd",
+      "media_type": "FILE",
+      "media_name": "annuaire-avocats-20260515-rennesmetropole.csv",
+      "media_caption": "annuaire-avocats-20260515.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "83f284d6-3ff5-52f9-bff5-3117e9110a32",
+      "media_type": "FILE",
+      "media_name": "annuaire-avocats-20260420-rennesmetropole.csv",
+      "media_caption": "annuaire-avocats-20260420.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "b953c4c8-df13-5ca2-96df-a6e04ea4374f",
+      "media_type": "FILE",
+      "media_name": "annuaire-avocats-20260316-rennesmetropole.csv",
+      "media_caption": "annuaire-avocats-20260316.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "53b46741-62e9-5c65-ada7-9b81cf22907e",
+      "media_type": "FILE",
+      "media_name": "annuaire-avocats-20260216-rennesmetropole.csv",
+      "media_caption": "Annuaire-avocats-20260216.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "25736b2f-6fc9-5db8-b21b-b34ecad6b6a3",
+      "media_type": "FILE",
+      "media_name": "annuaire-avocats-20260114-rennesmetropole.csv",
+      "media_caption": "annuaire-avocats-20260114.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "0a4a1944-3ef4-5bf5-b7e4-54a9408988a3",
+      "media_type": "FILE",
+      "media_name": "annuaire-avocats-20251215-rennesmetropole.csv",
+      "media_caption": "annuaire-avocats-20251215.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "febc0474-0ceb-5a2b-aac5-b5d3fac7cacd",
+      "media_type": "FILE",
+      "media_name": "annuaire-avocats-20251117-rennesmetropole.csv",
+      "media_caption": "annuaire-avocats-20251117.CSV — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "27555d3c-4d9c-5445-90c7-6229911a38dc",
+      "media_type": "FILE",
+      "media_name": "annuaire-avocats-20251017-rennesmetropole.csv",
+      "media_caption": "annuaire-avocats-20251017.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "7f497c9d-5e91-555c-8e50-8d1605df0d7e",
+      "media_type": "FILE",
+      "media_name": "annuaire-avocats-20250917-rennesmetropole.csv",
+      "media_caption": "annuaire-avocats-20250917.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "da169cdc-1732-5c19-8d46-084ac736b9ac",
+      "media_type": "FILE",
+      "media_name": "annuaire-avocats-20250819-rennesmetropole.csv",
+      "media_caption": "annuaire-avocats-20250819.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "fc247a12-2adb-5a02-bd38-509a794aaed1",
+      "media_type": "FILE",
+      "media_name": "annuaire-avocats-20250718-rennesmetropole.csv",
+      "media_caption": "annuaire-avocats-20250718.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "f65aa715-441c-550b-8689-810120868a71",
+      "media_type": "FILE",
+      "media_name": "annuaire-avocats-20250618-rennesmetropole.csv",
+      "media_caption": "annuaire-avocats-20250618.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "f9872987-b29b-5fe6-b189-fd64ade3fd3b",
+      "media_type": "FILE",
+      "media_name": "annuaire-avocats-20250514-rennesmetropole.csv",
+      "media_caption": "annuaire-avocats-20250514.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "8ff99d36-18f8-5336-93cc-393605a9d047",
+      "media_type": "FILE",
+      "media_name": "annuaire-avocats-20250424-rennesmetropole.csv",
+      "media_caption": "annuaire-avocats-20250424.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "3acfc2c2-6bcc-550a-8db5-068eb64e9c44",
+      "media_type": "FILE",
+      "media_name": "annuaire-avocats-20250317-rennesmetropole.csv",
+      "media_caption": "annuaire-avocats-20250317.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "ccb788ee-ae65-5e1f-83a9-8d5a051af635",
+      "media_type": "FILE",
+      "media_name": "annuaire-avocats-20250217-rennesmetropole.csv",
+      "media_caption": "annuaire-avocats-20250217.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "14b5044e-9756-5e61-908b-0db439135fed",
+      "media_type": "FILE",
+      "media_name": "annuaire-avocats-20250109-rennesmetropole.csv",
+      "media_caption": "annuaire-avocats-20250109.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "dacedf16-23af-56f4-aeb7-1864c00bad86",
+      "media_type": "FILE",
+      "media_name": "annuaire-avocats-20241031-rennesmetropole.csv",
+      "media_caption": "annuaire-avocats-20241031.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "5aac462a-cdee-56a1-b4c0-ef7140620f10",
+      "media_type": "FILE",
+      "media_name": "annuaire-avocats-20240823-rennesmetropole.csv",
+      "media_caption": "annuaire-avocats-20240823.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "8e055cfc-51ed-55ab-b901-08e06e537b59",
+      "media_type": "FILE",
+      "media_name": "annuaire-avocats-20240715-rennesmetropole.csv",
+      "media_caption": "annuaire-avocats-20240715.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "0bf5669d-56f5-5292-82fd-b7625d1178f3",
+      "media_type": "FILE",
+      "media_name": "annuaire-avocats-20240617-rennesmetropole.csv",
+      "media_caption": "annuaire-avocats-20240617.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "fc267173-1203-5454-abd6-c1e2f8a16838",
+      "media_type": "FILE",
+      "media_name": "annuaire-avocats-20240521-rennesmetropole.csv",
+      "media_caption": "annuaire-avocats-20240521.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "ac7de6c3-6349-5861-b5a5-88f2adfa0b8e",
+      "media_type": "FILE",
+      "media_name": "annuaire-avocats-20240415-rennesmetropole.csv",
+      "media_caption": "annuaire-avocats-20240415.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "98feb2c1-d435-5f5e-b6b1-da6428d730e7",
+      "media_type": "FILE",
+      "media_name": "annuaire-avocats-20240318-rennesmetropole.csv",
+      "media_caption": "annuaire-avocats-20240318.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "f9a218a5-90ee-5a76-b998-b7a2ebf7d688",
+      "media_type": "FILE",
+      "media_name": "annuaire-avocas-20240221-rennesmetropole.csv",
+      "media_caption": "annuaire-avocas-20240221.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "d9ee6627-6a08-5fb8-8dce-0d9809d3acc6",
+      "media_type": "FILE",
+      "media_name": "annuaire-avocas-20240125-rennesmetropole.csv",
+      "media_caption": "annuaire-avocas-20240125.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "76e25583-dfdf-5cf6-9a45-174584fda028",
+      "media_type": "FILE",
+      "media_name": "annuaire-avocats-20231120-rennesmetropole.csv",
+      "media_caption": "annuaire-avocats-20231120.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "7f1f374a-93da-5898-b523-e776723dc52b",
+      "media_type": "FILE",
+      "media_name": "annuaire-avocats-20231024-rennesmetropole.csv",
+      "media_caption": "annuaire-avocats-20231024.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "528630b2-5960-548c-b0cb-dfded3d5b420",
+      "media_type": "FILE",
+      "media_name": "annuaire-avocats-20231016-rennesmetropole.csv",
+      "media_caption": "annuaire-avocats-20231016.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "08367882-b0cc-5449-ab7d-9c7e6970ff1b",
+      "media_type": "FILE",
+      "media_name": "annuaire-avocats-20230919-rennesmetropole.csv",
+      "media_caption": "annuaire-avocats-20230919.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "596c3451-9e9f-5b93-9f38-a0be9e3a9f9d",
+      "media_type": "FILE",
+      "media_name": "annuaire-avocats-20230821-rennesmetropole.csv",
+      "media_caption": "annuaire-avocats-20230821.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "54ac5cde-0921-5902-913f-3533f841c5bc",
+      "media_type": "FILE",
+      "media_name": "annuaire-avocats-20230723-rennesmetropole.csv",
+      "media_caption": "annuaire-avocats-20230723.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "7eb190cd-dc3e-5c84-b122-6fbb2bfd59d2",
+      "media_type": "FILE",
+      "media_name": "annuaire-avocats-20230629-rennesmetropole.csv",
+      "media_caption": "annuaire-avocats-20230629.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "dd7c2bfb-21c2-5348-8139-308b1270c815",
+      "media_type": "FILE",
+      "media_name": "annuaire-avocats-20230522-rennesmetropole.csv",
+      "media_caption": "annuaire-avocats-20230522.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "b2297d3b-57e7-5bcb-97f5-0527565c0913",
+      "media_type": "FILE",
+      "media_name": "annuaire-avocats-20230417-rennesmetropole.csv",
+      "media_caption": "annuaire-avocats-20230417.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "38ef3720-c580-5d7f-95f0-8465a3602f33",
+      "media_type": "FILE",
+      "media_name": "annuaire-avocats-20230320-rennesmetropole.csv",
+      "media_caption": "annuaire-avocats-20230320.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "d4f1c4ef-e310-55df-bc48-07b058c8c7eb",
+      "media_type": "FILE",
+      "media_name": "annuaire-avocats-20230227-rennesmetropole.csv",
+      "media_caption": "annuaire-avocats-20230227.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "c5fbecb7-5146-5b37-a0d2-cc4d521bcb21",
+      "media_type": "FILE",
+      "media_name": "annuaire-avocats-20230125-rennesmetropole.csv",
+      "media_caption": "annuaire-avocats-20230125.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "f023b552-4b61-5800-9cfb-e241763f6bc9",
+      "media_type": "FILE",
+      "media_name": "annuaire-avocats-20221226-rennesmetropole.csv",
+      "media_caption": "annuaire-avocats-20221226.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "98ace626-681c-54ba-bd32-b6d8817cf5e3",
+      "media_type": "FILE",
+      "media_name": "annuaire-avocats-20221125-rennesmetropole.csv",
+      "media_caption": "annuaire-avocats-20221125.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "1edb05c8-8e5a-5046-93d8-8ccee8289260",
+      "media_type": "FILE",
+      "media_name": "annuaire-avocats-20221011-rennesmetropole.csv",
+      "media_caption": "annuaire-avocats-20221011.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "e6438a5d-4dc4-5a64-b831-f4c888fd4f0f",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://static.data.gouv.fr/resources/annuaire-des-avocats-de-france/20260615-125703/annuaire-avocats-20260615.csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2022-10-25T00:00:00Z",
+    "updated": "2026-06-15T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2022-10-25T00:00:00Z",
+      "updated": "2026-06-15T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/6357de8624b187e5486cbef3"
+  }
+}

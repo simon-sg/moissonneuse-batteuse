@@ -1,0 +1,81 @@
+{
+  "local_id": "37e8d042-c7e1-51b5-9795-bd03e8a97b0c",
+  "resource_title": "Historique des codes IRIS - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Historique des codes IRIS — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/64a935e7f5ddd207829205e8\n\nLes IRIS (Îlots Regroupés pour l’Information Statistique) sont des découpages géographiques utilisés par l’Insee pour la diffusion de données statistiques en France. Ils correspondent à des quartiers ou portions de communes et sont utilisés pour produire des statistiques locales. Leurs contours administratifs évoluent au fil des années.\n\nDans le cadre du [Challenge GD4H](https://challenge.gd4h.ecologie.gouv.fr/), une équipe de bénévoles a travaillé sur la constitution d'une table de passage des codes IRIS de 1999 à 2022. Ce référentiel n'était en effet pas disponible.\n\nLe code et les données sont disponibles sur [la forge du projet](https://gitlab.com/data-challenge-gd4h/historiris).\n\n[La méthode de constitution du référentiel est documentée ici](https://gitlab.com/data-challenge-gd4h/historiris/-/blob/main/docs/regles-gestions.md).\n\n> Attention : ce référentiel est jeune et peut présenter des erreurs. Nous vous invitons à l'utiliser avec précaution et à faire part de vos [retours pour son amélioration le cas échéant](https://gitlab.com/data-challenge-gd4h/historiris#contributions)."
+    }
+  ],
+  "theme": "culture",
+  "keywords": [
+    "decoupage-administratif",
+    "gd4h",
+    "insee",
+    "iris",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Santé publique France"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "914129f0-c713-5dd6-ba15-db69fcf37a04",
+      "media_type": "FILE",
+      "media_name": "table-de-passage-synthetique-rennesmetropole.csv",
+      "media_caption": "Table de passage synthétique — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "5b13ec9e-7aef-5b81-8277-7facdeaac0bb",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://gitlab.com/data-challenge-gd4h/historiris/-/raw/main/data/iris/output/table_passage_1999_2022.csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2023-07-08T00:00:00Z",
+    "updated": "2023-08-24T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2023-07-08T00:00:00Z",
+      "updated": "2023-08-24T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/64a935e7f5ddd207829205e8"
+  }
+}

@@ -1,0 +1,89 @@
+{
+  "local_id": "abaf0c5c-d8be-5b2b-a9f2-e260a9a67b50",
+  "resource_title": "Eté culturel 2024 - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Eté culturel 2024 — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/6691fbc3e33ff438151ff6b5\n\nAfin de favoriser la participation à la vie culturelle, le ministère de la Culture apporte son soutien à des projets culturels et artistiques organisés pendant l’été. \n\nLancé en 2020, l'Eté culturel est une opération nationale visant à soutenir des propositions artistiques et culturelles (concerts, représentations, ateliers, projets participatifs, etc.), toutes disciplines confondues, ayant lieu en juillet et août. Ces projets peuvent être proposés par une association, un particulier, une collectivité (territoriale, régionale, départementale, communale), un établissement public ou bien un organisme privé.  \nL’opération se décline en « Vacances culturelles » en Outre-mer.\n\n**Pour[en savoir plus](https://www.culture.gouv.fr/catalogue-des-demarches-et-subventions/appels-a-projets-candidatures/ete-culturel).**"
+    }
+  ],
+  "theme": "culture",
+  "keywords": [
+    "culture",
+    "ministeredelaculture",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Ministère de la Culture"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "00d39eef-3860-5380-905d-52e85d49adfa",
+      "media_type": "FILE",
+      "media_name": "ete-culturel-rennesmetropole.csv",
+      "media_caption": "ete-culturel.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "d40ea633-f419-509d-8655-5d2838aee444",
+      "media_type": "FILE",
+      "media_name": "ete-culturel-rennesmetropole.json",
+      "media_caption": "ete-culturel.csv — données filtrées sur Rennes Métropole (JSON)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "c92c43e3-d4bf-5865-80e6-159321bfaf1a",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://static.data.gouv.fr/resources/ete-culturel-2024/20250827-135658/ete-culturel.csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2024-07-13T00:00:00Z",
+    "updated": "2025-10-23T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2024-07-13T00:00:00Z",
+      "updated": "2025-10-23T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/6691fbc3e33ff438151ff6b5"
+  }
+}

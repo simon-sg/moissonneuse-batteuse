@@ -1,0 +1,52 @@
+[
+  {
+    "Organismes inscrits": "Université Rennes 1 – Service commun de la documentation (SCD) et Service d’aide à la vie étudiante (SAVE)",
+    "Statuts": "Etablissement relevant de l'enseignement supérieur et de la recherche",
+    "Voies": "13 avenue du Professeur Léon Bernard",
+    "Villes": "Rennes",
+    "Codes postaux": "35000",
+    "Régions": "Bretagne",
+    "Organismes agréés": "",
+    "geolocalisation": "48.116763, -1.702316"
+  },
+  {
+    "Organismes inscrits": "Ville de Rennes Métropole - Bibliothèque Les Champs Libres",
+    "Statuts": "Bibliothèque territoriale",
+    "Voies": "46 boulevard Magenta",
+    "Villes": "Rennes",
+    "Codes postaux": "35012",
+    "Régions": "Bretagne",
+    "Organismes agréés": "",
+    "geolocalisation": "48.105254, -1.674045"
+  },
+  {
+    "Organismes inscrits": "ECOLE SUPERIEURE D'ART DE BRETAGNE (EESAB)",
+    "Statuts": "Etablissement relevant de l'enseignement supérieur et de la recherche",
+    "Voies": "34, rue Hoche",
+    "Villes": "RENNES",
+    "Codes postaux": "35000",
+    "Régions": "Bretagne",
+    "Organismes agréés": "Agréé",
+    "geolocalisation": ""
+  },
+  {
+    "Organismes inscrits": "Médiathèque départementale d’Ille-et-Vilaine",
+    "Statuts": "Bibliothèque territoriale",
+    "Voies": "1 avenue de la Préfecture",
+    "Villes": "Rennes",
+    "Codes postaux": "35042",
+    "Régions": "Bretagne",
+    "Organismes agréés": "",
+    "geolocalisation": "48.127132, -1.693496"
+  },
+  {
+    "Organismes inscrits": "PEP Bretill’Armor – Centre Angèle Vannier",
+    "Statuts": "Établissement social et médico-social",
+    "Voies": "5 rue Albert Martin",
+    "Villes": "Rennes",
+    "Codes postaux": "35000",
+    "Régions": "Bretagne",
+    "Organismes agréés": "Agréé",
+    "geolocalisation": "48.090393, -1.691587"
+  }
+]

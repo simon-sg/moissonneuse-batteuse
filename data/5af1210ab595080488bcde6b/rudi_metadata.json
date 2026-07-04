@@ -1,0 +1,94 @@
+{
+  "local_id": "3c1b9e75-8ed5-5e3f-b201-5a34b2ab1ec3",
+  "resource_title": "Liste des établissements de l'enseignement supérieur culture - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Liste des établissements de l'enseignement supérieur culture — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/5af1210ab595080488bcde6b\n\nListe et localisation des établissements (sièges et sites) de l'enseignement supérieur sous tutelle du ministère de la culture et de la communication (ESC).\n\nLa géolocalisation de ce jeu de données est effectuée à partir de l'adresse postale, et à défaut, du code postal."
+    }
+  ],
+  "theme": "culture",
+  "keywords": [
+    "culture",
+    "ministeredelaculture",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Ministère de la Culture"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "8c45d514-76b1-5c80-b28a-3f9737e058ba",
+      "media_type": "FILE",
+      "media_name": "liste-des-etablissements-denseignement-superieur-s-rennesmetropole.csv",
+      "media_caption": "liste-des-etablissements-denseignement-superieur-sous-tutelle-du-mcc.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "5ebd9caf-fb75-58d6-bfbb-1b389856ef6a",
+      "media_type": "FILE",
+      "media_name": "liste-des-etablissements-denseignement-superieur-s-rennesmetropole.json",
+      "media_caption": "liste-des-etablissements-denseignement-superieur-sous-tutelle-du-mcc.csv — données filtrées sur Rennes Métropole (JSON)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "40fe8835-b60a-5637-a994-2b823d41e782",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://static.data.gouv.fr/resources/liste-des-etablissements-de-lenseignement-superieur-culture-1/20250827-122115/liste-des-etablissements-denseignement-superieur-sous-tutelle-du-mcc.csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2018-05-08T00:00:00Z",
+    "updated": "2025-10-23T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "CUSTOM",
+      "custom_licence_label": [
+        {
+          "lang": "fr",
+          "text": "fr-lo"
+        }
+      ],
+      "custom_licence_uri": "https://www.data.gouv.fr/datasets/5af1210ab595080488bcde6b"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2018-05-08T00:00:00Z",
+      "updated": "2025-10-23T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/5af1210ab595080488bcde6b"
+  }
+}

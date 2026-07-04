@@ -1,0 +1,81 @@
+{
+  "local_id": "b81e48d4-fac6-58d9-8be1-d6d235803839",
+  "resource_title": "Enquête nationale sur les transports collectifs urbains - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Enquête nationale sur les transports collectifs urbains — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/64d634d0a44bad3832e40886\n\n#### ARCHIVE : jeu de données plus mis à jour depuis 2017\n\nDe 1990 à 2016, l'enquête nationale sur les transports collectifs urbains a été pilotée par le Cerema, en partenariat avec la DGITM, le SDES, le Gart et l'UTP.\nLes jeux de données diffusés ici ne concernent que la période 1990-2016.\nDepuis, l'enquête est pilotée par le Gart et l'UTP.\n"
+    }
+  ],
+  "theme": "culture",
+  "keywords": [
+    "enquete",
+    "mobilite",
+    "reseau",
+    "tcu",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Cerema"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "8267efc8-9176-5408-aa96-51d9431eb947",
+      "media_type": "FILE",
+      "media_name": "tcu-reseau-rennesmetropole.csv",
+      "media_caption": "tcu-reseau.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "643057a0-45a2-544e-aa8a-da958a7533a1",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://static.data.gouv.fr/resources/enquete-nationale-sur-les-transports-collectifs-urbains/20230830-200846/open-data-tcu-dataenq.csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2023-08-11T00:00:00Z",
+    "updated": "2025-05-05T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2023-08-11T00:00:00Z",
+      "updated": "2025-05-05T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/64d634d0a44bad3832e40886"
+  }
+}

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title></title>
+<script>(function(){try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<style>
+:root{--bg:#f5f6f8;--card:#fff;--txt:#1c2733;--muted:#667;--accent:#0b6e99;--bord:#e2e6ea;
+      --avert-bg:#fff8e1;--avert-bord:#ffe082;--avert-txt:#6d4c00;
+      --geo-bg:#eaf4fb;--geo-hover:#d4ecf7;--stripe:#fafbfc;--row-hover:#eef6fb;
+      --resizer:rgba(11,110,153,.35);--td-bord:#f0f2f4}
+:root[data-theme="dark"]{--bg:#10151b;--card:#1a222b;--txt:#dbe2e8;--muted:#8996a3;--accent:#4fb3da;--bord:#29323c;
+      --avert-bg:#3a2f10;--avert-bord:#6b5418;--avert-txt:#e8c96a;
+      --geo-bg:#16303c;--geo-hover:#1d3f4d;--stripe:#161d24;--row-hover:#17242c;
+      --resizer:rgba(79,179,218,.35);--td-bord:#232c35}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#10151b;--card:#1a222b;--txt:#dbe2e8;--muted:#8996a3;--accent:#4fb3da;--bord:#29323c;
+      --avert-bg:#3a2f10;--avert-bord:#6b5418;--avert-txt:#e8c96a;
+      --geo-bg:#16303c;--geo-hover:#1d3f4d;--stripe:#161d24;--row-hover:#17242c;
+      --resizer:rgba(79,179,218,.35);--td-bord:#232c35}
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+     background:var(--bg);color:var(--txt);display:flex;flex-direction:column;height:100vh}
+header{background:var(--card);border-bottom:1px solid var(--bord);padding:10px 16px;
+       display:flex;flex-wrap:wrap;gap:10px;align-items:center;flex-shrink:0}
+h1{font-size:.9rem;font-weight:600;flex:1;min-width:150px;
+   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#filtre{padding:7px 11px;font-size:.9rem;border:1px solid var(--bord);
+        border-radius:6px;width:220px;background:var(--card);color:var(--txt)}
+#info{color:var(--muted);font-size:.82rem;white-space:nowrap}
+#theme-toggle{background:none;border:1px solid var(--bord);border-radius:6px;padding:5px 10px;
+              cursor:pointer;font-size:.9rem;line-height:1;color:var(--txt);flex-shrink:0}
+#theme-toggle:hover{background:var(--bg)}
+.avert{background:var(--avert-bg);border-bottom:1px solid var(--avert-bord);padding:5px 16px;
+       font-size:.8rem;color:var(--avert-txt);flex-shrink:0}
+.wrap{flex:1;overflow:auto}
+table{border-collapse:collapse;font-size:.82rem;table-layout:fixed}
+thead{position:sticky;top:0;z-index:2;background:var(--card);box-shadow:0 1px 0 var(--bord)}
+th{padding:8px 12px;text-align:left;cursor:pointer;user-select:none;color:var(--muted);font-weight:600;
+   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative}
+th:hover{background:var(--bg);color:var(--txt)}
+th.asc::after{content:" ↑";color:var(--accent)}
+th.desc::after{content:" ↓";color:var(--accent)}
+th.geo{color:var(--accent);background:var(--geo-bg)}
+th.geo:hover{background:var(--geo-hover)}
+th.trad{text-decoration:underline dotted;text-decoration-color:var(--accent);text-underline-offset:3px}
+td{padding:0;border-bottom:1px solid var(--td-bord)}
+td div{padding:5px 12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+td div a{color:var(--accent);text-decoration:none}
+td div a:hover{text-decoration:underline}
+tr:nth-child(even) td{background:var(--stripe)}
+tr:hover td{background:var(--row-hover)}
+.resizer{position:absolute;right:0;top:0;width:5px;height:100%;cursor:col-resize;z-index:1}
+.resizer:hover,.resizer.active{background:var(--resizer)}
+</style>
+</head>
+<body>
+<header>
+  <h1 id="titre"></h1>
+  <input id="filtre" type="search" placeholder="Filtrer toutes les colonnes…">
+  <span id="info"></span>
+  <button id="theme-toggle" title="Basculer thème clair/sombre" aria-label="Basculer thème clair/sombre">🌙</button>
+</header>
+<div id="avert" class="avert" style="display:none"></div>
+<div class="wrap"><table id="t"><colgroup id="cols"></colgroup><thead id="thead"></thead><tbody id="tbody"></tbody></table></div>
+<script id="d" type="application/json">{"nom": "elus-maires-mai-rennesmetropole.csv", "champs_geo": ["Libellé de la commune"], "dictionnaire": {}, "entetes": ["Code du département", "Libellé du département", "Code de la collectivité à statut particulier", "Libellé de la collectivité à statut particulier", "Code de la commune", "Libellé de la commune", "Nom de l'élu", "Prénom de l'élu", "Code sexe", "Date de naissance", "Code de la catégorie socio-professionnelle", "Libellé de la catégorie socio-professionnelle", "Date de début du mandat", "Date de début de la fonction"], "lignes": [["30", "Gard", "", "", "30258", "Saint-Gilles", "VALADIER", "Eddy", "M", "1967-04-19", "33", "Cadre de la fonction publique", "2026-03-15", "2026-03-22"], ["35", "Ille-Et-Vilaine", "", "", "35001", "Acigné", "DEHAESE", "Olivier", "M", "1970-02-12", "34", "Professeur, profession scientifique", "2026-03-15", "2026-03-20"], ["35", "Ille-Et-Vilaine", "", "", "35022", "Bécherel", "PARMENTIER", "Mélina", "F", "1982-01-16", "54", "Employé administratif d'entreprise", "2026-03-15", "2026-03-20"], ["35", "Ille-Et-Vilaine", "", "", "35024", "Betton", "BROCHAIN", "François", "M", "1960-11-07", "38", "Ingénieur et cadre technique d'entreprise", "2026-03-15", "2026-03-21"], ["35", "Ille-Et-Vilaine", "", "", "35032", "Bourgbarré", "MORVAN", "Franck", "M", "1961-07-14", "74", "Ancien cadre", "2026-03-15", "2026-03-20"], ["35", "Ille-Et-Vilaine", "", "", "35039", "Brécé", "HERBST", "Vincent", "M", "1974-10-31", "45", "Profession intermédiaire administrative de la fonction publique", "2026-03-15", "2026-03-20"], ["35", "Ille-Et-Vilaine", "", "", "35047", "Bruz", "HOUSSIN", "Jean-René", "M", "1959-11-06", "37", "Cadre administratif et commercial d'entreprise", "2026-03-15", "2026-03-20"], ["35", "Ille-Et-Vilaine", "", "", "35051", "Cesson-Sévigné", "SAVIGNAC", "Jean-Pierre", "M", "1969-07-06", "38", "Ingénieur et cadre technique d'entreprise", "2026-03-15", "2026-03-21"], ["35", "Ille-Et-Vilaine", "", "", "35055", "Chantepie", "LE BLOND", "Grégoire", "M", "1972-11-30", "22", "Commerçant et assimilé", "2026-03-15", "2026-03-20"], ["35", "Ille-Et-Vilaine", "", "", "35058", "La Chapelle-Chaussée", "PINAULT", "Pascal", "M", "1970-04-03", "34", "Professeur, profession scientifique", "2026-03-15", "2026-03-20"], ["35", "Ille-Et-Vilaine", "", "", "35059", "La Chapelle-Des-Fougeretz", "GASTÉ", "Christèle", "F", "1972-09-17", "45", "Profession intermédiaire administrative de la fonction publique", "2026-03-15", "2026-03-20"], ["35", "Ille-Et-Vilaine", "", "", "35065", "La Chapelle-Thouarault", "ARMAND", "Régine", "F", "1968-05-31", "37", "Cadre administratif et commercial d'entreprise", "2026-03-15", "2026-03-20"], ["35", "Ille-Et-Vilaine", "", "", "35066", "Chartres-De-Bretagne", "LE BORGNE", "David", "M", "1974-01-18", "33", "Cadre de la fonction publique", "2026-03-22", "2026-03-28"], ["35", "Ille-Et-Vilaine", "", "", "35076", "Chavagne", "RENOUX", "Thierry", "M", "1961-02-10", "74", "Ancien cadre", "2026-03-15", "2026-03-20"], ["35", "Ille-Et-Vilaine", "", "", "35079", "Chevaigné", "VINCENT", "Sandrine", "F", "1975-08-09", "85", "Personne diverse sans activité professionnelle de moins de 60 ans (sauf retraité)", "2026-03-15", "2026-03-20"], ["35", "Ille-Et-Vilaine", "", "", "35080", "Cintré", "TRAON", "Dominique", "M", "1967-12-04", "37", "Cadre administratif et commercial d'entreprise", "2026-03-22", "2026-03-27"], ["35", "Ille-Et-Vilaine", "", "", "35081", "Clayes", "SICOT", "Philippe", "M", "1965-07-15", "55", "Employé de commerce", "2026-03-15", "2026-03-20"], ["35", "Ille-Et-Vilaine", "", "", "35088", "Corps-Nuds", "LISEMBART", "Laurent", "M", "1969-05-27", "37", "Cadre administratif et commercial d'entreprise", "2026-03-15", "2026-03-20"], ["35", "Ille-Et-Vilaine", "", "", "35120", "Gévezé", "CHAUVIN", "Benoît", "M", "1972-07-15", "12", "Agriculteur sur moyenne exploitation", "2026-03-15", "2026-03-21"], ["35", "Ille-Et-Vilaine", "", "", "35131", "L'Hermitage", "LE BORGNE", "Vincent", "M", "1985-07-22", "38", "Ingénieur et cadre technique d'entreprise", "2026-03-15", "2026-03-20"], ["35", "Ille-Et-Vilaine", "", "", "35139", "Laillé", "LOUAPRE", "Françoise", "F", "1970-10-02", "11", "Agriculteur sur petite exploitation", "2026-03-15", "2026-03-20"], ["35", "Ille-Et-Vilaine", "", "", "35144", "Langan", "JOLIVET", "Thierry", "M", "1960-04-14", "71", "Ancien agriculteur exploitant", "2026-03-15", "2026-03-20"], ["35", "Ille-Et-Vilaine", "", "", "35180", "Miniac-Sous-Bécherel", "GAIGNERIE", "Jean-Christophe", "M", "1963-05-17", "74", "Ancien cadre", "2026-03-15", "2026-03-20"], ["35", "Ille-Et-Vilaine", "", "", "35189", "Montgermont", "PRIZÉ", "Laurent", "M", "1968-02-29", "37", "Cadre administratif et commercial d'entreprise", "2026-03-22", "2026-03-27"], ["35", "Ille-Et-Vilaine", "", "", "35196", "Mordelles", "BILLARD", "Armelle", "F", "1966-06-30", "37", "Cadre administratif et commercial d'entreprise", "2026-03-15", "2026-03-21"], ["35", "Ille-Et-Vilaine", "", "", "35204", "Nouvoitou", "DENIS", "Gilles", "M", "1984-05-15", "37", "Cadre administratif et commercial d'entreprise", "2026-03-15", "2026-03-20"], ["35", "Ille-Et-Vilaine", "", "", "35206", "Noyal-Châtillon-Sur-Seiche", "GUERET", "Sébastien", "M", "1973-04-04", "33", "Cadre de la fonction publique", "2026-03-15", "2026-03-21"], ["35", "Ille-Et-Vilaine", "", "", "35208", "Orgères", "COCHAUD", "Yannick", "M", "1973-01-07", "37", "Cadre administratif et commercial d'entreprise", "2026-03-15", "2026-03-15"], ["35", "Ille-Et-Vilaine", "", "", "35210", "Pacé", "DEPOUEZ", "Hervé", "M", "1952-04-15", "31", "Profession libérale", "2026-03-22", "2026-03-27"], ["35", "Ille-Et-Vilaine", "", "", "35216", "Parthenay-De-Bretagne", "LE GALL", "Philippe", "M", "1973-12-17", "45", "Profession intermédiaire administrative de la fonction publique", "2026-03-15", "2026-03-21"], ["35", "Ille-Et-Vilaine", "", "", "35238", "Rennes", "APPÉRÉ", "Nathalie", "F", "1975-07-08", "86", "Personne diverse sans activité professionnelle de 60 ans et plus (sauf retraité)", "2026-03-22", "2026-03-22"], ["35", "Ille-Et-Vilaine", "", "", "35240", "Le Rheu", "LESNÉ", "Bruno", "M", "1970-08-18", "38", "Ingénieur et cadre technique d'entreprise", "2026-03-15", "2026-03-21"], ["35", "Ille-Et-Vilaine", "", "", "35245", "Romillé", "GUINARD", "Arnaud", "M", "1980-05-27", "12", "Agriculteur sur moyenne exploitation", "2026-03-15", "2026-03-21"], ["35", "Ille-Et-Vilaine", "", "", "35250", "Saint-Armel", "CHEREL", "Ludovic", "M", "1974-09-17", "34", "Professeur, profession scientifique", "2026-03-15", "2026-03-20"], ["35", "Ille-Et-Vilaine", "", "", "35266", "Saint-Erblon", "POLLET", "Matthieu", "M", "1979-10-31", "22", "Commerçant et assimilé", "2026-03-15", "2026-03-20"], ["35", "Ille-Et-Vilaine", "", "", "35275", "Saint-Gilles", "LE FRÊCHE", "Antoine", "M", "1975-10-04", "37", "Cadre administratif et commercial d'entreprise", "2026-03-15", "2026-03-20"], ["35", "Ille-Et-Vilaine", "", "", "35278", "Saint-Grégoire", "REMOISSENET", "Laëtitia", "F", "1976-09-07", "37", "Cadre administratif et commercial d'entreprise", "2026-03-15", "2026-03-20"], ["35", "Ille-Et-Vilaine", "", "", "35281", "Saint-Jacques-De-La-Lande", "COLLET", "Sebastien", "M", "2001-04-02", "33", "Cadre de la fonction publique", "2026-03-22", "2026-03-28"], ["35", "Ille-Et-Vilaine", "", "", "35315", "Saint-Sulpice-La-Forêt", "HUAUMÉ", "Yann", "M", "1977-07-04", "43", "Profession intermédiaire de la santé et du travail social", "2026-03-15", "2026-03-21"], ["35", "Ille-Et-Vilaine", "", "", "35334", "Thorigné-Fouillard", "CLAUDON", "Benoit", "M", "1980-09-04", "34", "Professeur, profession scientifique", "2026-03-15", "2026-03-20"], ["35", "Ille-Et-Vilaine", "", "", "35351", "Le Verger", "CHRISTEL", "Patrick", "M", "1967-06-15", "23", "Chef d'entreprise de 10 salariés ou plus", "2026-03-15", "2026-03-20"], ["35", "Ille-Et-Vilaine", "", "", "35352", "Vern-Sur-Seiche", "LABBÉ", "Stéphane", "M", "1971-04-14", "22", "Commerçant et assimilé", "2026-03-15", "2026-03-21"], ["35", "Ille-Et-Vilaine", "", "", "35353", "Vezin-Le-Coquet", "LE MEUT", "Paul", "M", "1955-09-10", "31", "Profession libérale", "2026-03-22", "2026-03-28"], ["35", "Ille-Et-Vilaine", "", "", "35363", "Pont-Péan", "ZEROUKHI", "Mourad", "M", "1977-06-20", "31", "Profession libérale", "2026-03-15", "2026-03-21"], ["36", "Indre", "", "", "36196", "Saint-Gilles", "GROEN", "Spike", "M", "2000-08-13", "31", "Profession libérale", "2026-03-15", "2026-03-20"], ["50", "Manche", "", "", "50483", "Saint-Gilles", "LEROUXEL", "Jean-Luc", "M", "1959-10-18", "71", "Ancien agriculteur exploitant", "2026-03-15", "2026-03-20"], ["51", "Marne", "", "", "51484", "Saint-Gilles", "COULVIER", "Thierry", "M", "1964-08-29", "37", "Cadre administratif et commercial d'entreprise", "2026-03-15", "2026-03-20"], ["53", "Mayenne", "", "", "53042", "Brecé", "FAUVEAU", "Jérôme", "M", "1973-02-17", "52", "Employé civil et agent de service de la fonction publique", "2026-03-15", "2026-03-20"], ["53", "Mayenne", "", "", "53214", "Saint-Erblon", "JONCHERAY", "Quentin", "M", "1981-01-11", "64", "Chauffeur", "2026-03-15", "2026-03-20"], ["56", "Morbihan", "", "", "56205", "Saint-Armel", "TRÉMOUREUX", "Philippe", "M", "1960-03-28", "74", "Ancien cadre", "2026-03-15", "2026-03-20"], ["61", "Orne", "", "", "61317", "Orgères", "BERGUE", "François", "M", "1956-07-10", "75", "Ancienne profession intermédiaire", "2026-03-15", "2026-03-15"], ["61", "Orne", "", "", "61321", "Pacé", "DELAUNAY", "Lionel", "M", "1973-04-12", "52", "Employé civil et agent de service de la fonction publique", "2026-03-15", "2026-03-15"], ["71", "Saône-Et-Loire", "", "", "71425", "Saint-Gilles", "PETITJEAN", "Maxime", "M", "1981-09-27", "13", "Agriculteur sur grande exploitation", "2026-03-15", "2026-03-20"], ["81", "Tarn", "", "", "81253", "Saint-Grégoire", "DELPERIE", "Laurence", "F", "1969-09-17", "43", "Profession intermédiaire de la santé et du travail social", "2026-03-15", "2026-03-21"]], "tronque": false, "nb_total": 54}</script>
+<script>
+(function(){
+  const btn = document.getElementById("theme-toggle");
+  function effectif(){
+    return document.documentElement.getAttribute("data-theme") ||
+      (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  }
+  function majIcone(){ btn.textContent = effectif() === "dark" ? "☀️" : "🌙"; }
+  btn.addEventListener("click", () => {
+    const suivant = effectif() === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", suivant);
+    try { localStorage.setItem("theme", suivant); } catch(e) {}
+    majIcone();
+  });
+  majIcone();
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+    if (!document.documentElement.getAttribute("data-theme")) majIcone();
+  });
+})();
+
+const D=JSON.parse(document.getElementById("d").textContent);
+const tbl=document.getElementById("t"),wrap=document.querySelector(".wrap");
+const nCols=D.entetes.length;
+const wrapW=wrap.clientWidth||800;
+const colW=Math.max(80,Math.floor(Math.max(wrapW,nCols*160)/nCols));
+tbl.style.width=Math.max(wrapW,nCols*160)+"px";
+document.getElementById("cols").innerHTML=D.entetes.map(()=>`<col style="width:${colW}px">`).join("");
+document.title=D.nom;document.getElementById("titre").textContent=D.nom;
+if(D.tronque){const a=document.getElementById("avert");a.style.display="";
+  a.textContent=`Prévisualisation : ${D.lignes.length.toLocaleString("fr")} premières lignes sur ${D.nb_total.toLocaleString("fr")} au total.`;}
+const geo=new Set(D.champs_geo||[]);
+const DICO=D.dictionnaire||{};
+let sc=-1,asc=true,q="";
+function esc(s){return String(s??"").replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function cell(v){const s=String(v??"").trim();return /^https?:\/\/\S+$/.test(s)?`<a href="${esc(s)}" target="_blank" rel="noopener">${esc(s)}</a>`:esc(v);}
+function rendu(){
+  let rows=D.lignes;
+  if(q){const f=q.toLowerCase();rows=rows.filter(r=>r.some(v=>String(v??"").toLowerCase().includes(f)));}
+  if(sc>=0){const col=sc,up=asc;rows=[...rows].sort((a,b)=>{
+    const va=a[col]??"",vb=b[col]??"",na=+va,nb=+vb;
+    return(!isNaN(na)&&!isNaN(nb))?(up?na-nb:nb-na):(up?String(va).localeCompare(String(vb),"fr"):String(vb).localeCompare(String(va),"fr"));
+  });}
+  const th=D.entetes.map((h,i)=>{
+    const trad=DICO[h];
+    const cls=[sc===i?(asc?"asc":"desc"):"",geo.has(h)?"geo":"",trad?"trad":""].filter(Boolean).join(" ");
+    const tip=trad?` title="${esc(h)}"`:"";
+    return`<th class="${cls}"${tip}>${esc(trad||h)}<div class="resizer"></div></th>`;
+  }).join("");
+  document.getElementById("thead").innerHTML=`<tr>${th}</tr>`;
+  document.getElementById("tbody").innerHTML=rows.map(r=>`<tr>${r.map(v=>`<td><div title="${esc(v)}">${cell(v)}</div></td>`).join("")}</tr>`).join("");
+  const n=rows.length,tot=D.lignes.length;
+  document.getElementById("info").textContent=n<tot
+    ?`${n.toLocaleString("fr")} / ${tot.toLocaleString("fr")} lignes`
+    :`${n.toLocaleString("fr")} ligne${n>1?"s":""}`;
+}
+// Sort via delegation — ignore clicks that start on the resizer handle
+tbl.addEventListener("click",e=>{
+  if(e.target.closest(".resizer"))return;
+  const th=e.target.closest("th");
+  if(!th)return;
+  const i=th.cellIndex;sc===i?asc=!asc:(sc=i,asc=true);rendu();
+});
+// Column resize
+tbl.addEventListener("mousedown",e=>{
+  const rz=e.target.closest(".resizer");
+  if(!rz)return;
+  e.preventDefault();
+  const th=rz.parentElement,idx=th.cellIndex;
+  const cols=document.querySelectorAll("#cols col");
+  const startX=e.clientX,startW=th.offsetWidth;
+  rz.classList.add("active");
+  document.body.style.cursor="col-resize";
+  function onMove(e){
+    const w=Math.max(40,startW+(e.clientX-startX));
+    cols[idx].style.width=w+"px";
+    tbl.style.width=Array.from(cols).reduce((s,c)=>s+(parseInt(c.style.width)||colW),0)+"px";
+  }
+  function onUp(){
+    rz.classList.remove("active");
+    document.body.style.cursor="";
+    document.removeEventListener("mousemove",onMove);
+    document.removeEventListener("mouseup",onUp);
+  }
+  document.addEventListener("mousemove",onMove);
+  document.addEventListener("mouseup",onUp);
+});
+document.getElementById("filtre").addEventListener("input",e=>{q=e.target.value;rendu();});
+rendu();
+</script>
+</body>
+</html>

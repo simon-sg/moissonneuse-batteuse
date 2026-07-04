@@ -1,0 +1,62 @@
+[
+  {
+    "﻿Nom du chantier": "RENNES",
+    "Adresse 1": "Avenue Chardonnet",
+    "CP": "35000",
+    "Latitude": "48.108608",
+    "Longitude": "-1.633662",
+    "VILLE": "RENNES",
+    "N°": "9",
+    "Longueur apte à la manutention (ml)": "210",
+    "Nom de la cour": "",
+    "Manutention 2021": "Grue(s)"
+  },
+  {
+    "﻿Nom du chantier": "RENNES",
+    "Adresse 1": "Avenue Chardonnet",
+    "CP": "35000",
+    "Latitude": "48.108608",
+    "Longitude": "-1.633662",
+    "VILLE": "RENNES",
+    "N°": "13",
+    "Longueur apte à la manutention (ml)": "245",
+    "Nom de la cour": "",
+    "Manutention 2021": "Grue(s)"
+  },
+  {
+    "﻿Nom du chantier": "RENNES",
+    "Adresse 1": "Avenue Chardonnet",
+    "CP": "35000",
+    "Latitude": "48.108608",
+    "Longitude": "-1.633662",
+    "VILLE": "RENNES",
+    "N°": "8",
+    "Longueur apte à la manutention (ml)": "345",
+    "Nom de la cour": "",
+    "Manutention 2021": "1 Portique"
+  },
+  {
+    "﻿Nom du chantier": "RENNES",
+    "Adresse 1": "Avenue Chardonnet",
+    "CP": "35000",
+    "Latitude": "48.108608",
+    "Longitude": "-1.633662",
+    "VILLE": "RENNES",
+    "N°": "12",
+    "Longueur apte à la manutention (ml)": "245",
+    "Nom de la cour": "",
+    "Manutention 2021": "Grue(s)"
+  },
+  {
+    "﻿Nom du chantier": "RENNES",
+    "Adresse 1": "Avenue Chardonnet",
+    "CP": "35000",
+    "Latitude": "48.108608",
+    "Longitude": "-1.633662",
+    "VILLE": "RENNES",
+    "N°": "7",
+    "Longueur apte à la manutention (ml)": "345",
+    "Nom de la cour": "",
+    "Manutention 2021": "1 Portique"
+  }
+]

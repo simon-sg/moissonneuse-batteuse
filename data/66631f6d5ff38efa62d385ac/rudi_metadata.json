@@ -1,0 +1,129 @@
+{
+  "local_id": "99604b3f-9d30-5f3c-93b0-368b13d4143d",
+  "resource_title": "Installations classées pour la protection de l'environnement (ICPE) - France métropolitaine et DROM — Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Installations classées pour la protection de l'environnement (ICPE) - France métropolitaine et DROM — données géographiques pour Rennes Métropole (WFS"
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Service WFS filtré sur Rennes Métropole (43 communes, EPCI 243500139).\n\nSource : https://mapsref.brgm.fr/wxs/georisques/georisques_dl\n\nJeu de données du thème « environnement », produit par Bureau de Recherches Géologiques et Minières, limité aux communes de Rennes Métropole."
+    }
+  ],
+  "theme": "environment",
+  "keywords": [
+    "rennes métropole",
+    "géographique",
+    "wfs"
+  ],
+  "producer": {
+    "organization_name": "Bureau de Recherches Géologiques et Minières"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "40a5ad88-8d99-5932-b5a3-394b2f1150d5",
+      "media_type": "FILE",
+      "media_name": "ETAT_AV_PPR.geojson",
+      "media_caption": "ms:ETAT_AV_PPR — GeoJSON filtré Rennes Métropole",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "5bf6d40c-17c6-5fc3-83df-62d1314a3cb8",
+      "media_type": "FILE",
+      "media_name": "ETAT_AV_TRI.geojson",
+      "media_caption": "ms:ETAT_AV_TRI — GeoJSON filtré Rennes Métropole",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "fbabd29d-4735-541b-b026-c8157ff04bf1",
+      "media_type": "FILE",
+      "media_name": "InstallationsClassees.geojson",
+      "media_caption": "ms:InstallationsClassees — GeoJSON filtré Rennes Métropole",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "79e6cf21-abbe-5de8-ba39-f5b46ef41e57",
+      "media_type": "FILE",
+      "media_name": "InstallationsClassees_France.geojson",
+      "media_caption": "ms:InstallationsClassees_France — GeoJSON filtré Rennes Métropole",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "6dd4d2cc-3c4b-50ee-badf-44aed68d2c61",
+      "media_type": "FILE",
+      "media_name": "parcs.geojson",
+      "media_caption": "ms:parcs — GeoJSON filtré Rennes Métropole",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "2148289b-20ee-5b68-953e-fab4d87de701",
+      "media_type": "FILE",
+      "media_name": "aerogenerateurs.geojson",
+      "media_caption": "ms:aerogenerateurs — GeoJSON filtré Rennes Métropole",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "55a046c1-fc84-57a3-b3fc-5a44f4997eb9",
+      "media_type": "SERVICE",
+      "media_name": "service-wfs",
+      "media_caption": "Service WFS source",
+      "connector": {
+        "url": "https://mapsref.brgm.fr/wxs/georisques/georisques_dl?SERVICE=WFS&REQUEST=GetCapabilities",
+        "interface_contract": "wfs"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2026-07-04T17:55:21Z",
+    "updated": "2026-07-04T17:55:21Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2026-07-04T17:55:21Z",
+      "updated": "2026-07-04T17:55:21Z"
+    },
+    "metadata_source": "https://mapsref.brgm.fr/wxs/georisques/georisques_dl"
+  }
+}

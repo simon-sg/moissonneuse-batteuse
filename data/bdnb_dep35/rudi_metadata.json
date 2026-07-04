@@ -1,0 +1,136 @@
+{
+  "local_id": "b77d14d2-54da-518a-a15c-754f4293882a",
+  "resource_title": "Base de Données Nationale des Bâtiments (BDNB 2026-02-a) — Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Données BDNB millésime 2026-02-a filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Données BDNB filtrées sur Rennes Métropole.\n\nLe millésime 2026-02-a inclut 7 table(s) : batiment_groupe-rennesmetropole.csv, batiment_groupe_dpe_representatif_logement-rennesmetropole.csv, batiment_groupe_dpe_statistique_logement-rennesmetropole.csv, batiment_groupe_dpe_tertiaire-rennesmetropole.csv, batiment_groupe_dle_elec_multimillesime-rennesmetropole.csv, batiment_groupe_dle_gaz_multimillesime-rennesmetropole.csv, batiment_groupe_ffo_bat-rennesmetropole.csv.\n\nSource : https://open-data.s3.fr-par.scw.cloud/bdnb_millesime_2026-02-a/millesime_2026-02-a_dep35/open_data_millesime_2026-02-a_dep35_csv.zip\n\nJeu de données du thème « logement », produit par Centre Scientifique et Technique du Bâtiment (CSTB), limité aux communes de Rennes Métropole. Les enregistrements comportent les champs suivants : batiment_groupe_id, code_departement_insee, s_geom_groupe, code_iris, code_commune_insee, libelle_commune_insee, code_epci_insee, contient_fictive_geom_groupe."
+    }
+  ],
+  "theme": "housing",
+  "keywords": [
+    "bdnb",
+    "bâtiment",
+    "dpe",
+    "énergie",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Centre Scientifique et Technique du Bâtiment (CSTB)"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "c2e804b5-982d-5683-908c-5295d774a1cd",
+      "media_type": "FILE",
+      "media_name": "batiment_groupe-rennesmetropole.csv",
+      "media_caption": "batiment_groupe-rennesmetropole.csv — données BDNB filtrées sur Rennes Métropole (CSV, 126696 bâtiments)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "7837c557-077b-5920-8730-2c2ae97fff74",
+      "media_type": "FILE",
+      "media_name": "batiment_groupe_dpe_representatif_logement-rennesmetropole.csv",
+      "media_caption": "batiment_groupe_dpe_representatif_logement-rennesmetropole.csv — données BDNB filtrées sur Rennes Métropole (CSV, 32883 bâtiments)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "0cc9a4a6-0259-562f-86bf-74d88161de05",
+      "media_type": "FILE",
+      "media_name": "batiment_groupe_dpe_statistique_logement-rennesmetropole.csv",
+      "media_caption": "batiment_groupe_dpe_statistique_logement-rennesmetropole.csv — données BDNB filtrées sur Rennes Métropole (CSV, 32883 bâtiments)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "d5df5a6b-1db6-5a45-955e-a433b07758c0",
+      "media_type": "FILE",
+      "media_name": "batiment_groupe_dpe_tertiaire-rennesmetropole.csv",
+      "media_caption": "batiment_groupe_dpe_tertiaire-rennesmetropole.csv — données BDNB filtrées sur Rennes Métropole (CSV, 3627 bâtiments)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "8edd8716-a8c1-5206-a93b-fdccde1ee061",
+      "media_type": "FILE",
+      "media_name": "batiment_groupe_dle_elec_multimillesime-rennesmetropole.csv",
+      "media_caption": "batiment_groupe_dle_elec_multimillesime-rennesmetropole.csv — données BDNB filtrées sur Rennes Métropole (CSV, 37546 bâtiments)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "5520ecf4-662b-5f05-8ac4-98560964684b",
+      "media_type": "FILE",
+      "media_name": "batiment_groupe_dle_gaz_multimillesime-rennesmetropole.csv",
+      "media_caption": "batiment_groupe_dle_gaz_multimillesime-rennesmetropole.csv — données BDNB filtrées sur Rennes Métropole (CSV, 14925 bâtiments)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "629c0d1e-0ac5-539f-9b40-d370a37c69b1",
+      "media_type": "FILE",
+      "media_name": "batiment_groupe_ffo_bat-rennesmetropole.csv",
+      "media_caption": "batiment_groupe_ffo_bat-rennesmetropole.csv — données BDNB filtrées sur Rennes Métropole (CSV, 99753 bâtiments)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "0432a2b6-dd8c-5d34-a9f7-6ad98b1dbfa1",
+      "media_type": "SERVICE",
+      "media_name": "source-bdnb",
+      "media_caption": "ZIP source BDNB département 35 (Bretagne entière)",
+      "connector": {
+        "url": "https://open-data.s3.fr-par.scw.cloud/bdnb_millesime_2026-02-a/millesime_2026-02-a_dep35/open_data_millesime_2026-02-a_dep35_csv.zip",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "updated": "2026-05-22T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_source": "https://open-data.s3.fr-par.scw.cloud/bdnb_millesime_2026-02-a/millesime_2026-02-a_dep35/open_data_millesime_2026-02-a_dep35_csv.zip"
+  }
+}

@@ -1,10 +1,11 @@
 import json
 import sys
 import os
+import re
 import unicodedata
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from conf.communes_rm import COMMUNES_RM, CODES_POSTAUX_RENNES
+from conf.communes_rm import COMMUNES_RM, CODES_POSTAUX_RENNES, CIRCONSCRIPTIONS_RM
 
 
 def normaliser(texte: str) -> str:
@@ -49,6 +50,39 @@ def est_dans_rm(ville: str, cp: str) -> bool:
     # ET le code postal doit correspondre
     cp_attendu = _COMMUNES_NORMALISEES.get(ville_norm)
     return cp_attendu is not None and cp_attendu == cp
+
+
+_RE_NON_DIGIT = re.compile(r"\D+")
+
+
+def normaliser_circonscription(valeur) -> str | None:
+    """
+    Normalise un code de circonscription législative vers la forme canonique "DDD-NN"
+    (département sur 3 chiffres, numéro de circonscription sur 2 chiffres), quel que
+    soit le format rencontré dans un JDD réel : "035-01", "35-01", "3501", "35_01"...
+    On ne garde que les chiffres ; les 2 derniers forment le numéro de circonscription,
+    tout ce qui précède est le département (zéros de tête retirés puis remis à 3
+    chiffres, pour matcher le format de CIRCONSCRIPTIONS_RM). Retourne None si moins de
+    3 chiffres exploitables.
+    """
+    chiffres = _RE_NON_DIGIT.sub("", str(valeur or ""))
+    if len(chiffres) < 3:
+        return None
+    circo = chiffres[-2:]
+    dep = chiffres[:-2].lstrip("0") or "0"
+    return f"{dep.zfill(3)}-{circo}"
+
+
+def est_circonscription_rm(valeur: str) -> bool:
+    """
+    Teste si un code de circonscription législative recoupe Rennes Métropole.
+    ATTENTION (voir CLAUDE.md "Known limitations") : une circonscription couvre un
+    territoire plus large que RM — ce test confirme seulement que la ligne est
+    *quelque part* dans une circonscription qui recoupe RM, pas qu'elle est dans une
+    des 43 communes. C'est pourquoi ce champ est toujours essayé en dernier recours.
+    """
+    code = normaliser_circonscription(valeur)
+    return code is not None and code in CIRCONSCRIPTIONS_RM
 
 
 def filter_json_by_postal_codes(data: list, ville_field: str = "ville", postal_code_field: str = "cp") -> list:

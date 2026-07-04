@@ -1,0 +1,85 @@
+{
+  "local_id": "5152f190-dac5-5105-af93-cfcd1860c827",
+  "resource_title": "Liste des sites patrimoniaux remarquables (SPR) - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Liste des sites patrimoniaux remarquables (SPR) — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/628da9ff836d8bf454c7fd48\n\n**Ce jeu de données comprend la liste des communes où est localisé au moins un site patrimonial remarquable (SPR).**  \n  \n**Le classement au titre des sites patrimoniaux remarquables** a pour objectif de protéger et mettre en valeur le patrimoine architectural, urbain et paysager de nos territoires. Les sites patrimoniaux remarquables sont des servitudes d’utilité publique c’est-à-dire instituées par une autorité publique dans un but d’intérêt général. Les sites patrimoniaux remarquables se substituent aux anciens dispositifs de protection : secteurs sauvegardés, zones de protection du patrimoine architectural, urbain et paysager (ZPPAUP) et aires de mise en valeur de l’architecture et du patrimoine (AVAP). On dénombre aujourd’hui plus de 940 sites patrimoniaux remarquables. \n\n**Point d'attention sur la liste**. Le cas majoritaire est celui d'un SPR entièrement localisé dans une commune unique. Il existe toutefois deux autres cas :  \n\\- Le territoire d’une commune peut comprendre plusieurs SPR : les numéros de SPR distincts localisés dans une même commune seront différents, et il y aura autant de lignes pour la commune que de SPR distincts sur son territoire ;  \n\\- un SPR peut s’étendre sur le territoire de plusieurs communes : chacune des communes où ce SPR est localisé sera identifiée par une ligne propre mais le « numéro de SPR » sera identique dans les différentes lignes ; la colonne \"Nombre de SPR\" indiquera la valeur \"1\" pour une seule de ces communes afin de pouvoir comptabiliser facilement le nombre total de SPR distincts.  \n  \n**Les enjeux des sites patrimoniaux remarquables** sont retranscrits dans un plan de gestion qui peut prendre deux formes :  \n\\- soit un plan de sauvegarde et de mise en valeur (document d’urbanisme)  \n\\- soit un plan de valorisation de l’architecture et du patrimoine (servitude d’utilité publique)  \nChacun d’eux constitue un facteur de lisibilité pour les porteurs de projets et les habitants. \n\nPour en [savoir plus](https://www.culture.gouv.fr/Thematiques/Monuments-Sites/Monuments-historiques-sites-patrimoniaux/Les-sites-patrimoniaux-remarquables)..."
+    }
+  ],
+  "theme": "culture",
+  "keywords": [
+    "cite-historique",
+    "commune-francaise",
+    "culture",
+    "ministeredelaculture",
+    "patrimoine",
+    "patrimoine-architectural",
+    "protection-territoriale",
+    "site-remarquable",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Ministère de la Culture"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "6783112d-70b4-57b6-ab27-2f06d315160c",
+      "media_type": "FILE",
+      "media_name": "liste-sites-patrimoniaux-remarquables-rennesmetropole.csv",
+      "media_caption": "liste_sites_patrimoniaux_remarquables.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "e30d966b-03ea-5e31-b8fe-04a0562a1744",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://ministere-culture.s3.sbg.io.cloud.ovh.net/SPR/liste_sites_patrimoniaux_remarquables.csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2022-05-25T00:00:00Z",
+    "updated": "2026-06-29T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2022-05-25T00:00:00Z",
+      "updated": "2026-06-29T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/628da9ff836d8bf454c7fd48"
+  }
+}

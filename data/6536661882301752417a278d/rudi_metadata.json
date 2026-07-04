@@ -1,0 +1,96 @@
+{
+  "local_id": "d4523476-1748-512e-a16c-79420dfab8d9",
+  "resource_title": "Recensement de la population - Fichiers détail : Individus localisés au canton-ou-ville  - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Recensement de la population - Fichiers détail : Individus localisés au canton-ou-ville  — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/6536661882301752417a278d\n\nDonnées localisées au canton-ou-ville (et à l'IRIS, pour les IRIS d'au moins 200 habitants) décrivant les caractéristiques de chaque personne recensée, celles de son ménage, ainsi que celles de sa résidence principale.\nLe fichier national individus localisés au canton-ou-ville est disponible au format Parquet.\n\n**Champ** : tous individus.\n\n**[Lien vers le fichier détail des logements ordinaires](https://www.data.gouv.fr/fr/datasets/recensement-de-la-population-fichiers-detail-logements-ordinaires/)**\n\n**[Retrouvez toute la documentation sur insee.fr](https://www.insee.fr/fr/statistiques/8205966)**"
+    }
+  ],
+  "theme": "housing",
+  "keywords": [
+    "individus",
+    "iris",
+    "menages",
+    "recensement",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Institut national de la statistique et des études économiques (Insee)"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "0bcc220b-275b-566d-8884-135b8088fa4e",
+      "media_type": "FILE",
+      "media_name": "individus-localises-canton-ou-ville-rp2021parquet-rennesmetropole.csv",
+      "media_caption": "Individus_localises_canton ou ville_rp2021.parquet — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "eec79b17-e615-50dc-8fa6-8fd3a7edee8f",
+      "media_type": "FILE",
+      "media_name": "fd-indcvi-2020parquet-rennesmetropole.csv",
+      "media_caption": "fd-indcvi-2020.parquet — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "0add16a4-4643-5f54-8de7-0f6ea5821c3a",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://static.data.gouv.fr/resources/recensement-de-la-population-fichiers-detail-individus-localises-au-canton-ou-ville-2020-1/20250211-165315/varmod-indcvi-2021.csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2023-10-23T00:00:00Z",
+    "updated": "2025-02-12T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "CUSTOM",
+      "custom_licence_label": [
+        {
+          "lang": "fr",
+          "text": "notspecified"
+        }
+      ],
+      "custom_licence_uri": "https://www.data.gouv.fr/datasets/6536661882301752417a278d"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2023-10-23T00:00:00Z",
+      "updated": "2025-02-12T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/6536661882301752417a278d"
+  }
+}

@@ -296,7 +296,7 @@ def traduire_metadonnees_service(config: dict,
         couches_rm = [c.get("nom", "") for c in wms_service.get("couches", [])]
 
     colonnes = []
-    if service_type in ("wfs", "ogcapi") and fichiers_geojson:
+    if service_type in ("wfs", "ogcapi", "geojson") and fichiers_geojson:
         colonnes = entetes_depuis_geojson(fichiers_geojson[0][0])
 
     synopsis = f"{titre} — données géographiques pour Rennes Métropole ({service_type.upper()})"[:150]
@@ -309,7 +309,7 @@ def traduire_metadonnees_service(config: dict,
 
     available_formats = []
 
-    if service_type in ("wfs", "ogcapi") and fichiers_geojson:
+    if service_type in ("wfs", "ogcapi", "geojson") and fichiers_geojson:
         for chemin, typename in fichiers_geojson:
             nom_fichier = os.path.basename(chemin)
             media_id = str(uuid.uuid5(uuid.NAMESPACE_URL, f"geo:{service_id}:file:{nom_fichier}"))
@@ -324,7 +324,7 @@ def traduire_metadonnees_service(config: dict,
                 },
             })
 
-    # Entrée SERVICE vers le endpoint OGC source
+    # Entrée SERVICE vers l'endpoint/fichier source (France entière / non filtré)
     sep = "&" if "?" in url_service else "?"
     if service_type == "wms":
         caps_url = f"{url_service}{sep}SERVICE=WMS&REQUEST=GetCapabilities"
@@ -332,16 +332,24 @@ def traduire_metadonnees_service(config: dict,
     elif service_type == "ogcapi":
         caps_url = url_service.rstrip("/") + "/collections"
         contract = "wfs"
+    elif service_type == "geojson":
+        # Fichier GeoJSON statique : pas de service OGC, l'URL source EST le lien de téléchargement complet
+        caps_url = url_service
+        contract = "dwnl"
     else:
         caps_url = f"{url_service}{sep}SERVICE=WFS&REQUEST=GetCapabilities"
         contract = "wfs"
 
     media_id_service = str(uuid.uuid5(uuid.NAMESPACE_URL, f"geo:{service_id}:service"))
+    caption_service = (
+        "Jeu de données complet (non filtré)" if service_type == "geojson"
+        else f"Service {service_type.upper()} source"
+    )
     available_formats.append({
         "media_id": media_id_service,
         "media_type": "SERVICE",
         "media_name": f"service-{service_type}",
-        "media_caption": f"Service {service_type.upper()} source",
+        "media_caption": caption_service,
         "connector": {
             "url": caps_url,
             "interface_contract": contract,

@@ -1,0 +1,95 @@
+{
+  "local_id": "80ff0f99-e66d-52be-803f-ca643941d366",
+  "resource_title": "Parcoursup 2021 - vœux de poursuite d'études et de réorientation dans l'enseignement supérieur et réponses des établissements - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Parcoursup 2021 - vœux de poursuite d'études et de réorientation dans l'enseignement supérieur et réponses des établisse — données filtrées sur Renne"
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/63c760caf773e996bdb7fe74\n\nCe jeu de données présente les vœux de poursuite d’études et de réorientation dans l’enseignement supérieur ainsi que les propositions des établissements pour chaque formation – hors apprentissage – à la fin du processus d’affectation de la plateforme Parcoursup pour la session 2021 (du 20 janvier au 16 septembre 2021). Les données sont tirées de la plateforme Parcoursup 2021 et prennent en compte l’ensemble de la campagne jusqu’à la date du 16 septembre 2021. Elles sont disponibles sous forme de base de donnés à télécharger et sous forme de [visualisation graphique « dataviz »](https://data.enseignementsup-recherche.gouv.fr/pages/parcoursupdata_2021/?disjunctive.fili&sort=tri).\n\n* * *\n\nCe jeu de données est bâti à partir des données Parcoursup de la campagne 2021. L’application Parcoursup est la plateforme nationale de préinscription mise en place par le Ministère de l’Enseignement supérieur, de la recherche et de l’innovation permettant aux élèves de candidater à l’entrée dans l’enseignement supérieur.  \n\n\nIl couvre l’ensemble des candidats ayant au moins un vœu d’orientation validé en phase principale et/ou complémentaire, ce parmi les 13 396 formations proposées hors apprentissage. Il couvre ainsi 965 531 candidats. Un sous ensemble de données porte spécifiquement sur les 636 044 néo-bacheliers parmi ces candidats.\n\n* * *\n\n[Ce jeu de données est complété par une « dataviz » proposant une visualisation des principaux indicateurs](https://data.enseignementsup-recherche.gouv.fr/pages/parcoursupdata_2021/?disjunctive.fili&sort=tri). Ainsi, sont représentés graphiquement pour chaque formation détaillée, la capacité d’accueil, le nombre de vœux faits par les candidats dans une formation, le nombre de propositions d’admission faites par l’établissement sur cette formation, le nombre de candidats qui ont accepté cette proposition dans l’ensemble des phases de la procédure, les rangs du dernier appelé en phase principal.\n\n![](https://dataesr.enseignementsup-recherche.pro/images/P811-PORTFOLIO_FR_PARCOURSUP_EXPLORER.png)  \n\n\nCes principaux indicateurs sont complétés par un graphique représentant le rythme auquel les candidats qui s’inscrivent dans une formation, ont vu cette formation leur être proposée. Enfin, un zoom est réalisé sur le profil des néo-bacheliers qui ont accepté la proposition d’admission de la formation : série de baccalauréat, mention au baccalauréat (dont la mention « Très bien » agrégée), caractère boursier de l’enseignement secondaire ou non, origine géographique. \n\nCette [dataviz ](https://data.enseignementsup-recherche.gouv.fr/pages/parcoursupdata_2021/?disjunctive.fili&sort=tri)se veut un outil complémentaire d’aide aux lycéens candidatant sur Parcoursup, en leur permettant de repérer un certain nombre de caractéristiques synthétiques sur chaque formation, reflétant les profils des admis ainsi que le rythme auquel les admis se sont vus, au cours de la procédure, proposer la formation in fine choisie.  \n\n\nLes informations sont accessibles selon l’établissement d’accueil et la formation :   \n\n\no Le nom de l’établissement et son n°UAI\n\no La région, l’académie et le département de l’établissement\n\no La formation demandée, agrégée et détaillée ainsi que sa nature sélective ou non\n\no Le nombre de places (capacité d’accueil)\n\no Le nombre de vœux reçus selon le sexe et la série du baccalauréat\n\no Le nombre de vœux classés par l’établissement de la formation d’accueil selon la série du baccalauréat\n\no Le nombre de propositions d’admission faites selon la série du baccalauréat \n\no Le nombre de propositions d’admission faites aux différentes dates clés de la campagne Parcoursup et qui seront ensuite acceptées \n\no Le nombre d’admis selon le sexe, la série du baccalauréat et la mention obtenue\n\no Le rang du dernier appelé de son groupe parmi les candidatures en phase principale\n\no Le nombre de boursiers de l’enseignement secondaire pour les lycéens de terminale et de l’enseignement supérieur pour les étudiants en réorientation\n\no Le nombre de candidats admis en BTS ou en CPGE et issus de leur lycée (i.e. le lycée où ils étaient inscrits en terminale)\n\nCette année la mention « Très bien » est détaillée par deux variables : la mention « Très Bien (hors félicitations) » (entre 16 et 18 de moyenne au baccalauréat) et la mention « Très bien avec félicitations du jury » (plus de 18 de moyenne au baccalauréat). Egalement, le nombre de groupes d’appelés a été réduit à trois ; il s’agit du rang affiché sur la cartographie Parcoursup et ce rang est susceptible d’être supérieur au nombre de classés pour certaines formations qui utilisent les listes communes d’appelés (elles sont identifiées par la variable « list_com »).\n\nComme l’année précédente, les données issues de la cartographie du site parcoursup.fr ont été ajoutées. Deux indicateurs supplémentaires sont disponibles pour l’ensemble des candidats et pour chaque formation en fin de fichier :\n\n- Taux d’accès 2021 = rapport entre le nombre de candidats dont le rang de classement est inférieur ou égal au rang du dernier appelé de son groupe et le nombre de candidats ayant validé un vœu pour la formation étudiée (en PP). Si le taux est de 100 %, cela signifie que l’ensemble des candidats qui a fait un vœu a reçu une proposition de l’établissement. Sont exclues de ce calcul, les propositions faites au titre de « meilleur bachelier ».\n\n- Pourcentage d’étudiants par type de baccalauréat Général / Technologique / Professionnel = cet indicateur donne les pourcentages des différentes catégories de bacheliers parmi tous les candidats admis dans la formation en 2021. Si la somme de ces 3 pourcentages est inférieure à 100%, cela signifie que certains candidats admis ne sont pas titulaires du baccalauréat. Ils peuvent avoir obtenu un DAEU, une capacité en droit, un brevet de technicien, un baccalauréat étranger, ou une équivalence sur titre.\n\nLe jeu de données permet ainsi d’observer pour chaque formation présente dans Parcoursup et pour chaque établissement d’accueil la demande et la satisfaction de celle-ci, le profil des candidats et celui des admis ainsi que d’autres résultats à la fin du processus d’affectation. \n\nParcoursup est le portail internet national de préinscription à l’enseignement supérieur. Parcoursup s’adresse à toute personne qui souhaite s’inscrire dans une première année de l’enseignement supérieur. On retrouve ainsi principalement les néo-bacheliers, les étudiants en réorientation et les étudiants étrangers. Ils doivent formuler et confirmer des vœux pour recevoir une affectation. Un candidat peut faire jusqu’à 10 vœux non hiérarchisés en phase principale. Attention, pour certaines formations, les vœux peuvent être multiples : chaque vœu multiple est composé de sous-vœux qui correspondent chacun à une formation dans un établissement donné. C’est le cas par exemple pour les écoles d’ingénieur ou de commerce s’inscrivant dans le cadre d’un concours national."
+    }
+  ],
+  "theme": "education",
+  "keywords": [
+    "admis",
+    "admissibles",
+    "boursier",
+    "boursiers",
+    "bts",
+    "but",
+    "capacite",
+    "cpge",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Ministère de l'Enseignement supérieur, de la Recherche et de l'Espace"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "0c4276bf-a69e-5c92-99d9-cb58d4f11afa",
+      "media_type": "FILE",
+      "media_name": "fr-esr-parcoursup-2021-rennesmetropole.csv",
+      "media_caption": "fr-esr-parcoursup_2021.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "86988a4c-031c-5ac8-b223-6bda8dc9a60a",
+      "media_type": "FILE",
+      "media_name": "fr-esr-parcoursup-2021-rennesmetropole.json",
+      "media_caption": "fr-esr-parcoursup_2021.csv — données filtrées sur Rennes Métropole (JSON)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "26c1e479-482a-5bcd-be6d-101b27481582",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://data.enseignementsup-recherche.gouv.fr/api/explore/v2.1/catalog/datasets/fr-esr-parcoursup_2021/exports/csv?use_labels=true",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2022-01-20T00:00:00Z",
+    "updated": "2022-01-20T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2022-01-20T00:00:00Z",
+      "updated": "2022-01-20T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/63c760caf773e996bdb7fe74"
+  }
+}

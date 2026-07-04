@@ -1,0 +1,50 @@
+[
+  {
+    "Académie": "Rennes",
+    "Nom": "Archives départementales d’Ille et Vilaine",
+    "Accessibilité sur Adage": "Présent",
+    "Type de lieu": "Archives",
+    "Thématiques abordées": "",
+    "Label": "",
+    "Nombre d'élèves accueillis": "",
+    "Nombre d'établissements accueillis": "",
+    "Nombre de projets accueillis": "",
+    "Adresse": "1 Rue Jacques Léonard, 35000 Rennes",
+    "latitude": "48.128541",
+    "longitude": "-1.6933547",
+    "site internet": "https://archives.ille-et-vilaine.fr/",
+    "pointgeo": "48.128541, -1.6933547"
+  },
+  {
+    "Académie": "Rennes",
+    "Nom": "Musée de Bretagne - Les champs libres",
+    "Accessibilité sur Adage": "Présent",
+    "Type de lieu": "Autres musées",
+    "Thématiques abordées": "",
+    "Label": "",
+    "Nombre d'élèves accueillis": "9282",
+    "Nombre d'établissements accueillis": "102",
+    "Nombre de projets accueillis": "204",
+    "Adresse": "46 Boulevard Magenta - RENNES (035)",
+    "latitude": "48.105254",
+    "longitude": "-1.674045",
+    "site internet": "https://www.leschampslibres.fr/",
+    "pointgeo": "48.105254, -1.674045"
+  },
+  {
+    "Académie": "Rennes",
+    "Nom": "Mémorial des martyrs de la Résistance et de la Déportation à Rennes",
+    "Accessibilité sur Adage": "Non présent",
+    "Type de lieu": "Autres sites mémoriels",
+    "Thématiques abordées": "Histoire et mémoire de la Shoah,Histoire et mémoire des génocides des Tutsi et des Arméniens,Histoire et mémoire liées à l'antisémitisme",
+    "Label": "",
+    "Nombre d'élèves accueillis": "",
+    "Nombre d'établissements accueillis": "",
+    "Nombre de projets accueillis": "",
+    "Adresse": "37 Rue du Capitaine Maignan, 35000 Rennes",
+    "latitude": "48.112",
+    "longitude": "-1.6743",
+    "site internet": "https://www.wiki-rennes.fr/Square_des_Martyrs_de_la_R%C3%A9sistance",
+    "pointgeo": "48.112, -1.6743"
+  }
+]

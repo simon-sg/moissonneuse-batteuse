@@ -1,0 +1,55 @@
+code_commune,libelle_commune,institution,id_service,service,code_postal,codes_postaux
+35001,Acigné,GN,1006079,Gendarmerie - Brigade de Liffré,35690,35690
+35022,Bécherel,GN,1006095,Gendarmerie - Brigade de Bécherel,35190,35190
+35024,Betton,GN,1006077,Gendarmerie - Brigade de Betton,35830,35830
+35032,Bourgbarré,GN,1006082,Gendarmerie - Brigade de Vern-sur-Seiche,35230,35230
+35039,Brécé,GN,1006133,Gendarmerie - Brigade de Châteaugiron,35530,35530
+35047,Bruz,GN,1006078,Gendarmerie - Brigade de Bruz,35170,35170
+35051,Cesson-Sévigné,PN,,Commissariat de police de Rennes,35510,35510
+35055,Chantepie,PN,,Commissariat de police de Rennes,35135,35135
+35058,La Chapelle-Chaussée,GN,1006095,Gendarmerie - Brigade de Bécherel,35630,35630
+35059,La Chapelle-des-Fougeretz,GN,1006081,Gendarmerie - Brigade de Pacé,35520,35520
+35065,La Chapelle-Thouarault,GN,1006088,Gendarmerie - Brigade de Montfort-sur-Meu,35590,35590
+35066,Chartres-de-Bretagne,GN,1006078,Gendarmerie - Brigade de Bruz,35131,35131
+35076,Chavagne,GN,1006080,Gendarmerie - Brigade de Mordelles,35310,35310
+35079,Chevaigné,GN,1006077,Gendarmerie - Brigade de Betton,35250,35250
+35080,Cintré,GN,1006080,Gendarmerie - Brigade de Mordelles,35310,35310
+35081,Clayes,GN,1006088,Gendarmerie - Brigade de Montfort-sur-Meu,35590,35590
+35088,Corps-Nuds,GN,1006144,Gendarmerie - Brigade de Janzé,35150,35150
+35120,Gévezé,GN,1006094,Gendarmerie - Brigade de Hédé-Bazouges,35850,35850
+35131,L'Hermitage,GN,1006081,Gendarmerie - Brigade de Pacé,35590,35590
+35132,Hirel,GN,1006114,Gendarmerie - Brigade de Cancale,35120,35120
+35135,Irodouër,GN,1006095,Gendarmerie - Brigade de Bécherel,35850,35850
+35136,Janzé,GN,1006144,Gendarmerie - Brigade de Janzé,35150,35150
+35139,Laillé,GN,1006104,Gendarmerie - Brigade de Guichen,35890,35890
+35144,Langan,GN,1006095,Gendarmerie - Brigade de Bécherel,35850,35850
+35150,Lécousse,PN,,Commissariat de police de Fougères,35133,35133
+35160,Loutehel,GN,1006107,Gendarmerie - Brigade de Val-d'Anast,35330,35330
+35170,Mecé,GN,1006130,Gendarmerie - Brigade de Vitré,35450,35450
+35180,Miniac-sous-Bécherel,GN,1006095,Gendarmerie - Brigade de Bécherel,35190,35190
+35189,Montgermont,GN,1006081,Gendarmerie - Brigade de Pacé,35760,35760
+35190,Monthault,GN,1006137,Gendarmerie - Brigade de Louvigné-du-Désert,35420,35420
+35196,Mordelles,GN,1006080,Gendarmerie - Brigade de Mordelles,35310,35310
+35200,Moutiers,GN,1006139,Gendarmerie - Brigade de La-Guerche-de-Bretagne,35130,35130
+35204,Nouvoitou,GN,1006133,Gendarmerie - Brigade de Châteaugiron,35410,35410
+35206,Noyal-Châtillon-sur-Seiche,GN,1006082,Gendarmerie - Brigade de Vern-sur-Seiche,35230,35230
+35208,Orgères,GN,1006082,Gendarmerie - Brigade de Vern-sur-Seiche,35230,35230
+35210,Pacé,GN,1006081,Gendarmerie - Brigade de Pacé,35740,35740
+35216,Parthenay-de-Bretagne,GN,1006094,Gendarmerie - Brigade de Hédé-Bazouges,35850,35850
+35230,Poilley,GN,1006137,Gendarmerie - Brigade de Louvigné-du-Désert,35420,35420
+35235,Rannée,GN,1006139,Gendarmerie - Brigade de La-Guerche-de-Bretagne,35130,35130
+35238,Rennes,PN,,Commissariat de police de Rennes,35000,35000-35200-35700
+35240,Le Rheu,GN,1006080,Gendarmerie - Brigade de Mordelles,35650,35650
+35245,Romillé,GN,1006095,Gendarmerie - Brigade de Bécherel,35850,35850
+35250,Saint-Armel,GN,1006144,Gendarmerie - Brigade de Janzé,35230,35230
+35266,Saint-Erblon,GN,1006082,Gendarmerie - Brigade de Vern-sur-Seiche,35230,35230
+35275,Saint-Gilles,GN,1006081,Gendarmerie - Brigade de Pacé,35590,35590
+35278,Saint-Grégoire,PN,,Commissariat de police de Rennes,35760,35760
+35281,Saint-Jacques-de-la-Lande,PN,,Commissariat de police de Rennes,35136,35136
+35310,Saint-Sauveur-des-Landes,GN,1006136,Gendarmerie - Brigade de Fougères,35133,35133
+35315,Saint-Sulpice-la-Forêt,GN,1006079,Gendarmerie - Brigade de Liffré,35250,35250
+35334,Thorigné-Fouillard,GN,1006079,Gendarmerie - Brigade de Liffré,35235,35235
+35351,Le Verger,GN,1006088,Gendarmerie - Brigade de Montfort-sur-Meu,35160,35160
+35352,Vern-sur-Seiche,GN,1006082,Gendarmerie - Brigade de Vern-sur-Seiche,35770,35770
+35353,Vezin-le-Coquet,GN,1006081,Gendarmerie - Brigade de Pacé,35132,35132
+35363,Pont-Péan,GN,1006078,Gendarmerie - Brigade de Bruz,35131,35131

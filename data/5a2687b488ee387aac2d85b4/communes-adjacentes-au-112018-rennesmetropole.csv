@@ -1,0 +1,55 @@
+insee,nom,nb_voisins,insee_voisins,noms_voisins,as$
+35001,Acigné,7,35152|35031|35327|35039|35207|35051|35334,Liffré|La Bouëxière|Servon-sur-Vilaine|Brécé|Noyal-sur-Vilaine|Cesson-Sévigné|Thorigné-Fouillard,3|63|122|151|170|243|283
+35022,Bécherel,2,35156|35180,Longaulnay|Miniac-sous-Bécherel,5|145
+35024,Betton,9,35079|35197|35315|35152|35334|35051|35238|35278|35173,Chevaigné|Mouazé|Saint-Sulpice-la-Forêt|Liffré|Thorigné-Fouillard|Cesson-Sévigné|Rennes|Saint-Grégoire|Melesse,9|35|56|75|121|152|199|229|323
+35032,Bourgbarré,6,35352|35250|35088|35054|35208|35266,Vern-sur-Seiche|Saint-Armel|Corps-Nuds|Chanteloup|Orgères|Saint-Erblon,10|49|100|183|263|336
+35039,Brécé,3,35327|35207|35001,Servon-sur-Vilaine|Noyal-sur-Vilaine|Acigné,63|208|331
+35047,Bruz,7,35281|35066|35363|35139|35126|35123|35076,Saint-Jacques-de-la-Lande|Chartres-de-Bretagne|Pont-Péan|Laillé|Guichen|Goven|Chavagne,19|56|113|159|205|255|320
+35051,Cesson-Sévigné,7,35334|35001|35207|35099|35055|35238|35024,Thorigné-Fouillard|Acigné|Noyal-sur-Vilaine|Domloup|Chantepie|Rennes|Betton,13|63|115|145|187|261|332
+35055,Chantepie,5,35051|35099|35352|35206|35238,Cesson-Sévigné|Domloup|Vern-sur-Seiche|Noyal-Châtillon-sur-Seiche|Rennes,7|108|182|233|300
+35058,La Chapelle-Chaussée,9,35258|35317|35276|35146|35144|35245|35180|35050|35134,Saint-Brieuc-des-Iffs|Saint-Symphorien|Saint-Gondran|Langouet|Langan|Romillé|Miniac-sous-Bécherel|Cardroc|Les Iffs,20|71|87|109|158|193|289|312|357
+35059,La Chapelle-des-Fougeretz,5,35173|35278|35189|35210|35177,Melesse|Saint-Grégoire|Montgermont|Pacé|La Mézière,39|116|145|225|350
+35065,La Chapelle-Thouarault,5,35275|35131|35196|35080|35040,Saint-Gilles|L'Hermitage|Mordelles|Cintré|Breteil,6|97|165|228|290
+35066,Chartres-de-Bretagne,4,35206|35363|35047|35281,Noyal-Châtillon-sur-Seiche|Pont-Péan|Bruz|Saint-Jacques-de-la-Lande,76|169|236|341
+35076,Chavagne,5,35240|35281|35047|35123|35196,Le Rheu|Saint-Jacques-de-la-Lande|Bruz|Goven|Mordelles,5|65|140|217|308
+35079,Chevaigné,5,35251|35197|35024|35173|35274,Saint-Aubin-d'Aubigné|Mouazé|Betton|Melesse|Saint-Germain-sur-Ille,33|108|189|262|338
+35080,Cintré,4,35065|35196|35331|35040,La Chapelle-Thouarault|Mordelles|Talensac|Breteil,48|128|237|331
+35081,Clayes,3,35216|35275|35227,Parthenay-de-Bretagne|Saint-Gilles|Pleumeleuc,61|180|279
+35088,Corps-Nuds,7,35204|35002|35136|35041|35054|35032|35250,Nouvoitou|Amanlis|Janzé|Brie|Chanteloup|Bourgbarré|Saint-Armel,14|71|130|157|232|280|347
+35120,Gévezé,8,35356|35177|35210|35275|35216|35245|35144|35146,Vignoc|La Mézière|Pacé|Saint-Gilles|Parthenay-de-Bretagne|Romillé|Langan|Langouet,28|91|167|211|219|280|306|350
+35131,L'Hermitage,5,35210|35240|35196|35065|35275,Pacé|Le Rheu|Mordelles|La Chapelle-Thouarault|Saint-Gilles,40|136|206|277|321
+35132,Hirel,4,35361|35186|35116|35255,Le Vivier-sur-Mer|Mont-Dol|La Fresnais|Saint-Benoît-des-Ondes,78|124|251|300
+35135,Irodouër,6,35180|35245|35023|35060|35143|35307,Miniac-sous-Bécherel|Romillé|Bédée|La Chapelle du Lou du Lac|Landujan|Saint-Pern,24|116|180|223|272|328
+35136,Janzé,10,35002|35220|35108|35333|35262|35089|35343|35321|35041|35088,Amanlis|Piré-sur-Seiche|Essé|Le Theil-de-Bretagne|Sainte-Colombe|La Couyère|Tresbœuf|Saulnières|Brie|Corps-Nuds,3|35|84|115|149|181|210|245|284|310
+35139,Laillé,7,35363|35208|35054|35090|35033|35126|35047,Pont-Péan|Orgères|Chanteloup|Crevin|Bourg-des-Comptes|Guichen|Bruz,15|61|102|134|187|268|339
+35144,Langan,4,35146|35120|35245|35058,Langouet|Gévezé|Romillé|La Chapelle-Chaussée,52|126|239|338
+35150,Lécousse,7,35215|35142|35138|35115|35137|35243|35273,Parigné|Landéan|Laignelet|Fougères|Javené|Romagné|Saint-Germain-en-Coglès,13|42|66|112|167|241|322
+35160,Loutehel,4,35169|35168|56075|35223,Maxent|Val d'Anast|Guer|Plélan-le-Grand,46|122|229|360
+35170,Mecé,6,35086|35192|35260|35347|35154|35269,Combourtillé|Montreuil-des-Landes|Saint-Christophe-des-Bois|Val-d'Izé|Livré-sur-Changeon|Saint-Georges-de-Chesné,30|76|113|194|251|332
+35180,Miniac-sous-Bécherel,8,35017|35050|35058|35245|35135|35307|35022|35156,La Baussaine|Cardroc|La Chapelle-Chaussée|Romillé|Irodouër|Saint-Pern|Bécherel|Longaulnay,32|80|109|151|204|270|325|342
+35189,Montgermont,4,35278|35238|35210|35059,Saint-Grégoire|Rennes|Pacé|La Chapelle-des-Fougeretz,78|151|268|325
+35190,Monthault,5,50484|50452|35162|35174|35271,Saint-Hilaire-du-Harcouët|Saint-Brice-de-Landelles|Louvigné-du-Désert|Mellé|Saint-Georges-de-Reintembault,19|45|126|200|271
+35196,Mordelles,9,35131|35240|35076|35123|35037|35351|35331|35080|35065,L'Hermitage|Le Rheu|Chavagne|Goven|Bréal-sous-Montfort|Le Verger|Talensac|Cintré|La Chapelle-Thouarault,26|75|128|178|200|252|275|308|345
+35200,Moutiers,5,35272|35119|35008|35125|35097,Saint-Germain-du-Pinel|Gennes-sur-Seiche|Availles-sur-Seiche|La Guerche-de-Bretagne|Domalain,37|66|143|219|316
+35204,Nouvoitou,6,35099|35069|35002|35088|35250|35352,Domloup|Châteaugiron|Amanlis|Corps-Nuds|Saint-Armel|Vern-sur-Seiche,10|71|129|194|227|302
+35206,Noyal-Châtillon-sur-Seiche,7,35055|35352|35266|35363|35066|35281|35238,Chantepie|Vern-sur-Seiche|Saint-Erblon|Pont-Péan|Chartres-de-Bretagne|Saint-Jacques-de-la-Lande|Rennes,53|89|158|209|256|301|348
+35208,Orgères,5,35266|35032|35054|35139|35363,Saint-Erblon|Bourgbarré|Chanteloup|Laillé|Pont-Péan,25|83|139|241|321
+35210,Pacé,9,35177|35059|35189|35238|35353|35240|35131|35275|35120,La Mézière|La Chapelle-des-Fougeretz|Montgermont|Rennes|Vezin-le-Coquet|Le Rheu|L'Hermitage|Saint-Gilles|Gévezé,17|45|88|123|152|182|220|270|347
+35216,Parthenay-de-Bretagne,5,35120|35275|35081|35227|35245,Gévezé|Saint-Gilles|Clayes|Pleumeleuc|Romillé,39|205|241|264|316
+35230,Poilley,5,35271|35357|35071|35191|35111,Saint-Georges-de-Reintembault|Villamée|Le Châtellier|Les Portes du Coglais|Le Ferré,17|113|170|252|310
+35235,Rannée,14,35008|35325|53098|53041|53197|53192|35077|35114|35239|35102|35199|35005|35359|35125,Availles-sur-Seiche|La Selle-Guerchaise|Fontaine-Couverte|Brains-sur-les-Marches|Saint-Aignan-sur-Roë|La Rouaudière|Chelun|Forges-la-Forêt|Retiers|Drouges|Moussé|Arbrissel|Visseiche|La Guerche-de-Bretagne,26|42|77|116|131|156|194|229|274|275|296|300|321|346
+35238,Rennes,10,35024|35051|35055|35206|35281|35240|35353|35210|35189|35278,Betton|Cesson-Sévigné|Chantepie|Noyal-Châtillon-sur-Seiche|Saint-Jacques-de-la-Lande|Le Rheu|Vezin-le-Coquet|Pacé|Montgermont|Saint-Grégoire,19|81|120|168|217|258|278|303|331|357
+35240,Le Rheu,7,35210|35353|35238|35281|35076|35196|35131,Pacé|Vezin-le-Coquet|Rennes|Saint-Jacques-de-la-Lande|Chavagne|Mordelles|L'Hermitage,2|46|78|118|185|255|316
+35245,Romillé,8,35058|35144|35120|35216|35227|35023|35135|35180,La Chapelle-Chaussée|Langan|Gévezé|Parthenay-de-Bretagne|Pleumeleuc|Bédée|Irodouër|Miniac-sous-Bécherel,13|59|100|136|194|233|297|331
+35250,Saint-Armel,4,35204|35088|35032|35352,Nouvoitou|Corps-Nuds|Bourgbarré|Vern-sur-Seiche,47|167|229|337
+35266,Saint-Erblon,5,35352|35032|35208|35363|35206,Vern-sur-Seiche|Bourgbarré|Orgères|Pont-Péan|Noyal-Châtillon-sur-Seiche,36|156|205|258|338
+35275,Saint-Gilles,8,35216|35120|35210|35131|35065|35040|35227|35081,Parthenay-de-Bretagne|Gévezé|Pacé|L'Hermitage|La Chapelle-Thouarault|Breteil|Pleumeleuc|Clayes,25|31|90|141|186|250|320|360
+35278,Saint-Grégoire,5,35024|35238|35189|35059|35173,Betton|Rennes|Montgermont|La Chapelle-des-Fougeretz|Melesse,49|177|258|296|357
+35281,Saint-Jacques-de-la-Lande,6,35238|35206|35066|35047|35076|35240,Rennes|Noyal-Châtillon-sur-Seiche|Chartres-de-Bretagne|Bruz|Chavagne|Le Rheu,37|121|161|199|245|298
+35310,Saint-Sauveur-des-Landes,6,35273|35243|35063|35293|35280|35257,Saint-Germain-en-Coglès|Romagné|La Chapelle-Saint-Aubert|Saint-Marc-sur-Couesnon|Saint-Hilaire-des-Landes|Maen-Roch,33|94|180|221|256|339
+35315,Saint-Sulpice-la-Forêt,4,35067|35152|35024|35197,Chasné-sur-Illet|Liffré|Betton|Mouazé,8|101|236|285
+35334,Thorigné-Fouillard,4,35152|35001|35051|35024,Liffré|Acigné|Cesson-Sévigné|Betton,44|103|193|301
+35351,Le Verger,5,35331|35196|35037|35319|35187,Talensac|Mordelles|Bréal-sous-Montfort|Saint-Thurial|Monterfil,15|72|114|185|261
+35352,Vern-sur-Seiche,7,35055|35099|35204|35250|35032|35266|35206,Chantepie|Domloup|Nouvoitou|Saint-Armel|Bourgbarré|Saint-Erblon|Noyal-Châtillon-sur-Seiche,2|69|122|157|190|216|269
+35353,Vezin-le-Coquet,3,35238|35240|35210,Rennes|Le Rheu|Pacé,98|226|332
+35363,Pont-Péan,6,35206|35266|35208|35139|35047|35066,Noyal-Châtillon-sur-Seiche|Saint-Erblon|Orgères|Laillé|Bruz|Chartres-de-Bretagne,29|78|141|195|293|349

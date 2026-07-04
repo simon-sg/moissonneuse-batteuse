@@ -1,0 +1,87 @@
+{
+  "local_id": "7ef2a2a5-9ade-5180-81b5-340e0b46a851",
+  "resource_title": "Agrégation des fichiers des personnes décédées - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Agrégation des fichiers des personnes décédées — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/66d997ba09e4429d7f846249\n\nA partir des [fichiers des personnes décédées](https://www.data.gouv.fr/fr/datasets/5de8f397634f4164071119c5/) produits par [l'INSEE](https://www.data.gouv.fr/fr/organizations/institut-national-de-la-statistique-et-des-etudes-economiques-insee/), l'équipe de data.gouv.fr propose une nouvelle façon d'accéder aux données, sous la forme d'un seul fichier agrégé. Vous pouvez retrouver la documentation ainsi que l'ensemble des précautions liées aux données dans la description du jeu de données d'origine. Pour toute question concernant le contenu des données, nous vous invitons à  [poser vos questions sur le jeu de données source](https://www.data.gouv.fr/fr/datasets/5de8f397634f4164071119c5/#/discussions). Les données sont identiques aux données sources, hormis :\n- les quelques lignes dans lesquelles la structure  n'a pas permis de reconstituer les colonnes correctement (une seule ligne actuellement)\n- la colonne `fichier_origine`, qui indique de quel fichier source la ligne est issue\n- la colonne `opposition`, qui indique si la ligne en question a [fait l'objet d'une opposition](https://www.data.gouv.fr/fr/datasets/5de8f397634f4164071119c5/#/resources/7bcdfa57-dc50-43a8-beb6-6c76537e7057)\n\nLes données sont mises à jour automatiquement lorsque les données sources le sont, et le [code de mise à jour est ouvert](https://github.com/datagouv/datagouvfr_data_pipelines/tree/main/data_processing/insee/deces). Les données sont disponibles aux formats csv et parquet. Les colonnes de ces fichiers sont décrites dans le fichier de documentation."
+    }
+  ],
+  "theme": "health",
+  "keywords": [
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "data.gouv.fr"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "1e068ea3-1ec6-5e7f-939c-cae8437914b5",
+      "media_type": "FILE",
+      "media_name": "personnes-decedees-entre-1970-et-mai-2026-format-c-rennesmetropole.csv",
+      "media_caption": "Personnes décédées entre 1970 et mai 2026 (format csv) — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "5c1731fa-7cf3-54c3-bf1d-54c8c1e658e6",
+      "media_type": "FILE",
+      "media_name": "personnes-decedees-entre-1970-et-mai-2026-format-p-rennesmetropole.csv",
+      "media_caption": "Personnes décédées entre 1970 et mai 2026 (format parquet) — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "60ab591b-0fc5-5afa-b6a3-f2685d6faa75",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://data-pipeline-open.s3.sbg.io.cloud.ovh.net/deces/deces.csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2024-09-05T00:00:00Z",
+    "updated": "2026-07-03T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2024-09-05T00:00:00Z",
+      "updated": "2026-07-03T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/66d997ba09e4429d7f846249"
+  }
+}

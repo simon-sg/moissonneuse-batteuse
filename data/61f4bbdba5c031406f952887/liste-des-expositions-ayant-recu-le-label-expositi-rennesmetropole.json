@@ -1,0 +1,68 @@
+[
+  {
+    "Année": "2018",
+    "ID Muséofile": "M0212",
+    "Région": "Bretagne",
+    "Commune": "Rennes",
+    "Nom du musée": "musée de Bretagne",
+    "Titre de l'exposition": "Rennes, les vies d'une ville",
+    "Departement": "Ille-et-Vilaine",
+    "URL": "www.musee-bretagne.fr/",
+    "Coordonnees": "48.105455, -1.674922"
+  },
+  {
+    "Année": "2014",
+    "ID Muséofile": "M0212",
+    "Région": "Bretagne",
+    "Commune": "Rennes",
+    "Nom du musée": "musée de Bretagne",
+    "Titre de l'exposition": "Terre Neuve, Terre neuvas",
+    "Departement": "Ille-et-Vilaine",
+    "URL": "www.musee-bretagne.fr/",
+    "Coordonnees": "48.105455, -1.674922"
+  },
+  {
+    "Année": "2024",
+    "ID Muséofile": "M0212",
+    "Région": "Bretagne",
+    "Commune": "Rennes",
+    "Nom du musée": "musée de Bretagne",
+    "Titre de l'exposition": "Mourir, quelle histoire !",
+    "Departement": "Ille-et-Vilaine",
+    "URL": "www.musee-bretagne.fr/",
+    "Coordonnees": "48.105455, -1.674922"
+  },
+  {
+    "Année": "2024",
+    "ID Muséofile": "M0211",
+    "Région": "Bretagne",
+    "Commune": "Rennes",
+    "Nom du musée": "musée des beaux-arts",
+    "Titre de l'exposition": "Aérosol. Histoire(s) de graffiti",
+    "Departement": "Ille-et-Vilaine",
+    "URL": "mba.rennes.fr",
+    "Coordonnees": "48.109837, -1.674981"
+  },
+  {
+    "Année": "2015",
+    "ID Muséofile": "M0211",
+    "Région": "Bretagne",
+    "Commune": "Rennes",
+    "Nom du musée": "musée des beaux-arts",
+    "Titre de l'exposition": "Gilles Aillaud 1928-2005",
+    "Departement": "Ille-et-Vilaine",
+    "URL": "mba.rennes.fr",
+    "Coordonnees": "48.109837, -1.674981"
+  },
+  {
+    "Année": "2017",
+    "ID Muséofile": "M0211",
+    "Région": "Bretagne",
+    "Commune": "Rennes",
+    "Nom du musée": "musée des beaux-arts",
+    "Titre de l'exposition": "Le fabuleux destin des tableaux de l’abbé Desjardins ; Peintures françaises des XVIIe et XVIIIe siècles des églises et musées de Québec",
+    "Departement": "Ille-et-Vilaine",
+    "URL": "mba.rennes.fr",
+    "Coordonnees": "48.109837, -1.674981"
+  }
+]

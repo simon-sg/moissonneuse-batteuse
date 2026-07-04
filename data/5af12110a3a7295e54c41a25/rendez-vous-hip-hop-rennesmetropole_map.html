@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title></title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>(function(){try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<style>
+:root{--bg:#f5f6f8;--card:#fff;--txt:#1c2733;--muted:#667;--accent:#0b6e99;--bord:#e2e6ea;
+      --btn-bg:#eef3f6;--btn-bord:#c8d6e0;--btn-hover:#d4ecf7}
+:root[data-theme="dark"]{--bg:#10151b;--card:#1a222b;--txt:#dbe2e8;--muted:#8996a3;--accent:#4fb3da;--bord:#29323c;
+      --btn-bg:#1c2932;--btn-bord:#2f4552;--btn-hover:#26404d}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#10151b;--card:#1a222b;--txt:#dbe2e8;--muted:#8996a3;--accent:#4fb3da;--bord:#29323c;
+      --btn-bg:#1c2932;--btn-bord:#2f4552;--btn-hover:#26404d}
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+     background:var(--bg);color:var(--txt);display:flex;flex-direction:column;height:100vh}
+header{background:var(--card);border-bottom:1px solid var(--bord);padding:8px 16px;
+       display:flex;flex-wrap:wrap;gap:8px;align-items:center;flex-shrink:0}
+h1{font-size:.9rem;font-weight:600;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#info{color:var(--muted);font-size:.82rem;white-space:nowrap}
+#btn-plus{background:var(--btn-bg);border:1px solid var(--btn-bord);border-radius:6px;padding:4px 12px;
+          font-size:.8rem;cursor:pointer;color:var(--accent);white-space:nowrap;flex-shrink:0}
+#btn-plus:hover{background:var(--btn-hover)}
+#btn-plus:disabled{opacity:.5;cursor:wait}
+#theme-toggle{background:none;border:1px solid var(--bord);border-radius:6px;padding:4px 9px;
+              cursor:pointer;font-size:.9rem;line-height:1;color:var(--txt);flex-shrink:0}
+#theme-toggle:hover{background:var(--bg)}
+#carte{flex:1}
+.leaflet-popup-content{min-width:160px;max-width:320px;font-size:.8rem}
+.leaflet-popup-content table{border-collapse:collapse;width:100%}
+.leaflet-popup-content td{padding:3px 6px;vertical-align:top;border-bottom:1px solid var(--bord);word-break:break-word}
+.leaflet-popup-content td:first-child{color:var(--muted);font-weight:600;white-space:nowrap;padding-right:10px}
+</style>
+</head>
+<body>
+<header>
+  <h1 id="titre"></h1>
+  <span id="info"></span>
+  <button id="btn-plus" style="display:none" onclick="chargerPlus()"></button>
+  <button id="theme-toggle" title="Basculer thème clair/sombre" aria-label="Basculer thème clair/sombre">🌙</button>
+</header>
+<div id="carte"></div>
+<script id="d" type="application/json">{"nom": "rendez-vous-hip-hop-rennesmetropole.csv", "type": "points", "points": [[48.087758, -1.661527, {"Identifiant": "81558203", "Titre - FR": "Sessions Freestyle #2", "Description - FR": "Evénement des Rendez-vous Hip-hop 2018", "Description longue - FR": "Retrouvez Demozamau pour les Sessions Freestyle du 2e trimestre 2018 !Venez bénéficier des enseignements de Kevin et Rémi pour vous perfectionner au rap!Écriture de texte, conseils de pose, répétitions au micro, évènements publics, etcLes Sessions Freestyle sont le moment idéal pour vous adonner à votre passion!Inscriptions : >> https://doodle.com/poll/nvapkyw4d45pru7p <<Tarifs : 20€ pour le trimestre + coût de l'adhésion (10€)", "Détail des conditions - FR": "20€ pour le trimestre + coût de l'adhésion (10€)", "Description longue - HTML - FR": "<p>Retrouvez Demozamau pour les Sessions Freestyle du 2e trimestre 2018 !<\/p><p>Venez bénéficier des enseignements de Kevin et Rémi pour vous perfectionner au rap!<\/p><p>Écriture de texte, conseils de pose, répétitions au micro, évènements publics, etc<\/p><p>Les Sessions Freestyle sont le moment idéal pour vous adonner à votre passion!<\/p><p>Inscriptions : &gt;&gt; <a href=\"https://doodle.com/poll/nvapkyw4d45pru7p\" class=\"url\" target=\"_blank\">https://doodle.com/poll/nvapkyw4d45pru7p<\/a> &lt;&lt;<\/p><p>Tarifs : 20€ pour le trimestre + coût de l&#39;adhésion (10€)<\/p>", "Dernière mise à jour": "2018-04-16T10:52:35+00:00", "Résumé horaires - FR": "28 mai et 1 juin", "Résumé horaires - EN": "28 May and 1 June", "Horaires détaillés - FR": "lundi 28 mai - 18h00 à 20h00vendredi 1er juin - 18h00 à 20h00", "Horaires ISO": "2018-05-28T18:00:00+02:00-2018-05-28T20:00:00+02:002018-06-01T18:00:00+02:00-2018-06-01T20:00:00+02:00", "Première date": "2018-05-28", "Première ouverture": "0001-01-01T18:00:00+00:00", "Première fermeture": "0001-01-01T20:00:00+00:00", "Dernière date": "2018-06-01", "Dernière ouverture": "0001-01-01T18:00:00+00:00", "Dernière fermeture": "0001-01-01T20:00:00+00:00", "Discipline": "Rap", "Type d'événement": "Atelier et workshop", "Condition de participation": "Payant", "Lien d'inscription": "http://demozamau.com/zoom-sessions-freestyle/", "Lien": "https://openagenda.com/rdvhiphop2018/events/sessions-freestyle-2", "Identifiant du lieu": "68387621", "Région": "Bretagne", "Département": "Ille-et-Vilaine", "Nom du lieu": "Le Block", "Adresse": "4 avenue des Pays-Bas 35200 Rennes", "Ville": "Rennes", "Code postal": "35200", "Pays": "France (Métropole)", "geolocalisation": "48.087758, -1.661527", "Crédits image": "Association Démozamau", "Agenda d'origine ( titre )": "Rendez-vous Hip Hop 2018", "Agenda d'origine ( uid )": "7912967"}], [48.109738, -1.6802929999999998, {"Identifiant": "89534700", "Titre - FR": "\"Friday Break\" avec DJ Yaburtz", "Description - FR": "Evénement des Rendez-vous Hip-hop 2018", "Description longue - FR": "Retrouvez chaque vendredi votre rendez-vous incontournable au @ BDS : Soirée \"Friday Break\" avec DJ Yaburtz 19h/0h30 - Tous les Vendredis !!!On s'est dit que ça ferait du bien de retrouver tous les bons sons \"Hip-Hop classics\" le temps d'une soirée...De NTM à Mobb Deep, du Wu-Tang à IAM, de Lunatic à Biggie...et on en passe...Retrouvez les meilleurs sons HH, RnB, New Jack...sélectionnés par DJ Yaburtz.- Entrée libre - BDS  1 quai Lamennais   35000 Rennes  02 99 79 34 79  www.bds-restaurant.fr", "Détail des conditions - FR": "Entrée libre", "Description longue - HTML - FR": "<p>Retrouvez chaque vendredi votre rendez-vous incontournable au @ BDS : Soirée &quot;Friday Break&quot; avec DJ Yaburtz 19h/0h30 - Tous les Vendredis !!!<\/p><p>On s&#39;est dit que ça ferait du bien de retrouver tous les bons sons &quot;Hip-Hop classics&quot; le temps d&#39;une soirée...De NTM à Mobb Deep, du Wu-Tang à IAM, de Lunatic à Biggie...et on en passe...Retrouvez les meilleurs sons HH, RnB, New Jack...sélectionnés par DJ Yaburtz.<\/p><ul><li>Entrée libre - <\/li><\/ul><p>BDS<br>1 quai Lamennais<br>35000 Rennes<br>02 99 79 34 79<br><a href=\"//www.bds-restaurant.fr\" class=\"url\" target=\"_blank\">www.bds-restaurant.fr<\/a><\/p>", "Dernière mise à jour": "2018-05-25T10:58:16+00:00", "Résumé horaires - FR": "Vendredi 1 juin, 19h00", "Résumé horaires - EN": "Friday 1 June, 19:00", "Horaires détaillés - FR": "vendredi 1er juin - 19h00 à 00h00", "Horaires ISO": "2018-06-01T19:00:00+02:00-2018-06-02T00:00:00+02:00", "Première date": "2018-06-01", "Première ouverture": "0001-01-01T19:00:00+00:00", "Première fermeture": "0001-01-01T00:00:00+00:00", "Dernière date": "2018-06-01", "Dernière ouverture": "0001-01-01T19:00:00+00:00", "Dernière fermeture": "0001-01-01T00:00:00+00:00", "Discipline": "DJ'ing", "Type d'événement": "Concert", "Condition de participation": "Gratuit", "Lien": "https://openagenda.com/rdvhiphop2018/events/friday-break-avec-dj-yaburtz", "Identifiant du lieu": "7139317", "Région": "Bretagne", "Département": "Ille-et-Vilaine", "Nom du lieu": "BDS", "Adresse": "1, Quai Lamennais, 35000 Rennes", "Ville": "Rennes", "Code postal": "35000", "Pays": "France (Métropole)", "geolocalisation": "48.109738, -1.6802929999999998", "Crédits image": "BDS", "Agenda d'origine ( titre )": "Rendez-vous Hip Hop 2018", "Agenda d'origine ( uid )": "7912967"}], [48.087688, -1.655873, {"Identifiant": "8387690", "Titre - FR": "Stage de danse et atelier chorégraphique", "Description - FR": "Evénement des Rendez-vous Hip-hop 2018", "Description longue - FR": "L'association Alalaprod et la SOA LE CLECH Cie, organisent le samedi 26 et le dimanche 27 mai 2018 un stage de danse au Triangle à Rennes.Au programme : cours techniques le samedi et ateliers chorégraphiques le dimanche.  Découvrez l'univers de 3 chorégraphes différents :- Laetitia Arnaud en danse Contemporaine, CIE Laetitia Arnaud  - Chris Locko Aka Man Inside en K.R.U.M.P.  - Soa Le Clech en danse moderne Urban-Ethnick, SOA LE CLECH Cie.Venez profiter d'un travail technique et théorique. Venez-vous initier et découvrir un nouveau langage corporel pour vous enrichir et affirmer les fondamentaux du travail du danseur interprète, ou amateur.  Nous développerons :- Le travail sur le croisement des esthétiques et des émotions   - Initiation et découverte d'un langage corporel lié aussi aux émotions   - Comprendre les fondamentaux du travail du danseur interprète  - Gestion de l'improvisation  - Gestion de l'espace scénique  - Le partage d'un travail chorégraphique en groupe. Ce week-end de danse est ouvert aux danseurs de tout horizon artistique ayant un niveau d'initié, confirmé, semi pro, ou pro dans leur technique respective (contemporain, classique, jazz, hip hop, afro, dancehall) ayant le désir de découvrir de nouvelles clefs et styles de danse pour leur propre chemin artistique.", "Description longue - HTML - FR": "<p>L&#39;association Alalaprod et la SOA LE CLECH Cie, organisent le samedi 26 et le dimanche 27 mai 2018 un stage de danse au Triangle à Rennes.<\/p><p>Au programme : cours techniques le samedi et ateliers chorégraphiques le dimanche.  <\/p><p>Découvrez l&#39;univers de 3 chorégraphes différents :<\/p><ul><li>Laetitia Arnaud en danse Contemporaine, CIE Laetitia Arnaud  <\/li><li>Chris Locko Aka Man Inside en K.R.U.M.P.  <\/li><li>Soa Le Clech en danse moderne Urban-Ethnick, SOA LE CLECH Cie.<\/li><\/ul><p>Venez profiter d&#39;un travail technique et théorique. <\/p><p>Venez-vous initier et découvrir un nouveau langage corporel pour vous enrichir et affirmer les fondamentaux du travail du danseur interprète, ou amateur.  <\/p><p>Nous développerons :<\/p><ul><li>Le travail sur le croisement des esthétiques et des émotions   <\/li><li>Initiation et découverte d&#39;un langage corporel lié aussi aux émotions   <\/li><li>Comprendre les fondamentaux du travail du danseur interprète  <\/li><li>Gestion de l&#39;improvisation  <\/li><li>Gestion de l&#39;espace scénique  <\/li><li>Le partage d&#39;un travail chorégraphique en groupe. <\/li><\/ul><p>Ce week-end de danse est ouvert aux danseurs de tout horizon artistique ayant un niveau d&#39;initié, confirmé, semi pro, ou pro dans leur technique respective (contemporain, classique, jazz, hip hop, afro, dancehall) ayant le désir de découvrir de nouvelles clefs et styles de danse pour leur propre chemin artistique.<\/p>", "Dernière mise à jour": "2018-04-16T11:01:36+00:00", "Résumé horaires - FR": "26 et 27 mai", "Résumé horaires - EN": "26 and 27 May", "Horaires détaillés - FR": "samedi 26 mai - 13h00 à 17h30dimanche 27 mai - 10h00 à 16h00", "Horaires ISO": "2018-05-26T13:00:00+02:00-2018-05-26T17:30:00+02:002018-05-27T10:00:00+02:00-2018-05-27T16:00:00+02:00", "Première date": "2018-05-26", "Première ouverture": "0001-01-01T13:00:00+00:00", "Première fermeture": "0001-01-01T17:30:00+00:00", "Dernière date": "2018-05-27", "Dernière ouverture": "0001-01-01T10:00:00+00:00", "Dernière fermeture": "0001-01-01T16:00:00+00:00", "Discipline": "Danse", "Type d'événement": "Atelier et workshop", "Condition de participation": "Payant", "Lien d'inscription": "soamazone@yahoo.fr, 0626456246", "Lien": "https://openagenda.com/rdvhiphop2018/events/stage-de-danse-et-atelier-choregraphique", "Identifiant du lieu": "19512467", "Région": "Bretagne", "Département": "Ille-et-Vilaine", "Nom du lieu": "Le Triangle", "Adresse": "Boulevard de Yougoslavie 35000 Rennes", "Ville": "Rennes", "Code postal": "35200", "Pays": "France (Métropole)", "geolocalisation": "48.087688, -1.655873", "Crédits image": "Soamazone", "Agenda d'origine ( titre )": "Rendez-vous Hip Hop 2018", "Agenda d'origine ( uid )": "7912967"}], [48.105479, -1.677133, {"Identifiant": "30814055", "Titre - FR": "Rennes sur Roulettes", "Description - FR": "Evénement des Rendez-vous Hip-hop 2018", "Description longue - FR": "36ème édition de Rennes sur Roulettes !Organisé par l'association le Cercle Paul Bert Rennes en collaboration avec Rennes Ville et Métropole, sous l'égide des FF Roller Skateboard - Fédération Française de Roller et Skateboard & World Skate, Rennes sur Roulettes célèbre le temps d'un week-end \"la fête du roller\" sous toutes ses formes et plus généralement la glisse urbaine où tout un chacun peut s'initier, se mesurer et s'émerveiller lors de cette manifestation sportive populaire et gratuite.AIR & GRIND Contest2 lignes au programme, l'une résolument aérienne & l'autre tout en slide !   Contest ouvert aux Rollers / BMX et Trott'   Amateur -16 / +16 / Girl & Pro", "Description longue - HTML - FR": "<p>36ème édition de Rennes sur Roulettes !<\/p><p>Organisé par l&#39;association le Cercle Paul Bert Rennes en collaboration avec Rennes Ville et Métropole, sous l&#39;égide des FF Roller Skateboard - Fédération Française de Roller et Skateboard &amp; World Skate, Rennes sur Roulettes célèbre le temps d&#39;un week-end &quot;la fête du roller&quot; sous toutes ses formes et plus généralement la glisse urbaine où tout un chacun peut s&#39;initier, se mesurer et s&#39;émerveiller lors de cette manifestation sportive populaire et gratuite.<\/p><p>AIR &amp; GRIND Contest<\/p><p>2 lignes au programme, l&#39;une résolument aérienne &amp; l&#39;autre tout en slide !<br>Contest ouvert aux Rollers / BMX et Trott&#39;<br>Amateur -16 / +16 / Girl &amp; Pro<\/p>", "Dernière mise à jour": "2018-05-25T11:39:24+00:00", "Résumé horaires - FR": "26 et 27 mai", "Résumé horaires - EN": "26 and 27 May", "Horaires détaillés - FR": "samedi 26 mai - 15h00 à 23h00dimanche 27 mai - 08h00 à 18h00", "Horaires ISO": "2018-05-26T15:00:00+02:00-2018-05-26T23:00:00+02:002018-05-27T08:00:00+02:00-2018-05-27T18:00:00+02:00", "Première date": "2018-05-26", "Première ouverture": "0001-01-01T15:00:00+00:00", "Première fermeture": "0001-01-01T23:00:00+00:00", "Dernière date": "2018-05-27", "Dernière ouverture": "0001-01-01T08:00:00+00:00", "Dernière fermeture": "0001-01-01T18:00:00+00:00", "Discipline": "Sport", "Type d'événement": "Animation|Battle et rencontre chorégraphique|Performance", "Condition de participation": "Gratuit", "Lien": "https://openagenda.com/rdvhiphop2018/events/rennes-sur-roulettes_812", "Identifiant du lieu": "41713199", "Région": "Bretagne", "Département": "Ille-et-Vilaine", "Nom du lieu": "Rennes sur Roulettes", "Adresse": "Esplanade du Général de Gaulle, 35000 Rennes", "Ville": "Rennes", "Code postal": "35000", "Pays": "France (Métropole)", "geolocalisation": "48.105479, -1.677133", "Crédits image": "Cercle Paul Bert", "Agenda d'origine ( titre )": "Rendez-vous Hip Hop 2018", "Agenda d'origine ( uid )": "7912967"}], [48.083698, -1.691733, {"Identifiant": "2065582", "Titre - FR": "Training Hip-hop Transmission", "Description - FR": "Evénement des Rendez-vous Hip-hop 2018", "Description longue - FR": "Vous avez aimé le projet \"Hip-hop transmission\" : 3 jours de stages hip-hop (danses, parkour, djing), qui s'est conclu, notamment, par le battle \"Co(Opéra)ctif\" à l'opéra dans le cadre d'Urbaines ?Hip-Hop transmission continue, au travers de Trainings qui permettront aux danseurs débutants de rencontrer et échanger avec des danseurs confirmés !Training Hip-hop Transmission les samedis à la Mjc Bréquigny !Plus d'infos auprès de la Mjc Bréquigny", "Description longue - HTML - FR": "<p>Vous avez aimé le projet &quot;Hip-hop transmission&quot; : 3 jours de stages hip-hop (danses, parkour, djing), qui s&#39;est conclu, notamment, par le battle &quot;Co(Opéra)ctif&quot; à l&#39;opéra dans le cadre d&#39;Urbaines ?<\/p><p>Hip-Hop transmission continue, au travers de Trainings qui permettront aux danseurs débutants de rencontrer et échanger avec des danseurs confirmés !<\/p><p>Training Hip-hop Transmission les samedis à la Mjc Bréquigny !<\/p><p>Plus d&#39;infos auprès de la Mjc Bréquigny<\/p>", "Dernière mise à jour": "2018-04-19T11:01:35+00:00", "Résumé horaires - FR": "26 mai et 2 juin", "Résumé horaires - EN": "26 May and 2 June", "Horaires détaillés - FR": "samedi 26 mai - 14h00 à 18h00samedi 2 juin - 14h00 à 18h00", "Horaires ISO": "2018-05-26T14:00:00+02:00-2018-05-26T18:00:00+02:002018-06-02T14:00:00+02:00-2018-06-02T18:00:00+02:00", "Première date": "2018-05-26", "Première ouverture": "0001-01-01T14:00:00+00:00", "Première fermeture": "0001-01-01T18:00:00+00:00", "Dernière date": "2018-06-02", "Dernière ouverture": "0001-01-01T14:00:00+00:00", "Dernière fermeture": "0001-01-01T18:00:00+00:00", "Discipline": "Breakdance|Danse", "Type d'événement": "Atelier et workshop", "Condition de participation": "Payant|Sur inscription", "Lien": "https://openagenda.com/rdvhiphop2018/events/training-hip-hop-transmission", "Identifiant du lieu": "8030183", "Région": "Bretagne", "Département": "Ille-et-Vilaine", "Nom du lieu": "Mjc Bréquigny", "Adresse": "15 avenue Georges Graff 35200 Rennes", "Ville": "Rennes", "Code postal": "35200", "Pays": "France (Métropole)", "geolocalisation": "48.083698, -1.691733", "Crédits image": "Mjc Bréquigny", "Agenda d'origine ( titre )": "Rendez-vous Hip Hop 2018", "Agenda d'origine ( uid )": "7912967"}], [48.104428, -1.678893, {"Identifiant": "70623776", "Titre - FR": "OldToTheNew HipHop Party #11 (Retro X + Kleko)", "Description - FR": "Evénement des Rendez-vous Hip-hop 2018", "Description longue - FR": "Castmediacompany & 1988 Live Prod présentent :OldToTheNew HipHop Party #11Voyage spatio-temporel de 6h à travers le temps du hip-hop des années 1990 vers le New Sound du futur, mixé par des Djs de haut vol comme Dj Haze. Agrémenté en milieu de soirée par un concert live de 1h mettant en avant la scène rap régionale en mode club : Kleko (Rennes). Pour cette 11ème édition, Retro X (Paris), fer de lance de la scene hip-hop underground française, viendra nous jouer ses derniers titres extraits de sa dernière mixtape Dig3 Heroes, à l'occasion de son DigiTour.Line Up:Dj Haze (Oldschool HipHop)Concert Live :Kleko / Retro XDj Sauza (News Trap)Event : [http://bit.ly/2s6RmDR](http://bit.ly/2s6RmDR)▬▬▬▬▬▬▬▬▬▬ INFOS PRATIQUES ▬▬▬▬▬▬▬▬▬▬1988 Live Club – 27 Place du Colombier – RENNES◇ Pièce d’identité originale obligatoire◇ Événement interdit aux mineurs◇ La Direction se réserve le droit de refuser l’entrée à toute personne en état d'ébriété et/ou au comportement déplacé◇ CB acceptée – Vestiaire obligatoire 2 euros (3€ gros sac)◇ Billetterie en prévente et sur place◇ Consommations à prix réduit jusqu’à 2h", "Détail des conditions - FR": "5€ Early Bird / 7€ prévente / 10€ Sur Place", "Description longue - HTML - FR": "<p>Castmediacompany &amp; 1988 Live Prod présentent :<\/p><p>OldToTheNew HipHop Party #11<\/p><p>Voyage spatio-temporel de 6h à travers le temps du hip-hop des années 1990 vers le New Sound du futur, mixé par des Djs de haut vol comme Dj Haze. Agrémenté en milieu de soirée par un concert live de 1h mettant en avant la scène rap régionale en mode club : Kleko (Rennes). Pour cette 11ème édition, Retro X (Paris), fer de lance de la scene hip-hop underground française, viendra nous jouer ses derniers titres extraits de sa dernière mixtape Dig3 Heroes, à l&#39;occasion de son DigiTour.<\/p><p>Line Up:<\/p><p>Dj Haze (Oldschool HipHop)<\/p><p>Concert Live :Kleko / Retro X<\/p><p>Dj Sauza (News Trap)<\/p><p>Event : <a href=\"http://bit.ly/2s6RmDR\" class=\"url\" target=\"_blank\">http://bit.ly/2s6RmDR<\/a><\/p><p>▬▬▬▬▬▬▬▬▬▬ INFOS PRATIQUES ▬▬▬▬▬▬▬▬▬▬<\/p><p>1988 Live Club – 27 Place du Colombier – RENNES<\/p><p>◇ Pièce d’identité originale obligatoire<\/p><p>◇ Événement interdit aux mineurs<\/p><p>◇ La Direction se réserve le droit de refuser l’entrée à toute personne en état d&#39;ébriété et/ou au comportement déplacé<\/p><p>◇ CB acceptée – Vestiaire obligatoire 2 euros (3€ gros sac)<\/p><p>◇ Billetterie en prévente et sur place<\/p><p>◇ Consommations à prix réduit jusqu’à 2h<\/p>", "Dernière mise à jour": "2018-05-25T09:05:02+00:00", "Résumé horaires - FR": "Dimanche 27 mai, 00h00", "Résumé horaires - EN": "Sunday 27 May, 00:00", "Horaires détaillés - FR": "dimanche 27 mai - 00h00 à 06h00", "Horaires ISO": "2018-05-27T00:00:00+02:00-2018-05-27T06:00:00+02:00", "Première date": "2018-05-26", "Première ouverture": "0001-01-01T00:00:00+00:00", "Première fermeture": "0001-01-01T06:00:00+00:00", "Dernière date": "2018-05-26", "Dernière ouverture": "0001-01-01T00:00:00+00:00", "Dernière fermeture": "0001-01-01T06:00:00+00:00", "Discipline": "DJ'ing|Rap", "Type d'événement": "Concert|Soirée", "Condition de participation": "Payant", "Lien d'inscription": "http://bit.ly/2s6RmDR", "Age minimum": "18", "Age maximum": "99", "Contributeur: organisation": "1988 Live Prod", "Lien": "https://openagenda.com/rdvhiphop2018/events/oldtothenew-hiphop-party-11-retro-x-kleko", "Identifiant du lieu": "84069489", "Région": "Bretagne", "Département": "Ille-et-Vilaine", "Nom du lieu": "1988 Live Club", "Adresse": "27 place du Colombier, 35000 Rennes", "Ville": "Rennes", "Code postal": "35000", "Pays": "France (Métropole)", "geolocalisation": "48.104428, -1.678893", "Crédits image": "Licence libre", "Agenda d'origine ( titre )": "Rendez-vous Hip Hop 2018", "Agenda d'origine ( uid )": "7912967"}], [48.112428, -1.6864279999999998, {"Identifiant": "21526931", "Titre - FR": "Hip Hop Session Gueda One & Friends", "Description - FR": "Evénement des Rendez-vous Hip-hop 2018", "Description longue - FR": "Gueda One revient au Bar Le Chantier pour un mix hip hop / jazz accompagné de guests !", "Description longue - HTML - FR": "<p>Gueda One revient au Bar Le Chantier pour un mix hip hop / jazz accompagné de guests !<\/p>", "Dernière mise à jour": "2018-05-23T08:48:01+00:00", "Résumé horaires - FR": "Samedi 26 mai, 21h00", "Résumé horaires - EN": "Saturday 26 May, 21:00", "Horaires détaillés - FR": "samedi 26 mai - 21h00 à 01h00", "Horaires ISO": "2018-05-26T21:00:00+02:00-2018-05-27T01:00:00+02:00", "Première date": "2018-05-26", "Première ouverture": "0001-01-01T21:00:00+00:00", "Première fermeture": "0001-01-01T01:00:00+00:00", "Dernière date": "2018-05-26", "Dernière ouverture": "0001-01-01T21:00:00+00:00", "Dernière fermeture": "0001-01-01T01:00:00+00:00", "Discipline": "DJ'ing", "Type d'événement": "Concert|Soirée", "Condition de participation": "Gratuit", "Contributeur: organisation": "Bar Le Chantier", "Lien": "https://openagenda.com/rdvhiphop2018/events/hip-hop-session-gueda-one-friends", "Identifiant du lieu": "11289465", "Région": "Bretagne", "Département": "Ille-et-Vilaine", "Nom du lieu": "Bar Le Chantier", "Adresse": "18 carrefour Jouaust, 35000 Rennes", "Ville": "Rennes", "Code postal": "35000", "Pays": "France (Métropole)", "geolocalisation": "48.112428, -1.6864279999999998", "Crédits image": "Antoine Guedaone", "Agenda d'origine ( titre )": "Rendez-vous Hip Hop 2018", "Agenda d'origine ( uid )": "7912967"}]], "nb_total": 7, "tronque": false}</script>
+<script>
+function themeEffectif(){
+  return document.documentElement.getAttribute("data-theme") ||
+    (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+}
+function urlFond(theme){
+  return "https://{s}.basemaps.cartocdn.com/" + (theme==="dark"?"dark_all":"light_all") + "/{z}/{x}/{y}{r}.png";
+}
+
+const D=JSON.parse(document.getElementById("d").textContent);
+document.title=D.nom;
+document.getElementById("titre").textContent=D.nom;
+
+const map=L.map("carte");
+let fond=L.tileLayer(urlFond(themeEffectif()),{
+  attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+  subdomains:"abcd",maxZoom:19
+}).addTo(map);
+
+(function(){
+  const btn = document.getElementById("theme-toggle");
+  function majIcone(){ btn.textContent = themeEffectif() === "dark" ? "☀️" : "🌙"; }
+  btn.addEventListener("click", () => {
+    const suivant = themeEffectif() === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", suivant);
+    try { localStorage.setItem("theme", suivant); } catch(e) {}
+    map.removeLayer(fond);
+    fond = L.tileLayer(urlFond(suivant),{
+      attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      subdomains:"abcd",maxZoom:19
+    }).addTo(map);
+    majIcone();
+  });
+  majIcone();
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+    if (!document.documentElement.getAttribute("data-theme")) majIcone();
+  });
+})();
+
+function esc(s){return String(s??"").replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+function mkPopup(props){
+  if(!props||!Object.keys(props).length)return"";
+  const rows=Object.entries(props).filter(([,v])=>v!=null&&v!=="").slice(0,30)
+    .map(([k,v])=>`<tr><td>${esc(k)}</td><td>${esc(String(v).slice(0,300))}</td></tr>`).join("");
+  return`<table>${rows}</table>`;
+}
+
+const PT={radius:7,color:"#0b6e99",weight:1.5,fillColor:"#1a8bbf",fillOpacity:.75};
+
+function ajouterPoints(pts){
+  pts.forEach(([lat,lon,props])=>L.circleMarker([lat,lon],PT).bindPopup(mkPopup(props)).addTo(map));
+}
+function ajouterGeoJSON(features){
+  L.geoJSON({type:"FeatureCollection",features},{
+    style:{color:"#0b6e99",weight:2,fillColor:"#1a8bbf",fillOpacity:.35},
+    pointToLayer:(_,ll)=>L.circleMarker(ll,PT),
+    onEachFeature:(f,lyr)=>{if(f.properties)lyr.bindPopup(mkPopup(f.properties));}
+  }).addTo(map);
+}
+
+// Chargement initial : premiers 5 000 seulement
+const BATCH=5000;
+let layer;
+if(D.type==="points"){
+  layer=L.featureGroup(D.points.slice(0,BATCH).map(([lat,lon,props])=>
+    L.circleMarker([lat,lon],PT).bindPopup(mkPopup(props))
+  )).addTo(map);
+}else{
+  layer=L.geoJSON({type:"FeatureCollection",features:D.geojson.features.slice(0,BATCH)},{
+    style:{color:"#0b6e99",weight:2,fillColor:"#1a8bbf",fillOpacity:.35},
+    pointToLayer:(_,ll)=>L.circleMarker(ll,PT),
+    onEachFeature:(f,lyr)=>{if(f.properties)lyr.bindPopup(mkPopup(f.properties));}
+  }).addTo(map);
+}
+try{const b=layer.getBounds();if(b.isValid())map.fitBounds(b.pad(0.1));else map.setView([48.1,-1.68],11);}
+catch{map.setView([48.1,-1.68],11);}
+
+// Toutes les données sont embarquées dans D — pas de fetch nécessaire
+const allItems = D.type==="geojson" ? D.geojson.features : D.points;
+let offset = Math.min(BATCH, allItems.length);  // rendu initial
+
+function majInfo(){
+  const n=offset, tot=D.nb_total;
+  document.getElementById("info").textContent=
+    n<tot ? `${n.toLocaleString("fr")} / ${tot.toLocaleString("fr")} éléments`
+          : `${n.toLocaleString("fr")} élément${n>1?"s":""}`;
+}
+function majBouton(){
+  const btn=document.getElementById("btn-plus");
+  const restant=allItems.length-offset;
+  if(restant<=0){btn.style.display="none";return;}
+  btn.style.display="";
+  btn.textContent=`Afficher 5 000 de plus (${restant.toLocaleString("fr")} restants)`;
+}
+
+function chargerPlus(){
+  const batch=allItems.slice(offset, offset+BATCH);
+  if(D.type==="geojson") ajouterGeoJSON(batch); else ajouterPoints(batch);
+  offset+=batch.length;
+  majInfo(); majBouton();
+}
+
+majInfo();
+if(D.tronque) majBouton();
+</script>
+</body>
+</html>

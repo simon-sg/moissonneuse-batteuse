@@ -1,0 +1,90 @@
+{
+  "local_id": "bb433402-4bc8-594c-9275-6ca166733c8c",
+  "resource_title": "Base des lieux et équipements culturels (Basilic) - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Base des lieux et équipements culturels (Basilic) — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/61777ddaa9101d073e5506cd\n\nCette base géocodée des sites, lieux et équipements culturels est conçue et administrée par le département des études, de la prospective, des statistiques et de la documentation du ministère de la Culture. Elle alimente notamment la [base permanente des équipements](https://www.insee.fr/fr/metadonnees/source/serie/s1161) de l’Insee et l'[Atlas Culture des territoires](https://atlasculture.fr/).\n\nElle est réalisée par agrégation de différentes sources : bases de la direction générale des patrimoines et de l’architecture, de la direction générale de la création artistique, de la direction générale des médias et des industries culturelles, de la délégation générale à la transmission, aux territoires et à la démocratie culturelle, du Centre national du cinéma et de l'image animée, du Centre national du livre, du Centre national des arts du cirque, de la rue et du théâtre (Artcena), de la Médiathèque du patrimoine et de la photographie. \n\nElle porte sur le champ de la France entière.\n\nUne liste détaillée des types de structure recensées dans la colonne « Label et appellation » est téléchargeable ci-dessous (voir Pièces jointes).\n\nMalgré le travail de vérification, de nettoyage et de certification des bases, il peut subsister, compte tenu du nombre d'entrées, quelques erreurs (doublons ou erreurs d'adressage) et oublis. N'hésitez pas à nous les signaler en écrivant à : atlasculture@culture.gouv.fr."
+    }
+  ],
+  "theme": "culture",
+  "keywords": [
+    "culture",
+    "deps-doc",
+    "ministeredelaculture",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Ministère de la Culture"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "690a62be-e2fa-58dd-813c-8174b690b7d2",
+      "media_type": "FILE",
+      "media_name": "base-des-lieux-et-des-equipements-culturels-rennesmetropole.csv",
+      "media_caption": "base-des-lieux-et-des-equipements-culturels — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "2c7e4ef8-ab88-5972-b350-fe29589d847f",
+      "media_type": "FILE",
+      "media_name": "dict-metadonnees-basedeps.xlsx",
+      "media_caption": "Dictionnaire des variables — Métadonnées_baseDEPS.xlsx",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "de795d5f-dc30-5e5f-9e83-4274551cf7f2",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://static.data.gouv.fr/resources/base-des-lieux-et-equipements-culturels-basilic/20260218-084338/base-des-lieux-et-des-equipements-culturels.csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2021-10-26T00:00:00Z",
+    "updated": "2026-02-18T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2021-10-26T00:00:00Z",
+      "updated": "2026-02-18T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/61777ddaa9101d073e5506cd"
+  }
+}

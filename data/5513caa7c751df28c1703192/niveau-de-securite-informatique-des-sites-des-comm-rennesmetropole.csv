@@ -1,0 +1,48 @@
+Commune,Code Insee,url,Catégorie,Population,Site,https,Serveur,Version du serveur,Application,Version de l'application,Langage,Version du langage,Latitude,Longitude
+Acigné,35001,http://www.ville-acigne.fr,Niveau de sécurité incertain,6166,oui,non,Apache,2.2,Creaville,Inconnue,Inconnue,Inconnue,48.146457580168303,-1.519136912138280
+Betton ,35024,http://www.betton.fr,Pas à jour,10111,oui,non,Apache,2.2,Inconnue,Inconnue,php,5.2.0,48.181220658778699,-1.646486774275370
+Bourgbarré,35032,http://www.bourgbarre.fr,Pas à jour,3458,oui,non,Apache,2.2,Inconnue,Inconnue,php,5.2.0,47.988647484687398,-1.622325648756260
+Brécé,35039,http://www.mairie-brece.fr,Niveau de sécurité incertain,1929,oui,non,Apache,2.2,Inconnue,Inconnue,php,5.3.3,48.110452900697197,-1.489815063773260
+Bruz,35047,http://www.ville-bruz.fr,Pas à jour,16465,oui,non,Apache,2.2,SPIP,2.0.25,php,5.2.13,48.025941698780898,-1.748524926051720
+Cesson-Sévigné ,35051,http://www.ville-cesson-sevigne.fr,Pas à jour,15219,oui,non,Apache,Inconnue,Inconnue,Inconnue,php,5.2.17,48.120383860483500,-1.597250119552130
+Chantepie ,35055,http://www.chantepie.fr,Pas à jour,9823,oui,non,Apache,2.2,Inconnue,Inconnue,php,5.2.0,48.082008476839299,-1.603886616779270
+Chartres-de-Bretagne,35066,http://www.ville-chartresdebretagne.fr,Pas à jour,7260,oui,non,Apache,Inconnue,Inconnue,Inconnue,php,5.2.6,48.044914001970398,-1.706513878531220
+Chavagne,35076,http://www.ville-chavagne.fr,Niveau de sécurité incertain,3725,oui,non,Apache,2.2,Inconnue,Inconnue,Inconnue,Inconnue,48.056319294630001,-1.786580263691470
+Chevaigné,35079,http://www.ville-chevaigne.fr,Niveau de sécurité incertain,1838,oui,non,IIS,6.0,Inconnue,Inconnue,Inconnue,Inconnue,48.224458793570001,-1.636318989090140
+Cintré,35080,http://www.ville-cintre.fr,Niveau de sécurité incertain,2054,oui,non,IIS,7.5,Inconnue,Inconnue,asp.net,Inconnue,48.108590597431501,-1.885985366825710
+Clayes,35081,http://www.clayes.fr,À jour,678,oui,non,Inconnue,Inconnue,WordPress,4.1,php,Inconnue,48.179100166965398,-1.853815366940600
+Gévezé,35120,http://www.ville-geveze.fr,Pas à jour,3984,oui,non,Apache,Inconnue,Joomla,Inconnue,php,5.2.17,48.213364354513203,-1.798979895155440
+Hirel,35132,http://www.commune-hirel.fr,Informations masquées (vulnérabilités pas exposées),1373,oui,non,Apache,Inconnue,Inconnue,Inconnue,Inconnue,Inconnue,48.593447587282299,-1.808992172708180
+Irodouër,35135,http://www.mairie-irodouer.fr,Niveau de sécurité incertain,2015,oui,non,Apache,2.2,Inconnue,Inconnue,Inconnue,Inconnue,48.246273124908903,-1.950406014357990
+Janzé,35136,http://www.janze.fr,Niveau de sécurité incertain,8142,oui,non,Apache,Inconnue,Joomla,Inconnue,php,5.3.3,47.942881705840499,-1.500846420620770
+L'Hermitage,35131,http://www.mairie-lhermitage.fr,Pas à jour,3835,oui,non,Apache,1.3,Inconnue,Inconnue,Inconnue,Inconnue,48.121926366804097,-1.816441956128340
+La Chapelle-Chaussée,35058,http://www.lachapellechaussee.com,Informations masquées (vulnérabilités pas exposées),1146,oui,non,Apache,Inconnue,Inconnue,Inconnue,Inconnue,Inconnue,48.266687031081901,-1.863969453044970
+La Chapelle-des-Fougeretz,35059,http://www.lachapelledesfougeretz.fr,Informations masquées (vulnérabilités pas exposées),3944,oui,non,Icodia,Inconnue,Inconnue,Inconnue,Inconnue,Inconnue,48.177064279516998,-1.741357825026270
+La Chapelle-Thouarault,35065,http://www.lachapellethouarault.fr,Pas à jour,1926,oui,non,Apache,Inconnue,Inconnue,Inconnue,php,5.4.32,48.125247057305501,-1.858024957699200
+Laillé,35139,http://www.laille.fr,À jour,4348,oui,non,Apache,2.2,SPIP,2.1.26,php,Inconnue,47.967044271755697,-1.713982373290710
+Langan,35144,http://www.langan.fr,Informations masquées (vulnérabilités pas exposées),894,oui,non,Apache,Inconnue,Inconnue,Inconnue,Inconnue,Inconnue,48.235891736070599,-1.845019365952390
+Le Rheu ,35240,http://www.lerheu.fr,Niveau de sécurité incertain,7669,oui,non,Apache,2.2,eZ Publish,Inconnue,php,Inconnue,48.097241781200701,-1.780975416657000
+Le Verger,35351,http://www.mairie-le-verger.fr,Informations masquées (vulnérabilités pas exposées),1514,oui,non,Apache,Inconnue,Inconnue,Inconnue,Inconnue,Inconnue,48.065880229410404,-1.936334428489060
+Lécousse,35150,http://www.lecousse.fr,Pas à jour,2931,oui,non,Apache,1.3,Inconnue,Inconnue,Inconnue,Inconnue,48.359864459919102,-1.221044488580790
+Miniac-sous-Bécherel,35180,http://www.mairie-miniac-sous-becherel.fr,Niveau de sécurité incertain,708,oui,non,Apache,Inconnue,Inconnue,Inconnue,php,5.3.3,48.281018496014802,-1.926817558361230
+Montgermont,35189,http://www.ville-montgermont.fr,Pas à jour,3056,oui,non,Apache,Inconnue,Inconnue,Inconnue,php,5.2.17,48.153998758697199,-1.717041423975740
+Mordelles,35196,http://www.ville-mordelles.fr,Niveau de sécurité incertain,7180,oui,non,IIS,7.5,Inconnue,Inconnue,asp.net,Inconnue,48.085934183799999,-1.842714596763190
+Nouvoitou,35204,http://www.nouvoitou.fr,Pas à jour,2895,oui,non,Apache,Inconnue,Inconnue,Inconnue,php,5.3.29,48.030618981098499,-1.552443106288080
+Noyal-Châtillon-sur-Seiche,35206,http://www.ville-noyal-chatillon.fr,Niveau de sécurité incertain,6250,oui,non,Apache,2.2,Creaville,Inconnue,Inconnue,Inconnue,48.052271659428399,-1.662764062104560
+Orgères,35208,http://www.orgeres.fr,Niveau de sécurité incertain,3905,oui,non,IIS,6.0,Inconnue,Inconnue,asp.net,Inconnue,47.985224062408399,-1.665720013875010
+Pacé ,35210,http://www.ville-pace.fr,Pas à jour,9961,oui,oui,Apache,2.2,Inconnue,Inconnue,php,5.2.6,48.152606389235899,-1.777424180783920
+Parthenay-de-Bretagne,35216,http://www.mairie-parthenay35.com,Niveau de sécurité incertain,1378,oui,non,IIS,7.5,Inconnue,Inconnue,asp.net,Inconnue,48.188163876274700,-1.829103710746620
+Poilley,35230,http://www.louvignecommunaute.org,Pas à jour,397,oui,non,Apache,Inconnue,WordPress,4.0.1,php,5.3.29,48.466019873031300,-1.256713950498790
+Pont-Péan,35363,http://www.pontpean.fr,Pas à jour,3697,oui,non,Apache,Inconnue,Inconnue,Inconnue,php,5.2.17,48.010937459455398,-1.696401969312120
+Rannée,35235,http://www.rannee.com,Pas à jour,1156,oui,non,Apache,Inconnue,WordPress,3.4.2,php,5.4.37,47.900348588000902,-1.226895347074520
+Rennes ,35238,http://www.metropole.rennes.fr,Niveau de sécurité incertain,207178,oui,non,Apache,Inconnue,TYPO3,4.5,php,Inconnue,48.111673018544799,-1.681846356254090
+Romillé,35245,http://www.romille.fr,Pas à jour,3632,oui,non,Apache,2.2,SPIP,2.1.26,php,5.2.13,48.222461843877902,-1.878691780872500
+Saint-Armel,35250,http://www.saint-armel-35.fr,Pas à jour,1830,oui,non,Apache,Inconnue,Joomla,1.5,php,5.4.32,48.013332644829198,-1.580602930445000
+Saint-Erblon,35266,http://www.saint-erblon.fr,Niveau de sécurité incertain,2482,oui,non,IIS,7.5,Inconnue,Inconnue,asp.net,Inconnue,48.018926541694903,-1.642527470592430
+Saint-Gilles,35275,http://www.saint-gilles35.fr,Niveau de sécurité incertain,3783,oui,non,IIS,7.5,Inconnue,Inconnue,asp.net,Inconnue,48.152346253635997,-1.853742266373870
+Saint-Grégoire,35278,http://www.saint-gregoire.fr,Niveau de sécurité incertain,8549,oui,non,Apache,Inconnue,Inconnue,Inconnue,php,5.3.3,48.158478935815900,-1.685363625172780
+Saint-Jacques-de-la-Lande,35281,http://www.ville-st-jacques-de-la-lande.fr,Informations masquées (vulnérabilités pas exposées),10497,oui,non,Apache,Inconnue,Inconnue,Inconnue,Inconnue,Inconnue,48.076128086252801,-1.722563098999180
+Saint-Sulpice-la-Forêt,35315,http://www.saint-sulpice-la-foret.fr,À jour,1423,oui,non,Apache,Inconnue,Joomla,Inconnue,php,5.4.37,48.212391630463699,-1.575936163325370
+Thorigné-Fouillard,35334,http://www.thorigne-fouillard.fr,Pas à jour,7140,oui,non,Apache,2.2,Inconnue,Inconnue,php,5.3.27,48.156601749575799,-1.584440913232080
+Vern-sur-Seiche ,35352,http://www.ville-vern-sur-seiche.fr,Informations masquées (vulnérabilités pas exposées),8146,oui,non,Apache,Inconnue,Inconnue,Inconnue,Inconnue,Inconnue,48.052843026599199,-1.605171339187700
+Vezin-le-Coquet ,35353,http://www.vezinlecoquet.fr,À jour,4382,oui,non,Apache,Inconnue,SPIP,3.0.17,php,5.3.3,48.117645975985504,-1.749234062952870

@@ -1,0 +1,90 @@
+{
+  "local_id": "4fa5a848-3c8a-5df8-8a07-9b68b28431f7",
+  "resource_title": "Transparence-santé - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Transparence-santé — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/5710b9f088ee383cf54d8898\n\n**REFONTE DE TRANSPARENCE-SANTE**\n===============================\n\nDepuis plusieurs mois, un travail de **refonte de la base Transparence-Santé** a été engagé par le Ministère des Solidarités et de la Santé (site de déclaration et site de publication destinée au grand public). L’équipe projet vous annonce que **la nouvelle plateforme sera mise à disposition** :\n\nDébut 2022.\n===============================\n\n\n\nEn conséquence, à partir de cette date, les données qui seront disponibles sur Data.gouv.fr respecteront le nouveau modèle de données.\nPour plus d’information, merci de contacter l’équipe support : TRANSPARENCE-SANTE-SUPPORT@sante.gouv.fr\n\n***\n\n**Attention : le jeu de données contient plus de 10 millions de lignes. Il convient de disposer d’un logiciel permettant d’afficher l’ensemble de ces lignes.**\n\n***\n      \nLa base de données publique Transparence - Santé rend accessible l'ensemble des informations déclarées par les entreprises sur les liens qu'elles entretiennent avec les acteurs du secteur de la santé. Pilotée par le ministère chargé de la santé, cette initiative de transparence vise à préserver la nécessaire relation de confiance entre les citoyens, les usagers et les multiples acteurs du système de santé.\n\nConformément aux articles L. 1453-1 et L. 1453-2 du code de la santé publique, les entreprises produisant ou commercialisant des produits à finalité sanitaire, cosmétique ou sanitaire doivent rendre publics les conventions, les rémunérations et les avantages accordés aux différents acteurs intervenant dans le champ de la santé, notamment aux professionnels de santé.\n\nLes informations mises à disposition sont issues de déclarations réalisées, deux fois par an, par les entreprises et publiées sur le site www.transparence.sante.gouv.fr. Elles contiennent des données à caractère personnel et à ce titre le réutilisateur est tenu de se conformer aux obligations prévues par la loi n° 78-17 du 6 janvier 1978 relative à l’informatique, aux fichiers et aux libertés.\n\nLes entreprises sont responsables de l’exactitude des contenus publiés.\n\nLa réutilisation des données issues de la base Transparence - Santé est soumise au respect de la licence de réutilisation de l’information.\n\n**La réutilisation des données est restreinte**, elle doit être faite dans le respect de la finalité de la transparence des liens d’intérêts, ce qui exclut notamment une réutilisation à des fins strictement commerciales.\n\n[Attribution - Pas d’Utilisation Commerciale - Partage dans les Mêmes Conditions 4.0 International (CC BY-NC-SA 4.0)](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.fr)\n\nPar ailleurs, en cas de réutilisation des données donnant lieu à un traitement de données, **le réutilisateur doit se conformer aux dispositions de la loi n° 78-17 du 6 janvier 1978 relative à l’informatique, aux fichiers et aux libertés**. Le réutilisateur doit aussi assurer la sécurité et la protection des seules données directement identifiantes contre l'indexation par des moteurs de recherche externes.\n\nLe jeu de données contient les champs et les données que le public est autorisé à voir sur le site www.transparence-sante.gouv.fr à l’instant T, c’est-à-dire les déclarations publiées au moment de la date de la demande d’extraction sur le site data.gouv.fr et les tags des demandes de rectification sur ces déclarations.\n\n"
+    }
+  ],
+  "theme": "health",
+  "keywords": [
+    "avantage",
+    "avantages-en-natures",
+    "convention",
+    "medecin",
+    "medicament",
+    "professionnels-de-sante",
+    "sante",
+    "transparence",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Ministère des Solidarités et de la Santé"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "2f05b0f6-c885-53bf-b344-cff6d6dde18d",
+      "media_type": "FILE",
+      "media_name": "export-de-la-base-declaration-rennesmetropole.csv",
+      "media_caption": "Export de la base déclaration — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "14ae66f0-8852-592c-b6c2-aa088f1165ee",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://www.transparence.sante.gouv.fr/api/explore/v2.1/catalog/datasets/declarations/exports/csv?lang=fr&timezone=Europe%2FBerlin&use_labels=true&delimiter=%3B",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2016-04-15T00:00:00Z",
+    "updated": "2026-05-19T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "CUSTOM",
+      "custom_licence_label": [
+        {
+          "lang": "fr",
+          "text": "other-at"
+        }
+      ],
+      "custom_licence_uri": "https://www.data.gouv.fr/datasets/5710b9f088ee383cf54d8898"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2016-04-15T00:00:00Z",
+      "updated": "2026-05-19T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/5710b9f088ee383cf54d8898"
+  }
+}

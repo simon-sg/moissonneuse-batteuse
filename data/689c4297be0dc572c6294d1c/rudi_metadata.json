@@ -1,0 +1,218 @@
+{
+  "local_id": "e9d9adeb-9a90-5688-b51c-c44f322f8d4a",
+  "resource_title": "Données locales de consommation d'électricité, de gaz naturel et de chaleur et de froid - IRIS (à partir de 2018) - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Données locales de consommation d'électricité, de gaz naturel et de chaleur et de froid - IRIS (à partir de 2018) — données filtrées sur Rennes Métro"
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/689c4297be0dc572c6294d1c\n\nDonnées locales de consommation d'électricité, de gaz naturel et de chaleur et de froid - consommations annuelles et points de livraison d'électricité, de gaz naturel, et de chaleur et de froid, répartis en cinq secteurs (agriculture, industrie, tertiaire, résidentiel et non affecté) ou selon le code NAF à 2 niveaux selon les cas, à la maille IRIS\n\nVous pouvez accéder à la page dédiée au jeu de données dans le [catalogue DiDo du SDES](https://www.statistiques.developpement-durable.gouv.fr/catalogue?page=dataset&datasetId=610244c9e436671e84ec5da8)."
+    }
+  ],
+  "theme": "environment",
+  "keywords": [
+    "chaleur",
+    "consommation-d-energie",
+    "electricite",
+    "energie",
+    "froid",
+    "gaz-naturel",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Service des données et études statistiques (SDES)"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "eb441178-d1ff-53a5-aca1-9b3235274dfd",
+      "media_type": "FILE",
+      "media_name": "donnees-de-consommation-et-de-points-de-livraison--rennesmetropole.csv",
+      "media_caption": "Données de consommation et de points de livraison d'énergie à la maille IRIS - électricité - année 2024 — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "eb441178-d1ff-53a5-aca1-9b3235274dfd",
+      "media_type": "FILE",
+      "media_name": "donnees-de-consommation-et-de-points-de-livraison--rennesmetropole.csv",
+      "media_caption": "Données de consommation et de points de livraison d'énergie à la maille IRIS - gaz naturel - année 2024 — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "eb441178-d1ff-53a5-aca1-9b3235274dfd",
+      "media_type": "FILE",
+      "media_name": "donnees-de-consommation-et-de-points-de-livraison--rennesmetropole.csv",
+      "media_caption": "Données de consommation et de points de livraison d'énergie à la maille IRIS - électricité - année 2018 — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "eb441178-d1ff-53a5-aca1-9b3235274dfd",
+      "media_type": "FILE",
+      "media_name": "donnees-de-consommation-et-de-points-de-livraison--rennesmetropole.csv",
+      "media_caption": "Données de consommation et de points de livraison d'énergie à la maille IRIS - électricité - année 2019 — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "eb441178-d1ff-53a5-aca1-9b3235274dfd",
+      "media_type": "FILE",
+      "media_name": "donnees-de-consommation-et-de-points-de-livraison--rennesmetropole.csv",
+      "media_caption": "Données de consommation et de points de livraison d'énergie à la maille IRIS - gaz naturel - année 2018 — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "eb441178-d1ff-53a5-aca1-9b3235274dfd",
+      "media_type": "FILE",
+      "media_name": "donnees-de-consommation-et-de-points-de-livraison--rennesmetropole.csv",
+      "media_caption": "Données de consommation et de points de livraison d'énergie à la maille IRIS - gaz naturel - année 2019 — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "eb441178-d1ff-53a5-aca1-9b3235274dfd",
+      "media_type": "FILE",
+      "media_name": "donnees-de-consommation-et-de-points-de-livraison--rennesmetropole.csv",
+      "media_caption": "Données de consommation et de points de livraison d'énergie à la maille IRIS - électricité - année 2020 — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "eb441178-d1ff-53a5-aca1-9b3235274dfd",
+      "media_type": "FILE",
+      "media_name": "donnees-de-consommation-et-de-points-de-livraison--rennesmetropole.csv",
+      "media_caption": "Données de consommation et de points de livraison d'énergie à la maille IRIS - gaz naturel - année 2020 — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "eb441178-d1ff-53a5-aca1-9b3235274dfd",
+      "media_type": "FILE",
+      "media_name": "donnees-de-consommation-et-de-points-de-livraison--rennesmetropole.csv",
+      "media_caption": "Données de consommation et de points de livraison d'énergie à la maille IRIS - électricité - année 2021 — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "eb441178-d1ff-53a5-aca1-9b3235274dfd",
+      "media_type": "FILE",
+      "media_name": "donnees-de-consommation-et-de-points-de-livraison--rennesmetropole.csv",
+      "media_caption": "Données de consommation et de points de livraison d'énergie à la maille IRIS - gaz naturel - année 2021 — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "eb441178-d1ff-53a5-aca1-9b3235274dfd",
+      "media_type": "FILE",
+      "media_name": "donnees-de-consommation-et-de-points-de-livraison--rennesmetropole.csv",
+      "media_caption": "Données de consommation et de points de livraison d'énergie à la maille IRIS - électricité - année 2022 — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "eb441178-d1ff-53a5-aca1-9b3235274dfd",
+      "media_type": "FILE",
+      "media_name": "donnees-de-consommation-et-de-points-de-livraison--rennesmetropole.csv",
+      "media_caption": "Données de consommation et de points de livraison d'énergie à la maille IRIS - gaz naturel - année 2022 — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "eb441178-d1ff-53a5-aca1-9b3235274dfd",
+      "media_type": "FILE",
+      "media_name": "donnees-de-consommation-et-de-points-de-livraison--rennesmetropole.csv",
+      "media_caption": "Données de consommation et de points de livraison d'énergie à la maille IRIS - électricité - année 2023 — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "eb441178-d1ff-53a5-aca1-9b3235274dfd",
+      "media_type": "FILE",
+      "media_name": "donnees-de-consommation-et-de-points-de-livraison--rennesmetropole.csv",
+      "media_caption": "Données de consommation et de points de livraison d'énergie à la maille IRIS - gaz naturel - année 2023 — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "29bb9100-12c9-54ef-9087-d97e35044e17",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://data.statistiques.developpement-durable.gouv.fr/dido/api/v1/datafiles/a2752bf0-2100-47c3-bfc3-2a16153aba5b/csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2025-08-13T00:00:00Z",
+    "updated": "2026-06-25T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "CUSTOM",
+      "custom_licence_label": [
+        {
+          "lang": "fr",
+          "text": "fr-lo"
+        }
+      ],
+      "custom_licence_uri": "https://www.data.gouv.fr/datasets/689c4297be0dc572c6294d1c"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2025-08-13T00:00:00Z",
+      "updated": "2026-06-25T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/689c4297be0dc572c6294d1c"
+  }
+}

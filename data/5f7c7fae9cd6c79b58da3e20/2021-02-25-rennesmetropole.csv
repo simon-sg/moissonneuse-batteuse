@@ -1,0 +1,2 @@
+date,operateur,op_code,region,departement,code_postal,code_insee,commune,lat,long,voix2g,voix3g,voix4g,data3g,data4g,data5g,voix,data,propre,detail,debut_voix,fin_voix,debut_data,fin_data,debut,fin
+2021-02-25,SFR,sfr,,35,,35238,RENNES,48.123611111111,-1.6638888888889,,,,,,,HS,HS,,,,,,,,

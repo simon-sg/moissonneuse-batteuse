@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title></title>
+<script>(function(){try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<style>
+:root{--bg:#f5f6f8;--card:#fff;--txt:#1c2733;--muted:#667;--accent:#0b6e99;--bord:#e2e6ea;
+      --avert-bg:#fff8e1;--avert-bord:#ffe082;--avert-txt:#6d4c00;
+      --geo-bg:#eaf4fb;--geo-hover:#d4ecf7;--stripe:#fafbfc;--row-hover:#eef6fb;
+      --resizer:rgba(11,110,153,.35);--td-bord:#f0f2f4}
+:root[data-theme="dark"]{--bg:#10151b;--card:#1a222b;--txt:#dbe2e8;--muted:#8996a3;--accent:#4fb3da;--bord:#29323c;
+      --avert-bg:#3a2f10;--avert-bord:#6b5418;--avert-txt:#e8c96a;
+      --geo-bg:#16303c;--geo-hover:#1d3f4d;--stripe:#161d24;--row-hover:#17242c;
+      --resizer:rgba(79,179,218,.35);--td-bord:#232c35}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#10151b;--card:#1a222b;--txt:#dbe2e8;--muted:#8996a3;--accent:#4fb3da;--bord:#29323c;
+      --avert-bg:#3a2f10;--avert-bord:#6b5418;--avert-txt:#e8c96a;
+      --geo-bg:#16303c;--geo-hover:#1d3f4d;--stripe:#161d24;--row-hover:#17242c;
+      --resizer:rgba(79,179,218,.35);--td-bord:#232c35}
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+     background:var(--bg);color:var(--txt);display:flex;flex-direction:column;height:100vh}
+header{background:var(--card);border-bottom:1px solid var(--bord);padding:10px 16px;
+       display:flex;flex-wrap:wrap;gap:10px;align-items:center;flex-shrink:0}
+h1{font-size:.9rem;font-weight:600;flex:1;min-width:150px;
+   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#filtre{padding:7px 11px;font-size:.9rem;border:1px solid var(--bord);
+        border-radius:6px;width:220px;background:var(--card);color:var(--txt)}
+#info{color:var(--muted);font-size:.82rem;white-space:nowrap}
+#theme-toggle{background:none;border:1px solid var(--bord);border-radius:6px;padding:5px 10px;
+              cursor:pointer;font-size:.9rem;line-height:1;color:var(--txt);flex-shrink:0}
+#theme-toggle:hover{background:var(--bg)}
+.avert{background:var(--avert-bg);border-bottom:1px solid var(--avert-bord);padding:5px 16px;
+       font-size:.8rem;color:var(--avert-txt);flex-shrink:0}
+.wrap{flex:1;overflow:auto}
+table{border-collapse:collapse;font-size:.82rem;table-layout:fixed}
+thead{position:sticky;top:0;z-index:2;background:var(--card);box-shadow:0 1px 0 var(--bord)}
+th{padding:8px 12px;text-align:left;cursor:pointer;user-select:none;color:var(--muted);font-weight:600;
+   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative}
+th:hover{background:var(--bg);color:var(--txt)}
+th.asc::after{content:" ↑";color:var(--accent)}
+th.desc::after{content:" ↓";color:var(--accent)}
+th.geo{color:var(--accent);background:var(--geo-bg)}
+th.geo:hover{background:var(--geo-hover)}
+th.trad{text-decoration:underline dotted;text-decoration-color:var(--accent);text-underline-offset:3px}
+td{padding:0;border-bottom:1px solid var(--td-bord)}
+td div{padding:5px 12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+td div a{color:var(--accent);text-decoration:none}
+td div a:hover{text-decoration:underline}
+tr:nth-child(even) td{background:var(--stripe)}
+tr:hover td{background:var(--row-hover)}
+.resizer{position:absolute;right:0;top:0;width:5px;height:100%;cursor:col-resize;z-index:1}
+.resizer:hover,.resizer.active{background:var(--resizer)}
+</style>
+</head>
+<body>
+<header>
+  <h1 id="titre"></h1>
+  <input id="filtre" type="search" placeholder="Filtrer toutes les colonnes…">
+  <span id="info"></span>
+  <button id="theme-toggle" title="Basculer thème clair/sombre" aria-label="Basculer thème clair/sombre">🌙</button>
+</header>
+<div id="avert" class="avert" style="display:none"></div>
+<div class="wrap"><table id="t"><colgroup id="cols"></colgroup><thead id="thead"></thead><tbody id="tbody"></tbody></table></div>
+<script id="d" type="application/json">{"nom": "indicateurs-business-par-commune-csv-rennesmetropole.csv", "champs_geo": ["nom_commune", "code_commune"], "dictionnaire": {}, "entetes": ["code_commune", "nom_commune", "code_departement", "population", "revenu_median_uc", "nb_etablissements", "nb_activites_distinctes", "cessations_12m", "cessations_24m", "nb_entreprises_rne", "nb_dirigeants", "age_moyen_dirigeants", "pct_dirigeants_60plus", "pct_dirigeants_65plus", "nb_friches", "friches_surface_m2", "nb_permis_locaux_5y", "permis_surface_m2", "prix_m2_median_commerce_eur", "nb_mutations_dvf_5y", "taux_cfe_pct"], "lignes": [["35001", "Acigné", "35", "6874", "25850", "1075", "220", "21", "36", "1429", "773", "52.8", "30.01", "16.43", "1", "1168", "2", "59939", "1582", "404", "29.28"], ["35022", "Bécherel", "35", "677", "21270", "197", "78", "5", "7", "260", "92", "55.1", "31.52", "19.57", "1", "1122", "1", "", "675", "50", "29.28"], ["35024", "Betton", "35", "12964", "26890", "2154", "252", "50", "122", "2905", "1675", "52.6", "31.88", "20.36", "1", "2627", "8", "185215", "3716", "865", "29.28"], ["35032", "Bourgbarré", "35", "4804", "24630", "702", "174", "21", "40", "842", "449", "51.9", "24.05", "14.03", "", "", "8", "39102", "923", "326", "29.28"], ["35039", "Brécé", "35", "2232", "24510", "386", "134", "5", "15", "441", "246", "50.4", "27.24", "14.63", "2", "26111", "1", "1649", "1328", "137", "29.28"], ["35047", "Bruz", "35", "19683", "25250", "4064", "341", "97", "206", "4703", "2698", "53.2", "33.32", "20.35", "2", "35467", "8", "105177", "5248", "1458", "29.28"], ["35051", "Cesson-Sévigné", "35", "18761", "29450", "6901", "389", "267", "555", "7208", "5175", "53.0", "30.42", "19.29", "1", "1170", "8", "218421", "6131", "1634", "29.28"], ["35055", "Chantepie", "35", "10670", "24870", "2048", "283", "69", "148", "2511", "1185", "53.1", "31.9", "20.76", "1", "63144", "7", "97893", "3465", "786", "29.28"], ["35058", "La Chapelle-Chaussée", "35", "1298", "23890", "193", "81", "5", "9", "302", "118", "52.4", "27.12", "12.71", "1", "66686", "3", "16555", "1093", "72", "29.28"], ["35059", "La Chapelle-des-Fougeretz", "35", "4738", "25490", "993", "191", "30", "58", "1159", "715", "50.7", "26.57", "16.36", "1", "6987", "6", "334539", "3806", "373", "29.28"], ["35065", "La Chapelle-Thouarault", "35", "2304", "23720", "279", "94", "14", "18", "380", "168", "51.4", "31.55", "19.64", "", "", "4", "9016", "1471", "144", "29.28"], ["35066", "Chartres-de-Bretagne", "35", "8880", "23890", "1458", "221", "47", "87", "1756", "852", "52.4", "27.11", "17.25", "1", "2663065", "8", "50850", "1982", "649", "29.28"], ["35076", "Chavagne", "35", "4709", "24610", "665", "162", "14", "30", "896", "440", "51.1", "23.64", "17.27", "", "", "2", "2939", "1534", "366", "29.28"], ["35079", "Chevaigné", "35", "2397", "26570", "368", "102", "11", "19", "488", "304", "52.6", "33.55", "20.07", "", "", "3", "46450", "5125", "150", "29.28"], ["35080", "Cintré", "35", "2645", "24600", "319", "109", "9", "23", "409", "176", "49.4", "15.91", "5.68", "", "", "5", "25866", "3625", "180", "29.28"], ["35081", "Clayes", "35", "947", "24420", "105", "53", "1", "1", "138", "66", "48.8", "24.24", "18.18", "", "", "", "", "1048", "43", "29.28"], ["35088", "Corps-Nuds", "35", "3567", "23570", "621", "160", "14", "38", "779", "469", "52.1", "28.36", "17.48", "1", "619", "8", "72149", "6826", "241", "29.28"], ["35120", "Gévezé", "35", "6061", "25190", "912", "180", "27", "40", "1182", "655", "48.6", "16.95", "8.4", "1", "2257", "8", "43476", "10109", "404", "29.28"], ["35131", "L'Hermitage", "35", "4730", "24040", "722", "180", "19", "42", "933", "481", "51.2", "31.81", "16.84", "", "", "8", "182439", "1711", "328", "29.28"], ["35132", "Hirel", "35", "1382", "22390", "282", "84", "2", "6", "396", "204", "48.7", "21.08", "13.24", "1", "439", "3", "31418", "649", "118", "26.56"], ["35135", "Irodouër", "35", "2300", "23000", "357", "113", "5", "9", "518", "230", "49.1", "17.83", "10.43", "2", "27930", "4", "49815", "8250", "162", "25.2"], ["35136", "Janzé", "35", "8649", "23450", "1514", "248", "39", "83", "2055", "1171", "50.4", "23.65", "14.6", "5", "13399", "8", "23039", "5811", "750", "25.92"], ["35139", "Laillé", "35", "5225", "26950", "1046", "190", "19", "43", "1302", "693", "51.3", "25.25", "15.73", "1", "7341", "8", "44383", "13913", "464", "29.28"], ["35144", "Langan", "35", "1106", "22890", "135", "72", "6", "10", "226", "103", "50.2", "26.21", "19.42", "", "", "3", "61502", "2268", "90", "29.28"], ["35150", "Lécousse", "35", "3530", "24230", "664", "177", "14", "29", "813", "654", "52.8", "32.42", "22.94", "1", "9252", "8", "160071", "947", "258", "26.29"], ["35160", "Loutehel", "35", "243", "21090", "38", "27", "0", "2", "80", "24", "46.6", "12.5", "0.0", "", "", "", "", "", "26", "26.48"], ["35170", "Mecé", "35", "618", "22250", "95", "46", "3", "6", "165", "35", "48.9", "17.14", "14.29", "", "", "3", "31971", "", "40", "25.1"], ["35180", "Miniac-sous-Bécherel", "35", "776", "22430", "153", "58", "6", "9", "227", "128", "52.0", "29.69", "15.62", "1", "3491", "1", "", "1795", "56", "29.28"], ["35189", "Montgermont", "35", "3827", "25860", "831", "185", "26", "51", "984", "599", "52.0", "30.72", "20.37", "1", "2133", "6", "29950", "6127", "310", "29.28"], ["35190", "Monthault", "35", "248", "20240", "58", "31", "0", "2", "101", "39", "50.4", "15.38", "15.38", "", "", "", "", "", "77", "26.29"], ["35196", "Mordelles", "35", "7911", "23950", "1413", "235", "31", "76", "1764", "1043", "50.7", "25.02", "16.68", "3", "105308", "8", "62247", "7993", "623", "29.28"], ["35200", "Moutiers", "35", "896", "22110", "160", "65", "4", "6", "252", "140", "53.1", "26.43", "15.71", "", "", "2", "1785", "742", "55", "25.1"], ["35204", "Nouvoitou", "35", "3911", "25160", "605", "167", "20", "43", "798", "422", "50.6", "28.44", "15.88", "1", "2980", "6", "96376", "1279", "260", "29.28"], ["35206", "Noyal-Châtillon-sur-Seiche", "35", "8359", "24960", "1667", "239", "71", "146", "1952", "1140", "52.3", "32.37", "19.12", "", "", "8", "22231", "5678", "678", "29.28"], ["35208", "Orgères", "35", "5732", "24350", "785", "184", "17", "43", "1012", "509", "51.8", "26.33", "18.07", "", "", "5", "156401", "1097", "342", "29.28"], ["35210", "Pacé", "35", "11703", "28450", "2752", "290", "79", "153", "3176", "2319", "52.0", "27.04", "16.56", "", "", "8", "39799", "7260", "911", "29.28"], ["35216", "Parthenay-de-Bretagne", "35", "1793", "24750", "256", "103", "7", "19", "333", "207", "53.5", "30.43", "20.77", "", "", "8", "20448", "1004", "126", "29.28"], ["35230", "Poilley", "35", "394", "21970", "93", "40", "3", "4", "170", "68", "54.1", "38.24", "29.41", "", "", "1", "", "647", "39", "26.29"], ["35235", "Rannée", "35", "1100", "22370", "198", "69", "7", "13", "323", "154", "49.6", "25.97", "10.39", "1", "142917", "4", "61513", "975", "136", "25.1"], ["35238", "Rennes", "35", "230890", "22770", "65684", "526", "1364", "2784", "78466", "35422", "53.7", "34.81", "24.88", "38", "5828138", "8", "281446", "4991", "20294", "29.28"], ["35240", "Le Rheu", "35", "9839", "24780", "1858", "272", "59", "126", "2265", "1290", "51.5", "26.67", "18.14", "2", "179944", "2", "45650", "3114", "766", "29.28"], ["35245", "Romillé", "35", "4189", "24370", "681", "179", "18", "32", "933", "472", "49.6", "21.61", "13.35", "3", "1819", "7", "60200", "821", "324", "29.28"], ["35250", "Saint-Armel", "35", "2433", "24090", "370", "125", "7", "22", "463", "202", "49.5", "18.81", "12.38", "2", "51915", "8", "50009", "678", "215", "29.28"], ["35266", "Saint-Erblon", "35", "3651", "24550", "561", "150", "15", "27", "726", "383", "51.2", "30.29", "14.88", "", "", "7", "93074", "5409", "342", "29.28"], ["35275", "Saint-Gilles", "35", "5576", "24910", "1058", "223", "27", "57", "1319", "830", "50.4", "24.94", "13.25", "", "", "2", "189", "1751", "380", "29.28"], ["35278", "Saint-Grégoire", "35", "9957", "31110", "4366", "331", "115", "249", "4722", "4143", "53.2", "32.25", "19.77", "3", "15589", "8", "45270", "7675", "842", "29.28"], ["35281", "Saint-Jacques-de-la-Lande", "35", "13800", "21730", "3371", "295", "84", "184", "3767", "2084", "53.9", "34.6", "23.61", "5", "642894", "5", "65812", "4304", "1279", "29.28"], ["35310", "Saint-Sauveur-des-Landes", "35", "1565", "23150", "251", "105", "3", "11", "305", "161", "51.8", "29.81", "18.63", "1", "1339", "8", "155585", "4124", "90", "26.29"], ["35315", "Saint-Sulpice-la-Forêt", "35", "1580", "27370", "250", "78", "7", "13", "327", "200", "54.2", "40.0", "27.0", "", "", "8", "63798", "5721", "101", "29.28"], ["35334", "Thorigné-Fouillard", "35", "8667", "28380", "1415", "215", "35", "85", "1764", "984", "52.1", "30.89", "21.14", "1", "43706", "8", "119368", "2837", "540", "29.28"], ["35351", "Le Verger", "35", "1389", "23780", "157", "78", "4", "8", "229", "74", "50.6", "25.68", "8.11", "", "", "", "", "5873", "78", "29.28"], ["35352", "Vern-sur-Seiche", "35", "8207", "26480", "2062", "284", "68", "124", "2322", "1676", "51.3", "25.95", "16.77", "", "", "8", "34853", "1523", "600", "29.28"], ["35353", "Vezin-le-Coquet", "35", "6471", "24540", "992", "212", "30", "68", "1211", "564", "51.7", "29.79", "20.39", "1", "14183", "6", "27592", "4815", "484", "29.28"], ["35363", "Pont-Péan", "35", "4245", "25170", "651", "144", "24", "47", "848", "456", "48.9", "21.05", "11.62", "4", "171016", "6", "21037", "838", "298", "29.28"]], "tronque": false, "nb_total": 54}</script>
+<script>
+(function(){
+  const btn = document.getElementById("theme-toggle");
+  function effectif(){
+    return document.documentElement.getAttribute("data-theme") ||
+      (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  }
+  function majIcone(){ btn.textContent = effectif() === "dark" ? "☀️" : "🌙"; }
+  btn.addEventListener("click", () => {
+    const suivant = effectif() === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", suivant);
+    try { localStorage.setItem("theme", suivant); } catch(e) {}
+    majIcone();
+  });
+  majIcone();
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+    if (!document.documentElement.getAttribute("data-theme")) majIcone();
+  });
+})();
+
+const D=JSON.parse(document.getElementById("d").textContent);
+const tbl=document.getElementById("t"),wrap=document.querySelector(".wrap");
+const nCols=D.entetes.length;
+const wrapW=wrap.clientWidth||800;
+const colW=Math.max(80,Math.floor(Math.max(wrapW,nCols*160)/nCols));
+tbl.style.width=Math.max(wrapW,nCols*160)+"px";
+document.getElementById("cols").innerHTML=D.entetes.map(()=>`<col style="width:${colW}px">`).join("");
+document.title=D.nom;document.getElementById("titre").textContent=D.nom;
+if(D.tronque){const a=document.getElementById("avert");a.style.display="";
+  a.textContent=`Prévisualisation : ${D.lignes.length.toLocaleString("fr")} premières lignes sur ${D.nb_total.toLocaleString("fr")} au total.`;}
+const geo=new Set(D.champs_geo||[]);
+const DICO=D.dictionnaire||{};
+let sc=-1,asc=true,q="";
+function esc(s){return String(s??"").replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function cell(v){const s=String(v??"").trim();return /^https?:\/\/\S+$/.test(s)?`<a href="${esc(s)}" target="_blank" rel="noopener">${esc(s)}</a>`:esc(v);}
+function rendu(){
+  let rows=D.lignes;
+  if(q){const f=q.toLowerCase();rows=rows.filter(r=>r.some(v=>String(v??"").toLowerCase().includes(f)));}
+  if(sc>=0){const col=sc,up=asc;rows=[...rows].sort((a,b)=>{
+    const va=a[col]??"",vb=b[col]??"",na=+va,nb=+vb;
+    return(!isNaN(na)&&!isNaN(nb))?(up?na-nb:nb-na):(up?String(va).localeCompare(String(vb),"fr"):String(vb).localeCompare(String(va),"fr"));
+  });}
+  const th=D.entetes.map((h,i)=>{
+    const trad=DICO[h];
+    const cls=[sc===i?(asc?"asc":"desc"):"",geo.has(h)?"geo":"",trad?"trad":""].filter(Boolean).join(" ");
+    const tip=trad?` title="${esc(h)}"`:"";
+    return`<th class="${cls}"${tip}>${esc(trad||h)}<div class="resizer"></div></th>`;
+  }).join("");
+  document.getElementById("thead").innerHTML=`<tr>${th}</tr>`;
+  document.getElementById("tbody").innerHTML=rows.map(r=>`<tr>${r.map(v=>`<td><div title="${esc(v)}">${cell(v)}</div></td>`).join("")}</tr>`).join("");
+  const n=rows.length,tot=D.lignes.length;
+  document.getElementById("info").textContent=n<tot
+    ?`${n.toLocaleString("fr")} / ${tot.toLocaleString("fr")} lignes`
+    :`${n.toLocaleString("fr")} ligne${n>1?"s":""}`;
+}
+// Sort via delegation — ignore clicks that start on the resizer handle
+tbl.addEventListener("click",e=>{
+  if(e.target.closest(".resizer"))return;
+  const th=e.target.closest("th");
+  if(!th)return;
+  const i=th.cellIndex;sc===i?asc=!asc:(sc=i,asc=true);rendu();
+});
+// Column resize
+tbl.addEventListener("mousedown",e=>{
+  const rz=e.target.closest(".resizer");
+  if(!rz)return;
+  e.preventDefault();
+  const th=rz.parentElement,idx=th.cellIndex;
+  const cols=document.querySelectorAll("#cols col");
+  const startX=e.clientX,startW=th.offsetWidth;
+  rz.classList.add("active");
+  document.body.style.cursor="col-resize";
+  function onMove(e){
+    const w=Math.max(40,startW+(e.clientX-startX));
+    cols[idx].style.width=w+"px";
+    tbl.style.width=Array.from(cols).reduce((s,c)=>s+(parseInt(c.style.width)||colW),0)+"px";
+  }
+  function onUp(){
+    rz.classList.remove("active");
+    document.body.style.cursor="";
+    document.removeEventListener("mousemove",onMove);
+    document.removeEventListener("mouseup",onUp);
+  }
+  document.addEventListener("mousemove",onMove);
+  document.addEventListener("mouseup",onUp);
+});
+document.getElementById("filtre").addEventListener("input",e=>{q=e.target.value;rendu();});
+rendu();
+</script>
+</body>
+</html>

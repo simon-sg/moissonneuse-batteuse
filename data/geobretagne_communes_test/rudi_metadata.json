@@ -1,0 +1,79 @@
+{
+  "local_id": "8e49e87c-2bc1-51dd-8e7c-93f3d208627a",
+  "resource_title": "Communes — Rennes Métropole (IGN via Géobretagne) — Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Communes — Rennes Métropole (IGN via Géobretagne) — données géographiques pour Rennes Métropole (WFS)"
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Service WFS filtré sur Rennes Métropole (43 communes, EPCI 243500139).\n\nSource : https://geobretagne.fr/geoserver/ign/wfs\n\nJeu de données du thème « référentiels géographiques », produit par IGN / Géobretagne, limité aux communes de Rennes Métropole. Les enregistrements comportent les champs suivants : id, nom_com, nom_com_m, insee_com, statut, population, insee_can, insee_arr (+3 autres champs)."
+    }
+  ],
+  "theme": "location",
+  "keywords": [
+    "rennes métropole",
+    "géographique",
+    "wfs"
+  ],
+  "producer": {
+    "organization_name": "IGN / Géobretagne"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "a97a1a51-f5d5-5ce9-acd9-639ed17be1e0",
+      "media_type": "FILE",
+      "media_name": "commune_metro.geojson",
+      "media_caption": "ign:commune_metro — GeoJSON filtré Rennes Métropole",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "be7dac24-516f-59f7-843d-c40302196314",
+      "media_type": "SERVICE",
+      "media_name": "service-wfs",
+      "media_caption": "Service WFS source",
+      "connector": {
+        "url": "https://geobretagne.fr/geoserver/ign/wfs?SERVICE=WFS&REQUEST=GetCapabilities",
+        "interface_contract": "wfs"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2026-07-02T19:52:36Z",
+    "updated": "2026-07-02T19:52:36Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2026-07-02T19:52:36Z",
+      "updated": "2026-07-02T19:52:36Z"
+    },
+    "metadata_source": "https://geobretagne.fr/geoserver/ign/wfs"
+  }
+}

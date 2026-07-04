@@ -1,0 +1,90 @@
+{
+  "local_id": "c477d6d9-87cc-570d-9a24-ee0ddab2c5a1",
+  "resource_title": "Communes et inventaire SRU - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Communes et inventaire SRU — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/6564969d3579e21795ebd378\n\nAdoptée le 13 décembre 2000, la loi relative à la solidarité et au renouvellement urbain (SRU) vise à récréer un équilibre social dans chaque territoire et à répondre à la pénurie de logements sociaux. Son article 55 oblige certaines communes à disposer d’un nombre minimum de logements sociaux, proportionnel à leur parc résidentiel.\nPlus d'informations à [ce lien](https://www.ecologie.gouv.fr/larticle-55-loi-solidarite-et-renouvellement-urbain-sru-mode-demploi).\nRéf. réglementaire : L. 302-5 du CCH et suivants.\nLes dispositions de l’article L302-5 du CCH s’appliquent aux communes dont la population est au moins égale à 3 500 habitants (1 500 habitants en Île-de-France) qui sont comprises, au sens du recensement de la population, dans une agglomération ou un EPCI de plus de 50 000 habitants comprenant au moins une commune de plus de 15 000 habitants.\nCe jeu de données contient, pour les 2196 communes du périmètre SRU au 1er janvier 2025, la situation de la commune et le bilan annuel du nombre de logements sociaux - ou des logements assimilés, au 1er janvier 2024.\nLes données sont issues d’une enquête réalisée auprès des DDT(M) et DREAL/DEAL après des échanges suivant le principe du contradictoire avec les communes.\nLes données portant sur l’année 2025 seront publiées au second semestre 2026.\n"
+    }
+  ],
+  "theme": "housing",
+  "keywords": [
+    "logements-sociaux",
+    "solidarite-et-renouvellement-urbains",
+    "sru",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Ministère de la Transition écologique"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "39133d2c-8b2b-5e66-99ee-27a5666eb424",
+      "media_type": "FILE",
+      "media_name": "donnees-sru-data-gouv-2025-rennesmetropole.csv",
+      "media_caption": "donnees-sru-data-gouv-2025.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "ea50f6fc-c7a9-5d75-bb57-f1aee14611ae",
+      "media_type": "FILE",
+      "media_name": "donnees-sru-data-gouv-2023-rennesmetropole.csv",
+      "media_caption": "donnees-sru-data-gouv-2023.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "c95fed16-703d-5b1e-a778-a20e17b008ea",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://static.data.gouv.fr/resources/communes-et-inventaire-sru/20251219-143258/donnees-sru-data-gouv-2025-v2.csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2023-11-27T00:00:00Z",
+    "updated": "2026-01-22T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2023-11-27T00:00:00Z",
+      "updated": "2026-01-22T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/6564969d3579e21795ebd378"
+  }
+}

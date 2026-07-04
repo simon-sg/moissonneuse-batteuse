@@ -1,0 +1,82 @@
+{
+  "local_id": "291ff2ca-fd4d-56e4-bbb6-de249bc3d85c",
+  "resource_title": "table de correspondance entre n° Siren et code Insee des communes - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "table de correspondance entre n° Siren et code Insee des communes — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/630f5173873064dd369479b4\n\nLa table indique pour chaque commune son numéro Siren et son code Insee."
+    }
+  ],
+  "theme": "economy",
+  "keywords": [
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Direction générale des collectivités locales"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "924b1758-1a61-51db-a214-805aefb19b85",
+      "media_type": "FILE",
+      "media_name": "banatic-sireninsee-last-rennesmetropole.csv",
+      "media_caption": "banatic-sireninsee-last.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "6733fca4-1245-5575-8051-02f1d4db45f5",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://static.data.gouv.fr/resources/table-de-correspondance-entre-ndeg-siren-et-code-insee-des-communes/20240307-175212/banatic-sireninsee-last.csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2022-08-31T00:00:00Z",
+    "updated": "2024-03-07T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "CUSTOM",
+      "custom_licence_label": [
+        {
+          "lang": "fr",
+          "text": "notspecified"
+        }
+      ],
+      "custom_licence_uri": "https://www.data.gouv.fr/datasets/630f5173873064dd369479b4"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2022-08-31T00:00:00Z",
+      "updated": "2024-03-07T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/630f5173873064dd369479b4"
+  }
+}

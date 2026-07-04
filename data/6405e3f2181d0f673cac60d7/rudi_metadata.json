@@ -1,0 +1,82 @@
+{
+  "local_id": "cae5e9db-60fd-5ee9-b330-1badb84b6231",
+  "resource_title": "Consommation d'espaces naturels, agricoles et forestiers du 1er janvier 2009 au 1er janvier 2021 COENAF 2009-2021 - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Consommation d'espaces naturels, agricoles et forestiers du 1er janvier 2009 au 1er janvier 2021 COENAF 2009-2021 — données filtrées sur Rennes Métro"
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/6405e3f2181d0f673cac60d7\n\nDonnées du portail national de l'artificialisation [https://artificialisation.developpement-durable.gouv.fr](https://artificialisation.developpement-durable.gouv.fr).\nCette donnée est diffusée à une maille communale, avec un pas de temps annuel, pour la période 2009-2021 (du 1er janvier 2009 au 1er janvier 2021).\n\nEn outre, les données sont accessibles via [un tableau de bord](https://cartagene.cerema.fr/portal/apps/dashboards/9810991c73dd463191e84e7111a1b639) et une [cartographie dynamique](https://artificialisation.developpement-durable.gouv.fr/cartographie-artificialisation)\n\nLa méthodologie complète, ainsi que les définitions considérées et les limites du traitement sont disponible sur le portail national : [https://artificialisation.developpement-durable.gouv.fr](https://artificialisation.developpement-durable.gouv.fr)"
+    }
+  ],
+  "theme": "culture",
+  "keywords": [
+    "artificialisation",
+    "artificialisation-des-sols",
+    "consommation-despaces",
+    "urbanisme",
+    "urbanisme-logement",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Cerema"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "6288b862-c407-507a-82d7-e5f434b95030",
+      "media_type": "FILE",
+      "media_name": "obs-artif-conso-com-2009-2021-rennesmetropole.csv",
+      "media_caption": "obs-artif-conso-com-2009-2021.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "41e206d8-bf3e-52e5-a70e-a93704808106",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://static.data.gouv.fr/resources/consommation-despaces-2009-2021-portail-national-de-lartificialisation/20230306-140201/obs-artif-conso-com-2009-2021.csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2023-03-06T00:00:00Z",
+    "updated": "2023-11-14T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2023-03-06T00:00:00Z",
+      "updated": "2023-11-14T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/6405e3f2181d0f673cac60d7"
+  }
+}

@@ -1,0 +1,95 @@
+{
+  "local_id": "9e86ac14-baf7-5fda-a3b5-9b43579c288f",
+  "resource_title": "Logements vacants du parc privé par commune, département, région, France, de 2020 à 2026 - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Logements vacants du parc privé par commune, département, région, France, de 2020 à 2026 — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/61816c6e23197bb34835228e\n\n**Contexte :**\nLe traitement LOVAC a été créé dans le cadre du [plan national de lutte contre les logements vacants](https://www.ecologie.gouv.fr/plan-national-lutte-contre-logements-vacants). Lancé en 2020, il vise notamment à outiller les collectivités et services déconcentrés dans le repérage et la caractérisation des logements vacants afin de proposer des solutions de remise sur le marché adaptées aux propriétaires concernés.\n\n[Les données LOVAC](https://doc-datafoncier.cerema.fr/doc/fiche_descriptive/lovac) alimentent [Zéro Logement Vacant](https://zerologementvacant.beta.gouv.fr/), le service publique numérique gratuit proposé par la Direction Générale de l'Aménagement, du Logement et de la Nature. Cet outil est destiné à accompagner les collectivités dans la mobilisation des propriétaires de logements structurellement vacants (vacants depuis plus de 2 ans) et du parc locatif privé en prévention de la vacance des passoires énergétiques ([loi Climat et résilience](https://www.ecologie.gouv.fr/plan-national-lutte-contre-logements-vacantshttps://www.ecologie.gouv.fr/politiques-publiques/location-gel-loyers-passoires-energetiques)).\n\n**Présentation du jeu de données :**\nLOVAC est une base de données fondée sur le [fichier 1767Biscom](<https://www.collectivites-locales.gouv.fr/files/finances-locales/Fiche descriptive 1767 bis com.pdf>) de la DGFiP,  croisé avec les [Fichiers Fonciers (FF)](https://doc-datafoncier.cerema.fr/doc/ff/) et [DV3F](https://doc-datafoncier.cerema.fr/doc/fiche_descriptive/dv3f) du Cerema, ainsi que la [Base adresse nationale (BAN)](https://adresse.data.gouv.fr/) et le [Référentiel national du Bâtiment (RNB)](https://rnb.beta.gouv.fr/). \n\nCes données permettent de dénombrer **le nombre de logements du parc privé vacants par commune, département, région et France et par ancienneté de vacance.** Elles permettent ainsi de distinguer la vacance de courte durée, dite frictionnelle, de la vacance de longue durée, dite structurelle, cible du plan national de lutte contre les logements vacants.\n\nLes données LOVAC détaillées par logement et l'accès gratuit à Zéro Logement Vacant ne peuvent être obtenus que par les collectivités territoriales à fiscalité propre, les services de l'État et l'Anah, ainsi que par leurs prestataires, à des fins de connaissance et de prise de contact des propriétaires pour lutter contre la vacance des logements. La demande d'accès à la base de données et à l'outil s'effectuent, via une seule et même demande, sur [le portail des données foncières du Cerema](https://datafoncier.cerema.fr/lovac).\n\nLes données concernent tous les millésimes LOVAC distribués par le Cerema, de 2020 à 2026 (la version BETA de LOVAC 2019, n'est pas distribuée). Elles sont extraites des tables :\n\n* LOVAC\\_exh (pour LOVAC Exhaustif) pour l'ensemble des logements vacants du parc privé de 2020 à 2026\n\n* LOVAC\\_fil (pour LOVAC Filtré) pour les logements structurellement vacants (vacants depuis plus de 2 ans) du parc privé de 2020 à 2026\n\n* Ext\\_FF (pour Extrait des Fichiers fonciers) pour le dénombrement des logements du parc privé issu des fichiers fonciers de 2020 et 2025\n\nLes champs disponibles tous les ans sont les suivants :\n\n* Nombre de logements du parc privé au 1er janvier, de 2020 à 2025\n\n* Nombre de logements vacants du parc privé au 1er janvier, de 2020 à 2026\n\n* Nombre de logements vacants du parc privé depuis plus de deux ans au 1er janvier, de 2020 à 2026\n\nLe zonage géographique est celui de l'INSEE au 1er janvier 2026.\n\nLe seuil de secrétisation est de 11 logements. Les communes comptant moins de 11 logements du parc privé vacants depuis plus ou moins de 2 ans n'apparaissent pas dans ces données en application des règles du [secret statistique](https://www.insee.fr/fr/information/1300624) et du [secret fiscal](https://bofip.impots.gouv.fr/bofip/7248-PGP.html/identifiant%3DBOI-DJC-CADA-20-20150729). **Les valeurs secrétisées sont matérialisées par un \"s\".**\n\n**IMPORTANT -> Précautions d’emploi :** \n\nDepuis 2018, la **suppression progressive de la taxe d’habitation (TH) sur les résidences principales**, achevée en 2023, a entraîné la disparition des données fiscales issues de la TH. Le mode de collecte et de traitement des données d'occupation des locaux d'habitation a ainsi significativement évolué avec la mise en place du dispositif Gérer Mes Biens Immobiliers (GMBI) en 2023. Cela a créé une première rupture de série pour LOVAC désormais basé sur les seules données GMBI. La seconde rupture de série en 2025, a été causée par la modification de la production du 1767Biscom avant chaîne de taxation, excluant les vacants \"par défaut\" et ne contenant plus que les vacants déclarés explicitement par leur propriétaires. Les nouvelles données de 2026 attestent d'une amélioration de la mise à jour de GMBI. Pour plus d'explications, [vous référer à la documentation de Zéro Logement Vacant.](https://zerologementvacant.beta.gouv.fr/blog-et-actualités/de-la-taxe-dhabitation-à-gmbi-quels-impacts-pour-lovac/)\n\nD'ailleurs, les données fiscales 1767Biscom avant 2025 surestimaient légèrement la vacance par rapport au recensement de population du fait qu'une partie des logements définis comme « fiscalement vacants » par la chaîne de taxation pouvaient contenir des informations fiscales non mises à jour.\n"
+    }
+  ],
+  "theme": "housing",
+  "keywords": [
+    "fichiers-fonciers",
+    "fichiers-fonciers-anonymises",
+    "locaux-vacants",
+    "logement-vacant",
+    "logements",
+    "logements-vacants",
+    "lovac",
+    "parc-prive",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Ministère de la Transition écologique"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "b3ed6d8a-732b-5dcb-addb-5b1ef71b128e",
+      "media_type": "FILE",
+      "media_name": "lovac-opendata-communes-rennesmetropole.csv",
+      "media_caption": "Lovac_opendata_Communes.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "f497f0d9-8b02-5cee-b61d-92cd9509f55b",
+      "media_type": "FILE",
+      "media_name": "dict-lovac-open-data-2020-a-2026-version-xlsx.xlsx",
+      "media_caption": "Dictionnaire des variables — LOVAC open data 2020 à 2026 version xlsx",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "0450b632-060a-5aba-a0ee-a834336638c4",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://static.data.gouv.fr/resources/logements-vacants-du-parc-prive-par-commune-departement-region-france/20260625-162628/lovac-opendata-metadonnees26.csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2021-11-02T00:00:00Z",
+    "updated": "2026-06-25T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2021-11-02T00:00:00Z",
+      "updated": "2026-06-25T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/61816c6e23197bb34835228e"
+  }
+}

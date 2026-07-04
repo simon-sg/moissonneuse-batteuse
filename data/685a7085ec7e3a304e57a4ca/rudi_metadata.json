@@ -1,0 +1,82 @@
+{
+  "local_id": "56b78495-def7-52e7-8d15-67b51010d38f",
+  "resource_title": "Critères d'éligibilité à la tarification sociale et solidaire des transports - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Critères d'éligibilité à la tarification sociale et solidaire des transports — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/685a7085ec7e3a304e57a4ca\n\nCe jeu de données a été construit à partir de 3 sources de données :\n\n* la dernière version de la liste des [Autorités Organisatrices de la Mobilité](https://transport.data.gouv.fr/datasets/liste-et-composition-des-autorites-organisatrices-de-la-mobilite-aom#community-resources) pour les numéros SIREN, le nom des communes principales, la population concernée etc.\n* la dernière version des [offres de transport du](<* \\&#x20;\\<https://passim.info/pois/search?schema_name=OffreTransport\\&context_action=list\\&context_categories=\\&context_group=\\&context_organism_type=\\&context_organization=\\&context_schema=All\\&context_subscription=\\&context_territory=\\&context_two_col=False\\&context_hide_directory=False\\&context_hide_list=False\\&context_hide_map=False\\&context_pois_tab=\\&context_hide_category=False\\&context_what=\\&context_widget_mode=>) [CEREMA](https://passim.info/pois/search?schema_name=OffreTransport\\&context_action=list\\&context_categories=\\&context_group=\\&context_organism_type=\\&context_organization=\\&context_schema=All\\&context_subscription=\\&context_territory=\\&context_two_col=False\\&context_hide_directory=False\\&context_hide_list=False\\&context_hide_map=False\\&context_pois_tab=\\&context_hide_category=False\\&context_what=\\&context_widget_mode=) pour les urls des sites de billetterie\n* la dernière version des [AOMs du CEREMA](https://passim.info/pois/search?schema_name=Aom\\&context_action=list\\&context_categories=\\&context_group=\\&context_organism_type=\\&context_organization=\\&context_schema=All\\&context_subscription=\\&context_territory=\\&context_two_col=False\\&context_hide_directory=False\\&context_hide_list=False\\&context_hide_map=False\\&context_pois_tab=\\&context_hide_category=False\\&context_what=\\&context_widget_mode=#undefined) pour les identifiants RT (ressort territorial), nécessaires pour associer les offres de transport aux AOMs\n\nLes urls des sites de billetterie ont ensuite été scrapées et retraitées avec des méthodes d'analyse du langage et des LLM.\n\nCes données ont vocation à être vérifiées et complétées le cas échéant par les AOMs.\n\nLa méthode précise de traitement des données est documentée sur [le site de mise à jour](https://tous-a-bord-data.fly.dev/) administré par l'équipe Aides simplifiées.\n"
+    }
+  ],
+  "theme": "transportation",
+  "keywords": [
+    "eligibilite",
+    "reseaux-de-transport",
+    "tarification-sociale",
+    "tarification-solidaire",
+    "transport-en-commun",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Aides Simplifiées"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "b3290830-1cbb-5181-bfd5-45df18317619",
+      "media_type": "FILE",
+      "media_name": "eligibilitetarificationsocialesolidairetransports-rennesmetropole.csv",
+      "media_caption": "EligibiliteTarificationSocialeSolidaireTransports — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "7bc64131-28bd-5423-ae6f-6c1d6345fe45",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://static.data.gouv.fr/resources/criteres-deligibilite-a-la-tarification-sociale-et-solidaire-des-transports/20250624-104215/eligibilitetarificationsocialesolidairetransports.csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2025-06-24T00:00:00Z",
+    "updated": "2025-06-24T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2025-06-24T00:00:00Z",
+      "updated": "2025-06-24T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/685a7085ec7e3a304e57a4ca"
+  }
+}

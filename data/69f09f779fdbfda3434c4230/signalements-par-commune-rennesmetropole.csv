@@ -1,0 +1,3 @@
+code_insee,nom_commune,nb_signalements_en_attente,nb_signalements_traites,nb_signalements_ignores,nb_signalements_expires,nb_signalements_total,nb_alertes_en_attente,nb_alertes_traitees,nb_alertes_ignorees,nb_alertes_expirees,nb_alertes_total
+35238,Rennes,1,0,0,0,1,0,0,0,0,0
+35150,Lécousse,0,0,1,0,1,0,0,0,0,0

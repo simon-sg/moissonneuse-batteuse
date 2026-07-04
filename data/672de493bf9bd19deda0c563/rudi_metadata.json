@@ -1,0 +1,80 @@
+{
+  "local_id": "9d7c4364-e62a-54c3-a2cd-98255b225ba1",
+  "resource_title": "Communes enrichies avec la nuance politique (France) - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Communes enrichies avec la nuance politique (France) — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/672de493bf9bd19deda0c563\n\n**→ Motivations pour la création du jeu de données**\n\nLe croisement de données avec la nuance politique peut-être intéressant dans de nombreux domaines d'analyse. Or, il n'existe pas aujourd'hui de jeu de données qui répertorie la nuance politique des communes, lorsqu'elle est disponible.\nCe jeu de données publié correspond donc à la nuance politique récupérée des résultats des élections municipales aux tours 1 et 2, disponibles sur [OpenDataSoft](https://public.opendatasoft.com/explore/?sort=modified\\&q=Elections+municipales+2020), appliquée à la commune (une nuance par commune).\n\n**→ Composition du jeu de données**\n\nLa base de données est composée des champs suivants :\n\n* **nom\\_communes** : nom de la commune\n\n* **cog\\_commune** : code officiel géographique (COG) de la commune (aussi appelé \"code INSEE\")\n\n* **siren\\_commune** : numéro de SIREN de la commune\n\n* **nuance\\_politique** : acronyme de la nuance politique\n\n* **famille\\_nuance** : famille de la nuance politique, créée à partir de la [circulaire relative à l'attribution des nuances politiques aux candidats aux élections municipales et communautaires des 15 et 22 mars 2020](https://www.legifrance.gouv.fr/download/pdf/circ?id=44929)\n\nLes données sont disponibles au format CSV encodé en UTF-8, avec un séparateur virgule.\n\n**→ Processus de collecte et traitement des données**\n\nLes données de la nuance politique proviennent des résultats des élections municipales, [tour 1](https://public.opendatasoft.com/explore/dataset/election-france-municipale-2020-premier-tour/export/?disjunctive.dep_name\\&disjunctive.com_name\\&q=surname%3D%3D%22BOULON) et [tour 2](https://public.opendatasoft.com/explore/dataset/election-france-municipale-2020-deuxieme-tour/information/?disjunctive.dep_name\\&disjunctive.com_name\\&disjunctive.name_surname\\&disjunctive.reg_name\\&q=surname%3D%3D%22BOULON%22).\n\nElles ont été traitées avec les étapes suivantes avant de les joindre aux données RNE (dans le but d'obtenir une nuance par commune) :\n\n* rassemblement des 2 jeux en 1\n\n* création d'une colonne rassemblant le COG de la commune avec les noms et prénoms des candidats au format 'NOM Prénom'\n\nAfin de pouvoir attribuer une nuance politique à chacune des communes, nous avons réalisé une jointure à partir du RNE : les données sont extraites du fichier \"elus-conseillers-municipaux-cm.csv\\_\", disponible sur [datagouv](https://www.data.gouv.fr/fr/datasets/repertoire-national-des-elus-1/). Ces données ont été traitées avec les étapes suivantes avant de les enrichir de la nuance politique :\n\n* filtre du libellé de la fonction de l'élu sur les maires uniquement\n\n* création d'une colonne rassemblant le COG de la commune avec les noms et prénoms du maire au format 'NOM Prénom', qui servira à la jointure (pour éviter de récupérer plusieurs partis politiques lorsque plusieurs élus ont les mêmes nom et prénom)\n\n* suppression des DCP\n\nLes 2 jeux de données ont ainsi pu être joints par la colonne du COG et nom / prénom, permettant de récupérer le code de la nuance politique à partir des résultats des élections municipales de 2020. La famille de nuance a aussi été créée à partir de la [circulaire Légifrance](https://www.legifrance.gouv.fr/download/pdf/circ?id=44929), lorsque des maires ont 2 couleurs politiques et que celles-ci ne font pas partie de la même famille, seule la première a été considérée pour attribuer la couleur politique, dans un souci de simplification des données de sortie. Enfin, le numéro de SIREN de la commune a été ajouté à partir du jeu de données \"_Identifiants des collectivités territoriales et leurs établissements_\" disponible sur [datagouv](https://www.data.gouv.fr/fr/datasets/identifiants-des-collectivites-territoriales-et-leurs-etablissements/), pour permettre l'enrichissement de ce jeu de données publié avec différentes sources externes.\n\nLe **script** ayant permis cet enrichissement est disponible sur github : <https://github.com/datactivist/donnees_datagouv/blob/main/RNE_enrichi_couleurPo/Script.R>\n\n**→ Diffusion du jeu de données**\n\nLe jeu de données est publié sur le portail data.gouv.fr avec le compte Datactivist sous Licence ouverte comme les fichiers ayant servi à sa création.\n\n**→ Maintenance du jeu de données**\n\nIdéalement, la mise à jour devrait être faite à chaque élection municipale. Datactivist ne s'engage pas à réaliser cette mise à jour, mais met à disposition les scripts permettant de générer de nouvelles versions.\nEn cas de question ou de problème, il sera possible de contacter <diane@datactivist.coop> ou de poster un commentaire ci-dessous.\n\n**→ Considérations légales et éthiques**\n\nEn conformité avec le RGPD, toutes les données à caractère personnel ont été supprimées.\n"
+    }
+  ],
+  "theme": "citizenship",
+  "keywords": [
+    "commande-publique",
+    "communes",
+    "politique",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Datactivist"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "f4c667b8-96c1-5f95-936c-7f36b816003d",
+      "media_type": "FILE",
+      "media_name": "communes-enrichies-couleur-politique-2020-rennesmetropole.csv",
+      "media_caption": "communes-enrichies-couleur-politique_2020.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "9c5decf8-37c3-5cff-a1e2-e5fcbb64a4b8",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://static.data.gouv.fr/resources/communes-enrichies-avec-la-nuance-politique-france/20241202-093208/rne-enrichi-couleur-politique.csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2024-11-08T00:00:00Z",
+    "updated": "2026-01-13T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2024-11-08T00:00:00Z",
+      "updated": "2026-01-13T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/672de493bf9bd19deda0c563"
+  }
+}

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title></title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>(function(){try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<style>
+:root{--bg:#f5f6f8;--card:#fff;--txt:#1c2733;--muted:#667;--accent:#0b6e99;--bord:#e2e6ea;
+      --btn-bg:#eef3f6;--btn-bord:#c8d6e0;--btn-hover:#d4ecf7}
+:root[data-theme="dark"]{--bg:#10151b;--card:#1a222b;--txt:#dbe2e8;--muted:#8996a3;--accent:#4fb3da;--bord:#29323c;
+      --btn-bg:#1c2932;--btn-bord:#2f4552;--btn-hover:#26404d}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#10151b;--card:#1a222b;--txt:#dbe2e8;--muted:#8996a3;--accent:#4fb3da;--bord:#29323c;
+      --btn-bg:#1c2932;--btn-bord:#2f4552;--btn-hover:#26404d}
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+     background:var(--bg);color:var(--txt);display:flex;flex-direction:column;height:100vh}
+header{background:var(--card);border-bottom:1px solid var(--bord);padding:8px 16px;
+       display:flex;flex-wrap:wrap;gap:8px;align-items:center;flex-shrink:0}
+h1{font-size:.9rem;font-weight:600;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#info{color:var(--muted);font-size:.82rem;white-space:nowrap}
+#btn-plus{background:var(--btn-bg);border:1px solid var(--btn-bord);border-radius:6px;padding:4px 12px;
+          font-size:.8rem;cursor:pointer;color:var(--accent);white-space:nowrap;flex-shrink:0}
+#btn-plus:hover{background:var(--btn-hover)}
+#btn-plus:disabled{opacity:.5;cursor:wait}
+#theme-toggle{background:none;border:1px solid var(--bord);border-radius:6px;padding:4px 9px;
+              cursor:pointer;font-size:.9rem;line-height:1;color:var(--txt);flex-shrink:0}
+#theme-toggle:hover{background:var(--bg)}
+#carte{flex:1}
+.leaflet-popup-content{min-width:160px;max-width:320px;font-size:.8rem}
+.leaflet-popup-content table{border-collapse:collapse;width:100%}
+.leaflet-popup-content td{padding:3px 6px;vertical-align:top;border-bottom:1px solid var(--bord);word-break:break-word}
+.leaflet-popup-content td:first-child{color:var(--muted);font-weight:600;white-space:nowrap;padding-right:10px}
+</style>
+</head>
+<body>
+<header>
+  <h1 id="titre"></h1>
+  <span id="info"></span>
+  <button id="btn-plus" style="display:none" onclick="chargerPlus()"></button>
+  <button id="theme-toggle" title="Basculer thème clair/sombre" aria-label="Basculer thème clair/sombre">🌙</button>
+</header>
+<div id="carte"></div>
+<script id="d" type="application/json">{"nom": "features-rennesmetropole.geojson", "type": "geojson", "geojson": {"type": "FeatureCollection", "name": "centroides_communes_population", "crs": {"type": "name", "properties": {"name": "urn:ogc:def:crs:OGC:1.3:CRS84"}}, "features": [{"type": "Feature", "properties": {"INSEE_COM": "35001", "x_2154": 363001.3254243924, "y_2154": 6791519.504382354, "NOM": "Acigné", "INSEE_DEP": "35", "x_4326": -1.5328429451412329, "y_4326": 48.136964386341994}, "geometry": {"type": "Point", "coordinates": [-1.532842945141233, 48.136964386341994]}}, {"type": "Feature", "properties": {"INSEE_COM": "35022", "x_2154": 333586.1026142365, "y_2154": 6810997.218268119, "NOM": "Bécherel", "INSEE_DEP": "35", "x_4326": -1.94388934093236, "y_4326": 48.29603333107524}, "geometry": {"type": "Point", "coordinates": [-1.94388934093236, 48.29603333107524]}}, {"type": "Feature", "properties": {"INSEE_COM": "35024", "x_2154": 355377.49261920614, "y_2154": 6796801.940841506, "NOM": "Betton", "INSEE_DEP": "35", "x_4326": -1.6393250107890855, "y_4326": 48.18043448319713}, "geometry": {"type": "Point", "coordinates": [-1.639325010789086, 48.18043448319713]}}, {"type": "Feature", "properties": {"INSEE_COM": "35032", "x_2154": 355440.33416328405, "y_2154": 6775196.052740549, "NOM": "Bourgbarré", "INSEE_DEP": "35", "x_4326": -1.6214771872590332, "y_4326": 47.98637864582737}, "geometry": {"type": "Point", "coordinates": [-1.621477187259033, 47.98637864582737]}}, {"type": "Feature", "properties": {"INSEE_COM": "35039", "x_2154": 364638.1399011296, "y_2154": 6788632.590846038, "NOM": "Brécé", "INSEE_DEP": "35", "x_4326": -1.5086599468695452, "y_4326": 48.11187219099545}, "geometry": {"type": "Point", "coordinates": [-1.508659946869545, 48.11187219099545]}}, {"type": "Feature", "properties": {"INSEE_COM": "35047", "x_2154": 346545.2715880389, "y_2154": 6779737.718269549, "NOM": "Bruz", "INSEE_DEP": "35", "x_4326": -1.744156455396353, "y_4326": 48.02243325120605}, "geometry": {"type": "Point", "coordinates": [-1.744156455396353, 48.02243325120605]}}, {"type": "Feature", "properties": {"INSEE_COM": "35051", "x_2154": 357032.674946679, "y_2154": 6789339.309256038, "NOM": "Cesson-Sévigné", "INSEE_DEP": "35", "x_4326": -1.6112335740324855, "y_4326": 48.11427101445714}, "geometry": {"type": "Point", "coordinates": [-1.611233574032485, 48.11427101445714]}}, {"type": "Feature", "properties": {"INSEE_COM": "35055", "x_2154": 356919.851114857, "y_2154": 6786322.490272792, "NOM": "Chantepie", "INSEE_DEP": "35", "x_4326": -1.6103814856966576, "y_4326": 48.08711112385659}, "geometry": {"type": "Point", "coordinates": [-1.610381485696658, 48.08711112385659]}}, {"type": "Feature", "properties": {"INSEE_COM": "35058", "x_2154": 339922.89002124604, "y_2154": 6807521.69257896, "NOM": "La Chapelle-Chaussée", "INSEE_DEP": "35", "x_4326": -1.8557267053463702, "y_4326": 48.268358459956715}, "geometry": {"type": "Point", "coordinates": [-1.85572670534637, 48.268358459956715]}}, {"type": "Feature", "properties": {"INSEE_COM": "35059", "x_2154": 348967.9553133023, "y_2154": 6797212.588984151, "NOM": "La Chapelle-des-Fougeretz", "INSEE_DEP": "35", "x_4326": -1.7257369668812332, "y_4326": 48.18070495416588}, "geometry": {"type": "Point", "coordinates": [-1.725736966881233, 48.18070495416588]}}, {"type": "Feature", "properties": {"INSEE_COM": "35065", "x_2154": 339552.4327085242, "y_2154": 6791850.57549202, "NOM": "La Chapelle-Thouarault", "INSEE_DEP": "35", "x_4326": -1.8477520432060444, "y_4326": 48.12741231038303}, "geometry": {"type": "Point", "coordinates": [-1.847752043206044, 48.12741231038303]}}, {"type": "Feature", "properties": {"INSEE_COM": "35066", "x_2154": 349065.87083581585, "y_2154": 6781153.874787593, "NOM": "Chartres-de-Bretagne", "INSEE_DEP": "35", "x_4326": -1.711537688604817, "y_4326": 48.03651162826766}, "geometry": {"type": "Point", "coordinates": [-1.711537688604817, 48.03651162826766]}}, {"type": "Feature", "properties": {"INSEE_COM": "35076", "x_2154": 343841.1110075977, "y_2154": 6784056.110235569, "NOM": "Chavagne", "INSEE_DEP": "35", "x_4326": -1.783871333000129, "y_4326": 48.05975593302953}, "geometry": {"type": "Point", "coordinates": [-1.783871333000129, 48.05975593302953]}}, {"type": "Feature", "properties": {"INSEE_COM": "35079", "x_2154": 356349.505591608, "y_2154": 6800479.88302094, "NOM": "Chevaigné", "INSEE_DEP": "35", "x_4326": -1.629169062362509, "y_4326": 48.213984388731944}, "geometry": {"type": "Point", "coordinates": [-1.629169062362509, 48.213984388731944]}}, {"type": "Feature", "properties": {"INSEE_COM": "35080", "x_2154": 337562.3728285943, "y_2154": 6789418.400075523, "NOM": "Cintré", "INSEE_DEP": "35", "x_4326": -1.872433249862117, "y_4326": 48.104466497263346}, "geometry": {"type": "Point", "coordinates": [-1.872433249862117, 48.104466497263346]}}, {"type": "Feature", "properties": {"INSEE_COM": "35081", "x_2154": 339028.94073662226, "y_2154": 6797849.659498727, "NOM": "Clayes", "INSEE_DEP": "35", "x_4326": -1.8597342650124677, "y_4326": 48.18100193933252}, "geometry": {"type": "Point", "coordinates": [-1.859734265012468, 48.18100193933252]}}, {"type": "Feature", "properties": {"INSEE_COM": "35088", "x_2154": 358988.5317745885, "y_2154": 6774395.414355055, "NOM": "Corps-Nuds", "INSEE_DEP": "35", "x_4326": -1.5733719100919628, "y_4326": 47.98104381189664}, "geometry": {"type": "Point", "coordinates": [-1.573371910091963, 47.98104381189664]}}, {"type": "Feature", "properties": {"INSEE_COM": "35120", "x_2154": 344571.8096781588, "y_2154": 6801414.373524081, "NOM": "Gévezé", "INSEE_DEP": "35", "x_4326": -1.7882016130345793, "y_4326": 48.216062155578676}, "geometry": {"type": "Point", "coordinates": [-1.788201613034579, 48.216062155578676]}}, {"type": "Feature", "properties": {"INSEE_COM": "35131", "x_2154": 342175.9417359227, "y_2154": 6791722.966581198, "NOM": "L'Hermitage", "INSEE_DEP": "35", "x_4326": -1.8124509561054643, "y_4326": 48.12770933417005}, "geometry": {"type": "Point", "coordinates": [-1.812450956105464, 48.12770933417005]}}, {"type": "Feature", "properties": {"INSEE_COM": "35139", "x_2154": 348430.7643830099, "y_2154": 6774835.707388576, "NOM": "Laillé", "INSEE_DEP": "35", "x_4326": -1.7149851086991006, "y_4326": 47.97941436262254}, "geometry": {"type": "Point", "coordinates": [-1.714985108699101, 47.97941436262254]}}, {"type": "Feature", "properties": {"INSEE_COM": "35144", "x_2154": 340271.85317039205, "y_2154": 6804244.123317284, "NOM": "Langan", "INSEE_DEP": "35", "x_4326": -1.8483222723617383, "y_4326": 48.239116750151794}, "geometry": {"type": "Point", "coordinates": [-1.848322272361738, 48.239116750151794]}}, {"type": "Feature", "properties": {"INSEE_COM": "35180", "x_2154": 334992.39320032706, "y_2154": 6808537.131266259, "NOM": "Miniac-sous-Bécherel", "INSEE_DEP": "35", "x_4326": -1.92289728557034, "y_4326": 48.27473220964003}, "geometry": {"type": "Point", "coordinates": [-1.92289728557034, 48.27473220964003]}}, {"type": "Feature", "properties": {"INSEE_COM": "35189", "x_2154": 349807.43490277213, "y_2154": 6794246.748905703, "NOM": "Montgermont", "INSEE_DEP": "35", "x_4326": -1.7120825710512324, "y_4326": 48.15451677558048}, "geometry": {"type": "Point", "coordinates": [-1.712082571051232, 48.15451677558048]}}, {"type": "Feature", "properties": {"INSEE_COM": "35196", "x_2154": 339320.4026460497, "y_2154": 6786739.350682108, "NOM": "Mordelles", "INSEE_DEP": "35", "x_4326": -1.8466508017627024, "y_4326": 48.08137750081329}, "geometry": {"type": "Point", "coordinates": [-1.846650801762702, 48.08137750081329]}}, {"type": "Feature", "properties": {"INSEE_COM": "35204", "x_2154": 361260.8211169884, "y_2154": 6779984.2826182805, "NOM": "Nouvoitou", "INSEE_DEP": "35", "x_4326": -1.5472769215050475, "y_4326": 48.032434874385075}, "geometry": {"type": "Point", "coordinates": [-1.547276921505047, 48.032434874385075]}}, {"type": "Feature", "properties": {"INSEE_COM": "35206", "x_2154": 352388.01441177883, "y_2154": 6783718.344901874, "NOM": "Noyal-Châtillon-sur-Seiche", "INSEE_DEP": "35", "x_4326": -1.6690733879706738, "y_4326": 48.06132286791617}, "geometry": {"type": "Point", "coordinates": [-1.669073387970674, 48.06132286791617]}}, {"type": "Feature", "properties": {"INSEE_COM": "35208", "x_2154": 352248.984353387, "y_2154": 6776613.603552966, "NOM": "Orgères", "INSEE_DEP": "35", "x_4326": -1.665304797873404, "y_4326": 47.997425477814666}, "geometry": {"type": "Point", "coordinates": [-1.665304797873404, 47.997425477814666]}}, {"type": "Feature", "properties": {"INSEE_COM": "35210", "x_2154": 344509.39217776794, "y_2154": 6793806.273867425, "NOM": "Pacé", "INSEE_DEP": "35", "x_4326": -1.7828398746086334, "y_4326": 48.147695932178905}, "geometry": {"type": "Point", "coordinates": [-1.782839874608633, 48.147695932178905]}}, {"type": "Feature", "properties": {"INSEE_COM": "35216", "x_2154": 341851.6096529463, "y_2154": 6798770.809344633, "NOM": "Parthenay-de-Bretagne", "INSEE_DEP": "35", "x_4326": -1.8225840732902245, "y_4326": 48.19083106581446}, "geometry": {"type": "Point", "coordinates": [-1.822584073290225, 48.19083106581446]}}, {"type": "Feature", "properties": {"INSEE_COM": "35238", "x_2154": 351993.771850982, "y_2154": 6789036.258823325, "NOM": "Rennes", "INSEE_DEP": "35", "x_4326": -1.6785837304045907, "y_4326": 48.10888305255146}, "geometry": {"type": "Point", "coordinates": [-1.678583730404591, 48.10888305255146]}}, {"type": "Feature", "properties": {"INSEE_COM": "35240", "x_2154": 343217.22017055255, "y_2154": 6788221.423257797, "NOM": "Le Rheu", "INSEE_DEP": "35", "x_4326": -1.7956244853967813, "y_4326": 48.09682886835761}, "geometry": {"type": "Point", "coordinates": [-1.795624485396781, 48.09682886835761]}}, {"type": "Feature", "properties": {"INSEE_COM": "35245", "x_2154": 337922.65622821526, "y_2154": 6802001.610447828, "NOM": "Romillé", "INSEE_DEP": "35", "x_4326": -1.8780391087331485, "y_4326": 48.217676463230376}, "geometry": {"type": "Point", "coordinates": [-1.878039108733148, 48.217676463230376]}}, {"type": "Feature", "properties": {"INSEE_COM": "35250", "x_2154": 358719.6962696957, "y_2154": 6777837.9401514, "NOM": "Saint-Armel", "INSEE_DEP": "35", "x_4326": -1.5796439068591555, "y_4326": 48.011831383479525}, "geometry": {"type": "Point", "coordinates": [-1.579643906859155, 48.011831383479525]}}, {"type": "Feature", "properties": {"INSEE_COM": "35266", "x_2154": 353043.57620779396, "y_2154": 6779245.3566555055, "NOM": "Saint-Erblon", "INSEE_DEP": "35", "x_4326": -1.6567493221142582, "y_4326": 48.02148935770572}, "geometry": {"type": "Point", "coordinates": [-1.656749322114258, 48.02148935770572]}}, {"type": "Feature", "properties": {"INSEE_COM": "35275", "x_2154": 340610.4465993527, "y_2154": 6794529.934722217, "NOM": "Saint-Gilles", "INSEE_DEP": "35", "x_4326": -1.8357622269764942, "y_4326": 48.15206003543743}, "geometry": {"type": "Point", "coordinates": [-1.835762226976494, 48.15206003543743]}}, {"type": "Feature", "properties": {"INSEE_COM": "35278", "x_2154": 352247.0698481682, "y_2154": 6793385.822993999, "NOM": "Saint-Grégoire", "INSEE_DEP": "35", "x_4326": -1.678647069118102, "y_4326": 48.148088259637554}, "geometry": {"type": "Point", "coordinates": [-1.678647069118102, 48.148088259637554]}}, {"type": "Feature", "properties": {"INSEE_COM": "35281", "x_2154": 350385.3124928325, "y_2154": 6786985.808483887, "NOM": "Saint-Jacques-de-la-Lande", "INSEE_DEP": "35", "x_4326": -1.6985185557846891, "y_4326": 48.08960562653525}, "geometry": {"type": "Point", "coordinates": [-1.698518555784689, 48.08960562653525]}}, {"type": "Feature", "properties": {"INSEE_COM": "35315", "x_2154": 359548.79286093515, "y_2154": 6800125.854686592, "NOM": "Saint-Sulpice-la-Forêt", "INSEE_DEP": "35", "x_4326": -1.5858934751946419, "y_4326": 48.212483096532495}, "geometry": {"type": "Point", "coordinates": [-1.585893475194642, 48.212483096532495]}}, {"type": "Feature", "properties": {"INSEE_COM": "35334", "x_2154": 359035.22400174884, "y_2154": 6792304.658346792, "NOM": "Thorigné-Fouillard", "INSEE_DEP": "35", "x_4326": -1.5866830394847822, "y_4326": 48.141957952346175}, "geometry": {"type": "Point", "coordinates": [-1.586683039484782, 48.141957952346175]}}, {"type": "Feature", "properties": {"INSEE_COM": "35351", "x_2154": 331804.22364421864, "y_2154": 6785446.546728618, "NOM": "Le Verger", "INSEE_DEP": "35", "x_4326": -1.9463016855574744, "y_4326": 48.06557491078788}, "geometry": {"type": "Point", "coordinates": [-1.946301685557474, 48.06557491078788]}}, {"type": "Feature", "properties": {"INSEE_COM": "35352", "x_2154": 356325.8260748769, "y_2154": 6782870.092414775, "NOM": "Vern-sur-Seiche", "INSEE_DEP": "35", "x_4326": -1.6156371430241507, "y_4326": 48.05578494585742}, "geometry": {"type": "Point", "coordinates": [-1.615637143024151, 48.05578494585742]}}, {"type": "Feature", "properties": {"INSEE_COM": "35353", "x_2154": 346573.56924993155, "y_2154": 6790674.849520264, "NOM": "Vezin-le-Coquet", "INSEE_DEP": "35", "x_4326": -1.7526025763373378, "y_4326": 48.12069053828365}, "geometry": {"type": "Point", "coordinates": [-1.752602576337338, 48.12069053828365]}}, {"type": "Feature", "properties": {"INSEE_COM": "35363", "x_2154": 349193.90192459064, "y_2154": 6778487.814719909, "NOM": "Pont-Péan", "INSEE_DEP": "35", "x_4326": -1.707691383094057, "y_4326": 48.012631181096}, "geometry": {"type": "Point", "coordinates": [-1.707691383094057, 48.012631181096]}}]}, "nb_total": 43, "tronque": false}</script>
+<script>
+function themeEffectif(){
+  return document.documentElement.getAttribute("data-theme") ||
+    (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+}
+function urlFond(theme){
+  return "https://{s}.basemaps.cartocdn.com/" + (theme==="dark"?"dark_all":"light_all") + "/{z}/{x}/{y}{r}.png";
+}
+
+const D=JSON.parse(document.getElementById("d").textContent);
+document.title=D.nom;
+document.getElementById("titre").textContent=D.nom;
+
+const map=L.map("carte");
+let fond=L.tileLayer(urlFond(themeEffectif()),{
+  attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+  subdomains:"abcd",maxZoom:19
+}).addTo(map);
+
+(function(){
+  const btn = document.getElementById("theme-toggle");
+  function majIcone(){ btn.textContent = themeEffectif() === "dark" ? "☀️" : "🌙"; }
+  btn.addEventListener("click", () => {
+    const suivant = themeEffectif() === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", suivant);
+    try { localStorage.setItem("theme", suivant); } catch(e) {}
+    map.removeLayer(fond);
+    fond = L.tileLayer(urlFond(suivant),{
+      attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      subdomains:"abcd",maxZoom:19
+    }).addTo(map);
+    majIcone();
+  });
+  majIcone();
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+    if (!document.documentElement.getAttribute("data-theme")) majIcone();
+  });
+})();
+
+function esc(s){return String(s??"").replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+function mkPopup(props){
+  if(!props||!Object.keys(props).length)return"";
+  const rows=Object.entries(props).filter(([,v])=>v!=null&&v!=="").slice(0,30)
+    .map(([k,v])=>`<tr><td>${esc(k)}</td><td>${esc(String(v).slice(0,300))}</td></tr>`).join("");
+  return`<table>${rows}</table>`;
+}
+
+const PT={radius:7,color:"#0b6e99",weight:1.5,fillColor:"#1a8bbf",fillOpacity:.75};
+
+function ajouterPoints(pts){
+  pts.forEach(([lat,lon,props])=>L.circleMarker([lat,lon],PT).bindPopup(mkPopup(props)).addTo(map));
+}
+function ajouterGeoJSON(features){
+  L.geoJSON({type:"FeatureCollection",features},{
+    style:{color:"#0b6e99",weight:2,fillColor:"#1a8bbf",fillOpacity:.35},
+    pointToLayer:(_,ll)=>L.circleMarker(ll,PT),
+    onEachFeature:(f,lyr)=>{if(f.properties)lyr.bindPopup(mkPopup(f.properties));}
+  }).addTo(map);
+}
+
+// Chargement initial : premiers 5 000 seulement
+const BATCH=5000;
+let layer;
+if(D.type==="points"){
+  layer=L.featureGroup(D.points.slice(0,BATCH).map(([lat,lon,props])=>
+    L.circleMarker([lat,lon],PT).bindPopup(mkPopup(props))
+  )).addTo(map);
+}else{
+  layer=L.geoJSON({type:"FeatureCollection",features:D.geojson.features.slice(0,BATCH)},{
+    style:{color:"#0b6e99",weight:2,fillColor:"#1a8bbf",fillOpacity:.35},
+    pointToLayer:(_,ll)=>L.circleMarker(ll,PT),
+    onEachFeature:(f,lyr)=>{if(f.properties)lyr.bindPopup(mkPopup(f.properties));}
+  }).addTo(map);
+}
+try{const b=layer.getBounds();if(b.isValid())map.fitBounds(b.pad(0.1));else map.setView([48.1,-1.68],11);}
+catch{map.setView([48.1,-1.68],11);}
+
+// Toutes les données sont embarquées dans D — pas de fetch nécessaire
+const allItems = D.type==="geojson" ? D.geojson.features : D.points;
+let offset = Math.min(BATCH, allItems.length);  // rendu initial
+
+function majInfo(){
+  const n=offset, tot=D.nb_total;
+  document.getElementById("info").textContent=
+    n<tot ? `${n.toLocaleString("fr")} / ${tot.toLocaleString("fr")} éléments`
+          : `${n.toLocaleString("fr")} élément${n>1?"s":""}`;
+}
+function majBouton(){
+  const btn=document.getElementById("btn-plus");
+  const restant=allItems.length-offset;
+  if(restant<=0){btn.style.display="none";return;}
+  btn.style.display="";
+  btn.textContent=`Afficher 5 000 de plus (${restant.toLocaleString("fr")} restants)`;
+}
+
+function chargerPlus(){
+  const batch=allItems.slice(offset, offset+BATCH);
+  if(D.type==="geojson") ajouterGeoJSON(batch); else ajouterPoints(batch);
+  offset+=batch.length;
+  majInfo(); majBouton();
+}
+
+majInfo();
+if(D.tronque) majBouton();
+</script>
+</body>
+</html>

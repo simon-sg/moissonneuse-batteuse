@@ -1,0 +1,10 @@
+country_code,eutl_id,country_name,name,activity_code,activity_name,city,zip_code,address1,address2,emissions_start_year,emissions_end_year,company_country_code,company_name,snapshot_date,year,emissions_tco2e
+FR,179,France,PEUGEOT CITROEN RENNES SNC,20,Combustion of fuels,Chartres de Bretagne,35131,Route de Nantes,NA,2005,NA,FR,PEUGEOT CITROEN RENNES SNC,2026-06-21,2025,15108
+FR,180,France,Société laitière de l'Hermitage,1,Combustion installations with a rated thermal input exceeding 20 MW,L'Hermitage,35590,Place de la Gare,NA,2005,2010,FR,PIERROT,2026-06-21,2025,NA
+FR,185,France,ENERSUD- Chaufferie du Blosne,20,Combustion of fuels,Rennes,35000,Avenue des Pays Bas,NA,2005,NA,FR,ENERSUD,2026-06-21,2025,34592
+FR,190,France,COGELYO OUEST - CITROEN LA JANAIS,1,Combustion installations with a rated thermal input exceeding 20 MW,CHARTRES DE BRETAGNE,35131,La Janais,NA,2005,2012,FR,SNC COGELYO OUEST,2026-06-21,2025,NA
+FR,191,France,ESEO BARRE THOMAS - CF GOMMA,1,Combustion installations with a rated thermal input exceeding 20 MW,Rennes,35000,194 route de Lorient,NA,2005,2014,FR,ESEO BARRE THOMAS,2026-06-21,2025,NA
+FR,193,France,En'Rnov,20,Combustion of fuels,Rennes,35000,22 Avenue Charles Tillon,NA,2005,NA,FR,En'Rnov,2026-06-21,2025,32884
+FR,204059,France,SOCIETE LAITIERE DE L'HERMITAGE,20,Combustion of fuels,L'HERMITAGE,35590,SOCIETE LAITIERE DE L'HERMITAGE,Place de la Gare,2013,2023,FR,SOCIETE LAITIERE DE L'HERMITAGE,2026-06-21,2025,NA
+FR,215180,France,Cogelyo Ouest enceinte Citroen,20,Combustion of fuels,Chartres de Bretagne,35131,"PSA LA JANAIS, Route de Nantes",NA,2020,2023,FR,COGELYO OUEST,2026-06-21,2025,NA
+FR,228685,France,Chaufferie Nord Saint-Martin,20,Combustion of fuels,Rennes,35000,4 rue Jean-Julien Lemordant,NA,2025,NA,FR,En'Rnov,2026-06-21,2025,9513

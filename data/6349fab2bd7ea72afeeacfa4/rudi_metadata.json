@@ -1,0 +1,92 @@
+{
+  "local_id": "4ef57007-8cef-543d-97f2-0076507fef72",
+  "resource_title": "Base SIRENE - Région Bretagne - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Base SIRENE - Région Bretagne — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/6349fab2bd7ea72afeeacfa4\n\nRetrouvez toutes les entreprises et leurs établissements. La base Sirene® est actualisée tous les jours, elle regroupe environ 30 millions d'établissements en activité ou non. \n\nDonnées basées sur le stock de 2026-04.\n\n**Remarque :** Opendatasoft a arrêté depuis fin février les mises à jour quotidiennes du dataset SIRENE v3 depuis la dernière mise à jour de l'API de l'INSEE. En effet, nous rencontrons de nombreuses difficultés avec l'API tant sur sa stabilité que sur des problématiques de mises à jour.\n\n  \n\n\n### **IMPORTANT**\n\nLa base Sirene contenant des données à caractère personnel, l'Insee attire votre attention sur les obligations légales qui en découlent :\n\n  * Le traitement de ces données relève des obligations de déclaration de la Loi 78-17 du 6 janvier 1978 modifiée, dite Loi CNIL : <https://www.cnil.fr/fr/loi-78-17-du-6-janvier-1978-modifiee>\n  * Selon votre usage du jeu de données, il est de votre responsabilité de tenir compte du statut de diffusion le plus récent de chaque personne physique.\n\n\n\nEn effet, l'article A123-96 du code de commerce dispose que :\n\n> \"Toute personne physique peut demander soit directement lors de ses formalités de création ou de modification, soit par lettre adressée au directeur général de l'Institut national de la statistique et des études économiques, que les informations du répertoire la concernant ne puissent être utilisées par des tiers autres que les organismes habilités au titre de l'article R. 123-224 ou les administrations, à des fins de prospection, notamment commerciale.\"\n\n### **SIRENE BY ODS**\n\nODS présente une base des établissements consolidée avec les données de son unité légale associée.\n\n#### **Enrichissements**\n\n  * ajout des libellés des codes NAF et catégories juridiques;\n  * ajout des libellés tranches légales et des types de voie;\n  * ajout des hierarchies administratives (reg/arr/dep/epci);\n  * ajout de la géolocalisation des établissements via un géocodage BAN;\n  * changement de certaines abréviations (F/M, O/N, A/C) par le libellé correspondant (sexeunitelegale, etatadministratifunitelegale, caractereemployeurunitelegale, etatadministratifetablissement, etablissementsiege, caractereemployeuretablissement)\n  * ajout d'un champ \"première ligne d'adressage\" avec la civilité + nom prénom personne de l'unité legale\n  * ajout d'un champ adresse établissement (concaténation num + type + voie)\n\n\n\n#### **Notes**\n\n  * les valeurs de \"date de début de l’établissement\" ont été reconstruites à partir d’une ancienne version pour une centaine d’enregistrements dont les valeurs étaient incohérentes."
+    }
+  ],
+  "theme": "economy",
+  "keywords": [
+    "economie",
+    "entreprise",
+    "etablissement",
+    "sirene",
+    "unite-legale",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Région Bretagne"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "90ba6a22-f72f-58c3-9e71-8200666c4bfe",
+      "media_type": "FILE",
+      "media_name": "sirene-v3-consolidee-rennesmetropole.csv",
+      "media_caption": "sirene-v3-consolidee.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "5c64855e-1a55-580f-825b-bd7a00564805",
+      "media_type": "FILE",
+      "media_name": "sirene-v3-consolidee-rennesmetropole.json",
+      "media_caption": "sirene-v3-consolidee.csv — données filtrées sur Rennes Métropole (JSON)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "d3587444-c0eb-5995-bcf6-d270146758ef",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://data.bretagne.bzh/api/explore/v2.1/catalog/datasets/sirene-v3-consolidee/exports/csv?use_labels=true",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2026-05-01T00:00:00Z",
+    "updated": "2026-05-01T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2026-05-01T00:00:00Z",
+      "updated": "2026-05-01T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/6349fab2bd7ea72afeeacfa4"
+  }
+}

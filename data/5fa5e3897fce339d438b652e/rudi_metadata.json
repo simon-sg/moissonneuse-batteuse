@@ -1,0 +1,107 @@
+{
+  "local_id": "bc07aaec-832d-5043-8fcd-6a4d054f1378",
+  "resource_title": "Idéo-Structures d'enseignement secondaire - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Idéo-Structures d'enseignement secondaire — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/5fa5e3897fce339d438b652e\n\n_>>> Avertissement du 20/01/2026 : attention, changement de structure du jeu, voir Documentation et journal des évolutions (changelog) <<<_\n\n**Périmètre du jeu :** Ce jeu est un **répertoire des établissements proposant un enseignement secondaire** référencés par L'Onisep. Les types d'établissements présents dans ce jeu de données sont les collèges, les lycées, les CFA (centres de formation d'apprenti-e-s), les structures de scolarisation de l'enseignement adapté (SEGPA, EREA) et du secteur médicosocial...\n\n**Champs de ce jeu :**\n\n- Code UAI (unité administrative immatriculée),\n- n° SIRET, type d'établissement,\n- nom de l'établissement,\n- sigle,\n- statut (public, privé...),\n- tutelle (ministères, chambres consulaires...),\n- université de rattachement (libellé et lien direct vers la fiche onisep.fr avec identifiant unique Onisep),\n- établissements liés (libellés et liens d'accès direct vers la fiche Onisep.fr avec identifiants uniques Onisep)\n- coordonnées géographiques (boîte postale, adresse postale, code postal, commune, identifiant commune, mention cedex, n° de téléphone, arrondissement, département, académie, région, identidiant région, longitude X, latitude Y),\n- journées portes ouvertes\n- langues enseignées dans l’établissement\n- lien d'accès direct vers la fiche onisep.fr avec identifiant unique Onisep.\n\n**Mises à jour :** Ce jeu sera mis à jour environ **dix fois par an**, au rythme du calendrier de l’orientation et des mises à jour du site Onisep.fr."
+    }
+  ],
+  "theme": "economy",
+  "keywords": [
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Office national d'information sur les enseignements et les professions"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "d251ab61-0cf3-5d87-9d42-308098e05b7b",
+      "media_type": "FILE",
+      "media_name": "ideo-structures-denseignement-secondaire-rennesmetropole.csv",
+      "media_caption": "Idéo-Structures d'enseignement secondaire — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "ca38a934-603a-5b68-945f-62ee159efe35",
+      "media_type": "FILE",
+      "media_name": "ideo-structures-denseignement-secondaire-rennesmetropole.json",
+      "media_caption": "Idéo-Structures d'enseignement secondaire — données filtrées sur Rennes Métropole (JSON)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "d251ab61-0cf3-5d87-9d42-308098e05b7b",
+      "media_type": "FILE",
+      "media_name": "ideo-structures-denseignement-secondaire-rennesmetropole.csv",
+      "media_caption": "Idéo-Structures d'enseignement secondaire — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "ca38a934-603a-5b68-945f-62ee159efe35",
+      "media_type": "FILE",
+      "media_name": "ideo-structures-denseignement-secondaire-rennesmetropole.json",
+      "media_caption": "Idéo-Structures d'enseignement secondaire — données filtrées sur Rennes Métropole (JSON)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "4ccaf8b9-b5a8-57a5-abac-1874f69a3ad7",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://api.opendata.onisep.fr/downloads/5fa5816ac6a6e/5fa5816ac6a6e.csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2020-11-07T00:00:00Z",
+    "updated": "2026-07-03T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "odbl-1.0",
+      "licence_uri": "https://opendatacommons.org/licenses/odbl/1-0"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2020-11-07T00:00:00Z",
+      "updated": "2026-07-03T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/5fa5e3897fce339d438b652e"
+  }
+}

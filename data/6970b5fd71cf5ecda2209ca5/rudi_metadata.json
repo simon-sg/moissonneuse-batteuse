@@ -1,0 +1,95 @@
+{
+  "local_id": "fc875eef-77c6-5979-a1e8-1482e963eb5a",
+  "resource_title": "Parcoursup 2024 - vœux de poursuite d'études et de réorientation dans l'enseignement supérieur et réponses des établissements - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Parcoursup 2024 - vœux de poursuite d'études et de réorientation dans l'enseignement supérieur et réponses des établisse — données filtrées sur Renne"
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/6970b5fd71cf5ecda2209ca5\n\n**Ce jeu de données présente les vœux de poursuite d’études et de réorientation dans l’enseignement supérieur ainsi que les propositions des établissements pour chaque formation – hors apprentissage – à la fin du processus d’affectation de la plateforme Parcoursup pour la session 2024 (du 17 janvier au 12 septembre 2024). Les données sont tirées de la plateforme Parcoursup 2024 et prennent en compte l’ensemble de la campagne jusqu’à la date du 12 septembre 2024. Elles sont disponibles sous forme de base de données à télécharger et sous forme de[visualisation graphique « dataviz »](https://data.enseignementsup-recherche.gouv.fr/pages/parcoursupdata/?disjunctive.fili&sort=tri).**\n\n* * *\n\nCe jeu de données est bâti à partir des données Parcoursup de la campagne 2024. L’application Parcoursup est la plateforme nationale de préinscription mise en place par le Ministère chargé de l’Enseignement supérieur et de la Recherche permettant aux élèves de candidater à l’entrée dans l’enseignement supérieur.\n\nIl couvre l’ensemble des candidats ayant au moins un vœu d’orientation validé en phase principale (PP) et/ou complémentaire (PC), ce parmi les 14 079 formations proposées hors apprentissage. Il couvre ainsi 978 200 candidats. Un sous-ensemble de données porte spécifiquement sur les 647 300 néo-bacheliers parmi ces candidats (y compris ceux inscrits à l’Agence pour l'enseignement français à l’étranger). Les néo-bacheliers sont les élèves inscrits en classe de terminale et qui ont obtenu le baccalauréat français en 2023-2024, dans les filières générales, professionnelles ou technologiques. \n\n* * *\n\n[Ce jeu de données est complété par une « dataviz » proposant une visualisation des principaux indicateurs](https://data.enseignementsup-recherche.gouv.fr/pages/parcoursupdata/?disjunctive.fili&sort=tri). Ainsi, sont représentés graphiquement pour chaque formation détaillée, la capacité d’accueil, le nombre de vœux faits par les candidats dans une formation, le nombre de propositions d’admission faites par l’établissement sur cette formation, le nombre de candidats qui ont accepté cette proposition dans l’ensemble des phases de la procédure, les rangs du dernier appelé en phase principal.\n\n[![](https://dataesr.enseignementsup-recherche.pro/images/P811-PORTFOLIO_FR_PARCOURSUP_EXPLORER.png)](https://data.enseignementsup-recherche.gouv.fr/pages/parcoursupdata/?disjunctive.fili&sort=tri)  \n\n\nCes principaux indicateurs sont complétés par un graphique représentant le rythme auquel les candidats qui s’inscrivent dans une formation, ont vu cette formation leur être proposée. Enfin, un zoom est réalisé sur le profil des néo-bacheliers qui ont accepté la proposition d’admission de la formation : série de baccalauréat, mention au baccalauréat (dont la mention « Très bien » agrégée), bénéficiaire de bourse de l’enseignement secondaire ou non, origine géographique.\n\nCette [dataviz ](https://data.enseignementsup-recherche.gouv.fr/pages/parcoursupdata/?disjunctive.fili&sort=tri)se veut un outil complémentaire d’aide aux lycéens candidatant sur Parcoursup, en leur permettant de repérer un certain nombre de caractéristiques synthétiques sur chaque formation, reflétant les profils des admis ainsi que le rythme auquel les admis se sont vus, au cours de la procédure, proposer la formation in fine choisie.\n\nLes informations sont accessibles selon l’établissement d’accueil et la formation : \n\n  * Le nom de l’établissement et son n°UAI\n  * La région, l’académie et le département de l’établissement\n  * La formation demandée, agrégée et détaillée ainsi que sa nature sélective ou non\n  * Le nombre de places (capacité d’accueil)\n  * Le nombre de vœux reçus selon le sexe et la série du baccalauréat\n  * Le nombre de vœux classés par l’établissement de la formation d’accueil selon la série du baccalauréat\n  * Le nombre de propositions d’admission faites selon la série du baccalauréat \n  * Le nombre de propositions d’admission faites aux différentes dates clés de la campagne Parcoursup et qui seront ensuite acceptées \n  * Le nombre d’admis selon le sexe, la série du baccalauréat et la mention obtenue\n  * Le rang du dernier appelé de son groupe parmi les candidatures en phase principale\n  * Le nombre de boursiers de l’enseignement secondaire pour les lycéens de terminale et de l’enseignement supérieur pour les étudiants en réorientation\n  * Le nombre de candidats admis en BTS ou en CPGE et issus de leur lycée (i.e. le lycée où ils étaient inscrits en terminale)\n\n\n\nDepuis 2021 la mention « Très bien » est détaillée par deux variables : la mention « Très Bien (hors félicitations) » (entre 16 et 18 de moyenne au baccalauréat) et la mention « Très bien avec félicitations du jury » (plus de 18 de moyenne au baccalauréat). Également, le nombre de groupes d’appelés a été réduit à trois ; il s’agit du rang affiché sur la cartographie Parcoursup et ce rang est susceptible d’être supérieur au nombre de classés pour certaines formations qui utilisent les listes communes d’appelés (elles sont identifiées par la variable « list_com »).\n\n* * *\n\nComme les années précédentes, les données issues de la [cartographie du site parcoursup.fr](https://dossier.parcoursup.fr/Candidat/carte) ont été ajoutées. Deux indicateurs supplémentaires sont disponibles pour l’ensemble des candidats pour chaque formation en fin de fichier :  \n\n\n- **Taux d’accès 2024** : rapport entre le nombre de candidats dont le rang de classement est inférieur ou égal au rang du dernier appelé de son groupe et le nombre de candidats ayant validé un vœu pour la formation étudiée en phase principale (hors GDD - phase permettant de redistribuer les places laissées vacantes à l’issue de la phase principale aux néo-bacheliers sans proposition). Ce taux prend en compte l’ensemble des candidats ayant confirmé au moins un vœu en PP (les élèves de terminale, les étudiants en réorientation et les reprises d’études). Tous ces candidats n’ont pas intégré la formation, soit parce qu’ils ont eux-mêmes renoncé à cette formation avant de recevoir la proposition d’admission, soit parce qu’ils ont eu le choix entre plusieurs formations et ont au final accepté la proposition d’une autre formation. Si le taux est de 100 %, cela signifie qu'aucun candidat n’était en attente de proposition dans cette formation à la fin de la PP (hors GDD).\n\n- **Répartition par type de baccalauréat, des candidats qui étaient en position de recevoir une proposition en phase principale en 2024** : répartition par baccalauréat du nombre de candidats dont le rang de classement est inférieur ou égal au rang du dernier appelé de son groupe en phase principale (hors GDD)  \n\n\nSeuls les candidats scolarisés en France ou de nationalité européenne sont pris en compte dans le calcul de ces 2 indicateurs.  \n\n\n**Seuls les candidats scolarisés en France ou de nationalité européenne sont pris en compte dans le calcul de ces deux indicateurs.**\n\n**Le mode de calcul de ces indicateurs est identique à celui de l’année dernière.**\n\n/!\\ **Ces deux indicateurs ne peuvent être recalculés à partir des données disponibles dans cet opendata.**\n\n**/!\\ 16 janvier 2025 : Suite à un problème technique, certaines variables de la première version du jeu de données présentaient des valeurs erronées, désormais corrigées :**\n\n• Dont effectif des candidats ayant postulé en internat\n\n• Effectif des candidats classés par l’établissement en internat (CPGE)\n\n• Effectif des candidats classés par l’établissement hors internat (CPGE)\n\n• Dont effectif des admis en internat\n\n* * *\n\n  \n\n\nLe jeu de données permet ainsi d’observer pour chaque formation présente dans Parcoursup et pour chaque établissement d’accueil la demande et la satisfaction de celle-ci, le profil des candidats et celui des admis ainsi que d’autres résultats à la fin du processus d’affectation. \n\nParcoursup est le portail internet national de préinscription à l’enseignement supérieur. Parcoursup s’adresse à toute personne qui souhaite s’inscrire dans une première année de l’enseignement supérieur. On retrouve ainsi principalement les néo-bacheliers, les étudiants en réorientation et les étudiants étrangers. Ils doivent formuler et confirmer des vœux pour recevoir une affectation. Un candidat peut faire jusqu’à 10 vœux non hiérarchisés en phase principale. Attention, pour certaines formations, les vœux peuvent être multiples : chaque vœu multiple est composé de sous-vœux qui correspondent chacun à une formation dans un établissement donné. C’est le cas par exemple pour les écoles d’ingénieur ou de commerce s’inscrivant dans le cadre d’un concours national."
+    }
+  ],
+  "theme": "education",
+  "keywords": [
+    "admis",
+    "admissibles",
+    "boursier",
+    "boursiers",
+    "bts",
+    "but",
+    "capacite",
+    "cpge",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Ministère de l'Enseignement supérieur, de la Recherche et de l'Espace"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "00c546fa-23ee-5f18-a308-6f572c294d88",
+      "media_type": "FILE",
+      "media_name": "fr-esr-parcoursup-2024-rennesmetropole.csv",
+      "media_caption": "fr-esr-parcoursup_2024.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "72216796-f8ee-51c8-9898-983cd5ba0797",
+      "media_type": "FILE",
+      "media_name": "fr-esr-parcoursup-2024-rennesmetropole.json",
+      "media_caption": "fr-esr-parcoursup_2024.csv — données filtrées sur Rennes Métropole (JSON)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "b43c56d9-0da7-5ac9-9183-a6e19176b889",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://data.enseignementsup-recherche.gouv.fr/api/explore/v2.1/catalog/datasets/fr-esr-parcoursup_2024/exports/csv?use_labels=true",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2025-01-16T00:00:00Z",
+    "updated": "2025-01-16T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2025-01-16T00:00:00Z",
+      "updated": "2025-01-16T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/6970b5fd71cf5ecda2209ca5"
+  }
+}

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title></title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>(function(){try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<style>
+:root{--bg:#f5f6f8;--card:#fff;--txt:#1c2733;--muted:#667;--accent:#0b6e99;--bord:#e2e6ea}
+:root[data-theme="dark"]{--bg:#10151b;--card:#1a222b;--txt:#dbe2e8;--muted:#8996a3;--accent:#4fb3da;--bord:#29323c}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#10151b;--card:#1a222b;--txt:#dbe2e8;--muted:#8996a3;--accent:#4fb3da;--bord:#29323c}
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+     background:var(--bg);color:var(--txt);display:flex;flex-direction:column;height:100vh}
+header{background:var(--card);border-bottom:1px solid var(--bord);padding:8px 16px;
+       display:flex;flex-wrap:wrap;gap:8px;align-items:center;flex-shrink:0}
+h1{font-size:.9rem;font-weight:600;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#info{color:var(--muted);font-size:.82rem;white-space:nowrap}
+#theme-toggle{background:none;border:1px solid var(--bord);border-radius:6px;padding:4px 9px;
+              cursor:pointer;font-size:.9rem;line-height:1;color:var(--txt);flex-shrink:0}
+#theme-toggle:hover{background:var(--bg)}
+#carte{flex:1}
+</style>
+</head>
+<body>
+<header>
+  <h1 id="titre"></h1>
+  <span id="info"></span>
+  <button id="theme-toggle" title="Basculer thème clair/sombre" aria-label="Basculer thème clair/sombre">🌙</button>
+</header>
+<div id="carte"></div>
+<script id="d" type="application/json">{"nom": "GéoServices : géologie, hydrogéologie et gravimétrie", "url": "http://geoservices.brgm.fr/geologie", "couches": [{"nom": "GEOSERVICES_GEOLOGIE", "titre": "GéoServices : géologie, hydrogéologie et gravimétrie", "bbox_wgs84": {"west": -180.0, "east": 180.0, "south": -90.0, "north": 90.0}}, {"nom": "GEOLOGIE", "titre": "Cartes géologiques", "bbox_wgs84": {}}, {"nom": "SCAN_F_GEOL1M", "titre": "Carte géologique image de la France au million", "bbox_wgs84": {"west": -5.86764, "east": 11.0789, "south": 41.1701, "north": 51.1419}}, {"nom": "SCAN_F_GEOL250", "titre": "Carte géologique image de la France au 1/250000", "bbox_wgs84": {"west": -6.20495, "east": 12.2874, "south": 41.9671, "north": 51.2917}}, {"nom": "SCAN_D_GEOL50", "titre": "Carte géologique image de la France au 1/50 000e", "bbox_wgs84": {"west": -12.2064, "east": 11.894, "south": 40.681, "north": 52.1672}}, {"nom": "GEOLOGIE_OUTRE_MER", "titre": "Cartes géologiques imprimées des outre-mer (BRGM)", "bbox_wgs84": {}}, {"nom": "SCAN_F_GEOL50_CATALOG", "titre": "Carte d'assemblage des cartes géologiques au 1/50 000e", "bbox_wgs84": {"west": -5.50071, "east": 11.0344, "south": 41.2448, "north": 51.1211}}, {"nom": "SCAN_F_GEOL250_CATALOG", "titre": "Carte d'assemblage des cartes géologiques au 1/250 000", "bbox_wgs84": {"west": -6.20495, "east": 12.2874, "south": 41.9671, "north": 51.2917}}, {"nom": "SCAN_H_GEOL50", "titre": "Carte géologique 50 000e - harmonisé", "bbox_wgs84": {}}, {"nom": "SCAN_H_GEOL50_PERIMETRE", "titre": "Périmètre de la carte géologique 50 000e - harmonisé", "bbox_wgs84": {"west": -5.50071, "east": 11.0344, "south": 41.2448, "north": 51.1211}}], "producteur": "Bureau de Recherches Géologiques et Minières"}</script>
+<script>
+function themeEffectif(){
+  return document.documentElement.getAttribute("data-theme") ||
+    (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+}
+function urlFond(theme){
+  return "https://{s}.basemaps.cartocdn.com/" + (theme==="dark"?"dark_all":"light_all") + "/{z}/{x}/{y}{r}.png";
+}
+
+const D=JSON.parse(document.getElementById("d").textContent);
+document.title=D.nom;
+document.getElementById("titre").textContent=D.nom;
+document.getElementById("info").textContent=D.couches.length+" couche(s) WMS";
+
+const map=L.map("carte");
+let fond=L.tileLayer(urlFond(themeEffectif()),{
+  attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+  subdomains:"abcd",maxZoom:19
+}).addTo(map);
+
+(function(){
+  const btn = document.getElementById("theme-toggle");
+  function majIcone(){ btn.textContent = themeEffectif() === "dark" ? "☀️" : "🌙"; }
+  btn.addEventListener("click", () => {
+    const suivant = themeEffectif() === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", suivant);
+    try { localStorage.setItem("theme", suivant); } catch(e) {}
+    map.removeLayer(fond);
+    fond = L.tileLayer(urlFond(suivant),{
+      attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      subdomains:"abcd",maxZoom:19
+    }).addTo(map);
+    majIcone();
+  });
+  majIcone();
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+    if (!document.documentElement.getAttribute("data-theme")) majIcone();
+  });
+})();
+
+D.couches.forEach(c=>{
+  L.tileLayer.wms(D.url,{
+    layers:c.nom,
+    format:"image/png",
+    transparent:true,
+    opacity:0.75,
+    attribution:D.producteur||c.titre||"Source WMS"
+  }).addTo(map);
+});
+
+map.setView([48.1,-1.68],11);
+</script>
+</body>
+</html>

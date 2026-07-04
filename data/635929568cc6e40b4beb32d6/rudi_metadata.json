@@ -1,0 +1,94 @@
+{
+  "local_id": "9259f28c-63c9-52db-9c1f-f3ab89c9a259",
+  "resource_title": "Ordre des Avocats de Paris - Eléments d'Annuaire - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Ordre des Avocats de Paris - Eléments d'Annuaire — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/635929568cc6e40b4beb32d6\n\nDonnées constituant l'annuaire des avocats inscrits au Barreau de Paris :\n=> Avocats\n=> Structures d'exercices\n=> Mode d'exercice et rattachement éventuel à une structure ou à un autre avocat\n=> Structure d'exercice composées d'autres structures d'exercice\n=> Fonctions exercées au Barreau de Paris par les avocats en exercices\n=> Bureaux secondaires des avocats\n=> Bureaux secondaires des structures d'exercice\n"
+    }
+  ],
+  "theme": "environment",
+  "keywords": [
+    "annuaire",
+    "avocats",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Ordre des Avocats de Paris"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "f82a5ba5-597b-5f2f-b469-32beb632b34d",
+      "media_type": "FILE",
+      "media_name": "st-bur-sec-rennesmetropole.csv",
+      "media_caption": "st-bur-sec.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "1c1cb915-c2fe-5f8e-aea0-078fd5b44e38",
+      "media_type": "FILE",
+      "media_name": "avo-bur-sec-rennesmetropole.csv",
+      "media_caption": "avo-bur-sec.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "16c93ca3-6f60-5b90-8c38-0b80ece120bd",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://static.data.gouv.fr/resources/ordre-des-avocats-de-paris-elements-dannuaire/20260609-072207/st-bur-sec.csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2022-10-26T00:00:00Z",
+    "updated": "2026-06-09T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "CUSTOM",
+      "custom_licence_label": [
+        {
+          "lang": "fr",
+          "text": "other-pd"
+        }
+      ],
+      "custom_licence_uri": "https://www.data.gouv.fr/datasets/635929568cc6e40b4beb32d6"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2022-10-26T00:00:00Z",
+      "updated": "2026-06-09T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/635929568cc6e40b4beb32d6"
+  }
+}

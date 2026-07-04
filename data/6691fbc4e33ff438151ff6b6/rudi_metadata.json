@@ -1,0 +1,89 @@
+{
+  "local_id": "0c8791d3-b985-5ee7-9e2c-dce6e5495bca",
+  "resource_title": "Journées européennes du patrimoine 2024 - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Journées européennes du patrimoine 2024 — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/6691fbc4e33ff438151ff6b6\n\nPour sa 41e édition, les Journées européennes du patrimoine seront organisées les vendredi 20, samedi 21 et dimanche 22 septembre 2024 et auront pour thèmes « le patrimoine des itinéraires, des réseaux et des connexions et le patrimoine maritime ». \n\n**Pour[en savoir plus](https://journeesdupatrimoine.culture.gouv.fr/).**  \n  \nCe jeu de données est mis à jour quotidiennement."
+    }
+  ],
+  "theme": "culture",
+  "keywords": [
+    "culture",
+    "ministeredelaculture",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Ministère de la Culture"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "67914bf8-1d8c-504b-89af-5fceaaf8456e",
+      "media_type": "FILE",
+      "media_name": "journees-europeennes-du-patrimoine-2024-rennesmetropole.csv",
+      "media_caption": "journees-europeennes-du-patrimoine-2024.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "0a19bd3d-16a4-5d87-a324-3af8264969ee",
+      "media_type": "FILE",
+      "media_name": "journees-europeennes-du-patrimoine-2024-rennesmetropole.json",
+      "media_caption": "journees-europeennes-du-patrimoine-2024.csv — données filtrées sur Rennes Métropole (JSON)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "fe1ce68d-0e15-53a6-9d16-c0032989f889",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://static.data.gouv.fr/resources/journees-europeennes-du-patrimoine-2024/20250827-135736/journees-europeennes-du-patrimoine-2024.csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2024-07-13T00:00:00Z",
+    "updated": "2025-10-23T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2024-07-13T00:00:00Z",
+      "updated": "2025-10-23T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/6691fbc4e33ff438151ff6b6"
+  }
+}

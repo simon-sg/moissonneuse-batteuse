@@ -308,7 +308,8 @@ def _champs_geo(cand: dict) -> dict:
     """Champs géographiques utilisés pour le filtrage Rennes Métropole."""
     champs = {}
     for cle, libelle in (("champ_ville", "ville"), ("champ_cp", "cp"),
-                         ("champ_iris", "iris"), ("champ_adresse", "adresse")):
+                         ("champ_iris", "iris"), ("champ_adresse", "adresse"),
+                         ("champ_circonscription", "circonscription")):
         valeur = cand.get(cle)
         if valeur:
             champs[libelle] = valeur
@@ -424,9 +425,21 @@ GABARIT_HTML = r"""<!DOCTYPE html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Catalogue des jeux de données — Rennes Métropole</title>
+<script>(function(){try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
 <style>
-  :root { --bg:#f5f6f8; --card:#fff; --txt:#1c2733; --muted:#667; --accent:#0b6e99; --bord:#e2e6ea; }
+  :root { --bg:#f5f6f8; --card:#fff; --txt:#1c2733; --muted:#667; --accent:#0b6e99; --bord:#e2e6ea;
+          --warn:#a3372c; --tag-bg:#eef3f6; --tag-txt:#345; --code-bg:#f0f2f4;
+          --badge-bg:#fdecea; --badge-txt:#a3372c; }
+  :root[data-theme="dark"] { --bg:#10151b; --card:#1a222b; --txt:#dbe2e8; --muted:#8996a3;
+          --accent:#4fb3da; --bord:#29323c; --warn:#ff9686; --tag-bg:#20303a; --tag-txt:#b7c9d6;
+          --code-bg:#20272e; --badge-bg:#3a201d; --badge-txt:#ff9686; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg:#10151b; --card:#1a222b; --txt:#dbe2e8; --muted:#8996a3;
+          --accent:#4fb3da; --bord:#29323c; --warn:#ff9686; --tag-bg:#20303a; --tag-txt:#b7c9d6;
+          --code-bg:#20272e; --badge-bg:#3a201d; --badge-txt:#ff9686; }
+  }
   * { box-sizing: border-box; }
+  a { color:var(--accent); }
   body { margin:0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
          background:var(--bg); color:var(--txt); line-height:1.45; }
   header { background:var(--card); border-bottom:1px solid var(--bord); padding:18px 24px;
@@ -453,7 +466,7 @@ GABARIT_HTML = r"""<!DOCTYPE html>
   .description p:last-child { margin-bottom:0; }
   .description ul, .description ol { margin:4px 0 8px 20px; }
   .description a { color:var(--accent); }
-  .description code { background:#f0f2f4; padding:1px 5px; border-radius:4px; font-size:.85em; }
+  .description code { background:var(--code-bg); padding:1px 5px; border-radius:4px; font-size:.85em; }
   .description h4, .description h5, .description h6 { margin:10px 0 4px; color:var(--txt); }
   .description h4 { font-size:1rem; } .description h5 { font-size:.95rem; } .description h6 { font-size:.9rem; }
   .description h4:first-child, .description h5:first-child, .description h6:first-child { margin-top:0; }
@@ -462,19 +475,24 @@ GABARIT_HTML = r"""<!DOCTYPE html>
                background:none; border:none; padding:0; cursor:pointer; font-family:inherit; }
   .voir-plus:hover { text-decoration:underline; }
   .tags { display:flex; flex-wrap:wrap; gap:6px; margin:8px 0; }
-  .tag { background:#eef3f6; color:#345; border-radius:99px; padding:2px 10px; font-size:.75rem; }
-  .badge { display:inline-block; background:#fdecea; color:#a3372c; border-radius:99px;
+  .tag { background:var(--tag-bg); color:var(--tag-txt); border-radius:99px; padding:2px 10px; font-size:.75rem; }
+  .badge { display:inline-block; background:var(--badge-bg); color:var(--badge-txt); border-radius:99px;
            padding:2px 10px; font-size:.72rem; font-weight:600; }
   details summary { cursor:pointer; font-size:.85rem; color:var(--accent); user-select:none; }
   table.res { width:100%; border-collapse:collapse; margin-top:10px; font-size:.82rem; }
   table.res th, table.res td { text-align:left; padding:6px 8px; border-bottom:1px solid var(--bord); }
   table.res th { color:var(--muted); font-weight:600; }
-  table.res code { background:#f0f2f4; padding:1px 5px; border-radius:4px; }
+  table.res code { background:var(--code-bg); padding:1px 5px; border-radius:4px; }
   .vide { text-align:center; color:var(--muted); padding:40px; }
+  #theme-toggle { position:absolute; top:18px; right:24px; background:none; border:1px solid var(--bord);
+                  border-radius:8px; padding:6px 10px; cursor:pointer; font-size:1rem; line-height:1;
+                  color:var(--txt); }
+  #theme-toggle:hover { background:var(--bg); }
 </style>
 </head>
 <body>
 <header>
+  <button id="theme-toggle" title="Basculer thème clair/sombre" aria-label="Basculer thème clair/sombre">🌙</button>
   <h1>Catalogue des jeux de données — Rennes Métropole</h1>
   <div class="meta" id="entete"></div>
   <div class="barre">
@@ -489,6 +507,25 @@ GABARIT_HTML = r"""<!DOCTYPE html>
 
 <script id="donnees" type="application/json">/*__DONNEES__*/</script>
 <script>
+(function(){
+  const btn = document.getElementById("theme-toggle");
+  function effectif(){
+    return document.documentElement.getAttribute("data-theme") ||
+      (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  }
+  function majIcone(){ btn.textContent = effectif() === "dark" ? "☀️" : "🌙"; }
+  btn.addEventListener("click", () => {
+    const suivant = effectif() === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", suivant);
+    try { localStorage.setItem("theme", suivant); } catch(e) {}
+    majIcone();
+  });
+  majIcone();
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+    if (!document.documentElement.getAttribute("data-theme")) majIcone();
+  });
+})();
+
 const CAT = JSON.parse(document.getElementById("donnees").textContent);
 const liste = document.getElementById("liste");
 const compteur = document.getElementById("compteur");
@@ -705,35 +742,78 @@ GABARIT_WMS_MAP = r"""<!DOCTYPE html>
 <title></title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>(function(){try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
 <style>
+:root{--bg:#f5f6f8;--card:#fff;--txt:#1c2733;--muted:#667;--accent:#0b6e99;--bord:#e2e6ea}
+:root[data-theme="dark"]{--bg:#10151b;--card:#1a222b;--txt:#dbe2e8;--muted:#8996a3;--accent:#4fb3da;--bord:#29323c}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#10151b;--card:#1a222b;--txt:#dbe2e8;--muted:#8996a3;--accent:#4fb3da;--bord:#29323c}
+}
 *{box-sizing:border-box;margin:0;padding:0}
+a{color:var(--accent)}
 body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-     background:#f5f6f8;color:#1c2733;display:flex;flex-direction:column;height:100vh}
-header{background:#fff;border-bottom:1px solid #e2e6ea;padding:8px 16px;
+     background:var(--bg);color:var(--txt);display:flex;flex-direction:column;height:100vh}
+header{background:var(--card);border-bottom:1px solid var(--bord);padding:8px 16px;
        display:flex;flex-wrap:wrap;gap:8px;align-items:center;flex-shrink:0}
 h1{font-size:.9rem;font-weight:600;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#info{color:#667;font-size:.82rem;white-space:nowrap}
+#info{color:var(--muted);font-size:.82rem;white-space:nowrap}
+#theme-toggle{background:none;border:1px solid var(--bord);border-radius:6px;padding:4px 9px;
+              cursor:pointer;font-size:.9rem;line-height:1;color:var(--txt);flex-shrink:0}
+#theme-toggle:hover{background:var(--bg)}
 #carte{flex:1}
+.leaflet-control-attribution{background:var(--card);color:var(--muted)}
+.leaflet-control-attribution a{color:var(--accent)}
+.leaflet-bar a{background:var(--card);color:var(--txt);border-bottom-color:var(--bord)}
+.leaflet-bar a:hover{background:var(--bg)}
 </style>
 </head>
 <body>
 <header>
   <h1 id="titre"></h1>
   <span id="info"></span>
+  <button id="theme-toggle" title="Basculer thème clair/sombre" aria-label="Basculer thème clair/sombre">🌙</button>
 </header>
 <div id="carte"></div>
 <script id="d" type="application/json">/*__DATA__*/</script>
 <script>
+function themeEffectif(){
+  return document.documentElement.getAttribute("data-theme") ||
+    (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+}
+function urlFond(theme){
+  return "https://{s}.basemaps.cartocdn.com/" + (theme==="dark"?"dark_all":"light_all") + "/{z}/{x}/{y}{r}.png";
+}
+
 const D=JSON.parse(document.getElementById("d").textContent);
 document.title=D.nom;
 document.getElementById("titre").textContent=D.nom;
 document.getElementById("info").textContent=D.couches.length+" couche(s) WMS";
 
 const map=L.map("carte");
-L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",{
+let fond=L.tileLayer(urlFond(themeEffectif()),{
   attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
   subdomains:"abcd",maxZoom:19
 }).addTo(map);
+
+(function(){
+  const btn = document.getElementById("theme-toggle");
+  function majIcone(){ btn.textContent = themeEffectif() === "dark" ? "☀️" : "🌙"; }
+  btn.addEventListener("click", () => {
+    const suivant = themeEffectif() === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", suivant);
+    try { localStorage.setItem("theme", suivant); } catch(e) {}
+    map.removeLayer(fond);
+    fond = L.tileLayer(urlFond(suivant),{
+      attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      subdomains:"abcd",maxZoom:19
+    }).addTo(map);
+    majIcone();
+  });
+  majIcone();
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+    if (!document.documentElement.getAttribute("data-theme")) majIcone();
+  });
+})();
 
 D.couches.forEach(c=>{
   L.tileLayer.wms(D.url,{
@@ -760,23 +840,41 @@ GABARIT_MAP = r"""<!DOCTYPE html>
 <title></title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>(function(){try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
 <style>
+:root{--bg:#f5f6f8;--card:#fff;--txt:#1c2733;--muted:#667;--accent:#0b6e99;--bord:#e2e6ea;
+      --btn-bg:#eef3f6;--btn-bord:#c8d6e0;--btn-hover:#d4ecf7}
+:root[data-theme="dark"]{--bg:#10151b;--card:#1a222b;--txt:#dbe2e8;--muted:#8996a3;--accent:#4fb3da;--bord:#29323c;
+      --btn-bg:#1c2932;--btn-bord:#2f4552;--btn-hover:#26404d}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#10151b;--card:#1a222b;--txt:#dbe2e8;--muted:#8996a3;--accent:#4fb3da;--bord:#29323c;
+      --btn-bg:#1c2932;--btn-bord:#2f4552;--btn-hover:#26404d}
+}
 *{box-sizing:border-box;margin:0;padding:0}
+a{color:var(--accent)}
 body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-     background:#f5f6f8;color:#1c2733;display:flex;flex-direction:column;height:100vh}
-header{background:#fff;border-bottom:1px solid #e2e6ea;padding:8px 16px;
+     background:var(--bg);color:var(--txt);display:flex;flex-direction:column;height:100vh}
+header{background:var(--card);border-bottom:1px solid var(--bord);padding:8px 16px;
        display:flex;flex-wrap:wrap;gap:8px;align-items:center;flex-shrink:0}
 h1{font-size:.9rem;font-weight:600;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#info{color:#667;font-size:.82rem;white-space:nowrap}
-#btn-plus{background:#eef3f6;border:1px solid #c8d6e0;border-radius:6px;padding:4px 12px;
-          font-size:.8rem;cursor:pointer;color:#0b6e99;white-space:nowrap;flex-shrink:0}
-#btn-plus:hover{background:#d4ecf7}
+#info{color:var(--muted);font-size:.82rem;white-space:nowrap}
+#btn-plus{background:var(--btn-bg);border:1px solid var(--btn-bord);border-radius:6px;padding:4px 12px;
+          font-size:.8rem;cursor:pointer;color:var(--accent);white-space:nowrap;flex-shrink:0}
+#btn-plus:hover{background:var(--btn-hover)}
 #btn-plus:disabled{opacity:.5;cursor:wait}
+#theme-toggle{background:none;border:1px solid var(--bord);border-radius:6px;padding:4px 9px;
+              cursor:pointer;font-size:.9rem;line-height:1;color:var(--txt);flex-shrink:0}
+#theme-toggle:hover{background:var(--bg)}
 #carte{flex:1}
+.leaflet-popup-content-wrapper,.leaflet-popup-tip{background:var(--card);color:var(--txt)}
 .leaflet-popup-content{min-width:160px;max-width:320px;font-size:.8rem}
 .leaflet-popup-content table{border-collapse:collapse;width:100%}
-.leaflet-popup-content td{padding:3px 6px;vertical-align:top;border-bottom:1px solid #eee;word-break:break-word}
-.leaflet-popup-content td:first-child{color:#667;font-weight:600;white-space:nowrap;padding-right:10px}
+.leaflet-popup-content td{padding:3px 6px;vertical-align:top;border-bottom:1px solid var(--bord);word-break:break-word}
+.leaflet-popup-content td:first-child{color:var(--muted);font-weight:600;white-space:nowrap;padding-right:10px}
+.leaflet-control-attribution{background:var(--card);color:var(--muted)}
+.leaflet-control-attribution a{color:var(--accent)}
+.leaflet-bar a{background:var(--card);color:var(--txt);border-bottom-color:var(--bord)}
+.leaflet-bar a:hover{background:var(--bg)}
 </style>
 </head>
 <body>
@@ -784,19 +882,48 @@ h1{font-size:.9rem;font-weight:600;flex:1;white-space:nowrap;overflow:hidden;tex
   <h1 id="titre"></h1>
   <span id="info"></span>
   <button id="btn-plus" style="display:none" onclick="chargerPlus()"></button>
+  <button id="theme-toggle" title="Basculer thème clair/sombre" aria-label="Basculer thème clair/sombre">🌙</button>
 </header>
 <div id="carte"></div>
 <script id="d" type="application/json">/*__DATA__*/</script>
 <script>
+function themeEffectif(){
+  return document.documentElement.getAttribute("data-theme") ||
+    (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+}
+function urlFond(theme){
+  return "https://{s}.basemaps.cartocdn.com/" + (theme==="dark"?"dark_all":"light_all") + "/{z}/{x}/{y}{r}.png";
+}
+
 const D=JSON.parse(document.getElementById("d").textContent);
 document.title=D.nom;
 document.getElementById("titre").textContent=D.nom;
 
 const map=L.map("carte");
-L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",{
+let fond=L.tileLayer(urlFond(themeEffectif()),{
   attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
   subdomains:"abcd",maxZoom:19
 }).addTo(map);
+
+(function(){
+  const btn = document.getElementById("theme-toggle");
+  function majIcone(){ btn.textContent = themeEffectif() === "dark" ? "☀️" : "🌙"; }
+  btn.addEventListener("click", () => {
+    const suivant = themeEffectif() === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", suivant);
+    try { localStorage.setItem("theme", suivant); } catch(e) {}
+    map.removeLayer(fond);
+    fond = L.tileLayer(urlFond(suivant),{
+      attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      subdomains:"abcd",maxZoom:19
+    }).addTo(map);
+    majIcone();
+  });
+  majIcone();
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+    if (!document.documentElement.getAttribute("data-theme")) majIcone();
+  });
+})();
 
 function esc(s){return String(s??"").replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 
@@ -876,38 +1003,57 @@ GABARIT_VIEWER = r"""<!DOCTYPE html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title></title>
+<script>(function(){try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
 <style>
+:root{--bg:#f5f6f8;--card:#fff;--txt:#1c2733;--muted:#667;--accent:#0b6e99;--bord:#e2e6ea;
+      --avert-bg:#fff8e1;--avert-bord:#ffe082;--avert-txt:#6d4c00;
+      --geo-bg:#eaf4fb;--geo-hover:#d4ecf7;--stripe:#fafbfc;--row-hover:#eef6fb;
+      --resizer:rgba(11,110,153,.35);--td-bord:#f0f2f4}
+:root[data-theme="dark"]{--bg:#10151b;--card:#1a222b;--txt:#dbe2e8;--muted:#8996a3;--accent:#4fb3da;--bord:#29323c;
+      --avert-bg:#3a2f10;--avert-bord:#6b5418;--avert-txt:#e8c96a;
+      --geo-bg:#16303c;--geo-hover:#1d3f4d;--stripe:#161d24;--row-hover:#17242c;
+      --resizer:rgba(79,179,218,.35);--td-bord:#232c35}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#10151b;--card:#1a222b;--txt:#dbe2e8;--muted:#8996a3;--accent:#4fb3da;--bord:#29323c;
+      --avert-bg:#3a2f10;--avert-bord:#6b5418;--avert-txt:#e8c96a;
+      --geo-bg:#16303c;--geo-hover:#1d3f4d;--stripe:#161d24;--row-hover:#17242c;
+      --resizer:rgba(79,179,218,.35);--td-bord:#232c35}
+}
 *{box-sizing:border-box;margin:0;padding:0}
+a{color:var(--accent)}
 body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-     background:#f5f6f8;color:#1c2733;display:flex;flex-direction:column;height:100vh}
-header{background:#fff;border-bottom:1px solid #e2e6ea;padding:10px 16px;
+     background:var(--bg);color:var(--txt);display:flex;flex-direction:column;height:100vh}
+header{background:var(--card);border-bottom:1px solid var(--bord);padding:10px 16px;
        display:flex;flex-wrap:wrap;gap:10px;align-items:center;flex-shrink:0}
 h1{font-size:.9rem;font-weight:600;flex:1;min-width:150px;
    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#filtre{padding:7px 11px;font-size:.9rem;border:1px solid #e2e6ea;
-        border-radius:6px;width:220px}
-#info{color:#667;font-size:.82rem;white-space:nowrap}
-.avert{background:#fff8e1;border-bottom:1px solid #ffe082;padding:5px 16px;
-       font-size:.8rem;color:#6d4c00;flex-shrink:0}
+#filtre{padding:7px 11px;font-size:.9rem;border:1px solid var(--bord);
+        border-radius:6px;width:220px;background:var(--card);color:var(--txt)}
+#info{color:var(--muted);font-size:.82rem;white-space:nowrap}
+#theme-toggle{background:none;border:1px solid var(--bord);border-radius:6px;padding:5px 10px;
+              cursor:pointer;font-size:.9rem;line-height:1;color:var(--txt);flex-shrink:0}
+#theme-toggle:hover{background:var(--bg)}
+.avert{background:var(--avert-bg);border-bottom:1px solid var(--avert-bord);padding:5px 16px;
+       font-size:.8rem;color:var(--avert-txt);flex-shrink:0}
 .wrap{flex:1;overflow:auto}
 table{border-collapse:collapse;font-size:.82rem;table-layout:fixed}
-thead{position:sticky;top:0;z-index:2;background:#fff;box-shadow:0 1px 0 #e2e6ea}
-th{padding:8px 12px;text-align:left;cursor:pointer;user-select:none;color:#667;font-weight:600;
+thead{position:sticky;top:0;z-index:2;background:var(--card);box-shadow:0 1px 0 var(--bord)}
+th{padding:8px 12px;text-align:left;cursor:pointer;user-select:none;color:var(--muted);font-weight:600;
    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative}
-th:hover{background:#f5f6f8;color:#1c2733}
-th.asc::after{content:" ↑";color:#0b6e99}
-th.desc::after{content:" ↓";color:#0b6e99}
-th.geo{color:#0b6e99;background:#eaf4fb}
-th.geo:hover{background:#d4ecf7}
-th.trad{text-decoration:underline dotted;text-decoration-color:#0b6e99;text-underline-offset:3px}
-td{padding:0;border-bottom:1px solid #f0f2f4}
+th:hover{background:var(--bg);color:var(--txt)}
+th.asc::after{content:" ↑";color:var(--accent)}
+th.desc::after{content:" ↓";color:var(--accent)}
+th.geo{color:var(--accent);background:var(--geo-bg)}
+th.geo:hover{background:var(--geo-hover)}
+th.trad{text-decoration:underline dotted;text-decoration-color:var(--accent);text-underline-offset:3px}
+td{padding:0;border-bottom:1px solid var(--td-bord)}
 td div{padding:5px 12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-td div a{color:#0b6e99;text-decoration:none}
+td div a{color:var(--accent);text-decoration:none}
 td div a:hover{text-decoration:underline}
-tr:nth-child(even) td{background:#fafbfc}
-tr:hover td{background:#eef6fb}
+tr:nth-child(even) td{background:var(--stripe)}
+tr:hover td{background:var(--row-hover)}
 .resizer{position:absolute;right:0;top:0;width:5px;height:100%;cursor:col-resize;z-index:1}
-.resizer:hover,.resizer.active{background:rgba(11,110,153,.35)}
+.resizer:hover,.resizer.active{background:var(--resizer)}
 </style>
 </head>
 <body>
@@ -915,11 +1061,31 @@ tr:hover td{background:#eef6fb}
   <h1 id="titre"></h1>
   <input id="filtre" type="search" placeholder="Filtrer toutes les colonnes…">
   <span id="info"></span>
+  <button id="theme-toggle" title="Basculer thème clair/sombre" aria-label="Basculer thème clair/sombre">🌙</button>
 </header>
 <div id="avert" class="avert" style="display:none"></div>
 <div class="wrap"><table id="t"><colgroup id="cols"></colgroup><thead id="thead"></thead><tbody id="tbody"></tbody></table></div>
 <script id="d" type="application/json">/*__DATA__*/</script>
 <script>
+(function(){
+  const btn = document.getElementById("theme-toggle");
+  function effectif(){
+    return document.documentElement.getAttribute("data-theme") ||
+      (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  }
+  function majIcone(){ btn.textContent = effectif() === "dark" ? "☀️" : "🌙"; }
+  btn.addEventListener("click", () => {
+    const suivant = effectif() === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", suivant);
+    try { localStorage.setItem("theme", suivant); } catch(e) {}
+    majIcone();
+  });
+  majIcone();
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+    if (!document.documentElement.getAttribute("data-theme")) majIcone();
+  });
+})();
+
 const D=JSON.parse(document.getElementById("d").textContent);
 const tbl=document.getElementById("t"),wrap=document.querySelector(".wrap");
 const nCols=D.entetes.length;

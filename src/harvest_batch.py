@@ -616,14 +616,19 @@ def traiter_candidat(candidat: dict, state: dict) -> dict:
     last_modified = metadata.get("last_modified", "")
 
     # Vérifier si des fichiers filtrés existent déjà et que la source n'a pas changé
+    etat_precedent = state.get(dataset_id, {})
+    nb_rm_precedent = etat_precedent.get("nb_rm")
+    # Un run précédent "vide" (nb_rm == 0) ne produit jamais de fichier filtré sur
+    # disque — ne pas en exiger un dans ce cas, sinon ces JDD ne sont jamais mis en cache.
+    fichier_attendu = nb_rm_precedent not in (0, None)
     filtered_existe = (
         bool(glob.glob(os.path.join(dossier, "*-rennesmetropole.csv"))) or
         bool(glob.glob(os.path.join(dossier, "*-rennesmetropole.json"))) or
         bool(glob.glob(os.path.join(dossier, "filtered*.csv"))) or   # ancien nommage
         bool(glob.glob(os.path.join(dossier, "filtered*.json")))
     )
-    if filtered_existe and not dataset_a_change(state, dataset_id, last_modified):
-        nb_rm = state.get(dataset_id, {}).get("nb_rm", "?")
+    if not dataset_a_change(state, dataset_id, last_modified) and (filtered_existe or not fichier_attendu):
+        nb_rm = nb_rm_precedent if nb_rm_precedent is not None else "?"
         return {"statut": "cache", "nb_rm": nb_rm, "last_modified": last_modified}
 
     analyse = analyser_ressources(metadata)
@@ -683,7 +688,8 @@ def traiter_candidat(candidat: dict, state: dict) -> dict:
             if not present and dernieres_entetes
             else "0 lignes RM après filtrage"
         )
-        return {"statut": "vide", "raison": raison}
+        return {"statut": "vide", "raison": raison,
+                "entree": {"last_modified": last_modified, "nb_rm": 0, "dossier": dossier_nom}}
 
     # Télécharger les dictionnaires tels quels
     for r in analyse["dicts"]:
@@ -786,6 +792,10 @@ def main():
                 elif res["statut"] == "vide":
                     print(f"  → VIDE — {res['raison']}")
                     resultats["vides"].append({"dataset_id": dataset_id, "titre": candidat["titre"], "raison": res["raison"]})
+                    if "entree" in res:
+                        with lock:
+                            state[dataset_id] = res["entree"]
+                            sauvegarder_state(state)
                 else:
                     print(f"  → ÉCHEC — {res.get('raison', '')}")
                     resultats["echecs"].append({"dataset_id": dataset_id, "titre": candidat["titre"], "raison": res.get("raison", "")})

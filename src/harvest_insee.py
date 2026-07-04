@@ -12,6 +12,7 @@ Résultats :
 """
 import csv
 import datetime
+import glob
 import json
 import os
 import sys
@@ -55,22 +56,31 @@ def _sauvegarder_state(state: dict) -> None:
         json.dump(state, f, ensure_ascii=False, indent=2)
 
 
-def _inchange(pub_id: str, url: str, state: dict) -> bool:
-    """Retourne True si url+taille+date-modif correspondent à la dernière entrée en cache."""
+def _inchange(pub_id: str, url: str, state: dict, dossier: str) -> bool:
+    """Retourne True si url+taille+date-modif correspondent à la dernière entrée en cache.
+
+    insee.fr ne renvoie ni Content-Length ni Last-Modified sur ces URLs (constaté en
+    pratique) : quand aucun validateur HTTP n'est exploitable, on se fie à l'URL déjà
+    comparée (une publication INSEE est un fichier statique par millésime — URL
+    identique = même édition), à condition que le fichier filtré soit toujours présent
+    sur disque (garde-fou si data/<dossier>/ a été purgé sans purger state_insee.json).
+    """
     entree = state.get(pub_id, {})
     if entree.get("url") != url:
+        return False
+    if not glob.glob(os.path.join(dossier, "*-rennesmetropole.csv")):
         return False
     try:
         r = requests.head(url, headers=_HEADERS, timeout=15, allow_redirects=True)
         size = r.headers.get("Content-Length")
         lm   = r.headers.get("Last-Modified")
-        # Inchangé si taille identique ET (pas de Last-Modified OU date identique)
-        if size and str(size) == str(entree.get("content_length")):
-            if not lm or lm == entree.get("last_modified"):
-                return True
+        if size:
+            # Inchangé si taille identique ET (pas de Last-Modified OU date identique)
+            return str(size) == str(entree.get("content_length")) and (not lm or lm == entree.get("last_modified"))
     except Exception:
         pass
-    return False
+    # Pas de validateur HTTP exploitable : l'URL inchangée fait foi.
+    return True
 
 
 # ---------------------------------------------------------------------------
@@ -267,7 +277,7 @@ def traiter_publication(pub: dict, state: dict) -> dict:
         return {"statut": "echec", "raison": "URL introuvable (direct + scraping)"}
 
     # 2. Cache : vérifier si le fichier a changé
-    if _inchange(pub_id, url, state):
+    if _inchange(pub_id, url, state, dossier):
         nb_rm = state.get(pub_id, {}).get("nb_rm", "?")
         print(f"  → Cache (inchangé, {nb_rm} lignes RM)")
         return {"statut": "cache", "nb_rm": nb_rm}

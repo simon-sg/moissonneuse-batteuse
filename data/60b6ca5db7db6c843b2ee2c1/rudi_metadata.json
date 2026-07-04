@@ -1,0 +1,92 @@
+{
+  "local_id": "e9ff6919-2208-5666-8918-f7dd4f920948",
+  "resource_title": "[DEPRECIE] Données essentielles de la commande publique - données enrichies - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "[DEPRECIE] Données essentielles de la commande publique - données enrichies — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/60b6ca5db7db6c843b2ee2c1\n\nCe jeu de données ne sera plus maintenu à compter du 16 novembre 2023. Merci de vous référer à la documentation en suivant ce [lien](https://data.economie.gouv.fr/pages/donnees-essentielles-de-la-commande-publique/)  \n\n\n  \nL’[arrêté](https://www.legifrance.gouv.fr/loda/id/JORFTEXT000038318675) du 22 mars 2019 relatif aux données essentielles prévoit l’obligation pour tous les acheteurs publics français (collectivités territoriales, ministères, hôpitaux publics, établissements publics, etc.) de publier les données essentielles de leurs marchés publics et de leurs contrats de concession sur leur profil d'acheteur pendant une durée de cinq ans.  \n\n\nIl est également possible de les publier sur le portail national des données ouvertes ([data.gouv](https://data.gouv.fr))  \n  \nAfin de faciliter la consommation de ces données à l'échelle nationale, nous avons développé des scripts réunissant, retraitant et enrichissant ces données en provenance de data.gouv.fr, dans un **_fichier unique_** rassemblant marchés et contrats de concession. Ce fichier unique est remis à disposition sur data.gouv.fr au lien [suivant](https://www.data.gouv.fr/fr/datasets/donnees-essentielles-de-la-commande-publique-fichiers-consolides/).  \n\n\n**Les sources de données utilisées sont les suivantes :**\n\n  * données issues du PES Marché de la DGFiP \n  * données collectées par l'API DUME de l'AIFE  \n\n  * données issues du profil d'acheteur Achatpublic.com mises à \n  * disposition via l'API DUME de l'AIFE  \n\n  * données issues du profil d'acheteur Dématis facilitant le \n  * téléchargement des données de ses clients (e-marchespublics.com)  \n\n  * données publiées sur le portail Open Data du Grand Lyon  \n\n  * données publiées sur le profil d'acheteur AWS (marches-publics.info), extraites et publiées manuellement par Colin Maudry sur data.gouv.fr \n\n  \nSi vous avez connaissance de sources de données susceptibles d'être agrégées à ce jeu de données, merci de nous contacter sur **oecp-recensement.daj[@]finances.gouv.fr.**"
+    }
+  ],
+  "theme": "economy",
+  "keywords": [
+    "commande-publique",
+    "declarations",
+    "donnees-essentielles",
+    "marches-conclus",
+    "marches-publics",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Ministères économiques et financiers"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "16997b4c-8d5b-53c4-8c57-8e7d36a4497d",
+      "media_type": "FILE",
+      "media_name": "decp-augmente-rennesmetropole.csv",
+      "media_caption": "decp_augmente.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "0bf44ec7-a3af-57a1-826a-282dfb93f349",
+      "media_type": "FILE",
+      "media_name": "decp-augmente-rennesmetropole.json",
+      "media_caption": "decp_augmente.csv — données filtrées sur Rennes Métropole (JSON)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "93d52209-3002-5bd4-868b-4ebec96f3cbf",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/decp_augmente/exports/csv?use_labels=true",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2026-03-05T00:00:00Z",
+    "updated": "2026-03-05T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2026-03-05T00:00:00Z",
+      "updated": "2026-03-05T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/60b6ca5db7db6c843b2ee2c1"
+  }
+}

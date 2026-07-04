@@ -1,0 +1,1031 @@
+<!doctype html>
+<html data-n-head-ssr lang="fr" data-n-head="%7B%22lang%22:%7B%22ssr%22:%22fr%22%7D%7D">
+  <head >
+    <meta data-n-head="ssr" charset="utf-8"><meta data-n-head="ssr" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui"><meta data-n-head="ssr" name="twitter:card" content="summary"><meta data-n-head="ssr" property="og:locale" content="fr_FR"><meta data-n-head="ssr" data-hid="og:image" property="og:image" content="https://data.ademe.fr/api/v1/portals/efWMeL1ZP/assets/home?draft=false&amp;hash=fit-c9484ba6c9.png"><meta data-n-head="ssr" data-hid="og:image:width" property="og:image:width" content="567"><meta data-n-head="ssr" data-hid="og:image:height" property="og:image:height" content="383"><meta data-n-head="ssr" data-hid="description" name="description" content="Le diagnostic de performance énergétique (DPE) renseigne sur la performance énergétique d’un logement ou d’un bâtiment, en évaluant sa consommation d’énergie et son impact en terme d’émissions de gaz à effet de serre. Il s’inscrit dans le cadre de la politique énergétique définie au niveau européen afin de réduire la consommation d’énergie des bâtiments et de limiter les émissions de gaz à effet de serre."><meta data-n-head="ssr" property="og:url" content="undefined"><meta data-n-head="ssr" data-hid="og:title" property="og:title" content="DPE tertiaire (avant juillet 2021)"><meta data-n-head="ssr" property="og:description" content="Le diagnostic de performance énergétique (DPE) renseigne sur la performance énergétique d’un logement ou d’un bâtiment, en évaluant sa consommation d’énergie et son impact en terme d’émissions de gaz à effet de serre. Il s’inscrit dans le cadre de la politique énergétique définie au niveau européen afin de réduire la consommation d’énergie des bâtiments et de limiter les émissions de gaz à effet de serre."><meta data-n-head="ssr" property="og:type" content="article"><meta data-n-head="ssr" property="article:author" content="ADEME"><meta data-n-head="ssr" property="article:modified_time" content="2022-12-13T08:54:42.946Z"><meta data-n-head="ssr" property="article:published_time" content="2021-03-24T16:09:15.507Z"><title>DPE tertiaire (avant juillet 2021)</title><base href="/"><link data-n-head="ssr" rel="canonical" href="https://data.ademe.fr/datasets/dpe-tertiaire"><link data-n-head="ssr" rel="icon" type="image/x-icon" href="https://data.ademe.fr/api/v1/portals/efWMeL1ZP/assets/favicon?draft=false&amp;hash=fit-d7749fd80a.png"><style data-n-head="ssr" vmid="config-style" type="text/css">
+html {
+  overflow-y: scroll !important;
+}
+
+.v-application#app.theme--light#app {
+  background: #FFFFFF;
+}
+
+.v-btn.primary.theme--light.v-btn--has-bg {
+  background: linear-gradient(90deg, #0d47a2 0%, #093273 100%);
+}
+
+/* TODO: the next 3 rules should be deprecated and replaced by explicit coloring of buttons in components (as done in nav-link component) */
+.v-application#app.theme--light .v-btn.primary.v-btn--has-bg {
+  border: 1px solid #093273 !important;
+}
+.v-btn.secondary.theme--light.v-btn--has-bg {
+  background-color: #1775c8 !important;
+}
+.v-btn.tertiary.theme--light.v-btn--has-bg {
+  background-color: #1775c8 !important;
+}
+
+/* Apply fonts */
+@font-face {
+    font-family: 'font1';
+    src: url('https://data.ademe.fr/api/v1/portals/efWMeL1ZP/assets/font1?draft=false&hash=eb551203b0') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'font2';
+    src: url('https://data.ademe.fr/api/v1/portals/efWMeL1ZP/assets/font2?draft=false&hash=f927ded015') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+    .v-application#app {
+    font-family: "font1" !important;
+    }
+    .v-application#app .text-subtitle-1, .v-application#app .text-subtitle-2, .v-application#app .text-body-1, .v-application#app .text-button, .v-application#app .text-caption, .v-application#app .text-overline  {
+    font-family: "font1" !important;
+    }
+    .v-application#app .text-h1, .v-application#app .text-h2, .v-application#app .text-h3, .v-application#app .text-h4, .v-application#app .text-h5, .v-application#app .text-h6 {
+    font-family: "font2" !important;
+    }
+
+    /* older typography classes */
+    .v-application#app .subheading, .v-application#app .body-2, .v-application#app .body-1, .v-application#app .button, .v-application#app .caption, .v-application#app .overline {
+    font-family: "font1" !important;
+    }
+    .v-application#app .display-4, .v-application#app .display-3, .v-application#app .display-2, .v-application#app .display-1, .v-application#app .headline, .v-application#app .title {
+    font-family: "font2" !important;
+    }
+      
+
+      .v-application#app a {
+        text-decoration: none;
+      }
+
+        p>a:not(.v-btn),
+        .underline-link {
+          display: inline-block;
+          position: relative;
+        }
+        p>a:not(.v-btn):after,
+        .underline-link:after {
+          content: '';
+          position: absolute;
+          width: 45px;
+          transform: scaleX(0);
+          height: 3px;
+          bottom: 0;
+          left: 0;
+          background-color: #0d47a2;
+          transform-origin: bottom left;
+          transition: transform 0.25s ease-out;
+        }
+        .page-element a:hover:after,
+        p>a:hover:after,
+        .underline-link:hover:after,
+        .underline-link-hover:after {
+          transform: scaleX(1);
+          transform-origin: bottom left;
+          background-color: #093273;
+        }
+        .underline-link.underline-link-partial:after {
+          transform: scaleX(1);
+        }
+        .underline-link.underline-link-partial:hover:after,
+        .underline-link-hover.underline-link-partial:after {
+          transform: scaleX(2);
+        }
+        
+
+/* some police tuning */
+.v-application#app a:not(.v-tab):not(.v-list-item):not(.v-card--link) {
+  color: #0d47a2;
+}
+.v-application#app a:not(.v-tab):not(.v-list-item):not(.v-card--link):hover {
+  color: #093273;
+}
+.v-application#app .area--dark a,
+.v-application#app .area--dark a:not(.v-tab):not(.v-list-item):not(.v-card--link),
+.v-application#app .area--dark a:not(.v-tab):not(.v-list-item):not(.v-card--link):hover,
+.v-application#app .area--dark h3,
+.v-application#app .area--dark span {
+  color: white;
+}
+.v-application#app .v-btn:not(.v-btn--outlined).primary,
+.v-application#app .v-btn:not(.v-btn--outlined).secondary,
+.v-application#app .v-btn:not(.v-btn--outlined).accent,
+.v-application#app .v-btn:not(.v-btn--outlined).success,
+.v-application#app .v-btn:not(.v-btn--outlined).error,
+.v-application#app .v-btn:not(.v-btn--outlined).warning,
+.v-application#app .v-btn:not(.v-btn--outlined).info {
+  color: white;
+}
+.v-application#app .theme--dark.v-list a {
+  color: white;
+}
+.v-application#app .area--light a:not(.v-tab):not(.v-list-item),
+.v-application#app .area--light h3,
+.v-application#app .area--light span,
+.v-application#app .area--light .v-tabs-bar.primary .v-tab--active {
+  color: #0d47a2!important;
+}
+.v-application#app .primary--text {
+  color: #0d47a2!important;
+}
+.v-application#app .primary-darker--text {
+  color: #093273!important;
+}
+.v-application#app .secondary--text {
+  color: #1775c8!important;
+}
+.v-application#app .tertiary--text {
+  color: #1775c8!important;
+}
+
+/* style of the main app bar */
+
+        .theme--light.v-app-bar.main-app-bar.v-toolbar.v-sheet {
+          background: rgba(255, 255, 255, 0.9);
+        }
+        
+
+/* style of the personal and partner navigation bars */
+
+      .v-application#app.theme--light.personal-space .navigation-left {
+        border-right: 1px solid #093273 !important;
+        background: linear-gradient(90deg, #093273 0%, #2660bb 100%);
+      }
+      
+
+      .v-application#app.theme--light.partner-space .navigation-left {
+        border-right: 1px solid #093273 !important;
+        background: linear-gradient(90deg, #093273 0%, #2660bb 100%);
+      }
+      
+
+/* default radius */
+.v-application#app .v-sheet.v-card,
+.v-application#app .v-text-field--outlined:not(.v-text-field--rounded),
+.v-application#app .v-text-field--solo:not(.v-text-field--rounded),
+.v-application#app .v-btn:not(.v-btn--rounded):not(.v-btn--text):not(.v-btn--fab):not(.v-btn--icon) {
+  border-radius: 4px;
+}
+.v-application#app .v-chip.v-chip--label {
+  border-radius: 4px !important;
+}
+.v-application#app .v-btn-toggle > .v-btn.v-btn:first-child {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.v-application#app .v-btn-toggle > .v-btn.v-btn:last-child {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.v-application#app .v-menu__content {
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+.v-application#app .v-sheet.v-card.v-sheet--shaped {
+  border-top-left-radius: 24px;
+  border-bottom-right-radius: 24px;
+}
+.v-application#app .theme--light.v-sheet.primary-outlined {
+  border: 2px solid #0d47a2;
+}
+
+/* used to display descriptions in cards with bottom gradient */
+
+      .card-gradient-desc170 {
+        position: relative;
+      }
+      .card-gradient-desc170:before {
+        content:'';
+        position:absolute;
+        width:100%;
+        height:170px;
+        left:0;
+        top:0;
+        background:linear-gradient(transparent 0, transparent 76%, #FFFFFF);
+      }
+      
+
+      .card-gradient-desc130 {
+        position: relative;
+      }
+      .card-gradient-desc130:before {
+        content:'';
+        position:absolute;
+        width:100%;
+        height:130px;
+        left:0;
+        top:0;
+        background:linear-gradient(transparent 0, transparent 69%, #FFFFFF);
+      }
+      
+
+      .card-gradient-desc90 {
+        position: relative;
+      }
+      .card-gradient-desc90:before {
+        content:'';
+        position:absolute;
+        width:100%;
+        height:90px;
+        left:0;
+        top:0;
+        background:linear-gradient(transparent 0, transparent 56%, #FFFFFF);
+      }
+      
+
+      .card-gradient-desc70 {
+        position: relative;
+      }
+      .card-gradient-desc70:before {
+        content:'';
+        position:absolute;
+        width:100%;
+        height:70px;
+        left:0;
+        top:0;
+        background:linear-gradient(transparent 0, transparent 43%, #FAFAFA);
+      }
+      
+
+/* footer style */
+
+
+/* home page style */
+#app .nav-home-search input::placeholder {
+  color: #0d47a2;
+  font-weight: bold;
+}
+#app .nav-home-search .v-input__icon--append button {
+  color: #0d47a2;
+}
+        </style><style data-n-head="vuetify" type="text/css" id="vuetify-theme-stylesheet" nonce="undefined">.v-application a { color: #0d47a2; }
+.v-application .primary {
+  background-color: #0d47a2 !important;
+  border-color: #0d47a2 !important;
+}
+.v-application .primary--text {
+  color: #0d47a2 !important;
+  caret-color: #0d47a2 !important;
+}
+.v-application .primary.lighten-5 {
+  background-color: #b3c6ff !important;
+  border-color: #b3c6ff !important;
+}
+.v-application .primary--text.text--lighten-5 {
+  color: #b3c6ff !important;
+  caret-color: #b3c6ff !important;
+}
+.v-application .primary.lighten-4 {
+  background-color: #96abff !important;
+  border-color: #96abff !important;
+}
+.v-application .primary--text.text--lighten-4 {
+  color: #96abff !important;
+  caret-color: #96abff !important;
+}
+.v-application .primary.lighten-3 {
+  background-color: #7890f6 !important;
+  border-color: #7890f6 !important;
+}
+.v-application .primary--text.text--lighten-3 {
+  color: #7890f6 !important;
+  caret-color: #7890f6 !important;
+}
+.v-application .primary.lighten-2 {
+  background-color: #5b77da !important;
+  border-color: #5b77da !important;
+}
+.v-application .primary--text.text--lighten-2 {
+  color: #5b77da !important;
+  caret-color: #5b77da !important;
+}
+.v-application .primary.lighten-1 {
+  background-color: #3b5ebd !important;
+  border-color: #3b5ebd !important;
+}
+.v-application .primary--text.text--lighten-1 {
+  color: #3b5ebd !important;
+  caret-color: #3b5ebd !important;
+}
+.v-application .primary.darken-1 {
+  background-color: #003187 !important;
+  border-color: #003187 !important;
+}
+.v-application .primary--text.text--darken-1 {
+  color: #003187 !important;
+  caret-color: #003187 !important;
+}
+.v-application .primary.darken-2 {
+  background-color: #001d6d !important;
+  border-color: #001d6d !important;
+}
+.v-application .primary--text.text--darken-2 {
+  color: #001d6d !important;
+  caret-color: #001d6d !important;
+}
+.v-application .primary.darken-3 {
+  background-color: #000454 !important;
+  border-color: #000454 !important;
+}
+.v-application .primary--text.text--darken-3 {
+  color: #000454 !important;
+  caret-color: #000454 !important;
+}
+.v-application .primary.darken-4 {
+  background-color: #00003d !important;
+  border-color: #00003d !important;
+}
+.v-application .primary--text.text--darken-4 {
+  color: #00003d !important;
+  caret-color: #00003d !important;
+}
+.v-application .secondary {
+  background-color: #1e88e5 !important;
+  border-color: #1e88e5 !important;
+}
+.v-application .secondary--text {
+  color: #1e88e5 !important;
+  caret-color: #1e88e5 !important;
+}
+.v-application .secondary.lighten-5 {
+  background-color: #cfffff !important;
+  border-color: #cfffff !important;
+}
+.v-application .secondary--text.text--lighten-5 {
+  color: #cfffff !important;
+  caret-color: #cfffff !important;
+}
+.v-application .secondary.lighten-4 {
+  background-color: #b0f5ff !important;
+  border-color: #b0f5ff !important;
+}
+.v-application .secondary--text.text--lighten-4 {
+  color: #b0f5ff !important;
+  caret-color: #b0f5ff !important;
+}
+.v-application .secondary.lighten-3 {
+  background-color: #91d8ff !important;
+  border-color: #91d8ff !important;
+}
+.v-application .secondary--text.text--lighten-3 {
+  color: #91d8ff !important;
+  caret-color: #91d8ff !important;
+}
+.v-application .secondary.lighten-2 {
+  background-color: #70bdff !important;
+  border-color: #70bdff !important;
+}
+.v-application .secondary--text.text--lighten-2 {
+  color: #70bdff !important;
+  caret-color: #70bdff !important;
+}
+.v-application .secondary.lighten-1 {
+  background-color: #4da2ff !important;
+  border-color: #4da2ff !important;
+}
+.v-application .secondary--text.text--lighten-1 {
+  color: #4da2ff !important;
+  caret-color: #4da2ff !important;
+}
+.v-application .secondary.darken-1 {
+  background-color: #006fc9 !important;
+  border-color: #006fc9 !important;
+}
+.v-application .secondary--text.text--darken-1 {
+  color: #006fc9 !important;
+  caret-color: #006fc9 !important;
+}
+.v-application .secondary.darken-2 {
+  background-color: #0057ad !important;
+  border-color: #0057ad !important;
+}
+.v-application .secondary--text.text--darken-2 {
+  color: #0057ad !important;
+  caret-color: #0057ad !important;
+}
+.v-application .secondary.darken-3 {
+  background-color: #004092 !important;
+  border-color: #004092 !important;
+}
+.v-application .secondary--text.text--darken-3 {
+  color: #004092 !important;
+  caret-color: #004092 !important;
+}
+.v-application .secondary.darken-4 {
+  background-color: #002b78 !important;
+  border-color: #002b78 !important;
+}
+.v-application .secondary--text.text--darken-4 {
+  color: #002b78 !important;
+  caret-color: #002b78 !important;
+}
+.v-application .accent {
+  background-color: #ff9800 !important;
+  border-color: #ff9800 !important;
+}
+.v-application .accent--text {
+  color: #ff9800 !important;
+  caret-color: #ff9800 !important;
+}
+.v-application .accent.lighten-5 {
+  background-color: #ffffa2 !important;
+  border-color: #ffffa2 !important;
+}
+.v-application .accent--text.text--lighten-5 {
+  color: #ffffa2 !important;
+  caret-color: #ffffa2 !important;
+}
+.v-application .accent.lighten-4 {
+  background-color: #ffff85 !important;
+  border-color: #ffff85 !important;
+}
+.v-application .accent--text.text--lighten-4 {
+  color: #ffff85 !important;
+  caret-color: #ffff85 !important;
+}
+.v-application .accent.lighten-3 {
+  background-color: #ffeb69 !important;
+  border-color: #ffeb69 !important;
+}
+.v-application .accent--text.text--lighten-3 {
+  color: #ffeb69 !important;
+  caret-color: #ffeb69 !important;
+}
+.v-application .accent.lighten-2 {
+  background-color: #ffcf4d !important;
+  border-color: #ffcf4d !important;
+}
+.v-application .accent--text.text--lighten-2 {
+  color: #ffcf4d !important;
+  caret-color: #ffcf4d !important;
+}
+.v-application .accent.lighten-1 {
+  background-color: #ffb32f !important;
+  border-color: #ffb32f !important;
+}
+.v-application .accent--text.text--lighten-1 {
+  color: #ffb32f !important;
+  caret-color: #ffb32f !important;
+}
+.v-application .accent.darken-1 {
+  background-color: #df7e00 !important;
+  border-color: #df7e00 !important;
+}
+.v-application .accent--text.text--darken-1 {
+  color: #df7e00 !important;
+  caret-color: #df7e00 !important;
+}
+.v-application .accent.darken-2 {
+  background-color: #bf6400 !important;
+  border-color: #bf6400 !important;
+}
+.v-application .accent--text.text--darken-2 {
+  color: #bf6400 !important;
+  caret-color: #bf6400 !important;
+}
+.v-application .accent.darken-3 {
+  background-color: #a14c00 !important;
+  border-color: #a14c00 !important;
+}
+.v-application .accent--text.text--darken-3 {
+  color: #a14c00 !important;
+  caret-color: #a14c00 !important;
+}
+.v-application .accent.darken-4 {
+  background-color: #843300 !important;
+  border-color: #843300 !important;
+}
+.v-application .accent--text.text--darken-4 {
+  color: #843300 !important;
+  caret-color: #843300 !important;
+}
+.v-application .error {
+  background-color: #d50000 !important;
+  border-color: #d50000 !important;
+}
+.v-application .error--text {
+  color: #d50000 !important;
+  caret-color: #d50000 !important;
+}
+.v-application .error.lighten-5 {
+  background-color: #ffb082 !important;
+  border-color: #ffb082 !important;
+}
+.v-application .error--text.text--lighten-5 {
+  color: #ffb082 !important;
+  caret-color: #ffb082 !important;
+}
+.v-application .error.lighten-4 {
+  background-color: #ff9268 !important;
+  border-color: #ff9268 !important;
+}
+.v-application .error--text.text--lighten-4 {
+  color: #ff9268 !important;
+  caret-color: #ff9268 !important;
+}
+.v-application .error.lighten-3 {
+  background-color: #ff754e !important;
+  border-color: #ff754e !important;
+}
+.v-application .error--text.text--lighten-3 {
+  color: #ff754e !important;
+  caret-color: #ff754e !important;
+}
+.v-application .error.lighten-2 {
+  background-color: #ff5736 !important;
+  border-color: #ff5736 !important;
+}
+.v-application .error--text.text--lighten-2 {
+  color: #ff5736 !important;
+  caret-color: #ff5736 !important;
+}
+.v-application .error.lighten-1 {
+  background-color: #f6361d !important;
+  border-color: #f6361d !important;
+}
+.v-application .error--text.text--lighten-1 {
+  color: #f6361d !important;
+  caret-color: #f6361d !important;
+}
+.v-application .error.darken-1 {
+  background-color: #b40000 !important;
+  border-color: #b40000 !important;
+}
+.v-application .error--text.text--darken-1 {
+  color: #b40000 !important;
+  caret-color: #b40000 !important;
+}
+.v-application .error.darken-2 {
+  background-color: #950000 !important;
+  border-color: #950000 !important;
+}
+.v-application .error--text.text--darken-2 {
+  color: #950000 !important;
+  caret-color: #950000 !important;
+}
+.v-application .error.darken-3 {
+  background-color: #770000 !important;
+  border-color: #770000 !important;
+}
+.v-application .error--text.text--darken-3 {
+  color: #770000 !important;
+  caret-color: #770000 !important;
+}
+.v-application .error.darken-4 {
+  background-color: #5c0000 !important;
+  border-color: #5c0000 !important;
+}
+.v-application .error--text.text--darken-4 {
+  color: #5c0000 !important;
+  caret-color: #5c0000 !important;
+}
+.v-application .info {
+  background-color: #2196f3 !important;
+  border-color: #2196f3 !important;
+}
+.v-application .info--text {
+  color: #2196f3 !important;
+  caret-color: #2196f3 !important;
+}
+.v-application .info.lighten-5 {
+  background-color: #d4ffff !important;
+  border-color: #d4ffff !important;
+}
+.v-application .info--text.text--lighten-5 {
+  color: #d4ffff !important;
+  caret-color: #d4ffff !important;
+}
+.v-application .info.lighten-4 {
+  background-color: #b5ffff !important;
+  border-color: #b5ffff !important;
+}
+.v-application .info--text.text--lighten-4 {
+  color: #b5ffff !important;
+  caret-color: #b5ffff !important;
+}
+.v-application .info.lighten-3 {
+  background-color: #95e8ff !important;
+  border-color: #95e8ff !important;
+}
+.v-application .info--text.text--lighten-3 {
+  color: #95e8ff !important;
+  caret-color: #95e8ff !important;
+}
+.v-application .info.lighten-2 {
+  background-color: #75ccff !important;
+  border-color: #75ccff !important;
+}
+.v-application .info--text.text--lighten-2 {
+  color: #75ccff !important;
+  caret-color: #75ccff !important;
+}
+.v-application .info.lighten-1 {
+  background-color: #51b0ff !important;
+  border-color: #51b0ff !important;
+}
+.v-application .info--text.text--lighten-1 {
+  color: #51b0ff !important;
+  caret-color: #51b0ff !important;
+}
+.v-application .info.darken-1 {
+  background-color: #007cd6 !important;
+  border-color: #007cd6 !important;
+}
+.v-application .info--text.text--darken-1 {
+  color: #007cd6 !important;
+  caret-color: #007cd6 !important;
+}
+.v-application .info.darken-2 {
+  background-color: #0064ba !important;
+  border-color: #0064ba !important;
+}
+.v-application .info--text.text--darken-2 {
+  color: #0064ba !important;
+  caret-color: #0064ba !important;
+}
+.v-application .info.darken-3 {
+  background-color: #004d9f !important;
+  border-color: #004d9f !important;
+}
+.v-application .info--text.text--darken-3 {
+  color: #004d9f !important;
+  caret-color: #004d9f !important;
+}
+.v-application .info.darken-4 {
+  background-color: #003784 !important;
+  border-color: #003784 !important;
+}
+.v-application .info--text.text--darken-4 {
+  color: #003784 !important;
+  caret-color: #003784 !important;
+}
+.v-application .success {
+  background-color: #2e7d32 !important;
+  border-color: #2e7d32 !important;
+}
+.v-application .success--text {
+  color: #2e7d32 !important;
+  caret-color: #2e7d32 !important;
+}
+.v-application .success.lighten-5 {
+  background-color: #b8ffb2 !important;
+  border-color: #b8ffb2 !important;
+}
+.v-application .success--text.text--lighten-5 {
+  color: #b8ffb2 !important;
+  caret-color: #b8ffb2 !important;
+}
+.v-application .success.lighten-4 {
+  background-color: #9ceb97 !important;
+  border-color: #9ceb97 !important;
+}
+.v-application .success--text.text--lighten-4 {
+  color: #9ceb97 !important;
+  caret-color: #9ceb97 !important;
+}
+.v-application .success.lighten-3 {
+  background-color: #80ce7c !important;
+  border-color: #80ce7c !important;
+}
+.v-application .success--text.text--lighten-3 {
+  color: #80ce7c !important;
+  caret-color: #80ce7c !important;
+}
+.v-application .success.lighten-2 {
+  background-color: #65b263 !important;
+  border-color: #65b263 !important;
+}
+.v-application .success--text.text--lighten-2 {
+  color: #65b263 !important;
+  caret-color: #65b263 !important;
+}
+.v-application .success.lighten-1 {
+  background-color: #4a974a !important;
+  border-color: #4a974a !important;
+}
+.v-application .success--text.text--lighten-1 {
+  color: #4a974a !important;
+  caret-color: #4a974a !important;
+}
+.v-application .success.darken-1 {
+  background-color: #0a631a !important;
+  border-color: #0a631a !important;
+}
+.v-application .success--text.text--darken-1 {
+  color: #0a631a !important;
+  caret-color: #0a631a !important;
+}
+.v-application .success.darken-2 {
+  background-color: #004b01 !important;
+  border-color: #004b01 !important;
+}
+.v-application .success--text.text--darken-2 {
+  color: #004b01 !important;
+  caret-color: #004b01 !important;
+}
+.v-application .success.darken-3 {
+  background-color: #003300 !important;
+  border-color: #003300 !important;
+}
+.v-application .success--text.text--darken-3 {
+  color: #003300 !important;
+  caret-color: #003300 !important;
+}
+.v-application .success.darken-4 {
+  background-color: #002100 !important;
+  border-color: #002100 !important;
+}
+.v-application .success--text.text--darken-4 {
+  color: #002100 !important;
+  caret-color: #002100 !important;
+}
+.v-application .warning {
+  background-color: #d81b60 !important;
+  border-color: #d81b60 !important;
+}
+.v-application .warning--text {
+  color: #d81b60 !important;
+  caret-color: #d81b60 !important;
+}
+.v-application .warning.lighten-5 {
+  background-color: #ffbbe4 !important;
+  border-color: #ffbbe4 !important;
+}
+.v-application .warning--text.text--lighten-5 {
+  color: #ffbbe4 !important;
+  caret-color: #ffbbe4 !important;
+}
+.v-application .warning.lighten-4 {
+  background-color: #ff9dc8 !important;
+  border-color: #ff9dc8 !important;
+}
+.v-application .warning--text.text--lighten-4 {
+  color: #ff9dc8 !important;
+  caret-color: #ff9dc8 !important;
+}
+.v-application .warning.lighten-3 {
+  background-color: #ff80ad !important;
+  border-color: #ff80ad !important;
+}
+.v-application .warning--text.text--lighten-3 {
+  color: #ff80ad !important;
+  caret-color: #ff80ad !important;
+}
+.v-application .warning.lighten-2 {
+  background-color: #ff6292 !important;
+  border-color: #ff6292 !important;
+}
+.v-application .warning--text.text--lighten-2 {
+  color: #ff6292 !important;
+  caret-color: #ff6292 !important;
+}
+.v-application .warning.lighten-1 {
+  background-color: #f74379 !important;
+  border-color: #f74379 !important;
+}
+.v-application .warning--text.text--lighten-1 {
+  color: #f74379 !important;
+  caret-color: #f74379 !important;
+}
+.v-application .warning.darken-1 {
+  background-color: #b90049 !important;
+  border-color: #b90049 !important;
+}
+.v-application .warning--text.text--darken-1 {
+  color: #b90049 !important;
+  caret-color: #b90049 !important;
+}
+.v-application .warning.darken-2 {
+  background-color: #9a0032 !important;
+  border-color: #9a0032 !important;
+}
+.v-application .warning--text.text--darken-2 {
+  color: #9a0032 !important;
+  caret-color: #9a0032 !important;
+}
+.v-application .warning.darken-3 {
+  background-color: #7b001e !important;
+  border-color: #7b001e !important;
+}
+.v-application .warning--text.text--darken-3 {
+  color: #7b001e !important;
+  caret-color: #7b001e !important;
+}
+.v-application .warning.darken-4 {
+  background-color: #5e0004 !important;
+  border-color: #5e0004 !important;
+}
+.v-application .warning--text.text--darken-4 {
+  color: #5e0004 !important;
+  caret-color: #5e0004 !important;
+}
+.v-application .admin {
+  background-color: #b71c1c !important;
+  border-color: #b71c1c !important;
+}
+.v-application .admin--text {
+  color: #b71c1c !important;
+  caret-color: #b71c1c !important;
+}
+.v-application .admin.lighten-5 {
+  background-color: #ffaf95 !important;
+  border-color: #ffaf95 !important;
+}
+.v-application .admin--text.text--lighten-5 {
+  color: #ffaf95 !important;
+  caret-color: #ffaf95 !important;
+}
+.v-application .admin.lighten-4 {
+  background-color: #ff937b !important;
+  border-color: #ff937b !important;
+}
+.v-application .admin--text.text--lighten-4 {
+  color: #ff937b !important;
+  caret-color: #ff937b !important;
+}
+.v-application .admin.lighten-3 {
+  background-color: #ff7762 !important;
+  border-color: #ff7762 !important;
+}
+.v-application .admin--text.text--lighten-3 {
+  color: #ff7762 !important;
+  caret-color: #ff7762 !important;
+}
+.v-application .admin.lighten-2 {
+  background-color: #f75b4a !important;
+  border-color: #f75b4a !important;
+}
+.v-application .admin--text.text--lighten-2 {
+  color: #f75b4a !important;
+  caret-color: #f75b4a !important;
+}
+.v-application .admin.lighten-1 {
+  background-color: #d73e32 !important;
+  border-color: #d73e32 !important;
+}
+.v-application .admin--text.text--lighten-1 {
+  color: #d73e32 !important;
+  caret-color: #d73e32 !important;
+}
+.v-application .admin.darken-1 {
+  background-color: #980005 !important;
+  border-color: #980005 !important;
+}
+.v-application .admin--text.text--darken-1 {
+  color: #980005 !important;
+  caret-color: #980005 !important;
+}
+.v-application .admin.darken-2 {
+  background-color: #7a0000 !important;
+  border-color: #7a0000 !important;
+}
+.v-application .admin--text.text--darken-2 {
+  color: #7a0000 !important;
+  caret-color: #7a0000 !important;
+}
+.v-application .admin.darken-3 {
+  background-color: #5e0000 !important;
+  border-color: #5e0000 !important;
+}
+.v-application .admin--text.text--darken-3 {
+  color: #5e0000 !important;
+  caret-color: #5e0000 !important;
+}
+.v-application .admin.darken-4 {
+  background-color: #480000 !important;
+  border-color: #480000 !important;
+}
+.v-application .admin--text.text--darken-4 {
+  color: #480000 !important;
+  caret-color: #480000 !important;
+}
+.v-application .tertiary {
+  background-color: #1e88e5 !important;
+  border-color: #1e88e5 !important;
+}
+.v-application .tertiary--text {
+  color: #1e88e5 !important;
+  caret-color: #1e88e5 !important;
+}
+.v-application .tertiary.lighten-5 {
+  background-color: #cfffff !important;
+  border-color: #cfffff !important;
+}
+.v-application .tertiary--text.text--lighten-5 {
+  color: #cfffff !important;
+  caret-color: #cfffff !important;
+}
+.v-application .tertiary.lighten-4 {
+  background-color: #b0f5ff !important;
+  border-color: #b0f5ff !important;
+}
+.v-application .tertiary--text.text--lighten-4 {
+  color: #b0f5ff !important;
+  caret-color: #b0f5ff !important;
+}
+.v-application .tertiary.lighten-3 {
+  background-color: #91d8ff !important;
+  border-color: #91d8ff !important;
+}
+.v-application .tertiary--text.text--lighten-3 {
+  color: #91d8ff !important;
+  caret-color: #91d8ff !important;
+}
+.v-application .tertiary.lighten-2 {
+  background-color: #70bdff !important;
+  border-color: #70bdff !important;
+}
+.v-application .tertiary--text.text--lighten-2 {
+  color: #70bdff !important;
+  caret-color: #70bdff !important;
+}
+.v-application .tertiary.lighten-1 {
+  background-color: #4da2ff !important;
+  border-color: #4da2ff !important;
+}
+.v-application .tertiary--text.text--lighten-1 {
+  color: #4da2ff !important;
+  caret-color: #4da2ff !important;
+}
+.v-application .tertiary.darken-1 {
+  background-color: #006fc9 !important;
+  border-color: #006fc9 !important;
+}
+.v-application .tertiary--text.text--darken-1 {
+  color: #006fc9 !important;
+  caret-color: #006fc9 !important;
+}
+.v-application .tertiary.darken-2 {
+  background-color: #0057ad !important;
+  border-color: #0057ad !important;
+}
+.v-application .tertiary--text.text--darken-2 {
+  color: #0057ad !important;
+  caret-color: #0057ad !important;
+}
+.v-application .tertiary.darken-3 {
+  background-color: #004092 !important;
+  border-color: #004092 !important;
+}
+.v-application .tertiary--text.text--darken-3 {
+  color: #004092 !important;
+  caret-color: #004092 !important;
+}
+.v-application .tertiary.darken-4 {
+  background-color: #002b78 !important;
+  border-color: #002b78 !important;
+}
+.v-application .tertiary--text.text--darken-4 {
+  color: #002b78 !important;
+  caret-color: #002b78 !important;
+}</style><script data-n-head="ssr" data-hid="schema" type="application/ld+json">{"@context":"http://schema.org","@type":"Dataset","name":"DPE tertiaire (avant juillet 2021)","description":"Le diagnostic de performance énergétique (DPE) renseigne sur la performance énergétique d’un logement ou d’un bâtiment, en évaluant sa consommation d’énergie et son impact en terme d’émissions de gaz à effet de serre. Il s’inscrit dans le cadre de la politique énergétique définie au niveau européen afin de réduire la consommation d’énergie des bâtiments et de limiter les émissions de gaz à effet de serre.","author":{"@type":"Organization","name":"ADEME"},"creator":{"@type":"Organization","name":"ADEME"},"dateCreated":"2021-03-24T16:09:15.507Z","dateModified":"2022-12-13T08:54:42.946Z","sdPublisher":{"@context":"http://schema.org","@type":"Organization","name":"Koumoul","legalName":"Koumoul","url":"https://koumoul.com/","logo":"https://koumoul.com/assets/koumoul.png","foundingDate":"2017","founders":[{"@type":"Person","name":"Nicolas Bonnel","email":"nicolas.bonnel@koumoul.com","sameAs":["https://github.com/nicolas-bonnel","https://fr.linkedin.com/in/nicolas-bonnel-557a54131"]},{"@type":"Person","name":"Alban Mouton","email":"alban.mouton@koumoul.com","sameAs":["https://github.com/albanm","https://fr.linkedin.com/in/alban-mouton-56802a132"]}],"address":{"@type":"PostalAddress","streetAddress":"5, rue Joseph Le Brix","addressLocality":"Vannes","postalCode":"56000","addressCountry":"France"},"contactPoint":[{"@type":"ContactPoint","contactType":"customer service","url":"https://koumoul.com/contact","email":"contact@koumoul.com","availableLanguage":["English","French"]},{"@type":"ContactPoint","contactType":"technical support","email":"support@koumoul.com","url":"https://koumoul.com/contact","availableLanguage":["English","French"]}],"sameAs":["https://plus.google.com/108675070247986361976","https://twitter.com/Koumoul_fr","https://gitlab.com/koumoul","https://github.com/data-fair","http://codepen.io/koumoul/","http://www.data.gouv.fr/fr/organizations/koumoul-1/","https://www.facebook.com/Koumoul-868835219926301","https://hub.docker.com/u/koumoul/"]},"sdDatePublished":"2021-03-24T16:09:15.507Z","encodingFormat":"application/json","citation":"ADEME","spatialCoverage":{"@type":"Place","geo":{"@type":"GeoShape","box":"-61.52577705681324,16.415923959575593 9.55180998891592,51.08062697108835"}},"license":"https://www.etalab.gouv.fr/licence-ouverte-open-licence"}</script><link rel="preload" href="/_nuxt/c8d685a6-1ca8da7.js" as="script"><link rel="preload" href="/_nuxt/c9ad72b.js" as="script"><link rel="preload" href="/_nuxt/css/0e1f36c.css" as="style"><link rel="preload" href="/_nuxt/0515138.js" as="script"><link rel="preload" href="/_nuxt/css/704d84b.css" as="style"><link rel="preload" href="/_nuxt/c8d685a6-8470003.js" as="script"><link rel="preload" href="/_nuxt/css/0372ad1.css" as="style"><link rel="preload" href="/_nuxt/c8d685a6-033b2bd.js" as="script"><link rel="preload" href="/_nuxt/css/47903a7.css" as="style"><link rel="preload" href="/_nuxt/015d8d7.js" as="script"><link rel="preload" href="/_nuxt/css/ae59b58.css" as="style"><link rel="preload" href="/_nuxt/8fe7087.js" as="script"><link rel="preload" href="/_nuxt/css/632dc66.css" as="style"><link rel="preload" href="/_nuxt/e15899d.js" as="script"><link rel="preload" href="/_nuxt/css/4180938.css" as="style"><link rel="preload" href="/_nuxt/86fc9bc.js" as="script"><link rel="preload" href="/_nuxt/css/dd2cb3e.css" as="style"><link rel="preload" href="/_nuxt/c8d685a6-2a2bfb4.js" as="script"><link rel="stylesheet" href="/_nuxt/css/0e1f36c.css"><link rel="stylesheet" href="/_nuxt/css/704d84b.css"><link rel="stylesheet" href="/_nuxt/css/0372ad1.css"><link rel="stylesheet" href="/_nuxt/css/47903a7.css"><link rel="stylesheet" href="/_nuxt/css/ae59b58.css"><link rel="stylesheet" href="/_nuxt/css/632dc66.css"><link rel="stylesheet" href="/_nuxt/css/4180938.css"><link rel="stylesheet" href="/_nuxt/css/dd2cb3e.css">
+  </head>
+  <body >
+    <div data-server-rendered="true" id="__nuxt"><!----><div id="__layout"><div data-app="true" id="app" class="v-application v-application--is-ltr theme--light"><div class="v-application--wrap"><!----> <header data-fetch-key="0" class="v-sheet theme--light elevation-6 v-toolbar v-toolbar--extended v-app-bar v-app-bar--fixed main-app-bar mb-3 app-bar-xs area--light app-bar-fluid" style="height:65px;margin-top:0px;transform:translateY(0px);left:0px;right:0px;max-height:192px;"><div class="v-toolbar__content" style="height:1px;"></div><div class="v-toolbar__extension" style="height:64px;"><div style="float:left;"><a href="https://www.ademe.fr/" target="blank" class="mr-3" style="height:56px;display:block;"><img src="https://data.ademe.fr/api/v1/portals/efWMeL1ZP/assets/logo?draft=false&amp;hash=fit-2e58cae358.png" alt="Portail open data de l'ADEME" style="max-height:56px;max-width:0px;"></a></div> <div class="row nav-tabs-or-menu mx-0" style="overflow:hidden;"><div class="v-menu" data-v-c6f29c1c><button type="button" title="Menu de navigation" class="font-weight-bold v-btn v-btn--text v-btn--tile theme--light v-size--default" style="height:64px;" data-v-c6f29c1c><span class="v-btn__content"><i aria-hidden="true" class="v-icon notranslate mx-1 mdi mdi-menu theme--light" data-v-c6f29c1c></i> <!----></span></button><!----></div> <div class="v-tabs v-tabs--centered theme--light" style="display:none;"><div role="tablist" class="v-item-group theme--light v-slide-group v-tabs-bar v-tabs-bar--is-mobile primary--text transparent" style="height:64px;"><div class="v-slide-group__prev v-slide-group__prev--disabled"><!----></div><div class="v-slide-group__wrapper"><div class="v-slide-group__content v-tabs-bar__content"><div class="v-tabs-slider-wrapper" style="transition:none;"><div class="v-tabs-slider"></div></div> <a href="/" tabindex="0" aria-selected="false" role="tab" class="v-tab font-weight-bold grey--text text--darken-3">
+      Accueil
+    </a> <!----><a href="/datasets" aria-current="page" tabindex="0" aria-selected="false" role="tab" class="v-tab--active v-tab font-weight-bold grey--text text--darken-3">
+      Données
+    </a> <!----><a href="/applications" tabindex="0" aria-selected="false" role="tab" class="v-tab font-weight-bold grey--text text--darken-3">
+      Visualisations
+    </a> <!----><a href="/pages/acces-mcp" tabindex="0" aria-selected="false" role="tab" class="v-tab font-weight-bold grey--text text--darken-3">
+      Accès MCP
+    </a> <!----><a href="/pages/faq" tabindex="0" aria-selected="false" role="tab" class="v-tab font-weight-bold grey--text text--darken-3">
+      FAQ
+    </a> <!----><a href="/contact" tabindex="0" aria-selected="false" role="tab" class="v-tab font-weight-bold grey--text text--darken-3">
+      Contact
+    </a> <!----></div></div><div class="v-slide-group__next v-slide-group__next--disabled"><!----></div></div></div></div> <div class="v-toolbar__items"><!----> <!----></div></div></header> <main class="v-main mt-3" style="padding-top:1px;padding-right:0px;padding-bottom:0px;padding-left:0px;"><div class="v-main__wrap"><!----> <div data-fetch-key="1"><div class="container"><h1 class="text-h5 grey--text text--darken-3 my-4">DPE tertiaire (avant juillet 2021)</h1> <div class="row"><div class="col-md-7 col-12"><!----> <div><p>Le diagnostic de performance énergétique (DPE) renseigne sur la performance énergétique d’un logement ou d’un bâtiment, en évaluant sa consommation d’énergie et son impact en terme d’émissions de gaz à effet de serre. Il s’inscrit dans le cadre de la politique énergétique définie au niveau européen afin de réduire la consommation d’énergie des bâtiments et de limiter les émissions de gaz à effet de serre.</p>
+<p>Le contenu et les modalités d’établissement du DPE sont réglementés. Le DPE décrit le bâtiment ou le logement (surface, orientation, murs, fenêtres, matériaux, etc), ainsi que ses équipements de chauffage, de production d’eau chaude sanitaire, de refroidissement et de ventilation. Il indique, suivant les cas, soit la quantité d’énergie effectivement consommée (sur la base de factures), soit la consommation d’énergie estimée pour une utilisation standardisée du bâtiment ou du logement.</p>
+<p>La vue tabulaire des données est une vue simplifiée des données. </p><p></p>Les <a href="https://files.data.gouv.fr/ademe/202110/dpe_tertiaire_202110.sql">données complètes</a>, issues des bases de données, sont disponibles au téléchargement mais leur utilisation est un peu plus complexe et réservée à un public averti.<p></p></div></div> <div class="col-md-4 offset-md-1 col-12"><div class="py-3 v-card v-sheet theme--light elevation-0" style="background-color:#FAFAFA;"><div class="row"><div class="py-0 col-md-12 col-12"><div tabindex="-1" class="v-list-item theme--light" style="min-height:36px;"><div class="v-list-item__content"><div class="v-list-item__title"><div class="v-subheader pa-0 theme--light" style="height:26px;">
+                      Taille :
+                    </div>
+                    515 562 enregistrements
+                    
+                      - 546 Mo
+                    </div></div></div></div> <div class="py-0 col-md-12 col-12"><div tabindex="-1" class="v-list-item theme--light"><div class="v-list-item__content"><div class="v-list-item__title"><div class="v-subheader pa-0 theme--light" style="height:26px;">
+                      Données produites par :
+                    </div> <strong>ADEME</strong></div></div></div></div> <!----> <div class="py-0 col-md-12 col-12"><div tabindex="-1" class="v-list-item theme--light"><div class="v-list-item__content"><div class="v-list-item__title"><div class="v-subheader pa-0 theme--light" style="height:26px;">
+                      Licence :
+                    </div> <a href="https://www.etalab.gouv.fr/licence-ouverte-open-licence" rel="external" class="underline-link">Licence Ouverte / Open Licence</a></div></div></div></div> <div class="py-0 col-md-12 col-12"><div tabindex="-1" class="v-list-item theme--light"><div class="v-list-item__content"><div class="v-list-item__title" style="white-space:normal;"><div class="v-subheader pa-0 theme--light" style="height:26px;">
+                      Mots clés :
+                    </div> <span draggable="false" class="ma-1 v-chip theme--dark v-size--small" style="background-color:#1775c8;border-color:#1775c8;"><span class="v-chip__content">
+                      DPE 
+                    </span></span><span draggable="false" class="ma-1 v-chip theme--dark v-size--small" style="background-color:#1775c8;border-color:#1775c8;"><span class="v-chip__content">
+                      Bâtiment
+                    </span></span></div></div></div></div> <!----> <!----> <!----></div> <hr role="separator" aria-orientation="horizontal" class="mt-2 mb-3 v-divider theme--light"> <div class="row ma-0 align-center"><div class="px-5 py-1 col-md-12 col-12"><div class="row"><div class="pa-0 col col-auto"><div class="v-dialog__container"><button type="button" aria-label="Aperçu du tableau" title="Aperçu du tableau" class="action-icon ml-0 v-btn v-btn--fab v-btn--has-bg v-btn--round theme--light elevation-0 v-size--small transparent pa-0" style="width:32px;height:32px;"><span class="v-btn__content"><i aria-hidden="true" class="v-icon notranslate mdi mdi-table-eye theme--light primary--text"></i></span></button><!----></div></div> <div class="pa-0 col col-auto"><a href="/datasets/dpe-tertiaire/full" aria-label="Tableau plein écran" title="Tableau plein écran" class="action-icon ml-0 v-btn v-btn--fab v-btn--has-bg v-btn--round v-btn--router theme--light elevation-0 v-size--small transparent pa-0" style="width:32px;height:32px;"><span class="v-btn__content"><i aria-hidden="true" class="v-icon notranslate mdi mdi-table-large theme--light primary--text"></i></span></a></div> <div class="pa-0 col col-auto"><div class="v-dialog__container"><button type="button" aria-label="Carte générique" title="Carte générique" class="action-icon ml-0 v-btn v-btn--fab v-btn--has-bg v-btn--round theme--light elevation-0 v-size--small transparent pa-0" style="width:32px;height:32px;"><span class="v-btn__content"><i aria-hidden="true" class="v-icon notranslate mdi mdi-map-marker theme--light primary--text"></i></span></button><!----></div></div> <div class="pa-0 col col-auto"><a href="/datasets/dpe-tertiaire/api-doc" aria-label="Documentation d'API" title="Documentation d'API" class="action-icon ml-0 v-btn v-btn--fab v-btn--has-bg v-btn--round v-btn--router theme--light elevation-0 v-size--small transparent pa-0" style="width:32px;height:32px;"><span class="v-btn__content"><i aria-hidden="true" class="v-icon notranslate mdi mdi-cog theme--light primary--text"></i></span></a></div> <div class="pa-0 col col-auto"><div class="v-dialog__container"><button type="button" aria-label="Téléchargement des données" title="Téléchargement des données" class="action-icon ml-0 v-btn v-btn--fab v-btn--has-bg v-btn--round theme--light elevation-0 v-size--small transparent pa-0" style="width:32px;height:32px;"><span class="v-btn__content"><i aria-hidden="true" class="v-icon notranslate mdi mdi-download theme--light primary--text"></i></span></button><!----></div></div> <div class="pa-0 col col-auto"><div class="v-dialog__container"><button type="button" aria-label="Description des champs" title="Description des champs" class="action-icon ml-0 v-btn v-btn--fab v-btn--has-bg v-btn--round theme--light elevation-0 v-size--small transparent pa-0" style="width:32px;height:32px;"><span class="v-btn__content"><i aria-hidden="true" class="v-icon notranslate mdi mdi-view-list theme--light primary--text"></i></span></button><!----></div></div> <div class="pa-0 col col-auto"><div class="v-dialog__container"><button type="button" aria-label="Intégrer dans un site" title="Intégrer dans un site" class="action-icon ml-0 v-btn v-btn--fab v-btn--has-bg v-btn--round theme--light elevation-0 v-size--small transparent pa-0" style="width:32px;height:32px;"><span class="v-btn__content"><i aria-hidden="true" class="v-icon notranslate mdi mdi-code-tags theme--light primary--text"></i></span></button><!----></div></div> <!----> <div class="pa-0 col col-auto"><!----></div></div></div> <div class="py-1 col-md-12 col-12"><div tabindex="-1" class="v-list-item theme--light" style="min-height:36px;"><div class="v-list-item__content py-1"><div class="v-list-item__title" style="white-space:normal;"><div class="v-subheader pa-0 theme--light" style="height:26px;">
+                      Mis à jour le 13 décembre 2022
+                    </div></div></div></div></div> <div class="py-1 col-md-12 col-12"><div class="row ma-0 align-center"><div class="v-subheader theme--light" style="height:26px;">
+                  Partager :
+                </div> <div class="share-network"><!----><!----><!----><!----><!----></div></div></div></div></div></div></div>  <!----> <!----> <!----> <div class="row my-4 text-center"><div class="col col-12"><a href="/datasets" class="nuxt-link-active title primary--text"><i aria-hidden="true" class="v-icon notranslate mdi mdi-reply theme--light primary--text"></i>
+   <span class="underline-link">retourner à la liste</span></a></div></div></div></div> <!----></div></main> <button type="button" title="Remonter au début de la page" aria-label="Remonter au début de la page" class="transition-swing v-btn v-btn--bottom v-btn--is-elevated v-btn--fab v-btn--fixed v-btn--has-bg v-btn--right v-btn--round theme--light v-size--large primary" style="display:none;z-index:6;"><span class="v-btn__content"><i aria-hidden="true" class="v-icon notranslate mdi mdi-chevron-up theme--light"></i></span></button> <!----> <footer class="v-footer v-sheet theme--light main-footer pa-0 area--light mt-5"><div class="v-card v-sheet theme--light rounded-0" style="width:100%;background-color:#ffffff;border-color:#ffffff;"><div class="container"><div class="row mx-0 my-2 text-center align-center justify-center"><!----> <!----></div> <!----> <div class="row mx-0 my-2"><div class="pa-0 col-sm-4 offset-sm-2 col-10 offset-2"><a href="https://agirpourlatransition.ademe.fr/conditions-generales-dutilisation">Conditions d'utilisation</a></div><div class="pa-0 col-sm-4 offset-sm-2 col-10 offset-2"><a href="https://www.ademe.fr/">Site institutionnel</a></div><div class="pa-0 col-sm-4 offset-sm-2 col-10 offset-2"><a href="https://www.ademe.fr/content/contacter">Nous contacter</a></div><div class="pa-0 col-sm-4 offset-sm-2 col-10 offset-2"><a href="https://agirpourlatransition.ademe.fr/"> Agir pour la transition écologique</a></div><div class="pa-0 col-sm-4 offset-sm-2 col-10 offset-2"><a href="https://twitter.com/ademe">Twitter</a></div><div class="pa-0 col-sm-4 offset-sm-2 col-10 offset-2"><a href="/privacy-policy">
+        Politique de confidentialité
+      </a></div></div> <!----> <!----></div> <hr role="separator" aria-orientation="horizontal" class="v-divider theme--light"> <div class="container text-center py-1"><span>©2026 — </span><strong><a href="https://koumoul.com">Koumoul</a></strong></div></div></footer></div></div></div></div><script>window.__NUXT__=(function(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,_,$,aa,ab,ac,ad,ae,af,ag,ah,ai,aj,ak,al,am,an,ao,ap,aq,ar,as,at,au,av,aw,ax,ay,az,aA,aB,aC,aD,aE,aF,aG,aH,aI,aJ,aK,aL,aM,aN,aO,aP,aQ,aR,aS,aT,aU,aV,aW,aX,aY,aZ,a_,a$,ba,bb,bc,bd,be,bf,bg,bh,bi,bj,bk,bl,bm,bn,bo,bp,bq,br,bs,bt,bu,bv,bw,bx,by,bz,bA,bB,bC,bD,bE,bF,bG,bH,bI,bJ,bK,bL,bM,bN,bO,bP,bQ,bR,bS,bT,bU,bV,bW,bX,bY,bZ,b_,b$,ca,cb,cc,cd,ce,cf,cg,ch,ci,cj,ck,cl,cm,cn,co,cp,cq,cr,cs,ct,cu,cv,cw,cx,cy,cz,cA,cB,cC,cD,cE,cF,cG,cH,cI,cJ,cK,cL,cM,cN,cO,cP,cQ,cR,cS,cT,cU,cV,cW,cX,cY,cZ,c_,c$,da,db,dc,dd,de,df,dg,dh,di,dj,dk,dl,dm,dn,do0,dp,dq,dr,ds,dt,du,dv,dw,dx,dy,dz,dA,dB,dC,dD,dE,dF,dG,dH,dI,dJ,dK,dL,dM,dN,dO,dP,dQ,dR,dS,dT,dU,dV,dW,dX,dY,dZ,d_,d$,ea,eb,ec,ed,ee,ef,eg,eh,ei,ej,ek,el,em,en,eo,ep,eq,er,es,et,eu,ev,ew,ex){ed.assets={logo:{name:"RF & ADEME.png",hash:"fit-2e58cae358.png"},home:{name:"Open data ADEME 1.png",hash:"fit-c9484ba6c9.png"},favicon:{name:"LogoAdeme2020_FR_RVB.jpg",hash:"fit-d7749fd80a.png"},font2:{name:"Marianne-ExtraBold.woff2",lastModified:"2025-10-13T13:53:30.087Z",size:41988,type:b,hash:"f927ded015"},font1:{name:"Marianne-Regular.woff2",lastModified:"2025-10-13T13:53:19.898Z",size:41328,type:b,hash:"eb551203b0"}};ed.title="Portail open data de l'ADEME";ed.authentication="optional";ed.homeImageAlwaysVisible=i;ed.metaDescription="Portail open data de l'ADEME. Accès aux jeux de données et aux visualisations des données de l'ADEME; agence de la transition écologique.";ed.themeColor="#0D47A2";ed.buttonOptions=["alwaysUnderline","hoverUnderline"];ed.infoCardBackgroundColor="lightGrey";ed.infoCardOptions=[];ed.actionCardBackgroundColor=I;ed.actionCardOptions=["hoverElevate",C];ed.radius=g;ed.elevation=f;ed.backgroundColor=I;ed.secondaryBackgroundColor="#AAA1A1";ed.secondaryColor=ee;ed.topicsBackgroundColor="individual";ed.actionCardHorizontalOptions=[C,"flat","hoverColorTitle","hoverColorBorder"];ed.actionCardHorizontalBackgroundColor=I;ed.navLinkMode="link";ed.navLinkColor=ef;ed.tertiaryColor=ee;ed.headingsFont={source:eg,name:"font2",label:"Police 2 (Marianne-Bold.woff2)"};ed.bodyFont={source:eg,name:"font1",label:"Police 1 (Marianne-Regular.woff2)"};ed.appBarTransparency=c;ed.appBarBehavior="stick";ed.appBarColor=I;ed.appBarActiveOptions=["slider","color"];ed.appBarFluid=c;ed.appBarFontColorPrimary=i;ed.appBarAdditionalLinks=[];ed.website=eh;ed.titleColor=ei;ed.headerColor="page";ed.headerNoTitle=i;ed.useHtmlTitle=i;ed.headerLogo2="https:\u002F\u002Fcellule-strategie-numerique-adem.gitbook.io\u002F~gitbook\u002Fimage?url=https:%2F%2F4251515518-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252F2jK8JaUieA84hk2TJR3v%252Fuploads%252FjiBdH9uzuChCqRrgYFTU%252FLogo%2520Fabrique%2520-%2520small.jpg%3Falt=media%26token=50c7bfac-218c-4947-8dec-13efab2749c3&width=768&dpr=1&quality=100&sign=4aab3d5169efc1409f0e3aa8ad197f26b472b5c5bdf2d4a28515a21abca1a87d";ed.headerHide=c;ed.footerColor="#FFFFFF";ed.footerLinks=[{type:J,href:"https:\u002F\u002Fagirpourlatransition.ademe.fr\u002Fconditions-generales-dutilisation",title:"Conditions d'utilisation"},{type:J,href:eh,title:"Site institutionnel"},{type:J,href:"https:\u002F\u002Fwww.ademe.fr\u002Fcontent\u002Fcontacter",title:"Nous contacter"},{type:J,title:" Agir pour la transition écologique",href:"https:\u002F\u002Fagirpourlatransition.ademe.fr\u002F"},{type:J,title:"Twitter",href:"https:\u002F\u002Ftwitter.com\u002Fademe"}];ed.footerImportantLinks=[];ed.footerExtraLogos=[];ed.footerLinksMode="columns";ed.footerCopyrightAsLogo=i;ed.footerSocial=c;ed.footerBackgroundImage=w;ed.footerSitemap=i;ed.footerPrivacyPolicy=c;ed.homeImageAsBanner=i;ed.description="\u003Cp\u003EÉtablissement public à caractère industriel et commercial, placé sous la tutelle conjointe des ministères en charge de la Transition écologique et solidaire et de l’Enseignement supérieur et de la Recherche, l’ADEME participe à la mise en œuvre des politiques publiques dans les domaines de l’environnement, de l’énergie et du développement durable.\u003C\u002Fp\u003E\n\u003Cp\u003EPour répondre aux obligations réglementaires (Loi pour une République numérique) mais également pour accompagner la Transition écologique, l’Agence a décidé de mettre à disposition des entreprises, des collectivités locales, des pouvoirs publics et du grand public, ses données afin de leur permettre de progresser dans leur démarche environnementale et de démultiplier les actions en faveur de la Transition écologique.\u003C\u002Fp\u003E\n\u003Cp\u003ELes données de prospective \"Transition(s) 2050\" sont accessibles sur le portail \u003Ca href=\"https:\u002F\u002Fdata-transitions2050.ademe.fr\"\u003Edata-transitions2050.ademe.fr\u003C\u002Fa\u003E\u003C\u002Fp\u003E\n";ed.showKpis=c;ed.homeDatasets={type:ej,size:f,cardLayout:K};ed.homeApplications={type:ej,size:f,cardLayout:K};ed.showTwitterTimeline=c;ed.kpiBackgroundColor=I;ed.kpiOptions=[C,"shaped"];ed.homeImageHidden=i;ed.homeSearchPosition=cx;ed.homeTopicsPosition=cx;ed.homeShowSearch=i;ed.homeShowTopics=c;ed.homeTopicsOptions=[C,ek,el];ed.homeSearchOptions=[C,ek];ed.homeLinksOptions=[C,el];ed.homeLinks=[];ed.homeShowLinks=i;ed.showLastNews=i;ed.homeLinksPosition=cx;ed.showEvents=i;ed.homeTemplate={type:cy};ed.datasetThumbnailContain=i;ed.datasetsPage={type:em};ed.datasetsDefaultSort=en;ed.datasetsCardLayout=K;ed.datasetThumbnailApplication=i;ed.datasetMetaLayout="columnsLeftLarger";ed.datasetActionsDisplay=eo;ed.datasetsOwnerFilter={type:w};ed.datasetHideDepartment=c;ed.applicationsPage={type:em};ed.applicationsCardLayout=K;ed.applicationsDirectNavigation=i;ed.applicationActionsDisplay=eo;ed.applicationsDefaultSort=en;ed.applicationHideDepartment=c;ed.externalReusesPage={type:w};ed.usesPage={type:w};ed.usesManagement={type:"managers"};ed.usesCardLayout=K;ed.newsPage={type:w};ed.eventsPage={type:w};ed.contactEmail="cdo@ademe.fr";ed.contactFooterColor=ei;ed.networks=["twitter","linkedin","reddit","facebook","whatsapp"];ed.personalNavigationColor=ef;ed.personalAccountPages=[];ed.personnalHidePages=[];ed.analytics={type:w};ed.updatedAt="2025-10-13T13:57:39.535Z";ed.owner={type:cz,id:cA,name:ck};ep._id="efWMeL1ZP";es[0]="organization:mMqHP1AmF";ev[0]={_id:"6a301167ab8168b8b75456b6",updated:{date:"2026-06-24T09:03:32.074Z"},navigation:{type:ew,position:x},template:ex,title:"Accès MCP",id:"acces-mcp"};ev[1]={_id:"6717558f1adfd05460cc16b2",updated:{date:"2024-11-05T14:53:01.669Z"},navigation:{type:ew,position:x},template:ex,title:"FAQ",id:"faq"};return {layout:cy,data:[{}],fetch:{"0":{},"1":{isMobileOnly:i,dataset:{owner:{type:cz,id:cA,name:ck,role:j},updatedAt:"2026-06-30T10:17:14.001Z",createdAt:"2021-03-24T16:09:15.507Z",updatedBy:{id:"apiKey:qehQ6oYerTmgAC2SDwvPh",name:"SYDEREP"},createdBy:{id:"H1unz-fdl",name:"Nicolas Bonnel"},schema:[{key:L,"x-originalName":L,type:d,"x-cardinality":512284,description:b},{key:M,"x-originalName":M,type:a,"x-cardinality":516063,"x-capabilities":{textAgg:c},description:b},{key:N,"x-originalName":N,type:d,"x-cardinality":11743,description:b},{key:O,"x-originalName":O,type:d,"x-cardinality":cB,enum:[f,h,n,x,cB,P,y,s,cC,q,cD,cl,g],description:b},{key:Q,"x-originalName":Q,type:d,"x-cardinality":R,enum:[cE,g,q,f,cm,s,y,cF,cG,20,19,n,cl,cH,P,17,cC,R,h,x,S,cD,k],description:b},{key:T,"x-originalName":T,type:a,"x-cardinality":157,"x-capabilities":{textAgg:c},description:b},{key:U,"x-originalName":U,type:a,"x-cardinality":cI,"x-capabilities":{textAgg:c},description:b},{key:V,"x-originalName":V,type:a,"x-cardinality":y,enum:[l,"Th-BCE 2012","15 Août 2015","Th-CE 2005","Th-BCE","15 Août 2011","3CL - DPE","Th-C-E","1er déc 2015","15 août 2011","15 Août 2011 et 15 août 2011","15 août 2015"],"x-capabilities":{textAgg:c},description:b},{key:W,"x-originalName":W,type:a,"x-cardinality":54,"x-capabilities":{textAgg:c},description:b},{key:X,"x-originalName":X,type:a,format:t,"x-cardinality":3126,description:b},{key:Y,"x-originalName":Y,type:a,format:t,"x-cardinality":3142,"x-refersTo":"http:\u002F\u002Fschema.org\u002FDate","x-concept":{id:t,title:"Date d'évènement",primary:c},description:b},{key:Z,"x-originalName":Z,type:a,format:t,"x-cardinality":64,description:b},{key:_,"x-originalName":_,type:a,"x-cardinality":26809,"x-capabilities":{textAgg:c},description:b},{key:$,"x-originalName":$,type:a,"x-cardinality":1416,"x-capabilities":{textAgg:c},description:b},{key:aa,"x-originalName":aa,type:e,"x-cardinality":64514,description:b},{key:ab,"x-originalName":ab,type:a,"x-cardinality":P,enum:[cJ,cK,cL,cM,cN,cO,cP,cQ,cR,cS,"J"],"x-capabilities":{textAgg:c},description:b},{key:ac,"x-originalName":ac,type:e,"x-cardinality":11982,description:b},{key:ad,"x-originalName":ad,type:a,"x-cardinality":x,enum:[cJ,cO,cL,cQ,cK,cM,cP,cN,cS,cR],"x-capabilities":{textAgg:c},description:b},{key:ae,"x-originalName":ae,type:d,"x-cardinality":h,enum:[g,n],description:b},{key:af,"x-originalName":af,type:a,"x-cardinality":4909,"x-capabilities":{textAgg:c},description:b},{key:ag,"x-originalName":ag,type:a,"x-cardinality":s,enum:[l,z,o,A,u,r],"x-capabilities":{textAgg:c},description:b},{key:ah,"x-originalName":ah,type:a,"x-cardinality":cT,enum:[l,u,cn,A,"29",D,co,o,cU,z,"23",r,cV,cp,cW,cX,B,cY,"28",cZ,c_,E,c$,da,db,dc,dd,de,df,"27"],"x-capabilities":{textAgg:c},description:b},{key:ai,"x-originalName":ai,type:d,"x-cardinality":443,description:b},{key:aj,"x-originalName":aj,type:a,"x-cardinality":dg,"x-capabilities":{textAgg:c},description:b},{key:ak,"x-originalName":ak,type:a,"x-cardinality":dg,"x-capabilities":{textAgg:c},description:b},{key:al,"x-originalName":al,type:d,"x-cardinality":am,description:b},{key:an,"x-originalName":an,type:a,"x-cardinality":31718,"x-capabilities":{textAgg:c},description:b},{key:ao,"x-originalName":ao,type:a,"x-cardinality":371,"x-capabilities":{textAgg:c},description:b},{key:ap,"x-originalName":ap,type:a,"x-cardinality":1261,"x-capabilities":{textAgg:c},description:b},{key:aq,"x-originalName":aq,type:a,"x-cardinality":341677,"x-capabilities":{textAgg:c},description:b},{key:ar,"x-originalName":ar,type:a,"x-cardinality":8120,"x-capabilities":{textAgg:c},description:b},{key:as,"x-originalName":as,type:a,"x-cardinality":3332,"x-capabilities":{textAgg:c},description:b},{key:at,"x-originalName":at,type:a,"x-cardinality":18824,"x-capabilities":{textAgg:c},description:b},{key:au,"x-originalName":au,type:a,"x-cardinality":1762,"x-capabilities":{textAgg:c},description:b},{key:av,"x-originalName":av,type:a,"x-cardinality":1987,"x-capabilities":{textAgg:c},description:b},{key:aw,"x-originalName":aw,type:a,"x-cardinality":7993,"x-capabilities":{textAgg:c},description:b},{key:ax,"x-originalName":ax,type:a,"x-cardinality":19065,"x-refersTo":"http:\u002F\u002Frdf.insee.fr\u002Fdef\u002Fgeo#codeCommune","x-concept":{id:"codeCommune",title:"Code commune",primary:c},"x-capabilities":{textAgg:c},description:b},{key:ay,"x-originalName":ay,type:a,"x-cardinality":19063,"x-capabilities":{textAgg:c},description:b},{key:az,"x-originalName":az,type:a,"x-cardinality":24442,"x-capabilities":{textAgg:c},description:b},{key:aA,"x-originalName":aA,type:a,"x-cardinality":1056,"x-capabilities":{textAgg:c},description:b},{key:aB,"x-originalName":aB,type:a,"x-cardinality":401,"x-capabilities":{textAgg:c},description:b},{key:aC,"x-originalName":aC,type:a,"x-cardinality":1622,"x-capabilities":{textAgg:c},description:b},{key:aD,"x-originalName":aD,type:a,"x-cardinality":g,enum:[r,p,o,l],"x-capabilities":{textAgg:c},description:b},{key:aE,"x-originalName":aE,type:a,"x-cardinality":39907,"x-capabilities":{textAgg:c},description:b},{key:aF,"x-originalName":aF,type:a,"x-cardinality":38918,"x-capabilities":{textAgg:c},description:b},{key:aG,"x-originalName":aG,type:a,"x-cardinality":25646,"x-capabilities":{textAgg:c},description:b},{key:aH,"x-originalName":aH,type:a,"x-cardinality":148,"x-capabilities":{textAgg:c},description:b},{key:aI,"x-originalName":aI,type:a,"x-cardinality":f,enum:[p,l,o],"x-capabilities":{textAgg:c},description:b},{key:aJ,"x-originalName":aJ,type:a,"x-cardinality":f,enum:[p,l,o],"x-capabilities":{textAgg:c},description:b},{key:aK,"x-originalName":aK,type:a,"x-cardinality":dh,enum:[o,p,l,r,u,A,z,B,co,cZ,cp,D,cn,c_,db,c$,E,dd,cV,da,df,cU,"31","34","17",cY,dc,"32","35","41",di,"121","1969","1990","2001","2010","212",cW,"240",cX,"40","43","44","50","58","59","60","88","94"],"x-capabilities":{textAgg:c},description:b},{key:aL,"x-originalName":aL,type:a,"x-cardinality":cE,enum:[p,l,o,r,u,D,A,B],"x-capabilities":{textAgg:c},description:b},{key:aM,"x-originalName":aM,type:a,"x-cardinality":P,enum:[p,l,o,r,z,E,u,di,B,"70",cp],"x-capabilities":{textAgg:c},description:b},{key:aN,"x-originalName":aN,type:a,"x-cardinality":f,enum:[p,l,o],"x-capabilities":{textAgg:c},description:b},{key:aO,"x-originalName":aO,type:a,"x-cardinality":cq,"x-capabilities":{textAgg:c},description:b},{key:aP,"x-originalName":aP,type:a,"x-cardinality":g,enum:[l,"Double vitrage","Simple vitrage","Double vitrage VIR"],"x-capabilities":{textAgg:c},description:b},{key:aQ,"x-originalName":aQ,type:a,"x-cardinality":y,enum:[p,l,o,r,u,B,A,E,z,co,D,cn],"x-capabilities":{textAgg:c},description:b},{key:aR,"x-originalName":aR,type:a,"x-cardinality":y,enum:[p,l,r,o,z,u,A,de,B,D,"14603",E],"x-capabilities":{textAgg:c},description:b},{key:aS,"x-originalName":aS,type:a,"x-cardinality":4313,"x-capabilities":{textAgg:c},description:b},{key:aT,"x-originalName":aT,type:a,"x-cardinality":4238,"x-capabilities":{textAgg:c},description:b},{key:aU,"x-originalName":aU,type:a,"x-cardinality":3343,"x-capabilities":{textAgg:c},description:b},{key:aV,"x-originalName":aV,type:a,"x-cardinality":13459,"x-capabilities":{textAgg:c},description:b},{key:aW,"x-originalName":aW,type:a,"x-cardinality":13700,"x-capabilities":{textAgg:c},description:b},{key:aX,"x-originalName":aX,type:a,"x-cardinality":14444,"x-capabilities":{textAgg:c},description:b},{key:aY,"x-originalName":aY,type:m,"x-cardinality":k,enum:["true"],description:b},{key:aZ,"x-originalName":aZ,type:a,"x-cardinality":2749,"x-capabilities":{textAgg:c},description:b},{key:a_,"x-originalName":a_,type:a,"x-cardinality":5615,"x-capabilities":{textAgg:c},description:b},{key:a$,"x-originalName":a$,type:a,"x-cardinality":f,enum:[p,o,l],"x-capabilities":{textAgg:c},description:b},{key:ba,"x-originalName":ba,type:m,"x-cardinality":k,enum:[F],description:b},{key:bb,"x-originalName":bb,type:a,"x-cardinality":503691,format:dj,description:b},{key:G,"x-originalName":G,type:e,"x-cardinality":246445,"x-refersTo":"http:\u002F\u002Fschema.org\u002Flongitude","x-concept":{id:G,title:"Longitude",primary:c},description:b},{key:H,"x-originalName":H,type:e,"x-cardinality":245459,"x-refersTo":"http:\u002F\u002Fschema.org\u002Flatitude","x-concept":{id:H,title:"Latitude",primary:c},description:b},{key:bc,"x-originalName":bc,type:e,"x-cardinality":cr,description:b},{key:bd,"x-originalName":bd,type:a,"x-cardinality":103,"x-capabilities":{textAgg:c},description:b},{key:be,"x-originalName":be,type:a,"x-cardinality":267227,"x-capabilities":{textAgg:c},description:b},{key:bf,"x-originalName":bf,type:a,"x-cardinality":264602,"x-capabilities":{textAgg:c},description:b},{key:bg,"x-originalName":bg,type:a,"x-cardinality":212610,"x-capabilities":{textAgg:c},description:b},{key:bh,"x-originalName":bh,type:a,"x-cardinality":369,"x-capabilities":{textAgg:c},description:b},{key:bi,"x-originalName":bi,type:a,"x-cardinality":R,enum:["V8","V4","V7","V3","XX","V6","N2","P2","C2","C1","P6","V5","P1","P5","N1","P4","P3","I2","V2","L2","I1","L1","V1"],"x-capabilities":{textAgg:c},description:b},{key:bj,"x-originalName":bj,type:d,"x-cardinality":q,enum:[k,q,h,n,f,s,g],description:b},{key:bk,"x-originalName":bk,type:a,"x-cardinality":S,enum:["6.3c bis","6.3a bis","6.3c","6.3a","6.3b bis","6.2 neuf","6.1 bis public","Par énergie","Par usage","6.3 bis public","6.3b","6.1 public","6.3 public","6.1 neuf","6.2 bis public","6.2 public","6.2 (Vente)","6.2","6.B","6.1 (Vente)","6.A","6.1"],"x-capabilities":{textAgg:c},description:b},{key:bl,"x-originalName":bl,type:a,"x-cardinality":cl,enum:["Pour  les  autres  bâtiments  non  mentionnés  dans  les  deux  précédents  cas : Consommation par Energie","Pour  les  bâtiments  à  usage  principal  de  bureau,  d’administration  ou  d’enseignement : Consommation par Energie","Pour  les  autres  bâtiments  non  mentionnés  dans  les  deux  précédents  cas : Consommation par Usage","Pour  les  bâtiments  à  usage  principal  de  bureau,  d’administration  ou  d’enseignement : Consommation par Usage","Autres cas : Demande de subventions, baux commerciaux, ...","Pour  les  bâtiments  à  occupation  continue : Consommation par Energie","Pour les centres commerciaux","Pour  les  bâtiments  à  usage  autre  que  d’habitation","Pour les bâtiments à usage principal de bureau, d’administration ou d’enseignement : Consommation par Energie","Pour  les  bâtiments  à  occupation  continue : Consommation par Usage","Pour les bâtiments à usage principal de bureau, d’administration ou d’enseignement : Consommation par Usage","Pour  les  bâtiments  à  usage  principal  d’habitation  : Consommations  réelles  (Méthode Facture)","Pour  les  bâtiments  neufs  à  usage  principal  d’habitation","Pour  les  bâtiments  à  usage  principal  d’habitation : Consommations  estimées  (consommation  conventionnelle)"],"x-capabilities":{textAgg:c},description:b},{key:bm,"x-originalName":bm,type:a,"x-cardinality":S,enum:["8_V8_DPE_6.3c_bis.pdf","4_V4_DPE_6.3a_bis.pdf","7_V7_DPE_6.3c.pdf","3_V3_DPE_6.3a.pdf","6_V6_DPE_6.3b_bis.pdf","12_N2_DPE_6.2_neuf.pdf","15_P2_DPE_6.1_public_bis.pdf","21_C2_DPE_6.b.pdf","20_C1_DPE_6.a.pdf","19_P6_DPE_6.3_public_bis.pdf","5_V5_DPE_6.3b.pdf","14_P1_DPE_6.1_public.pdf","18_P5_DPE_6.3_public.pdf","11_N1_DPE_6.1_neuf.pdf","17_P4_DPE_6.2_public_bis.pdf","16_P3_DPE_6.2_public.pdf","23_I2_DPE_6.2.pdf","2_V2_DPE_6.2.pdf","10_L2_DPE_6.B.pdf","22_I1_DPE_6.1.pdf","9_L1_DPE_6.A.pdf","1_V1_DPE_6.1.pdf"],"x-capabilities":{textAgg:c},description:b},{key:bn,"x-originalName":bn,type:m,"x-cardinality":k,enum:[F],description:b},{key:bo,"x-originalName":bo,type:a,"x-cardinality":q,enum:[dk,dl,"Public",dm,dn,do0,dp],"x-capabilities":{textAgg:c},description:b},{key:bp,"x-originalName":bp,type:a,"x-cardinality":q,enum:[dk,dl,"Bâtiment public",dm,dn,do0,dp],"x-capabilities":{textAgg:c},description:b},{key:bq,"x-originalName":bq,type:d,"x-cardinality":q,enum:[k,q,n,g,f,s,h],description:b},{key:br,"x-originalName":br,type:a,"x-cardinality":h,enum:["TR002_004","TR002_005"],"x-capabilities":{textAgg:c},description:b},{key:bs,"x-originalName":bs,type:a,"x-cardinality":h,enum:["Bâtiments ou partie de bâtiment à usage principal autre que d'habitation","Centre Commerciaux"],"x-capabilities":{textAgg:c},description:b},{key:bt,"x-originalName":bt,type:a,"x-cardinality":h,enum:["Non résidentiel","Centres commerciaux"],"x-capabilities":{textAgg:c},description:b},{key:bu,"x-originalName":bu,type:m,"x-cardinality":k,enum:[F],description:b},{key:bv,"x-originalName":bv,type:d,"x-cardinality":h,enum:[n,g],description:b},{key:bw,"x-originalName":bw,type:m,"x-cardinality":k,enum:[F],description:b},{key:bx,"x-originalName":bx,type:a,"x-cardinality":n,"x-capabilities":{textAgg:c},description:b},{key:by,"x-originalName":by,type:a,"x-cardinality":n,"x-capabilities":{textAgg:c},description:b},{key:bz,"x-originalName":bz,type:a,"x-cardinality":h,"x-capabilities":{textAgg:c},description:b},{key:bA,"x-originalName":bA,type:m,"x-cardinality":k,description:b},{key:bB,"x-originalName":bB,type:a,"x-cardinality":bC,enum:["TR013_003","TR013_012","TR013_004","TR013_029","TR013_010","TR013_007","TR013_001","TR013_030","TR013_005","TR013_023","TR013_002","TR013_013","TR013_009","TR013_024","TR013_025","TR013_006","TR013_019","TR013_028","TR013_008","TR013_011","TR013_015","TR013_018","TR013_026","TR013_014","TR013_020","TR013_016","TR013_022","TR013_021","TR013_027"],"x-capabilities":{textAgg:c},description:b},{key:bD,"x-originalName":bD,type:a,"x-cardinality":bC,enum:["M : Magasins de vente, centres commerciaux","W : Administrations, banques, bureaux","N : Restaurants et débits de boisson","GHW : Bureaux","U : Établissements de soins","R : Établissements d’éveil, d’enseignement, de formation, centres de vacances, centres de loisirs sans hébergement","J : Structures d’accueil pour personnes âgées ou personnes handicapées","GHZ : Usage mixte","O : Hôtels et pensions de famille","GHA : Habitation","L : Salles d'auditions, de conférences, de réunions, de spectacles ou à usage multiple","X : Établissements sportifs couverts","T : Salles d'exposition à vocation commerciale","GHO : Hôtel","GHR : Enseignement","P : Salles de danse et salles de jeux","OA : Hôtels-restaurants d'Altitude","GHU : Usage sanitaire","S : Bibliothèques, centres de documentation","V : Établissements de divers cultes","PA : Établissements de Plein Air","PS : Parcs de Stationnement couverts","GHS : Dépôt d'archives","Y : Musées","GA : Gares Accessibles au public (chemins de fer, téléphériques, remonte-pentes...)","CTS : Chapiteaux, Tentes et Structures toile","REF : REFuges de montagne","EF : Établissements flottants (eaux intérieures)","GHTC : tour de contrôle"],"x-capabilities":{textAgg:c},description:b},{key:bE,"x-originalName":bE,type:d,"x-cardinality":f,enum:[k,f,h],description:b},{key:bF,"x-originalName":bF,type:m,"x-cardinality":k,enum:[F],description:b},{key:bG,"x-originalName":bG,type:a,"x-cardinality":f,enum:["Établissements installés dans un bâtiment","Immeubles de grande hauteur (IGH)","Établissements spéciaux"],"x-capabilities":{textAgg:c},description:b},{key:bH,"x-originalName":bH,type:a,"x-cardinality":am,"x-capabilities":{textAgg:c},description:b},{key:bI,"x-originalName":bI,type:a,"x-cardinality":am,"x-capabilities":{textAgg:c},description:b},{key:bJ,"x-originalName":bJ,type:d,"x-cardinality":f,enum:[k,h,f],description:b},{key:bK,"x-originalName":bK,type:d,"x-cardinality":g,enum:[h,f,k,g],description:b},{key:bL,"x-originalName":bL,type:d,"x-cardinality":h,enum:[v,cs],description:b},{key:bM,"x-originalName":bM,type:d,"x-cardinality":s,enum:[cs,1200,6000,2000,800,1600],description:b},{key:bN,"x-originalName":bN,type:d,"x-cardinality":cG,enum:[5500,5300,4900,5100,5200,5800,4000,5000,4800,4500,5600,3900,5400,4600,4100,4400,5700,4300,4700,3700,4200],description:b},{key:bO,"x-originalName":bO,type:d,"x-cardinality":dq,enum:[55000,58000,48000,54000,60000,61000,57000,36000,31000,53000,62000,44000,56000,64000,63000,50000,41000,65000,66000,38000,68000,45000,52000,51000,59000,71000,35000,42000,67000,30000,43000,47000,34000,32000],description:b},{key:bP,"x-originalName":bP,type:d,"x-cardinality":ct,enum:[dr,69,79,80,72,132,ds,83,82,dt,76,85,74,73,78,cr,du,135,dv,120,cq,110,126,dw,125,cI,130,dx,dy,84,81,dz,70],description:b},{key:bQ,"x-originalName":bQ,type:d,"x-cardinality":h,enum:[340,cs],description:b},{key:bR,"x-originalName":bR,type:e,"x-cardinality":h,enum:[dA,1.8],description:b},{key:bS,"x-originalName":bS,type:d,"x-cardinality":k,enum:[n],description:b},{key:bT,"x-originalName":bT,type:d,"x-cardinality":x,enum:[-5,-7,-10,-15,-9,-4,-8,-6,-12,-2],description:b},{key:bU,"x-originalName":bU,type:e,"x-cardinality":cr,description:b},{key:bV,"x-originalName":bV,type:e,"x-cardinality":dB,enum:[cm,dC,25.2,22.5,33.3,32.9,26.1,18.6,44.7,dD,37.8,dE,33.4,48.3,dF,dG,22.4,29.2,68.4,23.8,25.1,24.3,21.4,36.3,21.5,42.4,29.8,36.9,20.8,29.7,24.4,cu,67.7,23.4,25.5,29.5,27.9,R,39.1,dH,33.7,bC,cv,dI,41.5,ct],description:b},{key:bW,"x-originalName":bW,type:e,"x-cardinality":cw,enum:[49.5,53.5,45.7,51.8,53.4,dJ,58.1,dK,54.5,58.8,48.6,50.9,51.2,58.7,65.7,49.1,48.5,67.2,63.4,dI,50.5,50.4,49.7,48.8,63,53.9,60.4,57.1,53,48.9,52.8,63.1,dL,dM,50.8,51.7,54.7,61.9,50.3,57.3,53.7,dN,cu,57.7,56,65.9,dO],description:b},{key:bX,"x-originalName":bX,type:e,"x-cardinality":cw,enum:[63.9,67.8,59.1,68.7,73.7,62.7,66.9,65,80.4,68.9,73.5,64.2,66.5,65.3,74.3,82.2,62.8,83.4,79.5,65.2,64.9,dO,64.1,62.4,78.9,69.5,75.6,68.2,62.9,dG,78.8,dr,61.8,66.2,69.9,72.9,73.1,80.6,dK,72.5,69.2,66.4,74.6,81.8,65.6,74.4,71.1],description:b},{key:bY,"x-originalName":bY,type:d,"x-cardinality":cF,enum:[dv,89,dz,cq,dx,dy,am,du,dw,dt,97,ds,99,95,93],description:b},{key:bZ,"x-originalName":bZ,type:d,"x-cardinality":cH,enum:[dD,28,bC,cT,dC,cm,32,dq,dP,31,dE,ct,dQ,dR,dS,dT,cv,25],description:b},{key:b_,"x-originalName":b_,type:d,"x-cardinality":S,enum:[dT,dP,45,cv,dR,dS,cu,dh,dH,62,dL,59,cw,dB,dF,57,v,dM,dQ,37,dN,dJ],description:b},{key:b$,"x-originalName":b$,type:a,"x-cardinality":f,enum:["H1","H2","H3"],"x-capabilities":{textAgg:c},description:b},{key:ca,"x-originalName":ca,type:e,"x-cardinality":f,enum:[6.58,8.08,9.65],description:b},{key:cb,"x-originalName":cb,type:e,"x-cardinality":f,enum:[10.5,y,14.5],description:b},{key:cc,"x-originalName":cc,type:d,"x-cardinality":f,enum:[42030,33300,22200],description:b},{key:cd,"x-originalName":cd,type:e,"x-cardinality":f,enum:[3.6,3.4,2.9],description:b},{key:ce,"x-originalName":ce,type:a,"x-cardinality":g,enum:["Eb","Ec","Ea","Ed"],"x-capabilities":{textAgg:c},description:b},{key:cf,"x-originalName":cf,type:d,"x-cardinality":g,enum:[f,g,h,n],description:b},{key:cg,"x-originalName":cg,type:d,"x-cardinality":g,enum:[n,s,g,q],description:b},{key:ch,"x-originalName":ch,type:e,"x-cardinality":g,enum:[h,f,dA,g],description:b},{key:ci,"x-originalName":ci,type:d,"x-cardinality":g,enum:[f,g,h,n],description:b},{"x-calculated":c,key:"_geopoint",type:a,title:"Coordonnée géographique",description:"\u003Cp\u003ECentroïde au format \"lat,lon\"\u003C\u002Fp\u003E","x-refersTo":"http:\u002F\u002Fwww.w3.org\u002F2003\u002F01\u002Fgeo\u002Fwgs84_pos#lat_long","x-concept":{id:"latLon",title:"Latitude \u002F Longitude",primary:c}},{"x-calculated":c,key:"_id",type:a,format:"uri-reference",title:"Identifiant",description:"\u003Cp\u003EIdentifiant unique parmi toutes les lignes du jeu de données\u003C\u002Fp\u003E"},{"x-calculated":c,key:"_i",type:d,title:"Numéro de ligne",description:"\u003Cp\u003EIndice de la ligne dans le fichier d'origine\u003C\u002Fp\u003E"},{"x-calculated":c,key:"_rand",type:d,title:"Nombre aléatoire",description:"\u003Cp\u003EUn nombre aléatoire associé à la ligne qui permet d'obtenir un tri aléatoire par exemple\u003C\u002Fp\u003E"}],id:dU,title:"DPE tertiaire (avant juillet 2021)",originalFile:{name:dV,size:dW,mimetype:dX},status:"finalized",file:{name:dY,size:j,mimetype:dZ,encoding:"utf-8",schema:[{key:L,"x-originalName":L,type:d},{key:M,"x-originalName":M,type:a},{key:N,"x-originalName":N,type:d},{key:O,"x-originalName":O,type:d},{key:Q,"x-originalName":Q,type:d},{key:T,"x-originalName":T,type:a},{key:U,"x-originalName":U,type:a},{key:V,"x-originalName":V,type:a},{key:W,"x-originalName":W,type:a},{key:X,"x-originalName":X,type:a,format:t},{key:Y,"x-originalName":Y,type:a,format:t},{key:Z,"x-originalName":Z,type:a,format:t},{key:_,"x-originalName":_,type:a,"x-display":d_},{key:$,"x-originalName":$,type:a,"x-display":d_},{key:aa,"x-originalName":aa,type:e},{key:ab,"x-originalName":ab,type:a},{key:ac,"x-originalName":ac,type:e},{key:ad,"x-originalName":ad,type:a},{key:ae,"x-originalName":ae,type:d},{key:af,"x-originalName":af,type:a},{key:ag,"x-originalName":ag,type:a},{key:ah,"x-originalName":ah,type:a},{key:ai,"x-originalName":ai,type:d},{key:aj,"x-originalName":aj,type:a},{key:ak,"x-originalName":ak,type:a},{key:al,"x-originalName":al,type:d},{key:an,"x-originalName":an,type:a},{key:ao,"x-originalName":ao,type:a},{key:ap,"x-originalName":ap,type:a},{key:aq,"x-originalName":aq,type:a},{key:ar,"x-originalName":ar,type:a},{key:as,"x-originalName":as,type:a},{key:at,"x-originalName":at,type:a},{key:au,"x-originalName":au,type:a},{key:av,"x-originalName":av,type:a},{key:aw,"x-originalName":aw,type:a},{key:ax,"x-originalName":ax,type:a},{key:ay,"x-originalName":ay,type:a},{key:az,"x-originalName":az,type:a},{key:aA,"x-originalName":aA,type:a},{key:aB,"x-originalName":aB,type:a},{key:aC,"x-originalName":aC,type:a},{key:aD,"x-originalName":aD,type:a},{key:aE,"x-originalName":aE,type:a},{key:aF,"x-originalName":aF,type:a},{key:aG,"x-originalName":aG,type:a},{key:aH,"x-originalName":aH,type:a},{key:aI,"x-originalName":aI,type:a},{key:aJ,"x-originalName":aJ,type:a},{key:aK,"x-originalName":aK,type:a},{key:aL,"x-originalName":aL,type:a},{key:aM,"x-originalName":aM,type:a},{key:aN,"x-originalName":aN,type:a},{key:aO,"x-originalName":aO,type:a},{key:aP,"x-originalName":aP,type:a},{key:aQ,"x-originalName":aQ,type:a},{key:aR,"x-originalName":aR,type:a},{key:aS,"x-originalName":aS,type:a},{key:aT,"x-originalName":aT,type:a},{key:aU,"x-originalName":aU,type:a},{key:aV,"x-originalName":aV,type:a},{key:aW,"x-originalName":aW,type:a},{key:aX,"x-originalName":aX,type:a},{key:aY,"x-originalName":aY,type:m},{key:aZ,"x-originalName":aZ,type:a},{key:a_,"x-originalName":a_,type:a},{key:a$,"x-originalName":a$,type:a},{key:ba,"x-originalName":ba,type:m},{key:bb,"x-originalName":bb,type:a,format:dj,dateTimeFormat:"YYYY-MM-DD HH:mm:ss"},{key:G,"x-originalName":G,type:e},{key:H,"x-originalName":H,type:e},{key:bc,"x-originalName":bc,type:e},{key:bd,"x-originalName":bd,type:a},{key:be,"x-originalName":be,type:a},{key:bf,"x-originalName":bf,type:a},{key:bg,"x-originalName":bg,type:a},{key:bh,"x-originalName":bh,type:a},{key:bi,"x-originalName":bi,type:a},{key:bj,"x-originalName":bj,type:d},{key:bk,"x-originalName":bk,type:a},{key:bl,"x-originalName":bl,type:a},{key:bm,"x-originalName":bm,type:a},{key:bn,"x-originalName":bn,type:m},{key:bo,"x-originalName":bo,type:a},{key:bp,"x-originalName":bp,type:a},{key:bq,"x-originalName":bq,type:d},{key:br,"x-originalName":br,type:a},{key:bs,"x-originalName":bs,type:a},{key:bt,"x-originalName":bt,type:a},{key:bu,"x-originalName":bu,type:m},{key:bv,"x-originalName":bv,type:d},{key:bw,"x-originalName":bw,type:m},{key:bx,"x-originalName":bx,type:a},{key:by,"x-originalName":by,type:a},{key:bz,"x-originalName":bz,type:a},{key:bA,"x-originalName":bA,type:m},{key:bB,"x-originalName":bB,type:a},{key:bD,"x-originalName":bD,type:a},{key:bE,"x-originalName":bE,type:d},{key:bF,"x-originalName":bF,type:m},{key:bG,"x-originalName":bG,type:a},{key:bH,"x-originalName":bH,type:a},{key:bI,"x-originalName":bI,type:a},{key:bJ,"x-originalName":bJ,type:d},{key:bK,"x-originalName":bK,type:d},{key:bL,"x-originalName":bL,type:d},{key:bM,"x-originalName":bM,type:d},{key:bN,"x-originalName":bN,type:d},{key:bO,"x-originalName":bO,type:d},{key:bP,"x-originalName":bP,type:d},{key:bQ,"x-originalName":bQ,type:d},{key:bR,"x-originalName":bR,type:e},{key:bS,"x-originalName":bS,type:d},{key:bT,"x-originalName":bT,type:d},{key:bU,"x-originalName":bU,type:e},{key:bV,"x-originalName":bV,type:e},{key:bW,"x-originalName":bW,type:e},{key:bX,"x-originalName":bX,type:e},{key:bY,"x-originalName":bY,type:d},{key:bZ,"x-originalName":bZ,type:d},{key:b_,"x-originalName":b_,type:d},{key:b$,"x-originalName":b$,type:a},{key:ca,"x-originalName":ca,type:e},{key:cb,"x-originalName":cb,type:e},{key:cc,"x-originalName":cc,type:d},{key:cd,"x-originalName":cd,type:e},{key:ce,"x-originalName":ce,type:a},{key:cf,"x-originalName":cf,type:d},{key:cg,"x-originalName":cg,type:d},{key:ch,"x-originalName":ch,type:e},{key:ci,"x-originalName":ci,type:d}],props:{linesDelimiter:"\n",fieldsDelimiter:",",escapeChar:d$,quote:d$}},storage:{size:646880395,dataFiles:[{name:dV,key:"original",title:"Fichier original",mimetype:dX,size:dW,updatedAt:"2022-12-13T08:40:27.242Z"},{name:dY,key:"normalized",title:"Fichier normalisé (csv)",mimetype:dZ,size:ea,updatedAt:"2022-12-13T08:55:11.641Z"}],indexed:{size:ea,parts:["normalized-file"]},attachments:{size:v,count:v},metadataAttachments:{size:v,count:v}},count:515562,bbox:[-61.52577705681324,16.415923959575593,9.55180998891592,51.08062697108835],finalizedAt:"2022-12-13T09:39:32.665Z",description:"\u003Cp\u003ELe diagnostic de performance énergétique (DPE) renseigne sur la performance énergétique d’un logement ou d’un bâtiment, en évaluant sa consommation d’énergie et son impact en terme d’émissions de gaz à effet de serre. Il s’inscrit dans le cadre de la politique énergétique définie au niveau européen afin de réduire la consommation d’énergie des bâtiments et de limiter les émissions de gaz à effet de serre.\u003C\u002Fp\u003E\n\u003Cp\u003ELe contenu et les modalités d’établissement du DPE sont réglementés. Le DPE décrit le bâtiment ou le logement (surface, orientation, murs, fenêtres, matériaux, etc), ainsi que ses équipements de chauffage, de production d’eau chaude sanitaire, de refroidissement et de ventilation. Il indique, suivant les cas, soit la quantité d’énergie effectivement consommée (sur la base de factures), soit la consommation d’énergie estimée pour une utilisation standardisée du bâtiment ou du logement.\u003C\u002Fp\u003E\n\u003Cp\u003ELa vue tabulaire des données est une vue simplifiée des données. \u003C\u002Fp\u003E\u003Cp\u003E\u003C\u002Fp\u003ELes \u003Ca href=\"https:\u002F\u002Ffiles.data.gouv.fr\u002Fademe\u002F202110\u002Fdpe_tertiaire_202110.sql\"\u003Edonnées complètes\u003C\u002Fa\u003E, issues des bases de données, sont disponibles au téléchargement mais leur utilisation est un peu plus complexe et réservée à un public averti.\u003Cp\u003E\u003C\u002Fp\u003E",topics:[{title:eb,color:"#64B5F6FF",id:"fJZXrdcRGP",icon:{name:"domain-plus",svgPath:"M12 7V3H2V21H13.35A5.8 5.8 0 0 1 13 19H12V17H13.35A5 5 0 0 1 14 15.69V15H12V13H14V11H12V9H20V13.09A5.58 5.58 0 0 1 22 13.81V7M6 19H4V17H6M6 15H4V13H6M6 11H4V9H6M6 7H4V5H6M10 19H8V17H10M10 15H8V13H10M10 11H8V9H10M10 7H8V5H10M16 13H18V11H16M16 11V13H18V11M16 11V13H18V11M20 15V18H23V20H20V23H18V20H15V18H18V15Z"}}],license:{title:"Licence Ouverte \u002F Open Licence",href:"https:\u002F\u002Fwww.etalab.gouv.fr\u002Flicence-ouverte-open-licence"},publicationSites:["data-fair-portals:efWMeL1ZP","data-fair-portals:d60479cb-366f-4dc4-9f3f-1e9dd1a76c97"],publications:[],dataUpdatedAt:"2022-12-13T08:54:42.946Z",dataUpdatedBy:{id:"rJytCgDTf",name:"Balam Saldana"},primaryKey:[],origin:ck,extras:{applications:[{updatedAt:"2021-11-30T09:10:11.854Z",id:ec,slug:ec}]},analysis:{escapeKeyAlgorithm:"legacy"},slug:dU,esWarning:j,keywords:["DPE ",eb],userPermissions:["readDescription","readSchema","readSafeSchema","readLines","getGeoAgg","getValuesAgg","getValues","getMetricAgg","getSimpleMetricsAgg","getWordsAgg","getMinAgg","getMaxAgg","downloadOriginalData","downloadFullData","readApiDoc","realtime-transactions","readLine","readLineRevisions","readRevisions","bulkSearch","listDataFiles","downloadDataFile","downloadMetadataAttachment","downloadAttachment","getReadApiKey","readCompatODSRecords","readCompatODSExports","list"],public:c,visibility:"public",previews:[{id:"table",title:"Tableau",href:"https:\u002F\u002Fdata.ademe.fr\u002Fdata-fair\u002Fembed\u002Fdataset\u002Fdpe-tertiaire\u002Ftable"},{id:"map",title:"Carte",href:"https:\u002F\u002Fdata.ademe.fr\u002Fdata-fair\u002Fembed\u002Fdataset\u002Fdpe-tertiaire\u002Fmap"},{id:"map-bounds",title:"Enveloppe géographique",href:"https:\u002F\u002Fdata.ademe.fr\u002Fdata-fair\u002Fembed\u002Fdataset\u002Fdpe-tertiaire\u002Fmap-bounds"}],href:"https:\u002F\u002Fdata.ademe.fr\u002Fdata-fair\u002Fapi\u002Fv1\u002Fdatasets\u002Fdpe-tertiaire",page:"https:\u002F\u002Fdata.ademe.fr\u002Fdatasets\u002Fdpe-tertiaire"},applications:{count:v,results:[]},uses:[]}},error:j,state:{config:ed,portal:ep,draft:i,initialQuery:eq,textDark:"#212121",breadcrumbs:j,publicUrl:cj,publicBaseUrl:cj,mainPublicUrl:er,html:c,inPortal:c,concepts:j,userPartners:j,whiteLabelOwners:es,childBreadcrumbsRouteName:j,childBreadcrumbItems:j,processingsBasePath:et,notifyBasePath:eu,pageImages:{},navigation:{pages:ev,datasetsList:j,applicationsList:j,usesList:j,publicUrl:cj,publicBaseUrl:cj,mainPublicUrl:er,processingsBasePath:et,notifyBasePath:eu,initialQuery:eq,draft:i,portal:ep,html:c,inPortal:c,config:ed,whiteLabelOwners:es},style:{},session:{user:j,initialized:c,directoryUrl:"https:\u002F\u002Fdata.ademe.fr\u002Fsimple-directory",logoutRedirectUrl:j,cookieName:"id_token",interval:10000,sameSite:j,activeAccountDetails:j,reloadAfterAccountChange:c},i18n:{routeParams:{}},pages:ev},serverRendered:c,routePath:"\u002Fdatasets\u002Fdpe-tertiaire",config:{_app:{basePath:"\u002F",assetsPath:"\u002F_nuxt\u002F",cdnURL:j}}}}("string","",true,"integer","number",3,4,2,false,null,1,"\\N","boolean",5,"1","0",7,"2",6,"date","3",0,"none",10,12,"5","4","6","outlined","10","15","false","longitude","latitude","white","external","dense","id","numero_dpe","usr_diagnostiqueur_id","usr_logiciel_id",11,"tr001_modele_dpe_id",23,22,"nom_methode_dpe","version_methode_dpe","nom_methode_etude_thermique","version_methode_etude_thermique","date_visite_diagnostiqueur","date_etablissement_dpe","date_arrete_tarifs_energies","commentaires_ameliorations_recommandations","explication_personnalisee","consommation_energie","classe_consommation_energie","estimation_ges","classe_estimation_ges","tr002_type_batiment_id","secteur_activite","tr012_categorie_erp_id","tr013_type_erp_id","annee_construction","surface_habitable","surface_thermique_lot","tv016_departement_id",96,"commune","arrondissement","type_voie","nom_rue","numero_rue","batiment","escalier","etage","porte","code_postal","code_insee_commune","code_insee_commune_actualise","numero_lot","quote_part","nom_centre_commercial","surface_commerciale_contractuelle","portee_dpe_batiment","partie_batiment","shon","surface_utile","surface_thermique_parties_communes","en_souterrain","en_surface","nombre_niveaux","nombre_circulations_verticales","nombre_boutiques","presence_verriere","surface_verriere","type_vitrage_verriere","nombre_entrees_avec_sas","nombre_entrees_sans_sas","surface_baies_orientees_nord","surface_baies_orientees_est_ouest","surface_baies_orientees_sud","surface_planchers_hauts_deperditifs","surface_planchers_bas_deperditifs","surface_parois_verticales_opaques_deperditives","etat_avancement","organisme_certificateur","adresse_organisme_certificateur","dpe_vierge","est_efface","date_reception_dpe","geo_score","geo_type","geo_adresse","geo_id","geo_l4","geo_l5","tr001_modele_dpe_code","tr001_modele_dpe_type_id","tr001_modele_dpe_modele","tr001_modele_dpe_description","tr001_modele_dpe_fichier_vierge","tr001_modele_dpe_est_efface","tr001_modele_dpe_type","tr001_modele_dpe_type_libelle","tr001_modele_dpe_type_ordre","tr002_type_batiment_code","tr002_type_batiment_description","tr002_type_batiment_libelle","tr002_type_batiment_est_efface","tr002_type_batiment_ordre","tr002_type_batiment_simulateur","tr012_categorie_erp_code","tr012_categorie_erp_categorie","tr012_categorie_erp_groupe","tr012_categorie_erp_est_efface","tr013_type_erp_code",29,"tr013_type_erp_type","tr013_type_erp_categorie_id","tr013_type_erp_est_efface","tr013_type_erp_categorie","tv016_departement_code","tv016_departement_departement","tv017_zone_hiver_id","tv018_zone_ete_id","tv016_departement_altmin","tv016_departement_altmax","tv016_departement_nref","tv016_departement_dhref","tv016_departement_pref","tv016_departement_c2","tv016_departement_c3","tv016_departement_c4","tv016_departement_t_ext_basse","tv016_departement_e","tv016_departement_fch","tv016_departement_fecs_ancienne_m_i","tv016_departement_fecs_recente_m_i","tv016_departement_fecs_solaire_m_i","tv016_departement_fecs_ancienne_i_c","tv016_departement_fecs_recente_i_c","tv017_zone_hiver_code","tv017_zone_hiver_t_ext_moyen","tv017_zone_hiver_peta_cw","tv017_zone_hiver_dh14","tv017_zone_hiver_prs1","tv018_zone_ete_code","tv018_zone_ete_sclim_inf_150","tv018_zone_ete_sclim_sup_150","tv018_zone_ete_rclim_autres_etages","tv018_zone_ete_rclim_dernier_etage","https:\u002F\u002Fdata.ademe.fr","ADEME",14,24,"12","7","9",86,71,400,33,51,40,47,"belowKpi","default","organization","g1pKfMqaE",13,16,9,8,15,21,18,75,"N","D","C","E","G","B","F","A","H","I",30,"30","13","24","25","19","8","11","18","26","14","20","16","22","21",52548,49,"46","date-time","Vente","Autres","Centre commercial","Neuf","Copropriété","Location",34,66,100,98,91,87,88,94,92,90,1.5,46,35,26,27,44,67,36,52,50,64.6,58,48,60,65.5,43,39,41,42,38,"dpe-tertiaire","dpe-tertiaire.csv.gz",100868881,"application\u002Fgzip","dpe-tertiaire.csv","text\u002Fcsv","textarea","\"",546011514,"Bâtiment","diagnostics-de-performance-energetique-pour-les-batiments-tertiaire-classe-energetique-carto-stats",{},"#1E88E5","primary","assets","https:\u002F\u002Fwww.ademe.fr\u002F","grey","lasts","rounded","elevate","infiniteScroll","createdAt","icon",{},{},"https:\u002F\u002Fkoumoul.com\u002Fdata-fair-portals",Array(1),"\u002Fprocessings","\u002Fevents",Array(2),"direct","blank"));</script><script src="/_nuxt/c8d685a6-1ca8da7.js" defer></script><script src="/_nuxt/c8d685a6-033b2bd.js" defer></script><script src="/_nuxt/015d8d7.js" defer></script><script src="/_nuxt/8fe7087.js" defer></script><script src="/_nuxt/e15899d.js" defer></script><script src="/_nuxt/86fc9bc.js" defer></script><script src="/_nuxt/c8d685a6-2a2bfb4.js" defer></script><script src="/_nuxt/c9ad72b.js" defer></script><script src="/_nuxt/0515138.js" defer></script><script src="/_nuxt/c8d685a6-8470003.js" defer></script>
+  </body>
+</html>

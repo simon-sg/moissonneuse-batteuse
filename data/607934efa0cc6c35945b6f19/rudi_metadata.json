@@ -1,0 +1,107 @@
+{
+  "local_id": "09e5f45d-1ba0-5cd4-82d2-02308875120b",
+  "resource_title": "Idéo-Actions de formation initiale-Univers lycée - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Idéo-Actions de formation initiale-Univers lycée — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/607934efa0cc6c35945b6f19\n\n_>>> Avertissement du 20/01/2026 : attention, changement de structure du jeu, voir Documentation et journal des évolutions (changelog) <<<_\n\nLa **formation initiale**, qu’elle soit générale ou professionnelle, est le périmètre traditionnel de l’Onisep, qui s’adresse en priorité aux jeunes pour une phase de première orientation à différentes étapes de leur cursus scolaire et étudiant. Les grandes étapes en étant jusqu’ici principalement, mais pas uniquement, l’orientation en fin de 3e ou l’orientation en fin de Terminale.\n\nUne « **action de formation** » (AF) au sens Onisep est la mise en œuvre, dans un établissement enregistré et localisé, d’une formation. Cette notion rejoint souvent l’expression d’ « offre de formation » parfois utilisée par d’autres organismes.\n\n**Périmètre de ce jeu :** les **actions de formation initiale** ainsi définies, et référencées par l’Onisep **pour le lycée (formations de niveau 2de, 1re, bac, CAP, CAP+1 ou équivalent…)** et proposées principalement **sous statut scolaire ou étudiant.**\n\nIl contient :\n\n\\- **des données sur l'AF :**\n\n- Identifiant Onisep\n- Durée indicative\n- Modalités d’enseignement (attention, depuis septembre 2022, **ce jeu de données ne comprend plus les actions de formation proposées en apprentissage** (cf : <https://opendata.onisep.fr/actualite/53/8-apprentissage-les-jeux-open-data-onisep-evoluent.htm>), ni l’éventuelle modalité apprentissage des actions de formation proposées sous d’autres formes. Pour en savoir plus sur la collecte de l’offre de formation en apprentissage, consulter : <https://catalogue-apprentissage.intercariforef.org/>).).\n- Eléments d'enseignement (par exemple options/spécialisations particulières connues… NB : hors options linguistiques et hors options et spécialités de baccalauréat \\*),\n- Coûts de scolarité\n- Précisions sur les modalités d’accueil\n- Page web descriptive (proposée par l’établissement)\n- Date de dernière mise à jour dans les systèmes Onisep\n\n\\- **des données sur la formation (FOR) mise en œuvre :**\n\n- Libellé\n- Identifiant Onisep et lien vers la fiche sur onisep.fr\n- Indexation par domaines Onisep\n- Type\n- Nature du certificat obtenu en fin de formation\n- Lien vers un référentiel\n- Niveau de sortie de la formation\n\n **- des données sur le lieu d’enseignement :**\n\n- Libellé\n- Identifiant Onisep et lien vers sa fiche sur onisep.fr\n- Code UAI\n- Statut\n- Adresse complète\n- Code postal\n- Commune\n- Département\n- Académie\n- Région\n- Coordonnées GPS\n- N° de téléphone\n- Site web\n- Données connues sur l’hébergement\n- Données connues sur l’accessibilité\n\n**A savoir :** ce jeu comporte parfois **plusieurs lignes pour un même identifiant d'Action de formation** (AF), lorsqu'elle est proposée sur plusieurs lieux d'enseignement.\n\nCe jeu sera **mis à jour environ 10 fois par an**, au rythme du calendrier de l’orientation et des mises à jour du site onisep.fr.\n\n\\* pour ces options et spécialités de bac, voir les jeux dédiés :\n\n<http://opendata.onisep.fr/data/60113c3d5fee0/2-ideo-enseignements-optionnels-de-seconde-generale-et-technologique.htm>\n\n<http://opendata.onisep.fr/data/60113f395cce6/2-ideo-enseignements-de-specialite-de-premiere-generale.htm>"
+    }
+  ],
+  "theme": "education",
+  "keywords": [
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Office national d'information sur les enseignements et les professions"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "b5f5e636-c956-5224-bb41-730f68c104f5",
+      "media_type": "FILE",
+      "media_name": "ideo-actions-de-formation-initiale-univers-lycee-rennesmetropole.csv",
+      "media_caption": "Idéo-Actions de formation initiale-Univers lycée — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "c7ae36de-2df4-5704-a37f-52b4775e51b5",
+      "media_type": "FILE",
+      "media_name": "ideo-actions-de-formation-initiale-univers-lycee-rennesmetropole.json",
+      "media_caption": "Idéo-Actions de formation initiale-Univers lycée — données filtrées sur Rennes Métropole (JSON)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "b5f5e636-c956-5224-bb41-730f68c104f5",
+      "media_type": "FILE",
+      "media_name": "ideo-actions-de-formation-initiale-univers-lycee-rennesmetropole.csv",
+      "media_caption": "Idéo-Actions de formation initiale-Univers lycée — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "c7ae36de-2df4-5704-a37f-52b4775e51b5",
+      "media_type": "FILE",
+      "media_name": "ideo-actions-de-formation-initiale-univers-lycee-rennesmetropole.json",
+      "media_caption": "Idéo-Actions de formation initiale-Univers lycée — données filtrées sur Rennes Métropole (JSON)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "721784d2-d055-557b-b6a1-654913d19cfd",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://api.opendata.onisep.fr/downloads/605340ddc19a9/605340ddc19a9.csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2021-04-16T00:00:00Z",
+    "updated": "2026-07-03T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "odbl-1.0",
+      "licence_uri": "https://opendatacommons.org/licenses/odbl/1-0"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2021-04-16T00:00:00Z",
+      "updated": "2026-07-03T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/607934efa0cc6c35945b6f19"
+  }
+}

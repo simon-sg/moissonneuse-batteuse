@@ -1,0 +1,85 @@
+{
+  "local_id": "f4cd0158-b6ad-570d-9ab4-7f0fdf2f4d84",
+  "resource_title": "Adresse et géolocalisation des établissements d'enseignement des premier et second degrés - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Adresse et géolocalisation des établissements d'enseignement des premier et second degrés — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/5889d042a3a72974cbf0d5b8\n\nListe géolocalisée des établissements d'enseignement des premier et second degrés (tous ministères de tutelle, secteurs public et privé) situés en France et dans les collectivités d'outre-mer. Les établissements concernés sont déterminés selon leur code nature dans la nomenclature de l'éducation nationale. Les codes entre 100 et 199 (premier degré) et entre 300 et 399 (second degré) sont retenus.\n\nLes données sont issues de RAMSESE (répertoire académique et ministériel sur les établissements du système éducatif).\n\nLe référentiel national des bâtiments a été ajouté à ce jeu de données améliorant l'information sur l'établissement."
+    }
+  ],
+  "theme": "education",
+  "keywords": [
+    "colleges",
+    "donnees-de-reference",
+    "ecoles",
+    "eple",
+    "etablissements",
+    "lycees",
+    "lycees-professionnels",
+    "prive",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Ministères de l'Éducation nationale"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "586b64cc-6036-5a26-ae08-4d857e7ae7aa",
+      "media_type": "FILE",
+      "media_name": "fr-en-adresse-et-geolocalisation-etablissements-pr-rennesmetropole.csv",
+      "media_caption": "fr-en-adresse-et-geolocalisation-etablissements-premier-et-second-degre.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "828a6c6f-9bad-52aa-a19e-d6a8f861c085",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://data.education.gouv.fr/api/explore/v2.1/catalog/datasets/fr-en-adresse-et-geolocalisation-etablissements-premier-et-second-degre/exports/csv?use_labels=true",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2016-11-13T00:00:00Z",
+    "updated": "2026-07-03T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2016-11-13T00:00:00Z",
+      "updated": "2026-07-03T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/5889d042a3a72974cbf0d5b8"
+  }
+}

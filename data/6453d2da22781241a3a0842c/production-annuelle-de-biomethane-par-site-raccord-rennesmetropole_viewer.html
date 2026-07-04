@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title></title>
+<script>(function(){try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<style>
+:root{--bg:#f5f6f8;--card:#fff;--txt:#1c2733;--muted:#667;--accent:#0b6e99;--bord:#e2e6ea;
+      --avert-bg:#fff8e1;--avert-bord:#ffe082;--avert-txt:#6d4c00;
+      --geo-bg:#eaf4fb;--geo-hover:#d4ecf7;--stripe:#fafbfc;--row-hover:#eef6fb;
+      --resizer:rgba(11,110,153,.35);--td-bord:#f0f2f4}
+:root[data-theme="dark"]{--bg:#10151b;--card:#1a222b;--txt:#dbe2e8;--muted:#8996a3;--accent:#4fb3da;--bord:#29323c;
+      --avert-bg:#3a2f10;--avert-bord:#6b5418;--avert-txt:#e8c96a;
+      --geo-bg:#16303c;--geo-hover:#1d3f4d;--stripe:#161d24;--row-hover:#17242c;
+      --resizer:rgba(79,179,218,.35);--td-bord:#232c35}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#10151b;--card:#1a222b;--txt:#dbe2e8;--muted:#8996a3;--accent:#4fb3da;--bord:#29323c;
+      --avert-bg:#3a2f10;--avert-bord:#6b5418;--avert-txt:#e8c96a;
+      --geo-bg:#16303c;--geo-hover:#1d3f4d;--stripe:#161d24;--row-hover:#17242c;
+      --resizer:rgba(79,179,218,.35);--td-bord:#232c35}
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+     background:var(--bg);color:var(--txt);display:flex;flex-direction:column;height:100vh}
+header{background:var(--card);border-bottom:1px solid var(--bord);padding:10px 16px;
+       display:flex;flex-wrap:wrap;gap:10px;align-items:center;flex-shrink:0}
+h1{font-size:.9rem;font-weight:600;flex:1;min-width:150px;
+   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#filtre{padding:7px 11px;font-size:.9rem;border:1px solid var(--bord);
+        border-radius:6px;width:220px;background:var(--card);color:var(--txt)}
+#info{color:var(--muted);font-size:.82rem;white-space:nowrap}
+#theme-toggle{background:none;border:1px solid var(--bord);border-radius:6px;padding:5px 10px;
+              cursor:pointer;font-size:.9rem;line-height:1;color:var(--txt);flex-shrink:0}
+#theme-toggle:hover{background:var(--bg)}
+.avert{background:var(--avert-bg);border-bottom:1px solid var(--avert-bord);padding:5px 16px;
+       font-size:.8rem;color:var(--avert-txt);flex-shrink:0}
+.wrap{flex:1;overflow:auto}
+table{border-collapse:collapse;font-size:.82rem;table-layout:fixed}
+thead{position:sticky;top:0;z-index:2;background:var(--card);box-shadow:0 1px 0 var(--bord)}
+th{padding:8px 12px;text-align:left;cursor:pointer;user-select:none;color:var(--muted);font-weight:600;
+   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative}
+th:hover{background:var(--bg);color:var(--txt)}
+th.asc::after{content:" ↑";color:var(--accent)}
+th.desc::after{content:" ↓";color:var(--accent)}
+th.geo{color:var(--accent);background:var(--geo-bg)}
+th.geo:hover{background:var(--geo-hover)}
+th.trad{text-decoration:underline dotted;text-decoration-color:var(--accent);text-underline-offset:3px}
+td{padding:0;border-bottom:1px solid var(--td-bord)}
+td div{padding:5px 12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+td div a{color:var(--accent);text-decoration:none}
+td div a:hover{text-decoration:underline}
+tr:nth-child(even) td{background:var(--stripe)}
+tr:hover td{background:var(--row-hover)}
+.resizer{position:absolute;right:0;top:0;width:5px;height:100%;cursor:col-resize;z-index:1}
+.resizer:hover,.resizer.active{background:var(--resizer)}
+</style>
+</head>
+<body>
+<header>
+  <h1 id="titre"></h1>
+  <input id="filtre" type="search" placeholder="Filtrer toutes les colonnes…">
+  <span id="info"></span>
+  <button id="theme-toggle" title="Basculer thème clair/sombre" aria-label="Basculer thème clair/sombre">🌙</button>
+</header>
+<div id="avert" class="avert" style="display:none"></div>
+<div class="wrap"><table id="t"><colgroup id="cols"></colgroup><thead id="thead"></thead><tbody id="tbody"></tbody></table></div>
+<script id="d" type="application/json">{"nom": "production-annuelle-de-biomethane-par-site-raccord-rennesmetropole.csv", "champs_geo": ["Commune"], "dictionnaire": {}, "entetes": ["Annee", "Capacité théorique de production (GWh/an)", "Commune", "Type de site", "Gestionnaire réseau", "Type de réseau", "Nom du site", "Code PCR", "Code Commune Courant", "ID", "Production réelle du site en MWh/an", "Production réelle du site en GWh/an", "Nom EPCI", "Nom Département", "Nom Région", "Date de mise en service", "erreur_annee"], "lignes": [["2025", "5.3628", "Pacé", "Agricole autonome", "GRDF", "Distribution", "Pacé_SAS LAGO WATT_2018-35-66", "GD0277", "35210", "551", "5649.498", "5.649498", "Rennes Métropole", "Ille-et-Vilaine", "Bretagne", "2021-02-09", "true"], ["2025", "8.0442", "Saint-Gilles", "Agricole autonome", "GRDF", "Distribution", "SAINT-GILLES_SAS Metha R3G _2018-35-53", "GD0280", "35275", "421", "8892.308", "8.892308", "Rennes Métropole", "Ille-et-Vilaine", "Bretagne", "2021-02-16", "true"], ["2021", "15.1946", "Chavagne", "Agricole autonome", "GRDF", "Distribution", "CHAVAGNE_\tSARL Biogaz de la Vilaine_2018-35-39", "GD0280", "35076", "419", "1645.107", "1.645107", "Rennes Métropole", "Ille-et-Vilaine", "Bretagne", "2021-10-12", "true"], ["2023", "20.1105", "Noyal-Châtillon-sur-Seiche", "Agricole territorial", "GRDF", "Distribution", "SARL CASTELMETHA_NOYAL CHATILLON SUR SEICHE - 2018-35-29", "GD0308", "35206", "256", "9289.35", "9.28935", "Rennes Métropole", "Ille-et-Vilaine", "Bretagne", "2020-01-28", "true"], ["2024", "10.2787", "Cintré", "Agricole autonome", "GRDF", "Distribution", "CINTRE - COLLECTIF CINTRE BIOMETHANE - 2018-35-57", "GD0279", "35080", "455", "11130.738", "11.130738", "Rennes Métropole", "Ille-et-Vilaine", "Bretagne", "2020-08-04", "true"], ["2024", "8.0442", "Saint-Gilles", "Agricole autonome", "GRDF", "Distribution", "SAINT-GILLES_SAS Metha R3G _2018-35-53", "GD0280", "35275", "421", "8609.951", "8.609951", "Rennes Métropole", "Ille-et-Vilaine", "Bretagne", "2021-02-16", "true"], ["2025", "10.2787", "Cintré", "Agricole autonome", "GRDF", "Distribution", "CINTRE - COLLECTIF CINTRE BIOMETHANE - 2018-35-57", "GD0279", "35080", "455", "11114.321", "11.114321", "Rennes Métropole", "Ille-et-Vilaine", "Bretagne", "2020-08-04", "true"], ["2025", "20.1105", "Noyal-Châtillon-sur-Seiche", "Agricole territorial", "GRDF", "Distribution", "SARL CASTELMETHA_NOYAL CHATILLON SUR SEICHE - 2018-35-29", "GD0308", "35206", "256", "20686.456", "20.686456", "Rennes Métropole", "Ille-et-Vilaine", "Bretagne", "2020-01-28", "true"], ["2024", "20.1105", "Noyal-Châtillon-sur-Seiche", "Agricole territorial", "GRDF", "Distribution", "SARL CASTELMETHA_NOYAL CHATILLON SUR SEICHE - 2018-35-29", "GD0308", "35206", "256", "11408.395", "11.408395", "Rennes Métropole", "Ille-et-Vilaine", "Bretagne", "2020-01-28", "true"], ["2024", "5.3628", "Pacé", "Agricole autonome", "GRDF", "Distribution", "Pacé_SAS LAGO WATT_2018-35-66", "GD0277", "35210", "551", "5051.848", "5.051848", "Rennes Métropole", "Ille-et-Vilaine", "Bretagne", "2021-02-09", "true"], ["2024", "6.2566", "Thorigné-Fouillard", "Agricole autonome", "GRDF", "Distribution", "Thorigne Fouillard_SAS Terre Energie_2019-35-111", "GD0280", "35334", "826", "6675.909", "6.675909", "Rennes Métropole", "Ille-et-Vilaine", "Bretagne", "2023-03-09", "true"], ["2020", "10.2787", "Cintré", "Agricole autonome", "GRDF", "Distribution", "CINTRE - COLLECTIF CINTRE BIOMETHANE - 2018-35-57", "GD0279", "35080", "455", "4226.0", "4.226", "Rennes Métropole", "Ille-et-Vilaine", "Bretagne", "2020-08-04", "true"], ["2021", "20.1105", "Noyal-Châtillon-sur-Seiche", "Agricole territorial", "GRDF", "Distribution", "SARL CASTELMETHA_NOYAL CHATILLON SUR SEICHE - 2018-35-29", "GD0308", "35206", "256", "8784.21", "8.78421", "Rennes Métropole", "Ille-et-Vilaine", "Bretagne", "2020-01-28", "true"], ["2021", "8.0442", "Saint-Gilles", "Agricole autonome", "GRDF", "Distribution", "SAINT-GILLES_SAS Metha R3G _2018-35-53", "GD0280", "35275", "421", "6662.798", "6.662798", "Rennes Métropole", "Ille-et-Vilaine", "Bretagne", "2021-02-16", "true"], ["2022", "10.2787", "Cintré", "Agricole autonome", "GRDF", "Distribution", "CINTRE - COLLECTIF CINTRE BIOMETHANE - 2018-35-57", "GD0279", "35080", "455", "10696.975", "10.696975", "Rennes Métropole", "Ille-et-Vilaine", "Bretagne", "2020-08-04", "true"], ["2023", "10.2787", "Cintré", "Agricole autonome", "GRDF", "Distribution", "CINTRE - COLLECTIF CINTRE BIOMETHANE - 2018-35-57", "GD0279", "35080", "455", "10859.226", "10.859226", "Rennes Métropole", "Ille-et-Vilaine", "Bretagne", "2020-08-04", "true"], ["2025", "6.2566", "Betton", "Agricole autonome", "GRDF", "Distribution", "BETTON - SCEA TERREO - 2020-35-126", "GD0280", "35024", "1033", "6450.716", "6.450716", "Rennes Métropole", "Ille-et-Vilaine", "Bretagne", "2023-12-21", "true"], ["2025", "15.1946", "Chavagne", "Agricole autonome", "GRDF", "Distribution", "CHAVAGNE_\tSARL Biogaz de la Vilaine_2018-35-39", "GD0280", "35076", "419", "15178.672", "15.178672", "Rennes Métropole", "Ille-et-Vilaine", "Bretagne", "2021-10-12", "true"], ["2025", "6.2566", "Thorigné-Fouillard", "Agricole autonome", "GRDF", "Distribution", "Thorigne Fouillard_SAS Terre Energie_2019-35-111", "GD0280", "35334", "826", "6659.891", "6.659891", "Rennes Métropole", "Ille-et-Vilaine", "Bretagne", "2023-03-09", "true"], ["2021", "10.2787", "Cintré", "Agricole autonome", "GRDF", "Distribution", "CINTRE - COLLECTIF CINTRE BIOMETHANE - 2018-35-57", "GD0279", "35080", "455", "10449.809", "10.449809", "Rennes Métropole", "Ille-et-Vilaine", "Bretagne", "2020-08-04", "true"], ["2022", "15.1946", "Chavagne", "Agricole autonome", "GRDF", "Distribution", "CHAVAGNE_\tSARL Biogaz de la Vilaine_2018-35-39", "GD0280", "35076", "419", "8496.81", "8.49681", "Rennes Métropole", "Ille-et-Vilaine", "Bretagne", "2021-10-12", "true"], ["2022", "20.1105", "Noyal-Châtillon-sur-Seiche", "Agricole territorial", "GRDF", "Distribution", "SARL CASTELMETHA_NOYAL CHATILLON SUR SEICHE - 2018-35-29", "GD0308", "35206", "256", "9202.193", "9.202193", "Rennes Métropole", "Ille-et-Vilaine", "Bretagne", "2020-01-28", "true"], ["2022", "5.3628", "Pacé", "Agricole autonome", "GRDF", "Distribution", "Pacé_SAS LAGO WATT_2018-35-66", "GD0277", "35210", "551", "4784.636", "4.784636", "Rennes Métropole", "Ille-et-Vilaine", "Bretagne", "2021-02-09", "true"], ["2022", "8.0442", "Saint-Gilles", "Agricole autonome", "GRDF", "Distribution", "SAINT-GILLES_SAS Metha R3G _2018-35-53", "GD0280", "35275", "421", "8316.571", "8.316571", "Rennes Métropole", "Ille-et-Vilaine", "Bretagne", "2021-02-16", "true"], ["2023", "6.2566", "Betton", "Agricole autonome", "GRDF", "Distribution", "BETTON - SCEA TERREO - 2020-35-126", "GD0280", "35024", "1033", "139.647", "0.139647", "Rennes Métropole", "Ille-et-Vilaine", "Bretagne", "2023-12-21", "true"], ["2023", "5.3628", "Pacé", "Agricole autonome", "GRDF", "Distribution", "Pacé_SAS LAGO WATT_2018-35-66", "GD0277", "35210", "551", "4732.045", "4.732045", "Rennes Métropole", "Ille-et-Vilaine", "Bretagne", "2021-02-09", "true"], ["2023", "8.0442", "Saint-Gilles", "Agricole autonome", "GRDF", "Distribution", "SAINT-GILLES_SAS Metha R3G _2018-35-53", "GD0280", "35275", "421", "8011.934", "8.011934", "Rennes Métropole", "Ille-et-Vilaine", "Bretagne", "2021-02-16", "true"], ["2023", "6.2566", "Thorigné-Fouillard", "Agricole autonome", "GRDF", "Distribution", "Thorigne Fouillard_SAS Terre Energie_2019-35-111", "GD0280", "35334", "826", "5410.426", "5.410426", "Rennes Métropole", "Ille-et-Vilaine", "Bretagne", "2023-03-09", "true"], ["2020", "20.1105", "Noyal-Châtillon-sur-Seiche", "Agricole territorial", "GRDF", "Distribution", "SARL CASTELMETHA_NOYAL CHATILLON SUR SEICHE - 2018-35-29", "GD0308", "35206", "256", "6288.0", "6.288", "Rennes Métropole", "Ille-et-Vilaine", "Bretagne", "2020-01-28", "true"], ["2021", "5.3628", "Pacé", "Agricole autonome", "GRDF", "Distribution", "Pacé_SAS LAGO WATT_2018-35-66", "GD0277", "35210", "551", "4112.872", "4.112872", "Rennes Métropole", "Ille-et-Vilaine", "Bretagne", "2021-02-09", "true"], ["2023", "15.1946", "Chavagne", "Agricole autonome", "GRDF", "Distribution", "CHAVAGNE_\tSARL Biogaz de la Vilaine_2018-35-39", "GD0280", "35076", "419", "10610.891", "10.610891", "Rennes Métropole", "Ille-et-Vilaine", "Bretagne", "2021-10-12", "true"], ["2024", "6.2566", "Betton", "Agricole autonome", "GRDF", "Distribution", "BETTON - SCEA TERREO - 2020-35-126", "GD0280", "35024", "1033", "6379.64", "6.37964", "Rennes Métropole", "Ille-et-Vilaine", "Bretagne", "2023-12-21", "true"], ["2024", "15.1946", "Chavagne", "Agricole autonome", "GRDF", "Distribution", "CHAVAGNE_\tSARL Biogaz de la Vilaine_2018-35-39", "GD0280", "35076", "419", "13299.586", "13.299586", "Rennes Métropole", "Ille-et-Vilaine", "Bretagne", "2021-10-12", "true"]], "tronque": false, "nb_total": 33}</script>
+<script>
+(function(){
+  const btn = document.getElementById("theme-toggle");
+  function effectif(){
+    return document.documentElement.getAttribute("data-theme") ||
+      (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  }
+  function majIcone(){ btn.textContent = effectif() === "dark" ? "☀️" : "🌙"; }
+  btn.addEventListener("click", () => {
+    const suivant = effectif() === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", suivant);
+    try { localStorage.setItem("theme", suivant); } catch(e) {}
+    majIcone();
+  });
+  majIcone();
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+    if (!document.documentElement.getAttribute("data-theme")) majIcone();
+  });
+})();
+
+const D=JSON.parse(document.getElementById("d").textContent);
+const tbl=document.getElementById("t"),wrap=document.querySelector(".wrap");
+const nCols=D.entetes.length;
+const wrapW=wrap.clientWidth||800;
+const colW=Math.max(80,Math.floor(Math.max(wrapW,nCols*160)/nCols));
+tbl.style.width=Math.max(wrapW,nCols*160)+"px";
+document.getElementById("cols").innerHTML=D.entetes.map(()=>`<col style="width:${colW}px">`).join("");
+document.title=D.nom;document.getElementById("titre").textContent=D.nom;
+if(D.tronque){const a=document.getElementById("avert");a.style.display="";
+  a.textContent=`Prévisualisation : ${D.lignes.length.toLocaleString("fr")} premières lignes sur ${D.nb_total.toLocaleString("fr")} au total.`;}
+const geo=new Set(D.champs_geo||[]);
+const DICO=D.dictionnaire||{};
+let sc=-1,asc=true,q="";
+function esc(s){return String(s??"").replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function cell(v){const s=String(v??"").trim();return /^https?:\/\/\S+$/.test(s)?`<a href="${esc(s)}" target="_blank" rel="noopener">${esc(s)}</a>`:esc(v);}
+function rendu(){
+  let rows=D.lignes;
+  if(q){const f=q.toLowerCase();rows=rows.filter(r=>r.some(v=>String(v??"").toLowerCase().includes(f)));}
+  if(sc>=0){const col=sc,up=asc;rows=[...rows].sort((a,b)=>{
+    const va=a[col]??"",vb=b[col]??"",na=+va,nb=+vb;
+    return(!isNaN(na)&&!isNaN(nb))?(up?na-nb:nb-na):(up?String(va).localeCompare(String(vb),"fr"):String(vb).localeCompare(String(va),"fr"));
+  });}
+  const th=D.entetes.map((h,i)=>{
+    const trad=DICO[h];
+    const cls=[sc===i?(asc?"asc":"desc"):"",geo.has(h)?"geo":"",trad?"trad":""].filter(Boolean).join(" ");
+    const tip=trad?` title="${esc(h)}"`:"";
+    return`<th class="${cls}"${tip}>${esc(trad||h)}<div class="resizer"></div></th>`;
+  }).join("");
+  document.getElementById("thead").innerHTML=`<tr>${th}</tr>`;
+  document.getElementById("tbody").innerHTML=rows.map(r=>`<tr>${r.map(v=>`<td><div title="${esc(v)}">${cell(v)}</div></td>`).join("")}</tr>`).join("");
+  const n=rows.length,tot=D.lignes.length;
+  document.getElementById("info").textContent=n<tot
+    ?`${n.toLocaleString("fr")} / ${tot.toLocaleString("fr")} lignes`
+    :`${n.toLocaleString("fr")} ligne${n>1?"s":""}`;
+}
+// Sort via delegation — ignore clicks that start on the resizer handle
+tbl.addEventListener("click",e=>{
+  if(e.target.closest(".resizer"))return;
+  const th=e.target.closest("th");
+  if(!th)return;
+  const i=th.cellIndex;sc===i?asc=!asc:(sc=i,asc=true);rendu();
+});
+// Column resize
+tbl.addEventListener("mousedown",e=>{
+  const rz=e.target.closest(".resizer");
+  if(!rz)return;
+  e.preventDefault();
+  const th=rz.parentElement,idx=th.cellIndex;
+  const cols=document.querySelectorAll("#cols col");
+  const startX=e.clientX,startW=th.offsetWidth;
+  rz.classList.add("active");
+  document.body.style.cursor="col-resize";
+  function onMove(e){
+    const w=Math.max(40,startW+(e.clientX-startX));
+    cols[idx].style.width=w+"px";
+    tbl.style.width=Array.from(cols).reduce((s,c)=>s+(parseInt(c.style.width)||colW),0)+"px";
+  }
+  function onUp(){
+    rz.classList.remove("active");
+    document.body.style.cursor="";
+    document.removeEventListener("mousemove",onMove);
+    document.removeEventListener("mouseup",onUp);
+  }
+  document.addEventListener("mousemove",onMove);
+  document.addEventListener("mouseup",onUp);
+});
+document.getElementById("filtre").addEventListener("input",e=>{q=e.target.value;rendu();});
+rendu();
+</script>
+</body>
+</html>

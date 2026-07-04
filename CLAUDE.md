@@ -44,8 +44,8 @@ No dependencies beyond `requests` (stdlib otherwise).
 | `src/main.py` | Harvest: download, filter, translate, save for RUDI (tabular datasets) |
 | `src/harvest_geo.py` | Harvest: WFS→GeoJSON download, WMS service reference, OGC API Features |
 | `src/conf/datasets.py` | `DATASETS`, `DATASETS_GEO`, `DATASETS_INSEE` — all configured datasets |
-| `src/conf/communes_rm.py` | Reference data: 43 communes, INSEE codes, postal codes |
-| `src/filters/geographic.py` | `est_dans_rm()`, `est_commune_rm()`, `normaliser()` |
+| `src/conf/communes_rm.py` | Reference data: 43 communes, INSEE codes, postal codes, circonscriptions législatives |
+| `src/filters/geographic.py` | `est_dans_rm()`, `est_commune_rm()`, `normaliser()`, `est_circonscription_rm()` |
 | `src/connectors/datagouv.py` | data.gouv.fr API calls (metadata, download) |
 | `src/connectors/geo_services.py` | WFS/WMS/OGC API connector functions |
 | `src/connectors/insee.py` | INSEE direct download (HEAD probe + scraping failsafe), ZIP member extraction |
@@ -72,11 +72,18 @@ No dependencies beyond `requests` (stdlib otherwise).
   "echecs_n":          {"dataset-id": 2},     // consecutive failure count
   "sans_ressource":    ["dataset-id", ...],   // no CSV/JSON resource available
   "exclusions_termes": ["Landes", ...],       // term-based exclusions (org/title)
-  "a_examiner":        [{...}, ...]           // ambiguous cases from automated discovery — see below
+  "a_examiner":        [{...}, ...],          // ambiguous cases from automated discovery — see below
+  "historique":        [{...}, ...]           // "exclure"/"ignorer" decisions on a_examiner entries — see below
 }
 ```
 
 Only `exclus` and `exclusions_termes` survive a history reset — those are deliberate user decisions.
+
+`historique` holds a full snapshot of the `a_examiner` entry (plus `decision`: `"exclure"`|`"ignorer"`, and
+`date_decision`) at the moment `resoudre_a_examiner()` resolves it that way — populates the "Exclus"/"Ignorés"
+tabs on `/examen` (see "Tableau de bord web" below) with enough context to display without re-fetching, and lets
+`rouvrir_historique()` reconstruct the entry byte-for-byte if the decision is undone. `"candidat"`/`"ajouter_geo"`
+decisions don't get a `historique` entry — they're already visible elsewhere (`candidats`/`data/geo_services.json`).
 
 ## Discovery pipeline
 
@@ -92,12 +99,15 @@ Search → pre-filter → interactive review:
 
 ## Geographic detection in CSVs
 
-`analyser_csv()` tries in priority order:
+`_detecter_champs()` (used by `analyser_csv()` and every other format's analysis path) tries in priority order:
 1. **IRIS/INSEE code** (`deviner_champ_iris`): 5-digit commune code or 9-digit IRIS code → `est_iris_rm()` checks against `CODES_INSEE_RM`
 2. **Postal code + city** (`deviner_champs`): → `est_dans_rm()`
 3. **Address text** (`deviner_champ_adresse`): regex for `35xxx` postal codes or commune name match
+4. **SIREN/SIRET** (`deviner_champ_siren`): 9/14-digit id → cross-referenced against `obtenir_sirens_rm()`
+5. **Coordinates/geometry** (`deviner_champs_geo`): separate lat/lon columns, or a single combined column — `"lat,lon"` (OpenDataSoft `geo_point_2d`), WKT `POINT/POLYGON/MULTIPOLYGON(...)`, or a GeoJSON geometry serialized as JSON (`geom`/`geo_shape`/`the_geom`, e.g. `{"coordinates": [...]}`) — tested via `est_point_rm()`. For a multi-vertex geometry (polygon...) this is a bbox vertex test, not a true intersection, same tolerance already used for WMS/WFS layer bbox overlap.
+6. **Circonscription législative** (`deviner_champ_circonscription`): absolute last resort, tried only if nothing above matched — → `est_circonscription_rm()` checks the code against `CIRCONSCRIPTIONS_RM`. Deliberately least-trusted signal: see "Known limitations" below for why.
 
-`normaliser()` strips accents, lowercases, converts `_`/`-` to spaces — applied to column headers before matching.
+Each step is only tried if the previous ones found nothing (mutually exclusive cascade, not simultaneous signals). `normaliser()` strips accents, lowercases, converts `_`/`-` to spaces — applied to column headers before matching.
 
 ## API gotchas
 
@@ -247,6 +257,11 @@ Stdlib-only HTTP server (`http.server.ThreadingHTTPServer`, no framework) exposi
 - Purge confirmation is re-validated **server-side** (`_traiter_purge()`) exactly like `cli._confirmer()` — never trust the browser's disabled-button state alone for the destructive item (typed `SUPPRIMER`, case-sensitive exact match).
 - **Nœud RUDI card is the one exception to "go through `cli.py`"**: it calls `connectors/rudi_node.py`'s `statut_conteneur()`/`demarrer_conteneur()`/`arreter_conteneur()`/`noeud_pret()` directly (`GET /api/noeud`, `POST /api/noeud/<demarrer|arreter>`), because there's no terminal equivalent in `cli.py` to reuse — Podman container control has no CLI menu entry today. The container name is `CONTENEUR_RUDI` in `rudi_node.py` (currently `"rudinode"`) — update it there if the local node container is ever renamed. `statut_conteneur()` alone only reflects the Podman process state (`running` right after `podman start`), not whether the app inside has finished booting — `noeud_pret()` does a real HTTP probe of the manager URL, and `_etat_noeud()`'s `pret` field gates both the "Ouvrir le nœud" link and the badge (shows "démarrage…" with faster 2s polling until ready, see `actualiserNoeud()`'s `intervalleRapideNoeud`) — don't collapse this back to relying on Podman status alone, that's what made the button look broken.
 - **Catalogue link is served by the dashboard itself, not `file://`**: `GET /data/<chemin>` (`Handler._servir_fichier_donnees()`) serves any file under `data/` (path-traversal-guarded, `mimetypes`-guessed content type) so that `catalogue.html` and the sibling `*_viewer.html`/`*_map.html`/resource files it links to (relative paths from `catalogue.json`, e.g. `"<dossier>/<fichier>"`) resolve correctly under `/data/...`. A direct `file://` link was tried first and doesn't work — modern browsers block top-level navigation from an `http://` page to a `file://` URL.
+- **"JDD à examiner" lives on its own page** (`GET /examen` → `PAGE_EXAMEN_HTML`), not inline on the main dashboard — the full table (title/org/reason/actions per entry) made the main page too tall once the backlog grew. The main page keeps only a one-line summary with a count badge (`actualiserBadgeExamen()`, polls `/api/a_examiner` every 15s for `.length` only) and a link to `/examen`. The two pages' `<style>` blocks are independent copies of the shared rules they each need (badge/button/table.purge/notif) rather than a shared constant — small enough duplication that a shared-CSS abstraction wasn't worth it.
+- **`/examen` splits the backlog into 6 tabs** (`ONGLETS` in `PAGE_EXAMEN_HTML`'s JS, `basculerOnglet()`): "À examiner" (tabulaire only, still pending) / "Analyse échouée" (raison starts with `"analyse échouée"`, `sans_ressource` not yet True) / "Sans ressource" (`sans_ressource === true`) / "Services géo" (WFS/WMS still pending) / "Exclus" / "Ignorés". The first four are four mutually-exclusive client-side filters over the one `GET /api/a_examiner` array (`chargerExamen()`), same array as before, no new logic server-side — `sans_ressource` and `raison` are checked first, then the remainder is split `type === "tabulaire"` (→ "À examiner") vs not (→ "Services géo"). "Exclus"/"Ignorés" are backed by a separate `GET /api/historique` (`_historique_json()` in `dashboard.py`), sourced from `decouverte["historique"]` (see "Discovery state" above) — each entry there is a full snapshot of the `a_examiner` entry at decision time, so these tabs render title/org/raison without any re-fetch. `_historique_json()` also merges in any bare dataset-id-only entries from the legacy `decouverte["exclus"]` list (pre-dates `historique`) with a "titre inconnu" placeholder and no "Rouvrir" button (`rouvrable: false` — no snapshot to restore). `POST /api/historique/rouvrir` (`discover.rouvrir_historique()`) undoes an "exclure"/"ignorer" decision: re-appends the stored snapshot to `a_examiner` and, for an exclusion, also strips the id back out of `decouverte["exclus"]` — otherwise `_filtrer_communs()`'s "already excluded" check would silently block it from ever being re-discovered again even though it's sitting back in the visible backlog.
+- **"Services géo" has a bulk-resolve button**: `discover.resoudre_wfs_confirmes_en_masse()` applies the `"ajouter_geo"` decision to every WFS entry with `nb_rm > 0` in one call (`POST /api/a_examiner/resoudre_wfs_masse`) — covers the reliquat of WFS confirmed *before* `rechercher_et_filtrer_auto()`'s auto-bypass existed (that bypass only prevents *future* WFS-with-features from ever reaching `a_examiner`; it doesn't retroactively resolve entries already sitting there). The button in `PAGE_EXAMEN_HTML` only renders when at least one such entry is present in the currently loaded batch.
+- **Adding a candidate/geo service from `/examen` auto-triggers its harvest+publish, best-effort**: `_traiter_a_examiner()` and `_traiter_resoudre_wfs_masse()` call `_demarrer_job()` (the same one-job-at-a-time mechanism as the manual dashboard buttons) right after a successful `"candidat"`/`"ajouter_geo"` decision — `moisson_batch_et_publier`/`moisson_geo_et_publier` (two new chained `ACTIONS` entries: `cli.action_moisson_batch()`/`action_moisson_geo()` → `action_catalogue()` → `action_publier_rudi()`, deliberately narrower than the 8-step `pipeline_complet` since INSEE/OEB/BDNB/tabulaire data.gouv are unrelated to what just changed). This exists because without it, an addition made via `/examen` was pure `decouverte.json`/`geo_services.json` bookkeeping — inert until someone manually ran the corresponding moisson + catalogue + publish steps (or `harvest_auto.py`, which is **not** wired to any cron/systemd/Jenkins on this machine — see "Known limitations"). If a job is already running when the decision is made, the trigger is a no-op (the decision itself is never blocked or lost) — `harvest_batch.py`/`harvest_geo.py` re-read the *entire* `decouverte["candidats"]`/`DATASETS_GEO` list on every run and skip already-unchanged sources via `state.json`/`state_geo.json`, so whichever job is currently running (or the next manually-triggered one) picks up the addition anyway. Both chained actions are also exposed as manual buttons on the main dashboard page (`ACTIONS` in `PAGE_HTML`'s JS) as a fallback for when the auto-trigger was skipped.
+- **A manual "Analyser" failure now reclassifies the row instantly**: `_traiter_a_examiner_preview()` used to persist nothing on a transient failure (network/parsing error, `permanent=False`) — the row silently stayed in "À examiner" with no trace. It now calls the new `discover.marquer_a_examiner_echec()` (same shape as `marquer_a_examiner_verifie()`), which sets `raison` to the `"analyse échouée"`-prefixed format the tab partition already recognizes. The `permanent=True` case (no analyzable resource format at all) is unchanged — still routes to "Sans ressource" via `marquer_a_examiner_verifie()`, a distinct and already-correct state. JS `analyserJdd()` now calls `chargerExamen()` unconditionally on any failure (previously only when `permanent`), so the row moves to the right tab immediately instead of waiting for the next periodic reload.
 
 ## Découverte automatique (`src/harvest_auto.py`)
 
@@ -330,6 +345,31 @@ gap (`traiter_resultat()`, `rechercher_et_filtrer_auto()`, `_reanalyser_candidat
 still don't carry `champ_siren`/`champ_lat`/`champ_lon` into the candidat dict) is unchanged —
 only the manual-tagging path and the harvest-time filter were fixed.
 
+The manual "type de variable" picker (`discover._TYPES_VARIABLES`, shared by
+`revue_manuelle_a_examiner()` and the dashboard's `a_examiner` test tool) has a standalone
+**"Code postal seul"** type (`champ_cp`) alongside the "commune" bucket — useful when a column
+is known to hold *only* a postal code (not an INSEE/IRIS code or a commune name), so the count
+isn't muddied by `est_valeur_commune_rm()`'s broader matching. Auto-detection (`CHAMPS_CP`) has
+always matched `code_postal`/`code postal`/`codepostal` directly, plus any header containing
+"postal" as a substring fallback — this was already working before the standalone type existed.
+
+**Centroïde / WKT point columns**: `est_point_rm()` (mirrored in `discover.py` and
+`harvest_batch.py`) now also parses a WKT `"POINT(lon lat)"` string, not just the OpenDataSoft
+`"lat,lon"` combined format — common for a `centroid`/`centroide`/`the_geom_centroid`-style
+column. Auto-detection's `CHAMPS_GEO_POINT` list gained `centroid` and its usual variants
+(`centroid_geom`, `the_geom_centroid`, `centroid_wgs84`, …), and the manual picker's existing
+"Latitude / longitude" type covers WKT centroid columns too — no separate type was needed since
+both formats resolve to the same `champ_lat`/`champ_lon=None` combined-column representation.
+
+**Circonscription législative** works the same way as SIREN: `champ_circonscription` is
+persisted on candidat/`a_examiner` entries, taggable via `_TYPES_VARIABLES` in the manual-review
+flow (CLI and dashboard `/examen`), and filtered by `harvest_batch.py`'s `_ligne_est_rm()` via
+`filters/geographic.py::est_circonscription_rm()` (accepts common real-world formats —
+`"035-01"`, `"35-01"`, `"3501"`... — normalized to `"DDD-NN"` before the membership check).
+Unlike SIREN, it's deliberately tried **last** in every detection cascade — after IRIS, adresse,
+SIREN, EPCI, and lat/lon all fail — because a circonscription is geographically larger than RM
+(see "Known limitations" below), so it's the least trustworthy signal available.
+
 ## Known limitations / not addressed
 
 These were identified during a full pipeline audit but deliberately left as-is rather than changed silently — they need a product/architecture decision rather than a mechanical fix:
@@ -339,3 +379,5 @@ These were identified during a full pipeline audit but deliberately left as-is r
 - **`DATASETS` is empty** (see "Project overview" above) — `src/main.py`'s tabular data.gouv.fr pipeline is currently inactive, not broken.
 - **RUDI theme for auto-discovered candidates stays heuristic**: `rechercher_et_filtrer_auto()` never passes a `theme` to `traduire_metadonnees()`, so it falls back to `_detecter_theme()` (keyword scoring against title/description) exactly like the interactive session already does — occasionally wrong, worth an occasional glance at the catalogue rather than a blocker.
 - **`harvest_auto.py` still re-runs the full `REQUETES_STRUCTUREES` sweep every day** (up to 50 pages each); `deja_vus` avoids re-downloading/re-analysing already-known datasets, but the API listing itself isn't incremental. Not addressed here — revisit only if run duration becomes an actual problem.
+- **`harvest_auto.py` is not actually scheduled on this machine**: no crontab entry, systemd `.timer`, or Jenkinsfile exists in or around this repo — the crontab line in "Découverte automatique" above is only ever a suggested example, never installed. In practice `harvest_auto.py`/`cli.executer_pipeline_complet()` only run when launched by hand. This is why the `/examen` auto-trigger-on-add (see "Tableau de bord web" above) matters in practice: without it, or without someone periodically running the full pipeline, additions from `/examen` and results of `discover.py` sessions accumulate in `decouverte.json`/`geo_services.json` without ever reaching the RUDI node.
+- **`champ_circonscription` is coarser than every other geographic filter field**: a circonscription législative is geographically larger than Rennes Métropole — e.g. RM's 1st circonscription (`035-01`) also covers communes south of Rennes outside RM. Matching "circonscription code ∈ {the 7 RM-overlapping codes}" only proves a row is *somewhere in a circonscription overlapping RM*, not inside one of the 43 communes — unlike IRIS/CP+ville/adresse/SIREN/EPCI/lat-lon, which all precisely identify RM membership. This is why it's always tried last (`discover.py::_detecter_champs()`, `harvest_batch.py::_ligne_est_rm()`) — accepted as an occasional false-positive source for candidates where it's the only field ever detected, not fixed, since there's no cheap way to shrink a circonscription to just its RM-overlapping portion from a single code column.

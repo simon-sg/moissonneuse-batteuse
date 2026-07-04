@@ -1,0 +1,78 @@
+{
+  "local_id": "e35f907c-f943-5d1b-96e4-1e7b1536781e",
+  "resource_title": "Référentiel des unités de contrôle de l'inspection du travail - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Référentiel des unités de contrôle de l'inspection du travail — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/6836c8a3df73274082cf7ab6\n\nLe jeu de données comprend la liste des unités de contrôle de l’inspection du travail, leurs coordonnées électroniques et adresses ainsi que leur champ de compétence géographique et sectoriel.  L’unité de contrôle (UC) est le service auquel sont rattachés les agents de contrôle de l’inspection du travail. Typiquement, une unité de contrôle comprend une dizaine d’agents de contrôle, un(e) responsable d’unité et un ou plusieurs assistant(e)s.  Elle est compétente sur un territoire donné et le cas échéant sur un ou plusieurs secteurs d’activité.\n\n&#x20;Ce jeu de données s’adresse à un public ayant besoin d’automatiser la récupération de l’unité de contrôle compétente, par exemple pour satisfaire à une obligation récurrente d’information ou de notification.\n\nPour le grand public souhaitant simplement connaître l’agent de contrôle compétent, cette page propose un outil de recherche plus adapté: <https://travail-emploi.gouv.fr/contacter-linspection-du-travail-ou-repondre-vos-questions-sur-le-droit-du-travail#anchor-navigation-378>\n"
+    }
+  ],
+  "theme": "townPlanning",
+  "keywords": [
+    "inspection-du-travail",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Ministère du Travail du Plein emploi et de l'Insertion"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "1e12c24c-36ec-595e-9310-6ce52c571a52",
+      "media_type": "FILE",
+      "media_name": "referentieluc-rennesmetropole.csv",
+      "media_caption": "referentieluc.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "3e3e7167-a7ce-503c-8180-1a8601bc1808",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://static.data.gouv.fr/resources/referentiel-des-unites-de-controle-de-linspection-du-travail/20260601-080527/referentieluc.csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2025-05-28T00:00:00Z",
+    "updated": "2026-06-01T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2025-05-28T00:00:00Z",
+      "updated": "2026-06-01T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/6836c8a3df73274082cf7ab6"
+  }
+}

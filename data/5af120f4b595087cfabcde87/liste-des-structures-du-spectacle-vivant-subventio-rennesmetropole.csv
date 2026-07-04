@@ -1,0 +1,6 @@
+Structure,NOM1,NOM2,ADRESSE1,ADRESSE2,CP,VILLE,Longitude,Latitude,coordonnees_geoloc,coordonnees_ban,coordonnees_finales,Région
+Centre d’art,LA CRIÉE CENTRE D'ART CONTEMPORAIN,,Place Honoré Commeurec,,35000,RENNES,,,,"48.1084, -1.67969","48.1084, -1.67969",Bretagne
+SMAC,Le Jardin Moderne (projet SMAC d’agglomération rennaise),association Le Jardin Moderne,"11, rue du Manoir de Servigné",,35000,RENNES,,,,"48.102259, -1.725756","48.102259, -1.725756",Bretagne
+SMAC,ATM (projet SMAC d'agglomération rennaise),Association Trans Musicales,"10/12, rue Jean Guy",-CS 73912,35000,RENNES,,,,"48.106842, -1.695181","48.106842, -1.6951809999999998",Bretagne
+SMAC,Antipode (projet SMAC d'agglomération rennaise),MJC Cleunay,"2, rue A Trasbot","MJC Antipode,",35000,RENNES,,,,"48.100842, -1.708982","48.100842, -1.708982",Bretagne
+FRAC,Fonds régional d'art contemporain BRETAGNE,,19 avenue André Mussat,,35000,RENNES,,,,"48.130653, -1.695448","48.130653, -1.6954479999999998",Bretagne

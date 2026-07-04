@@ -1,0 +1,85 @@
+{
+  "local_id": "e3858f41-67be-5bb4-8ee7-027c3aabab31",
+  "resource_title": "Dépenses culturelles des communes - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Dépenses culturelles des communes — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/62da21021d3f7025e69ef260\n\n**Dépenses culturelles des communes de 3 500 habitants** : dépenses culturelles de fonctionnement, dépenses culturelles d'investissement, en milliers d'euros, en euros par habitant et en pourcentage des dépenses totales pour chaque commune.\n\nNB : les dépenses de fonctionnement sont destinées au fonctionnement courant de la collectivité, de ses services et des activités culturelles qu'elle finance ; les dépenses d'investissement comprennent des opérations qui modifient la consistance ou la valeur du patrimoine de la collectivité (constructions, gros aménagements, travaux d'infrastructure, achats de biens \"durables\", etc.).\n\nLibellés des valeurs du champ \"Nature\\_EPCI\" : CA (communauté d’agglomération) ; CC (communauté de communes) ; CU (communauté urbaine) ; ME (métropole) ; EPT (établissement public territorial). \\\nDepenses\\_F : dépenses  de fonctionnement ; Depenses\\_I : dépenses d'investissement.\n\n**Source** : comptes de gestion 2023 des communes, Direction générale des finances publiques, ministère chargé de l’Économie, traitement Deps-Doc, ministère de la Culture, 2025\n\n"
+    }
+  ],
+  "theme": "culture",
+  "keywords": [
+    "budget-culturel",
+    "collectivite-locale",
+    "collectivites-territoriales",
+    "culture",
+    "culture-communale",
+    "depenses",
+    "depenses-fonctionnement",
+    "depenses-investissement",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Ministère de la Culture"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "b55fa220-a6fe-52c2-8d7a-f689ab641efb",
+      "media_type": "FILE",
+      "media_name": "depenses-culturelles-des-communes-total-2023-rennesmetropole.csv",
+      "media_caption": "Dépenses_culturelles_des_communes_total_2023.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "8fb8e797-8176-5b1a-9f7d-2046287caf6e",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://ministere-culture.s3.sbg.io.cloud.ovh.net/DEPENSES_CULTURELLES/depenses_culturelles_des_communes.csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2022-07-22T00:00:00Z",
+    "updated": "2026-06-01T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2022-07-22T00:00:00Z",
+      "updated": "2026-06-01T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/62da21021d3f7025e69ef260"
+  }
+}

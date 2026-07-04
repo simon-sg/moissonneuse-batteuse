@@ -1,0 +1,85 @@
+{
+  "local_id": "f8a925bf-9c29-5fa3-bb83-25264e287465",
+  "resource_title": "Gentilés des communes de France - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Gentilés des communes de France — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/63ce596a11ce57e6a6cfb6df\n\n-----------------------------------------------------\nGENTILE\n-----------------------------------------------------\nSource : Habitants.fr\nAnnée de référence : 2020\nGéographie : 2020\n\nEnsemble des gentilés disponibles sur le site habitants.fr. Les gentilés sont consolidés en géographie 2020.\n"
+    }
+  ],
+  "theme": "environment",
+  "keywords": [
+    "communes",
+    "gentile",
+    "gentiles",
+    "gentiles-commune",
+    "gentiles-communes",
+    "gentiles-de-france",
+    "gentiles-par-commune",
+    "habitants",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Ithéa Conseil"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "3d3ac327-f228-577f-b484-71cf312bf7c1",
+      "media_type": "FILE",
+      "media_name": "gentile-rennesmetropole.csv",
+      "media_caption": "gentile.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "5bb2cdac-ff6d-5446-bd29-d1035522fa51",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://static.data.gouv.fr/resources/gentiles/20230309-150423/gentile.csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2023-01-23T00:00:00Z",
+    "updated": "2023-03-13T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2023-01-23T00:00:00Z",
+      "updated": "2023-03-13T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/63ce596a11ce57e6a6cfb6df"
+  }
+}

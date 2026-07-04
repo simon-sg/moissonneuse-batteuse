@@ -1,0 +1,95 @@
+{
+  "local_id": "9cb06f89-aba5-5851-bec5-98b67492f0b0",
+  "resource_title": "Indicateurs business par commune (France métropolitaine) - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Indicateurs business par commune (France métropolitaine) — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/6a34f17e153f3c387b4cdbae\n\nJeu de données ouvert : les communes de France métropolitaine décrites par des indicateurs économiques et commerciaux bruts, agrégés à la maille communale (clé code INSEE) à partir de données publiques officielles.\n\nTissu d'établissements et diversité d'activités (SIRENE), cessations et ventes de fonds (BODACC), dirigeants et pression de transmission — part des 60 ans et plus (INPI RNE), friches et emprises foncières (Cartofriches / Cerema), permis de construire non résidentiels (Sitadel), prix des locaux commerciaux (DVF), revenu médian local (FILOSOFI) et taux communal de CFE (DGFiP).\n\nUne ligne par commune. Schéma complet (types, titres, sources par colonne) dans datapackage.json (standard Frictionless). Les cellules vides correspondent à une donnée non disponible pour la commune — une absence honnête, pas un zéro.\n\nPortée : ce jeu contient des indicateurs bruts (valeurs de sortie). Il ne contient pas d'indice composite, de score propriétaire, de pondération, ni de ventilation nominative — ceux-ci relèvent de l'outil applicatif NextToYourBusiness.\n\nProduit par NextToYourBusiness — https://www.nexttoyourbusiness.fr"
+    }
+  ],
+  "theme": "transportation",
+  "keywords": [
+    "bodacc",
+    "cfe",
+    "commerce",
+    "commune",
+    "dvf",
+    "entreprises",
+    "friches",
+    "implantation",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "NextToYourBusiness"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "31490d45-703a-5729-8f30-3df8a5faa8fd",
+      "media_type": "FILE",
+      "media_name": "indicateurs-business-par-commune-csv-rennesmetropole.csv",
+      "media_caption": "Indicateurs business par commune (CSV) — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "22c3a78c-3582-55fd-81fc-128eb05d8746",
+      "media_type": "FILE",
+      "media_name": "indicateurs-business-par-commune-csv-rennesmetropole.json",
+      "media_caption": "Indicateurs business par commune (CSV) — données filtrées sur Rennes Métropole (JSON)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "6a0697fb-3db7-521e-bfca-d4d992cb57de",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://static.data.gouv.fr/resources/indicateurs-business-par-commune-france-metropolitaine/20260619-073631/communes-indicateurs.csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2026-06-19T00:00:00Z",
+    "updated": "2026-06-19T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2026-06-19T00:00:00Z",
+      "updated": "2026-06-19T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/6a34f17e153f3c387b4cdbae"
+  }
+}

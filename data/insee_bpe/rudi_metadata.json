@@ -1,0 +1,72 @@
+{
+  "local_id": "e37718d6-1b70-5f05-9617-4c6d35944fbf",
+  "resource_title": "Base permanente des équipements (BPE) — Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Base permanente des équipements (BPE) — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Données INSEE filtrées sur Rennes Métropole.\n\nSource : https://www.insee.fr/fr/statistiques/8217525\n\nJeu de données du thème « espace public », produit par Institut national de la statistique et des études économiques (Insee), limité aux communes de Rennes Métropole. Les enregistrements comportent les champs suivants : AN, NOMRS, CNOMRS, NUMVOIE, INDREP, TYPVOIE, LIBVOIE, CADR (+81 autres champs)."
+    }
+  ],
+  "theme": "publicSpace",
+  "keywords": [
+    "insee",
+    "rennes métropole",
+    "bpe"
+  ],
+  "producer": {
+    "organization_name": "Institut national de la statistique et des études économiques (Insee)"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "e6674558-8335-5bc1-b7f4-0d61147db551",
+      "media_type": "FILE",
+      "media_name": "bpe24-rennesmetropole.csv",
+      "media_caption": "bpe24-rennesmetropole.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "ce294302-32a7-5b77-9234-2abe306e0f55",
+      "media_type": "SERVICE",
+      "media_name": "source-insee",
+      "media_caption": "Publication complète (France entière) sur insee.fr",
+      "connector": {
+        "url": "https://www.insee.fr/fr/statistiques/fichier/8217525/BPE24.zip",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {},
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_source": "https://www.insee.fr/fr/statistiques/8217525"
+  }
+}

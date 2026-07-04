@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title></title>
+<script>(function(){try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<style>
+:root{--bg:#f5f6f8;--card:#fff;--txt:#1c2733;--muted:#667;--accent:#0b6e99;--bord:#e2e6ea;
+      --avert-bg:#fff8e1;--avert-bord:#ffe082;--avert-txt:#6d4c00;
+      --geo-bg:#eaf4fb;--geo-hover:#d4ecf7;--stripe:#fafbfc;--row-hover:#eef6fb;
+      --resizer:rgba(11,110,153,.35);--td-bord:#f0f2f4}
+:root[data-theme="dark"]{--bg:#10151b;--card:#1a222b;--txt:#dbe2e8;--muted:#8996a3;--accent:#4fb3da;--bord:#29323c;
+      --avert-bg:#3a2f10;--avert-bord:#6b5418;--avert-txt:#e8c96a;
+      --geo-bg:#16303c;--geo-hover:#1d3f4d;--stripe:#161d24;--row-hover:#17242c;
+      --resizer:rgba(79,179,218,.35);--td-bord:#232c35}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#10151b;--card:#1a222b;--txt:#dbe2e8;--muted:#8996a3;--accent:#4fb3da;--bord:#29323c;
+      --avert-bg:#3a2f10;--avert-bord:#6b5418;--avert-txt:#e8c96a;
+      --geo-bg:#16303c;--geo-hover:#1d3f4d;--stripe:#161d24;--row-hover:#17242c;
+      --resizer:rgba(79,179,218,.35);--td-bord:#232c35}
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+     background:var(--bg);color:var(--txt);display:flex;flex-direction:column;height:100vh}
+header{background:var(--card);border-bottom:1px solid var(--bord);padding:10px 16px;
+       display:flex;flex-wrap:wrap;gap:10px;align-items:center;flex-shrink:0}
+h1{font-size:.9rem;font-weight:600;flex:1;min-width:150px;
+   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#filtre{padding:7px 11px;font-size:.9rem;border:1px solid var(--bord);
+        border-radius:6px;width:220px;background:var(--card);color:var(--txt)}
+#info{color:var(--muted);font-size:.82rem;white-space:nowrap}
+#theme-toggle{background:none;border:1px solid var(--bord);border-radius:6px;padding:5px 10px;
+              cursor:pointer;font-size:.9rem;line-height:1;color:var(--txt);flex-shrink:0}
+#theme-toggle:hover{background:var(--bg)}
+.avert{background:var(--avert-bg);border-bottom:1px solid var(--avert-bord);padding:5px 16px;
+       font-size:.8rem;color:var(--avert-txt);flex-shrink:0}
+.wrap{flex:1;overflow:auto}
+table{border-collapse:collapse;font-size:.82rem;table-layout:fixed}
+thead{position:sticky;top:0;z-index:2;background:var(--card);box-shadow:0 1px 0 var(--bord)}
+th{padding:8px 12px;text-align:left;cursor:pointer;user-select:none;color:var(--muted);font-weight:600;
+   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative}
+th:hover{background:var(--bg);color:var(--txt)}
+th.asc::after{content:" ↑";color:var(--accent)}
+th.desc::after{content:" ↓";color:var(--accent)}
+th.geo{color:var(--accent);background:var(--geo-bg)}
+th.geo:hover{background:var(--geo-hover)}
+th.trad{text-decoration:underline dotted;text-decoration-color:var(--accent);text-underline-offset:3px}
+td{padding:0;border-bottom:1px solid var(--td-bord)}
+td div{padding:5px 12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+td div a{color:var(--accent);text-decoration:none}
+td div a:hover{text-decoration:underline}
+tr:nth-child(even) td{background:var(--stripe)}
+tr:hover td{background:var(--row-hover)}
+.resizer{position:absolute;right:0;top:0;width:5px;height:100%;cursor:col-resize;z-index:1}
+.resizer:hover,.resizer.active{background:var(--resizer)}
+</style>
+</head>
+<body>
+<header>
+  <h1 id="titre"></h1>
+  <input id="filtre" type="search" placeholder="Filtrer toutes les colonnes…">
+  <span id="info"></span>
+  <button id="theme-toggle" title="Basculer thème clair/sombre" aria-label="Basculer thème clair/sombre">🌙</button>
+</header>
+<div id="avert" class="avert" style="display:none"></div>
+<div class="wrap"><table id="t"><colgroup id="cols"></colgroup><thead id="thead"></thead><tbody id="tbody"></tbody></table></div>
+<script id="d" type="application/json">{"nom": "statistiques-totales-dvf-rennesmetropole.csv", "champs_geo": ["libelle_geo"], "dictionnaire": {}, "entetes": ["code_geo", "libelle_geo", "code_parent", "echelle_geo", "nb_ventes_whole_appartement", "moy_prix_m2_whole_appartement", "med_prix_m2_whole_appartement", "nb_ventes_whole_maison", "moy_prix_m2_whole_maison", "med_prix_m2_whole_maison", "nb_ventes_whole_apt_maison", "moy_prix_m2_whole_apt_maison", "med_prix_m2_whole_apt_maison", "nb_ventes_whole_local", "moy_prix_m2_whole_local", "med_prix_m2_whole_local"], "lignes": [["30258", "Saint-Gilles", "243000643", "commune", "225", "1829", "1692", "626", "2361", "2311", "851", "2220", "2126", "19", "882", "773"], ["35001", "Acigne", "243500139", "commune", "120", "3048", "3066", "218", "3116", "3063", "338", "3092", "3065", "9", "1934", "2411"], ["35022", "Becherel", "243500139", "commune", "4", "1976", "1920", "31", "1851", "1849", "35", "1865", "1888", "5", "872", "654"], ["35024", "Betton", "243500139", "commune", "278", "3336", "3344", "416", "3405", "3443", "694", "3377", "3384", "21", "2001", "2106"], ["35032", "Bourgbarre", "243500139", "commune", "80", "2591", "2633", "190", "2628", "2638", "270", "2617", "2638", "7", "542", "617"], ["35039", "Brece", "243500139", "commune", "41", "2329", "2109", "74", "2854", "2708", "115", "2667", "2590", "16", "957", "1062"], ["35047", "Bruz", "243500139", "commune", "599", "3200", "3115", "589", "3212", "3151", "1188", "3206", "3131", "63", "3536", "1919"], ["35051", "Cesson-Sevigne", "243500139", "commune", "595", "3688", "3651", "548", "4158", "4000", "1143", "3913", "3790", "120", "1933", "1467"], ["35055", "Chantepie", "243500139", "commune", "478", "3106", "3079", "216", "3283", "3288", "694", "3161", "3136", "33", "1686", "1400"], ["35058", "La Chapelle-Chaussee", "243500139", "commune", "", "", "", "61", "2199", "2180", "61", "2199", "2180", "", "", ""], ["35059", "La Chapelle-des-Fougeretz", "243500139", "commune", "101", "3059", "2938", "205", "3124", "3025", "306", "3102", "3014", "17", "1506", "1245"], ["35065", "La Chapelle-Thouarault", "243500139", "commune", "15", "2360", "2238", "100", "2454", "2475", "115", "2441", "2462", "1", "1471", "1471"], ["35066", "Chartres-de-Bretagne", "243500139", "commune", "308", "3006", "2991", "258", "2978", "2963", "566", "2993", "2976", "13", "1172", "667"], ["35076", "Chavagne", "243500139", "commune", "122", "2617", "2637", "190", "2783", "2746", "312", "2718", "2717", "7", "1077", "1169"], ["35079", "Chevaigne", "243500139", "commune", "11", "3075", "2792", "107", "2746", "2787", "118", "2777", "2789", "1", "3246", "3246"], ["35080", "Cintre", "243500139", "commune", "13", "2942", "2475", "126", "2417", "2449", "139", "2466", "2465", "3", "1201", "919"], ["35081", "Clayes", "243500139", "commune", "", "", "", "37", "2596", "2567", "37", "2596", "2567", "", "", ""], ["35088", "Corps-Nuds", "243500139", "commune", "23", "2631", "2590", "142", "2575", "2391", "165", "2583", "2425", "6", "1056", "1054"], ["35120", "Geveze", "243500139", "commune", "87", "2988", "2857", "259", "3107", "2936", "346", "3077", "2916", "7", "1386", "1569"], ["35131", "L'Hermitage", "243500139", "commune", "87", "2935", "2927", "167", "2750", "2644", "254", "2813", "2770", "13", "519", "450"], ["35139", "Laille", "243500139", "commune", "82", "2613", "2693", "266", "2696", "2664", "348", "2677", "2672", "11", "1550", "1305"], ["35144", "Langan", "243500139", "commune", "8", "2141", "2123", "64", "2605", "2403", "72", "2554", "2346", "1", "1222", "1222"], ["35180", "Miniac-sous-Becherel", "243500139", "commune", "", "", "", "42", "1755", "1655", "42", "1755", "1655", "", "", ""], ["35189", "Montgermont", "243500139", "commune", "87", "3394", "3479", "142", "3180", "3145", "229", "3261", "3262", "11", "1001", "956"], ["35196", "Mordelles", "243500139", "commune", "231", "2903", "2867", "253", "2795", "2774", "484", "2846", "2842", "14", "2003", "2289"], ["35204", "Nouvoitou", "243500139", "commune", "14", "2802", "2745", "177", "2613", "2630", "191", "2627", "2634", "10", "1095", "539"], ["35206", "Noyal-Chatillon-sur-Seiche", "243500139", "commune", "304", "2852", "2842", "248", "2958", "2917", "552", "2899", "2871", "24", "1721", "1427"], ["35208", "Orgeres", "243500139", "commune", "64", "2690", "2711", "223", "2672", "2653", "287", "2676", "2661", "10", "1345", "1342"], ["35210", "Pace", "243500139", "commune", "291", "3269", "3250", "383", "3357", "3333", "674", "3319", "3283", "43", "1756", "1168"], ["35216", "Parthenay-de-Bretagne", "243500139", "commune", "25", "2457", "2421", "85", "2420", "2443", "110", "2428", "2432", "2", "785", "785"], ["35238", "Rennes", "243500139", "commune", "15169", "3827", "3700", "2334", "5303", "4863", "17503", "4024", "3826", "946", "3091", "2665"], ["35240", "Le Rheu", "243500139", "commune", "369", "2784", "2794", "273", "2912", "2895", "642", "2838", "2851", "33", "1282", "1198"], ["35245", "Romille", "243500139", "commune", "42", "2502", "2565", "201", "2379", "2412", "243", "2400", "2453", "4", "8212", "1608"], ["35250", "Saint-Armel", "243500139", "commune", "54", "2648", "2645", "117", "2578", "2633", "171", "2600", "2637", "9", "916", "700"], ["35266", "Saint-Erblon", "243500139", "commune", "99", "2865", "2881", "175", "2812", "2765", "274", "2831", "2820", "8", "1419", "1685"], ["35275", "Saint-Gilles", "243500139", "commune", "105", "2640", "2697", "188", "2845", "2909", "293", "2772", "2833", "19", "1024", "979"], ["35278", "Saint-Gregoire", "243500139", "commune", "285", "3577", "3538", "296", "3917", "3918", "581", "3750", "3672", "64", "1639", "1896"], ["35281", "Saint-Jacques-de-la-Lande", "243500139", "commune", "865", "3076", "2919", "306", "3680", "3333", "1171", "3234", "3041", "49", "2862", "1311"], ["35315", "Saint-Sulpice-la-Foret", "243500139", "commune", "1", "3130", "3130", "69", "2712", "2621", "70", "2718", "2623", "1", "3134", "3134"], ["35334", "Thorigne-Fouillard", "243500139", "commune", "137", "3109", "3125", "294", "3334", "3205", "431", "3263", "3165", "18", "1818", "1875"], ["35351", "Le Verger", "243500139", "commune", "4", "2045", "1950", "57", "2195", "2263", "61", "2185", "2254", "", "", ""], ["35352", "Vern-sur-Seiche", "243500139", "commune", "129", "2799", "2769", "328", "3208", "2950", "457", "3092", "2886", "50", "1225", "1251"], ["35353", "Vezin-le-Coquet", "243500139", "commune", "199", "2954", "3047", "201", "3197", "3114", "400", "3076", "3082", "13", "1410", "1250"], ["35363", "Pont-Pean", "243500139", "commune", "94", "2771", "2877", "152", "2913", "2702", "246", "2859", "2755", "5", "1457", "1312"], ["36196", "Saint-Gilles", "200035137", "commune", "", "", "", "14", "665", "668", "14", "665", "668", "", "", ""], ["50483", "Saint-Gilles", "200066389", "commune", "", "", "", "57", "1775", "1731", "57", "1775", "1731", "2", "535", "535"], ["51484", "Saint-Gilles", "200067213", "commune", "1", "2437", "2437", "13", "1501", "1454", "14", "1568", "1456", "", "", ""], ["53042", "Brece", "245300389", "commune", "", "", "", "81", "1157", "1094", "81", "1157", "1094", "1", "75", "75"], ["53214", "Saint-Erblon", "200048551", "commune", "", "", "", "14", "1277", "1279", "14", "1277", "1279", "", "", ""], ["56205", "Saint-Armel", "200067932", "commune", "", "", "", "66", "4736", "3837", "66", "4736", "3837", "", "", ""], ["61317", "Orgeres", "200069458", "commune", "", "", "", "10", "1267", "891", "10", "1267", "891", "", "", ""], ["61321", "Pace", "246100663", "commune", "", "", "", "15", "1375", "1480", "15", "1375", "1480", "", "", ""], ["71425", "Saint-Gilles", "247100589", "commune", "", "", "", "18", "1392", "1301", "18", "1392", "1301", "", "", ""], ["79082", "Chavagne", "79", "commune", "", "", "", "", "", "", "", "", "", "", "", ""], ["81253", "Saint-Gregoire", "248100497", "commune", "", "", "", "17", "1420", "1417", "17", "1420", "1417", "", "", ""]], "tronque": false, "nb_total": 55}</script>
+<script>
+(function(){
+  const btn = document.getElementById("theme-toggle");
+  function effectif(){
+    return document.documentElement.getAttribute("data-theme") ||
+      (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  }
+  function majIcone(){ btn.textContent = effectif() === "dark" ? "☀️" : "🌙"; }
+  btn.addEventListener("click", () => {
+    const suivant = effectif() === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", suivant);
+    try { localStorage.setItem("theme", suivant); } catch(e) {}
+    majIcone();
+  });
+  majIcone();
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+    if (!document.documentElement.getAttribute("data-theme")) majIcone();
+  });
+})();
+
+const D=JSON.parse(document.getElementById("d").textContent);
+const tbl=document.getElementById("t"),wrap=document.querySelector(".wrap");
+const nCols=D.entetes.length;
+const wrapW=wrap.clientWidth||800;
+const colW=Math.max(80,Math.floor(Math.max(wrapW,nCols*160)/nCols));
+tbl.style.width=Math.max(wrapW,nCols*160)+"px";
+document.getElementById("cols").innerHTML=D.entetes.map(()=>`<col style="width:${colW}px">`).join("");
+document.title=D.nom;document.getElementById("titre").textContent=D.nom;
+if(D.tronque){const a=document.getElementById("avert");a.style.display="";
+  a.textContent=`Prévisualisation : ${D.lignes.length.toLocaleString("fr")} premières lignes sur ${D.nb_total.toLocaleString("fr")} au total.`;}
+const geo=new Set(D.champs_geo||[]);
+const DICO=D.dictionnaire||{};
+let sc=-1,asc=true,q="";
+function esc(s){return String(s??"").replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function cell(v){const s=String(v??"").trim();return /^https?:\/\/\S+$/.test(s)?`<a href="${esc(s)}" target="_blank" rel="noopener">${esc(s)}</a>`:esc(v);}
+function rendu(){
+  let rows=D.lignes;
+  if(q){const f=q.toLowerCase();rows=rows.filter(r=>r.some(v=>String(v??"").toLowerCase().includes(f)));}
+  if(sc>=0){const col=sc,up=asc;rows=[...rows].sort((a,b)=>{
+    const va=a[col]??"",vb=b[col]??"",na=+va,nb=+vb;
+    return(!isNaN(na)&&!isNaN(nb))?(up?na-nb:nb-na):(up?String(va).localeCompare(String(vb),"fr"):String(vb).localeCompare(String(va),"fr"));
+  });}
+  const th=D.entetes.map((h,i)=>{
+    const trad=DICO[h];
+    const cls=[sc===i?(asc?"asc":"desc"):"",geo.has(h)?"geo":"",trad?"trad":""].filter(Boolean).join(" ");
+    const tip=trad?` title="${esc(h)}"`:"";
+    return`<th class="${cls}"${tip}>${esc(trad||h)}<div class="resizer"></div></th>`;
+  }).join("");
+  document.getElementById("thead").innerHTML=`<tr>${th}</tr>`;
+  document.getElementById("tbody").innerHTML=rows.map(r=>`<tr>${r.map(v=>`<td><div title="${esc(v)}">${cell(v)}</div></td>`).join("")}</tr>`).join("");
+  const n=rows.length,tot=D.lignes.length;
+  document.getElementById("info").textContent=n<tot
+    ?`${n.toLocaleString("fr")} / ${tot.toLocaleString("fr")} lignes`
+    :`${n.toLocaleString("fr")} ligne${n>1?"s":""}`;
+}
+// Sort via delegation — ignore clicks that start on the resizer handle
+tbl.addEventListener("click",e=>{
+  if(e.target.closest(".resizer"))return;
+  const th=e.target.closest("th");
+  if(!th)return;
+  const i=th.cellIndex;sc===i?asc=!asc:(sc=i,asc=true);rendu();
+});
+// Column resize
+tbl.addEventListener("mousedown",e=>{
+  const rz=e.target.closest(".resizer");
+  if(!rz)return;
+  e.preventDefault();
+  const th=rz.parentElement,idx=th.cellIndex;
+  const cols=document.querySelectorAll("#cols col");
+  const startX=e.clientX,startW=th.offsetWidth;
+  rz.classList.add("active");
+  document.body.style.cursor="col-resize";
+  function onMove(e){
+    const w=Math.max(40,startW+(e.clientX-startX));
+    cols[idx].style.width=w+"px";
+    tbl.style.width=Array.from(cols).reduce((s,c)=>s+(parseInt(c.style.width)||colW),0)+"px";
+  }
+  function onUp(){
+    rz.classList.remove("active");
+    document.body.style.cursor="";
+    document.removeEventListener("mousemove",onMove);
+    document.removeEventListener("mouseup",onUp);
+  }
+  document.addEventListener("mousemove",onMove);
+  document.addEventListener("mouseup",onUp);
+});
+document.getElementById("filtre").addEventListener("input",e=>{q=e.target.value;rendu();});
+rendu();
+</script>
+</body>
+</html>

@@ -1,0 +1,84 @@
+{
+  "local_id": "8f9067ef-6af0-5911-9793-8a5591252368",
+  "resource_title": "Connaître le potentiel radon de ma commune - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Connaître le potentiel radon de ma commune — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/53834c53a3a72906c7ec5c4c\n\nLe radon est un gaz radioactif produit par la désintégration naturelle de l’uranium présent dans les roches. Cancérigène pulmonaire, il peut présenter un risque pour la santé lorsqu’il s’accumule dans les bâtiments. La connaissance des caractéristiques des formations géologiques sur le territoire permet d’identifier les zones sur lesquelles la présence de radon à des concentrations élevées dans les bâtiments est la plus probable. Ce travail, réalisé par l’ASNR, a permis d’établir une cartographie du potentiel radon couvrant l’ensemble du territoire métropolitain. Cette cartographie conduit à classer les communes en 3 catégories :\n\n**Catégorie 1**\n\nLes communes à potentiel radon de catégorie 1 sont celles localisées sur les formations géologiques présentant les teneurs en uranium les plus faibles. Ces formations correspondent notamment aux formations calcaires, sableuses et argileuses constitutives des grands bassins sédimentaires (bassin parisien, bassin aquitain) et à des formations volcaniques basaltiques (massif central, Polynésie française, Antilles…).\nSur ces formations, une grande majorité de bâtiments présente des concentrations en radon faibles. Les résultats de la campagne nationale de mesure en France métropolitaine montrent ainsi que seulement 20% des bâtiments dépassent 100 Bq.m-3 et moins de 2% dépassent 400 Bq.m-3.\n\n**Catégorie 2**\n\nLes communes à potentiel radon de catégorie 2 sont celles localisées sur des formations géologiques présentant des teneurs en uranium faibles mais sur lesquelles des facteurs géologiques particuliers peuvent faciliter le transfert du radon vers les bâtiments.\nLes communes concernées sont notamment celles recoupées par des failles importantes ou dont le sous-sol abrite des ouvrages miniers souterrains... Ces conditions géologiques particulières peuvent localement faciliter le transport du radon depuis la roche jusqu'à la surface du sol et ainsi augmenter la probabilité de concentrations élevées dans les bâtiments.\n\n**Catégorie 3**\n\nLes communes à potentiel radon de catégorie 3 sont celles qui, sur au moins une partie de leur superficie, présentent des formations géologiques dont les teneurs en uranium sont estimées plus élevées comparativement aux autres formations. Les formations concernées sont notamment celles constitutives de massifs granitiques (massif armoricain, massif central, Guyane française…), certaines formations volcaniques (massif central, Polynésie française, Mayotte…) mais également certains grés et schistes noirs.\nSur ces formations plus riches en uranium, la proportion des bâtiments présentant des concentrations en radon élevées est plus importante que dans le reste du territoire. Les résultats de la [campagne nationale de mesure](https://recherche-expertise.asnr.fr/savoir-comprendre/environnement/campagne-nationale-mesure-radon) en France métropolitaine montrent ainsi que plus de 40% des bâtiments situés sur ces terrains dépassent 100 Bq.m-3 et plus de 6% dépassent 400 Bq.m-3.\nRemarque : dans le cas des communes de superficie importante - comme c’est le cas en particulier pour certains Outre-Mer - les formations concernées n’occupent parfois qu’une proportion limitée du territoire communal. Dans ce cas, la cartographie par commune ne représente pas la surface réelle d’un territoire affectée par un  potentiel radon mais, en quelque sorte, la probabilité qu’il y ait sur le territoire d’une commune une source d’exposition au radon élevée, même très localisée. Afin de visualiser différentes zones au sein du territoire communal et de mieux apprécier le potentiel radon réel sur ce territoire, il convient de se référer à la [cartographie représentée selon les contours des formations géologiques](http://www.irsn.fr/FR/connaissances/Environnement/expertises-radioactivite-naturelle/radon/Pages/4-cartographie-potentiel-radon-formations-geologiques.aspx).\n\nPour en savoir plus : <https://recherche-expertise.asnr.fr/carte-radon>\n"
+    }
+  ],
+  "theme": "townPlanning",
+  "keywords": [
+    "potentiel",
+    "radon",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Autorité de sûreté nucléaire et de radioprotection"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "d70d99e4-f2d9-50e9-ad25-eed2026e807e",
+      "media_type": "FILE",
+      "media_name": "connaitre-le-potentiel-radon-de-ma-commune-csv-rennesmetropole.csv",
+      "media_caption": "Connaitre le potentiel radon de ma commune (csv) — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "eb7f6856-f1bf-5d9b-adcb-b8eb5838ac08",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://static.data.gouv.fr/resources/connaitre-le-potentiel-radon-de-ma-commune/20190506-174309/radon.csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2014-05-26T00:00:00Z",
+    "updated": "2025-09-30T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "CUSTOM",
+      "custom_licence_label": [
+        {
+          "lang": "fr",
+          "text": "fr-lo"
+        }
+      ],
+      "custom_licence_uri": "https://www.data.gouv.fr/datasets/53834c53a3a72906c7ec5c4c"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2014-05-26T00:00:00Z",
+      "updated": "2025-09-30T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/53834c53a3a72906c7ec5c4c"
+  }
+}

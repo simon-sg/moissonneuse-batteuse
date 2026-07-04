@@ -1,0 +1,129 @@
+{
+  "local_id": "42a5cf92-a95b-54fb-8e33-faa77d95251c",
+  "resource_title": "Accès communal aux informations publiques (données de Vos Questions) - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Accès communal aux informations publiques (données de Vos Questions) — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/6839daf67e56853f561e8bde\n\n[Vos Questions](https://vosquestions.ecologie-territoires.gouv.fr/) est un portail des ministères en charge de la transition écologique, de l'aménagement du territoire, des transports, de la ville et du logement. Il vise à faciliter l'accès du grand public aux informations publiées sur les sites des services et opérateurs du pôle ministériel, en les répertoriant avec une entrée à la commune.\n\nLe site présente ainsi une \"page communale\" pour chaque commune de métropole, des départements et régions d'outre-mer, et des territoires d'outre-mer. Chaque page communale liste un ensemble de questions susceptibles d'intéresser les internautes et indique, pour chacune, le ou les services numériques proposés par le pôle ministériel qui apportent des éléments de réponse, avec des liens renvoyant au plus près de l'information recherchée sur le site cible.\n\nLe présent jeu de données met à disposition les principales données de l'application Vos Questions :\n\n* Le fichier vq\\_commune.csv contient les URL de toutes les pages communales de Vos Questions, permettant notamment de retrouver l'URL de la page d'une commune en fonction de son code INSEE.\n\n* Le fichier vq\\_question\\_communale liste les questions présentées sur les pages de chaque commune.\n\n* Le fichier vq\\_reponse\\_communale détaille les réponses disponibles pour chaque question sur chaque page communale, incluant les URL des liens qui permettent d'accéder directement à l'information pertinente dans le contexte de la commune.\n\nLes données sont mises à jour au fil des évolutions de Vos Questions, notamment lorsque de nouveaux services numériques sont référencés sur ses pages.\n"
+    }
+  ],
+  "theme": "transportation",
+  "keywords": [
+    "information-publique",
+    "vos-questions",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Ministère de la Transition écologique"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "11318b1c-401f-53ae-8e18-d5cdb79e5ba7",
+      "media_type": "FILE",
+      "media_name": "vq-commune-rennesmetropole.csv",
+      "media_caption": "vq_commune.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "ba630c90-9dda-52dd-afea-c82f2af06c65",
+      "media_type": "FILE",
+      "media_name": "vq-commune-rennesmetropole.json",
+      "media_caption": "vq_commune.csv — données filtrées sur Rennes Métropole (JSON)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "f0a81298-556d-5757-8b0d-2238ea98c700",
+      "media_type": "FILE",
+      "media_name": "vq-question-communale-rennesmetropole.csv",
+      "media_caption": "vq_question_communale.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "4a34655f-d186-5ee3-bb62-f2229729dc9b",
+      "media_type": "FILE",
+      "media_name": "vq-question-communale-rennesmetropole.json",
+      "media_caption": "vq_question_communale.csv — données filtrées sur Rennes Métropole (JSON)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "43519577-1e81-5d6a-aed8-c637636f52aa",
+      "media_type": "FILE",
+      "media_name": "vq-reponse-communale-rennesmetropole.csv",
+      "media_caption": "vq_reponse_communale.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "8b68de81-950a-52c3-9e6d-566fa0924b4d",
+      "media_type": "FILE",
+      "media_name": "vq-reponse-communale-rennesmetropole.json",
+      "media_caption": "vq_reponse_communale.csv — données filtrées sur Rennes Métropole (JSON)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "ceea2074-7e3e-5dd5-95a8-da235dcc0b77",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://static.data.gouv.fr/resources/acces-communal-aux-informations-publiques-donnees-de-vos-questions/20260403-133346/vq-commune.csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2025-05-30T00:00:00Z",
+    "updated": "2026-06-29T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2025-05-30T00:00:00Z",
+      "updated": "2026-06-29T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/6839daf67e56853f561e8bde"
+  }
+}

@@ -1,0 +1,89 @@
+{
+  "local_id": "624dc3e2-f868-5f25-a2a9-e400838030ee",
+  "resource_title": "Nuit européenne des musées 2023 - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Nuit européenne des musées 2023 — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/643e163ba4d39d1a7a538673\n\nLa 19e Nuit européenne des musées se tient cette année, le **samedi 13 mai 2023** dans toute l'Europe.\n\n[Pour plus d'informations](https://nuitdesmusees.culture.gouv.fr/) sur cette manifestation.\n\nCe jeu de données est alimenté au fil de l'eau, et mis à jour quotidiennement."
+    }
+  ],
+  "theme": "culture",
+  "keywords": [
+    "culture",
+    "ministeredelaculture",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Ministère de la Culture"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "7c7440d1-ea22-52fb-93cd-8186dcba07df",
+      "media_type": "FILE",
+      "media_name": "nuit-des-musees-2023-rennesmetropole.csv",
+      "media_caption": "nuit-des-musees-2023.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "20c364bd-4776-50d2-aa67-c28f5a22605e",
+      "media_type": "FILE",
+      "media_name": "nuit-des-musees-2023-rennesmetropole.json",
+      "media_caption": "nuit-des-musees-2023.csv — données filtrées sur Rennes Métropole (JSON)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "b1290247-2f13-5383-bfe8-3c30c9bc6189",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://static.data.gouv.fr/resources/nuit-des-musees-2023/20250827-133323/nuit-des-musees-2023.csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2023-04-18T00:00:00Z",
+    "updated": "2025-10-23T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2023-04-18T00:00:00Z",
+      "updated": "2025-10-23T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/643e163ba4d39d1a7a538673"
+  }
+}

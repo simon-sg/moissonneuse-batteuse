@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title></title>
+<script>(function(){try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<style>
+:root{--bg:#f5f6f8;--card:#fff;--txt:#1c2733;--muted:#667;--accent:#0b6e99;--bord:#e2e6ea;
+      --avert-bg:#fff8e1;--avert-bord:#ffe082;--avert-txt:#6d4c00;
+      --geo-bg:#eaf4fb;--geo-hover:#d4ecf7;--stripe:#fafbfc;--row-hover:#eef6fb;
+      --resizer:rgba(11,110,153,.35);--td-bord:#f0f2f4}
+:root[data-theme="dark"]{--bg:#10151b;--card:#1a222b;--txt:#dbe2e8;--muted:#8996a3;--accent:#4fb3da;--bord:#29323c;
+      --avert-bg:#3a2f10;--avert-bord:#6b5418;--avert-txt:#e8c96a;
+      --geo-bg:#16303c;--geo-hover:#1d3f4d;--stripe:#161d24;--row-hover:#17242c;
+      --resizer:rgba(79,179,218,.35);--td-bord:#232c35}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#10151b;--card:#1a222b;--txt:#dbe2e8;--muted:#8996a3;--accent:#4fb3da;--bord:#29323c;
+      --avert-bg:#3a2f10;--avert-bord:#6b5418;--avert-txt:#e8c96a;
+      --geo-bg:#16303c;--geo-hover:#1d3f4d;--stripe:#161d24;--row-hover:#17242c;
+      --resizer:rgba(79,179,218,.35);--td-bord:#232c35}
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+     background:var(--bg);color:var(--txt);display:flex;flex-direction:column;height:100vh}
+header{background:var(--card);border-bottom:1px solid var(--bord);padding:10px 16px;
+       display:flex;flex-wrap:wrap;gap:10px;align-items:center;flex-shrink:0}
+h1{font-size:.9rem;font-weight:600;flex:1;min-width:150px;
+   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#filtre{padding:7px 11px;font-size:.9rem;border:1px solid var(--bord);
+        border-radius:6px;width:220px;background:var(--card);color:var(--txt)}
+#info{color:var(--muted);font-size:.82rem;white-space:nowrap}
+#theme-toggle{background:none;border:1px solid var(--bord);border-radius:6px;padding:5px 10px;
+              cursor:pointer;font-size:.9rem;line-height:1;color:var(--txt);flex-shrink:0}
+#theme-toggle:hover{background:var(--bg)}
+.avert{background:var(--avert-bg);border-bottom:1px solid var(--avert-bord);padding:5px 16px;
+       font-size:.8rem;color:var(--avert-txt);flex-shrink:0}
+.wrap{flex:1;overflow:auto}
+table{border-collapse:collapse;font-size:.82rem;table-layout:fixed}
+thead{position:sticky;top:0;z-index:2;background:var(--card);box-shadow:0 1px 0 var(--bord)}
+th{padding:8px 12px;text-align:left;cursor:pointer;user-select:none;color:var(--muted);font-weight:600;
+   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative}
+th:hover{background:var(--bg);color:var(--txt)}
+th.asc::after{content:" ↑";color:var(--accent)}
+th.desc::after{content:" ↓";color:var(--accent)}
+th.geo{color:var(--accent);background:var(--geo-bg)}
+th.geo:hover{background:var(--geo-hover)}
+th.trad{text-decoration:underline dotted;text-decoration-color:var(--accent);text-underline-offset:3px}
+td{padding:0;border-bottom:1px solid var(--td-bord)}
+td div{padding:5px 12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+td div a{color:var(--accent);text-decoration:none}
+td div a:hover{text-decoration:underline}
+tr:nth-child(even) td{background:var(--stripe)}
+tr:hover td{background:var(--row-hover)}
+.resizer{position:absolute;right:0;top:0;width:5px;height:100%;cursor:col-resize;z-index:1}
+.resizer:hover,.resizer.active{background:var(--resizer)}
+</style>
+</head>
+<body>
+<header>
+  <h1 id="titre"></h1>
+  <input id="filtre" type="search" placeholder="Filtrer toutes les colonnes…">
+  <span id="info"></span>
+  <button id="theme-toggle" title="Basculer thème clair/sombre" aria-label="Basculer thème clair/sombre">🌙</button>
+</header>
+<div id="avert" class="avert" style="display:none"></div>
+<div class="wrap"><table id="t"><colgroup id="cols"></colgroup><thead id="thead"></thead><tbody id="tbody"></tbody></table></div>
+<script id="d" type="application/json">{"nom": "annuaire-des-buralistes-de-france-metropolitaine-2-rennesmetropole.csv", "champs_geo": ["COMMUNE", "CODE POSTAL"], "dictionnaire": {}, "entetes": ["ID", "ENSEIGNE", "ADRESSE", "COMPLEMENT", "CODE POSTAL", "COMMUNE", "NATURE DU DEBIT", "geom", "area", "Département"], "lignes": [["8326", "", "14 R DU ML JOFFRE", "TABAC", "35000", "RENNES", "Ordinaire permanent", "48.108514, -1.677884", "35", "['35>35000']"], ["8480", "BAR TABAC LE TRISKEL", "14 AV GENERAL LECLERC", "TABAC LE TRISKELL", "35310", "MORDELLES", "Ordinaire permanent", "48.07258, -1.849089", "35", "['35>35310']"], ["8328", "", "12 RUE D'ANTRAIN", "TABAC", "35000", "RENNES", "Ordinaire permanent", "48.106813, -1.690007", "35", "['35>35000']"], ["8317", "TABAC PRESSE", "7 PLACE DE BRETAGNE", "TABAC", "35000", "RENNES", "Ordinaire permanent", "48.109174, -1.68374", "35", "['35>35000']"], ["8599", "TABAC PRESSE", "2 RUE DE SUISSE", "TABAC", "35200", "RENNES", "Ordinaire permanent", "48.08653, -1.667544", "35", "['35>35200']"], ["8426", "", "8 RUE DU GRAND FOUR", "TABAC", "35690", "ACIGNE", "Ordinaire permanent", "48.131908, -1.536261", "35", "['35>35690']"], ["8587", "TABAC PRESSE LE CHURCHILL", "1 RUE DE BOURGOGNE - VILLEJEAN", "TABAC", "35000", "RENNES", "Ordinaire permanent", "48.12177, -1.70417", "35", "['35>35000']"], ["8329", "", "13 RUE GAMBETTA", "TABAC", "35000", "RENNES", "Ordinaire permanent", "48.112175, -1.6752", "35", "['35>35000']"], ["8202", "", "7 Parvis de L EGLISE", "TABAC", "35150", "CORPS-NUDS", "Ordinaire permanent", "47.978241, -1.587425", "35", "['35>35150']"], ["8605", "", "3 R DU MORBIHAN CENTRE CL", "TABAC D L BELLENGERAIS", "35700", "RENNES", "Ordinaire permanent", "48.130045, -1.677288", "35", "['35>35700']"], ["8450", "", "2 RUE DU CHAMP FLEURY", "TABAC", "35310", "CHAVAGNE", "Ordinaire permanent", "48.053018, -1.790787", "35", "['35>35310']"], ["8581", "", "167 R ST MALO", "TABAC", "35000", "RENNES", "Ordinaire permanent", "48.123768, -1.6847750000000001", "35", "['35>35000']"], ["8173", "BAR TABAC LE LONGCHAMP", "1 RUE DE RENNES", "BAR  TABAC LE LONGCHAMP", "35830", "BETTON", "Ordinaire permanent", "48.180653, -1.6360519999999998", "35", "['35>35830']"], ["8443", "", "2 RUE DE MONTMURAN", "TABAC", "35630", "LA-CHAPELLE-CHAUSSEE", "Ordinaire permanent", "48.270964, -1.853956", "35", "['35>35630']"], ["8578", "TABAC PRESSE", "32 RUE DE TREGAIN", "TABAC", "35000", "RENNES", "Ordinaire permanent", "48.116654, -1.68383", "35", "['35>35000']"], ["8603", "", "35 AV DU GL DE GAULLE", "TABAC", "35170", "BRUZ", "Ordinaire permanent", "48.023247, -1.738582", "35", "['35>35170']"], ["8583", "TABAC PRESSE LE NEMROD", "19 BD GAETAN HERVE", "TABAC", "35200", "RENNES", "Ordinaire permanent", "48.090281, -1.667643", "35", "['35>35200']"], ["8539", "TABAC PRESSE LE VERGER", "3 PLACE DE L'EGLISE", "TABAC", "35160", "LE-VERGER", "Ordinaire permanent", "48.069983, -1.933479", "35", "['35>35160']"], ["8327", "TABAC PRESSE ARSENAL", "10 RUE DE L'ARSENAL", "TABAC", "35000", "RENNES", "Ordinaire permanent", "48.10669, -1.685591", "35", "['35>35000']"], ["8286", "", "17 PLACE DE L'EGLISE", "TABAC", "35410", "NOUVOITOU", "Ordinaire permanent", "48.041662, -1.546709", "35", "['35>35410']"], ["8318", "", "7 PLACE DU COLOMBIER", "TABAC", "35000", "RENNES", "Ordinaire permanent", "48.105022, -1.677873", "35", "['35>35000']"], ["8626", "TABAC PRESSE DU VERT BUISSON", "7  PLACE VERT BUISSON", "CENTRE COMMERCIAL DU VERT BUISSON", "35170", "BRUZ", "Ordinaire permanent", "48.029648, -1.758997", "35", "['35>35170']"], ["8615", "", "CTRE CCIAL BEAUSOLEIL", "TABAC", "35510", "CESSON-SEVIGNE", "Ordinaire permanent", "48.120598, -1.6120329999999998", "35", "['35>35510']"], ["8336", "", "2 RUE PAUL BERT", "TABAC", "35000", "RENNES", "Ordinaire permanent", "48.110614, -1.671106", "35", "['35>35000']"], ["8441", "", "PL DE L EGLISE", "TABAC", "35510", "CESSON-SEVIGNE", "Ordinaire permanent", "48.116742, -1.60484", "35", "['35>35510']"], ["8333", "", "5 R DUGUESCLIN", "TABAC", "35000", "RENNES", "Ordinaire permanent", "48.111736, -1.680955", "35", "['35>35000']"], ["8341", "", "95 BIS RUE D ANTRAIN", "TABAC", "35000", "RENNES", "Ordinaire permanent", "48.097012, -1.661949", "35", "['35>35000']"], ["8588", "TABAC TY GWEN", "45 COURS KENNEDY", "TABAC", "35000", "RENNES", "Ordinaire permanent", "48.121401, -1.7109109999999998", "35", "['35>35000']"], ["8515", "", "25 RUE DE RENNES", "TABAC", "35590", "SAINT-GILLES", "Ordinaire permanent", "48.155653, -1.827798", "35", "['35>35590']"], ["8624", "", "AEROP ST JACQUES", "AVENUE AEROPORT JOSEPH LE BRIX", "35136", "SAINT-JACQUES-DE-LA-LANDE", "Spécial", "48.075231, -1.728999", "35", "['35>35136']"], ["8598", "TABAC PRESSE GRAND QUARTIER", "CENTRE COMMERCIAL GRAND QUARTIER", "TABAC", "35760", "SAINT-GREGOIRE", "Ordinaire permanent", "48.136157, -1.69351", "35", "['35>35760']"], ["8486", "TABAC PRESSE LE SAINT MELAINE", "21 PLACE ST MELAINE", "TABAC", "35740", "PACE", "Ordinaire permanent", "48.147802, -1.772513", "35", "['35>35740']"], ["8616", "", "9 PLACE DU RONCERAY", "CTRE CIAL LA POTERIE -TABAC", "35000", "RENNES", "Ordinaire permanent", "48.105012, -1.677943", "35", "['35>35000']"], ["8321", "", "11 PLACE EUGENE AULNETTE", "TABAC PRESSE BEAUREGARD", "35000", "RENNES", "Ordinaire permanent", "48.129319, -1.6983730000000001", "35", "['35>35000']"], ["8502", "", "1 rue de rennes", "TABAC", "35230", "SAINT-ARMEL", "Ordinaire permanent", "48.014086, -1.595155", "35", "['35>35230']"], ["8338", "", "38 B R DE CHATEAUGIRON", "TABAC", "35000", "RENNES", "Ordinaire permanent", "48.101517, -1.654969", "35", "['35>35000']"], ["8442", "", "66 AV ANDRE BONNIN", "TABAC", "35135", "CHANTEPIE", "Ordinaire permanent", "48.088152, -1.6178819999999998", "35", "['35>35135']"], ["8594", "", "LE LANDREL BD LEON GRIMAU", "TABAC", "35200", "RENNES", "Ordinaire permanent", "48.091151, -1.65209", "35", "['35>35200']"], ["8353", "", "16 PLACE DE LA MAIRIE", "TABAC AU NEMROD", "35650", "LE-RHEU", "Ordinaire permanent", "48.100717, -1.794894", "35", "['35>35650']"], ["8602", "", "12 R DE SUEDE", "C CIAL LES ALMADIES-TABAC-", "35200", "RENNES", "Ordinaire permanent", "48.086653, -1.67575", "35", "['35>35200']"], ["8342", "TABAC PRESSE LE MARIGNY", "127 RUE de PARIS", "TABAC", "35000", "RENNES", "Ordinaire permanent", "48.114592, -1.6575700000000002", "35", "['35>35000']"], ["8621", "", "16 RUE DE CHATEAUBRIAND", "TABAC", "35770", "VERN-SUR-SEICHE", "Ordinaire permanent", "48.045249, -1.60163", "35", "['35>35770']"], ["8334", "", "142 R DE FOUGERES", "TABAC", "35000", "RENNES", "Ordinaire permanent", "48.100565, -1.686081", "35", "['35>35000']"], ["8323", "", "2 PLACE ST MICHEL", "TABAC", "35000", "RENNES", "Ordinaire permanent", "48.113412, -1.681492", "35", "['35>35000']"], ["8283", "", "2 PL ST PIERRE", "TABAC", "35310", "MORDELLES", "Ordinaire permanent", "48.07163, -1.850725", "35", "['35>35310']"], ["8369", "", "4 PL JULES VALLES", "TABAC", "35136", "SAINT-JACQUES-DE-LA-LANDE", "Ordinaire permanent", "48.067881, -1.721183", "35", "['35>35136']"], ["8350", "TABAC PRESSE", "2 BD EMILE COMBES", "TABAC", "35200", "RENNES", "Ordinaire permanent", "48.093562, -1.67087", "35", "['35>35200']"], ["8293", "BAR TABAC MON IDEE", "12 RUE PRINCIPALE", "TABAC", "35850", "PARTHENAY-DE-BRETAGNE", "Ordinaire permanent", "48.19175, -1.8279649999999998", "35", "['35>35850']"], ["8319", "", "10 R DE TOULOUSE", "TABAC", "35000", "RENNES", "Ordinaire permanent", "48.112463, -1.681268", "35", "['35>35000']"], ["8339", "", "4 R DU GL GUILLAUDOT", "TABAC", "35000", "RENNES", "Ordinaire permanent", "48.116239, -1.674089", "35", "['35>35000']"], ["8324", "", "43 BD DE VERDUN", "TABAC", "35000", "RENNES", "Ordinaire permanent", "48.117936, -1.689645", "35", "['35>35000']"], ["8316", "BAR TABAC LE NERVAL", "123 RUE DE DINAN", "TABAC", "35000", "RENNES", "Ordinaire permanent", "48.119803, -1.681029", "35", "['35>35000']"], ["8320", "", "24 RUE DE SAINT MALO", "TABAC", "35000", "RENNES", "Ordinaire permanent", "48.11617, -1.680807", "35", "['35>35000']"], ["8509", "", "39 PLACE DE L' EGLISE", "TABAC", "35230", "SAINT-ERBLON", "Ordinaire permanent", "48.020016, -1.652418", "35", "['35>35230']"], ["8589", "TABAC PRESSE LE BRAZZA", "SQUARE  DE FLANDRE", "TABAC", "35000", "RENNES", "Ordinaire permanent", "48.123378, -1.708083", "35", "['35>35000']"], ["8330", "BAR TABAC", "36  RUE  LEGRAVEREND", "TABAC", "35000", "RENNES", "Ordinaire permanent", "48.117603, -1.684186", "35", "['35>35000']"], ["8597", "TABAC PRESSE  LE TORIGNE", "CENTRE CL TORIGNE BOULEVARD DE BULGARIE", "TABAC", "35200", "RENNES", "Ordinaire permanent", "48.084766, -1.658808", "35", "['35>35200']"], ["8582", "", "284 RUE DE NANTES", "TABAC", "35136", "SAINT-JACQUES-DE-LA-LANDE", "Ordinaire permanent", "48.088675, -1.69379", "35", "['35>35136']"], ["8590", "", "209 AV DU GL LECLERC", "TABAC", "35700", "RENNES", "Ordinaire permanent", "48.114255, -1.648619", "35", "['35>35700']"], ["8540", "", "5 R DE CHATEAUBRIANT", "TABAC", "35770", "VERN-SUR-SEICHE", "Ordinaire permanent", "48.04603, -1.602386", "35", "['35>35770']"], ["8280", "", "2 PLACE JANE BEUSNEL", "TABAC", "35760", "MONTGERMONT", "Ordinaire permanent", "48.155353, -1.7165", "35", "['35>35760']"], ["8585", "TABAC PRESSE LE GAST", "8 RUE LUCIE ET RAYMOND AUBRAC", "TABAC", "35700", "RENNES", "Ordinaire permanent", "48.130862, -1.657041", "35", "['35>35700']"], ["8619", "", "15 COURS CAMILLE CLAUDEL", "TABAC", "35136", "SAINT-JACQUES-DE-LA-LANDE", "Ordinaire permanent", "48.08159, -1.713698", "35", "['35>35136']"], ["8180", "", "3 PLACE DE L EGLISE", "TABAC", "35530", "BRECE", "Ordinaire permanent", "48.110826, -1.481794", "35", "['35>35530']"], ["8331", "", "3 R DU VAU ST GERMAIN", "TABAC", "35000", "RENNES", "Ordinaire permanent", "48.111008, -1.6774239999999998", "35", "['35>35000']"], ["8569", "", "4 BIS RUE DU COMMERCE  LE 13 et 3", "TABAC", "35590", "LA-CHAPELLE-THOUARAULT", "Ordinaire permanent", "48.12388, -1.865881", "35", "['35>35590']"], ["8364", "BAR TABAC LE PONT PEANNAIS", "38 RUE DE NANTES", "TABAC", "35131", "PONT-PEAN", "Ordinaire permanent", "48.017828, -1.7052260000000001", "35", "['35>35131']"], ["8465", "BAR TABAC", "23 RUE DU POINT DU JOUR", "TABAC", "35890", "LAILLE", "Ordinaire permanent", "47.978315, -1.715961", "35", "['35>35890']"], ["8313", "", "6 RUE DE BREST", "TABAC", "35000", "RENNES", "Ordinaire permanent", "48.112136, -1.6882169999999999", "35", "['35>35000']"], ["8345", "", "80 Rue de Lorient", "TABAC", "35000", "RENNES", "Ordinaire permanent", "48.109461, -1.707945", "35", "['35>35000']"], ["8483", "", "2 rue de la mairire", "TABAC", "35230", "NOYAL-CHATILLON-SUR-SEICHE", "Ordinaire permanent", "48.042806, -1.663417", "35", "['35>35230']"], ["8584", "", "2 SQ SARAH BERNHARDT", "TABAC", "35200", "RENNES", "Ordinaire permanent", "48.091104, -1.681211", "35", "['35>35200']"], ["8325", "BAR TABAC LE SAINT HELIER", "83 RUE ST HELIER", "TABAC", "35000", "RENNES", "Ordinaire permanent", "48.105946, -1.666303", "35", "['35>35000']"], ["8193", "BAR TABAC LE FLYSE", "37 RUE DE RENNES", "TABAC", "35230", "NOYAL-CHATILLON-SUR-SEICHE", "Ordinaire permanent", "48.042038, -1.666679", "35", "['35>35230']"], ["8184", "", "76 AVENUE LA CHAUSSAIRIE", "TABAC", "35131", "CHARTRES-DE-BRETAGNE", "Ordinaire permanent", "48.032383, -1.711663", "35", "['35>35131']"], ["8501", "BAR TABAC AU BOULOT", "5 PLACE DE L' EGLISE", "TABAC", "35850", "ROMILLE", "Ordinaire permanent", "48.215649, -1.892129", "35", "['35>35850']"], ["8434", "BAR TABAC LE TREGOR", "1 PLACE DU VIEUX MARCHE", "TABAC", "35830", "BETTON", "Ordinaire permanent", "48.183308, -1.644706", "35", "['35>35830']"], ["8340", "", "154 bis RUE DE NANTES", "TABAC", "35000", "RENNES", "Ordinaire permanent", "48.099631, -1.6864400000000002", "35", "['35>35000']"], ["8586", "TABAC PRESSE DU GROS CHENE", "4 PLACE DU GROS CHENE", "TABAC", "35000", "RENNES", "Ordinaire permanent", "48.122013, -1.681824", "35", "['35>35000']"], ["8613", "TABAC PRESSE LES MARELLES", "PLACE DES MARELLES", "TABAC", "35135", "CHANTEPIE", "Ordinaire permanent", "48.088142, -1.620772", "35", "['35>35135']"], ["8315", "", "4 RUE  D' ESTREES", "TABAC", "35000", "RENNES", "Ordinaire permanent", "48.112027, -1.6792500000000001", "35", "['35>35000']"], ["8541", "TABAC PRESSE", "22 RUE DE RENNES", "TABAC", "35132", "VEZIN-LE-COQUET", "Ordinaire permanent", "48.119287, -1.754117", "35", "['35>35132']"], ["8440", "", "14 PL DU DOCTEUR JOLY", "TABAC", "35170", "BRUZ", "Ordinaire permanent", "48.024515, -1.746815", "35", "['35>35170']"], ["8172", "", "30 RUE DE LA LIBERATION", "TABAC", "35190", "BECHEREL", "Ordinaire permanent", "48.29586, -1.9454500000000001", "35", "['35>35190']"], ["8236", "", "1 RUE DE LA MEZIERE", "TABAC", "35850", "GEVEZE", "Ordinaire permanent", "48.221255, -1.788238", "35", "['35>35850']"], ["8516", "", "CTRE COMMERCIAL LA FORGE", "TABAC", "35760", "SAINT-GREGOIRE", "Ordinaire permanent", "48.150817, -1.684926", "35", "['35>35760']"], ["8370", "", "238 RUE DE NANTES", "TABAC", "35136", "SAINT-JACQUES-DE-LA-LANDE", "Ordinaire permanent", "48.095128, -1.6900870000000001", "35", "['35>35136']"], ["8177", "", "2 PLACE DE L EGLISE", "TABAC", "35230", "BOURGBARRE", "Ordinaire permanent", "47.994911, -1.615395", "35", "['35>35230']"], ["8196", "", "1 PLACE DE L'EGLISE", "TABAC", "35250", "CHEVAIGNE", "Ordinaire permanent", "48.211072, -1.631323", "35", "['35>35250']"], ["8485", "", "1 PLACE DE LA MAIRIE", "TABAC", "35230", "ORGERES", "Ordinaire permanent", "47.996212, -1.667724", "35", "['35>35230']"], ["8534", "BAR TABAC LE THORIGNE", "3 RUE DE LA MARE PAVEE", "TABAC", "35235", "THORIGNE-FOUILLARD", "Ordinaire permanent", "48.153896, -1.579729", "35", "['35>35235']"], ["8314", "", "16 PLACE SAINTE ANNE", "TABAC", "35000", "RENNES", "Ordinaire permanent", "48.114343, -1.6811180000000001", "35", "['35>35000']"], ["8499", "BAR TABAC LE ZINC", "LES LANDES D APIGNE 36 ROUTE NATIONALE", "TABAC", "35650", "LE-RHEU", "Ordinaire permanent", "48.095075, -1.769653", "35", "['35>35650']"], ["8191", "TABAC PRESSE", "CTE CIAL LE BRETAGNE", "TABAC", "35131", "CHARTRES-DE-BRETAGNE", "Ordinaire permanent", "", "35", "['35>35131']"], ["8444", "BAR TABAC LE TAMARIS", "4 ROUTE DE ST MALO", "TABAC", "35520", "LA-CHAPELLE-DES-FOUGERETZ", "Ordinaire permanent", "48.185119, -1.734255", "35", "['35>35520']"], ["8610", "", "ALLEE MORVAN LEBESQUE", "TABAC DES LONGSCHAMPS", "35700", "RENNES", "Ordinaire permanent", "48.13102, -1.63292", "35", "['35>35700']"], ["8576", "", "44 RUE JULES LALLEMAND", "TABAC", "35200", "RENNES", "Ordinaire permanent", "", "35", "['35>35200']"], ["8600", "TABAC PRESSE", "C CAL DE BOURGCHEVREUIL", "TABAC", "35510", "CESSON-SEVIGNE", "Ordinaire permanent", "48.118193, -1.606404", "35", "['35>35510']"]], "tronque": false, "nb_total": 98}</script>
+<script>
+(function(){
+  const btn = document.getElementById("theme-toggle");
+  function effectif(){
+    return document.documentElement.getAttribute("data-theme") ||
+      (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  }
+  function majIcone(){ btn.textContent = effectif() === "dark" ? "☀️" : "🌙"; }
+  btn.addEventListener("click", () => {
+    const suivant = effectif() === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", suivant);
+    try { localStorage.setItem("theme", suivant); } catch(e) {}
+    majIcone();
+  });
+  majIcone();
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+    if (!document.documentElement.getAttribute("data-theme")) majIcone();
+  });
+})();
+
+const D=JSON.parse(document.getElementById("d").textContent);
+const tbl=document.getElementById("t"),wrap=document.querySelector(".wrap");
+const nCols=D.entetes.length;
+const wrapW=wrap.clientWidth||800;
+const colW=Math.max(80,Math.floor(Math.max(wrapW,nCols*160)/nCols));
+tbl.style.width=Math.max(wrapW,nCols*160)+"px";
+document.getElementById("cols").innerHTML=D.entetes.map(()=>`<col style="width:${colW}px">`).join("");
+document.title=D.nom;document.getElementById("titre").textContent=D.nom;
+if(D.tronque){const a=document.getElementById("avert");a.style.display="";
+  a.textContent=`Prévisualisation : ${D.lignes.length.toLocaleString("fr")} premières lignes sur ${D.nb_total.toLocaleString("fr")} au total.`;}
+const geo=new Set(D.champs_geo||[]);
+const DICO=D.dictionnaire||{};
+let sc=-1,asc=true,q="";
+function esc(s){return String(s??"").replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function cell(v){const s=String(v??"").trim();return /^https?:\/\/\S+$/.test(s)?`<a href="${esc(s)}" target="_blank" rel="noopener">${esc(s)}</a>`:esc(v);}
+function rendu(){
+  let rows=D.lignes;
+  if(q){const f=q.toLowerCase();rows=rows.filter(r=>r.some(v=>String(v??"").toLowerCase().includes(f)));}
+  if(sc>=0){const col=sc,up=asc;rows=[...rows].sort((a,b)=>{
+    const va=a[col]??"",vb=b[col]??"",na=+va,nb=+vb;
+    return(!isNaN(na)&&!isNaN(nb))?(up?na-nb:nb-na):(up?String(va).localeCompare(String(vb),"fr"):String(vb).localeCompare(String(va),"fr"));
+  });}
+  const th=D.entetes.map((h,i)=>{
+    const trad=DICO[h];
+    const cls=[sc===i?(asc?"asc":"desc"):"",geo.has(h)?"geo":"",trad?"trad":""].filter(Boolean).join(" ");
+    const tip=trad?` title="${esc(h)}"`:"";
+    return`<th class="${cls}"${tip}>${esc(trad||h)}<div class="resizer"></div></th>`;
+  }).join("");
+  document.getElementById("thead").innerHTML=`<tr>${th}</tr>`;
+  document.getElementById("tbody").innerHTML=rows.map(r=>`<tr>${r.map(v=>`<td><div title="${esc(v)}">${cell(v)}</div></td>`).join("")}</tr>`).join("");
+  const n=rows.length,tot=D.lignes.length;
+  document.getElementById("info").textContent=n<tot
+    ?`${n.toLocaleString("fr")} / ${tot.toLocaleString("fr")} lignes`
+    :`${n.toLocaleString("fr")} ligne${n>1?"s":""}`;
+}
+// Sort via delegation — ignore clicks that start on the resizer handle
+tbl.addEventListener("click",e=>{
+  if(e.target.closest(".resizer"))return;
+  const th=e.target.closest("th");
+  if(!th)return;
+  const i=th.cellIndex;sc===i?asc=!asc:(sc=i,asc=true);rendu();
+});
+// Column resize
+tbl.addEventListener("mousedown",e=>{
+  const rz=e.target.closest(".resizer");
+  if(!rz)return;
+  e.preventDefault();
+  const th=rz.parentElement,idx=th.cellIndex;
+  const cols=document.querySelectorAll("#cols col");
+  const startX=e.clientX,startW=th.offsetWidth;
+  rz.classList.add("active");
+  document.body.style.cursor="col-resize";
+  function onMove(e){
+    const w=Math.max(40,startW+(e.clientX-startX));
+    cols[idx].style.width=w+"px";
+    tbl.style.width=Array.from(cols).reduce((s,c)=>s+(parseInt(c.style.width)||colW),0)+"px";
+  }
+  function onUp(){
+    rz.classList.remove("active");
+    document.body.style.cursor="";
+    document.removeEventListener("mousemove",onMove);
+    document.removeEventListener("mouseup",onUp);
+  }
+  document.addEventListener("mousemove",onMove);
+  document.addEventListener("mouseup",onUp);
+});
+document.getElementById("filtre").addEventListener("input",e=>{q=e.target.value;rendu();});
+rendu();
+</script>
+</body>
+</html>

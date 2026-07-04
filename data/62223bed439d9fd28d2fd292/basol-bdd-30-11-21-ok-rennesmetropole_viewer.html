@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title></title>
+<script>(function(){try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<style>
+:root{--bg:#f5f6f8;--card:#fff;--txt:#1c2733;--muted:#667;--accent:#0b6e99;--bord:#e2e6ea;
+      --avert-bg:#fff8e1;--avert-bord:#ffe082;--avert-txt:#6d4c00;
+      --geo-bg:#eaf4fb;--geo-hover:#d4ecf7;--stripe:#fafbfc;--row-hover:#eef6fb;
+      --resizer:rgba(11,110,153,.35);--td-bord:#f0f2f4}
+:root[data-theme="dark"]{--bg:#10151b;--card:#1a222b;--txt:#dbe2e8;--muted:#8996a3;--accent:#4fb3da;--bord:#29323c;
+      --avert-bg:#3a2f10;--avert-bord:#6b5418;--avert-txt:#e8c96a;
+      --geo-bg:#16303c;--geo-hover:#1d3f4d;--stripe:#161d24;--row-hover:#17242c;
+      --resizer:rgba(79,179,218,.35);--td-bord:#232c35}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#10151b;--card:#1a222b;--txt:#dbe2e8;--muted:#8996a3;--accent:#4fb3da;--bord:#29323c;
+      --avert-bg:#3a2f10;--avert-bord:#6b5418;--avert-txt:#e8c96a;
+      --geo-bg:#16303c;--geo-hover:#1d3f4d;--stripe:#161d24;--row-hover:#17242c;
+      --resizer:rgba(79,179,218,.35);--td-bord:#232c35}
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+     background:var(--bg);color:var(--txt);display:flex;flex-direction:column;height:100vh}
+header{background:var(--card);border-bottom:1px solid var(--bord);padding:10px 16px;
+       display:flex;flex-wrap:wrap;gap:10px;align-items:center;flex-shrink:0}
+h1{font-size:.9rem;font-weight:600;flex:1;min-width:150px;
+   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#filtre{padding:7px 11px;font-size:.9rem;border:1px solid var(--bord);
+        border-radius:6px;width:220px;background:var(--card);color:var(--txt)}
+#info{color:var(--muted);font-size:.82rem;white-space:nowrap}
+#theme-toggle{background:none;border:1px solid var(--bord);border-radius:6px;padding:5px 10px;
+              cursor:pointer;font-size:.9rem;line-height:1;color:var(--txt);flex-shrink:0}
+#theme-toggle:hover{background:var(--bg)}
+.avert{background:var(--avert-bg);border-bottom:1px solid var(--avert-bord);padding:5px 16px;
+       font-size:.8rem;color:var(--avert-txt);flex-shrink:0}
+.wrap{flex:1;overflow:auto}
+table{border-collapse:collapse;font-size:.82rem;table-layout:fixed}
+thead{position:sticky;top:0;z-index:2;background:var(--card);box-shadow:0 1px 0 var(--bord)}
+th{padding:8px 12px;text-align:left;cursor:pointer;user-select:none;color:var(--muted);font-weight:600;
+   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative}
+th:hover{background:var(--bg);color:var(--txt)}
+th.asc::after{content:" ↑";color:var(--accent)}
+th.desc::after{content:" ↓";color:var(--accent)}
+th.geo{color:var(--accent);background:var(--geo-bg)}
+th.geo:hover{background:var(--geo-hover)}
+th.trad{text-decoration:underline dotted;text-decoration-color:var(--accent);text-underline-offset:3px}
+td{padding:0;border-bottom:1px solid var(--td-bord)}
+td div{padding:5px 12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+td div a{color:var(--accent);text-decoration:none}
+td div a:hover{text-decoration:underline}
+tr:nth-child(even) td{background:var(--stripe)}
+tr:hover td{background:var(--row-hover)}
+.resizer{position:absolute;right:0;top:0;width:5px;height:100%;cursor:col-resize;z-index:1}
+.resizer:hover,.resizer.active{background:var(--resizer)}
+</style>
+</head>
+<body>
+<header>
+  <h1 id="titre"></h1>
+  <input id="filtre" type="search" placeholder="Filtrer toutes les colonnes…">
+  <span id="info"></span>
+  <button id="theme-toggle" title="Basculer thème clair/sombre" aria-label="Basculer thème clair/sombre">🌙</button>
+</header>
+<div id="avert" class="avert" style="display:none"></div>
+<div class="wrap"><table id="t"><colgroup id="cols"></colgroup><thead id="thead"></thead><tbody id="tbody"></tbody></table></div>
+<script id="d" type="application/json">{"nom": "basol-bdd-30-11-21-ok-rennesmetropole.csv", "champs_geo": ["Nom commune", "Code INSEE"], "dictionnaire": {}, "entetes": ["", "Code métier", "Autre identifiant", "Nom établissement", "Nom instruction", "Statut instruction", "Date début", "Date fin", "Description", "Code INSEE", "Nom commune", "Nom département", "Nom région", "Géolocalisation", "Coordonnée X", "Coordonnée y", "Code ICPE", "NAF", "NAF Rev1", "NAF Rev2", "idbasol", "geom_source", "geom_source_wfs", "geom_source_scrap", "geom_source_basold", "type_geom_source", "surface", "geometry"], "lignes": [["291", "SSP000038301", "35.0025", "ST Microelectronics", "", "En cours", "", "", "En cours", "35238", "RENNES", "ILLE-ET-VILAINE", "BRETAGNE", "Polygone", "-1.6654434", "48.0876", "H18 - Composants électroniques (fabrication de)", "", "", "", "SSP000038301", "scrap", "1", "1", "", "wfs", "43524.11436754069", "POLYGON ((-1.66426 48.08818, -1.66398 48.08818, -1.66398 48.08815, -1.66398 48.08814, -1.664 48.08766, -1.66403 48.08678, -1.66403 48.08667, -1.66431 48.08668, -1.66433 48.08668, -1.66515 48.08669, -1"], ["296", "SSP000038801", "35.0001", "Ancienne mine de Pont-Péan", "", "En cours", "", "", "En cours", "35363", "PONT PEAN", "ILLE-ET-VILAINE", "BRETAGNE", "Polygone", "-1.7158256", "48.01587", "F2 - Minerais métalliques (extraction de)", "", "", "", "SSP000038801", "scrap", "1", "1", "1", "wfs", "345675.7384437461", "POLYGON ((-1.71617 48.01142, -1.71618 48.01142, -1.71625 48.01134, -1.71631 48.01127, -1.71641 48.01123, -1.71643 48.01123, -1.71657 48.01121, -1.71667 48.01124, -1.71679 48.01127, -1.71694 48.01132, "], ["297", "SSP000038901", "35.0012", "Ancienne usine à gaz", "", "En cours", "", "", "En cours", "35238", "RENNES", "ILLE-ET-VILAINE", "BRETAGNE", "Polygone", "-1.7021092", "48.105946", "J1 - Cokéfaction, usines à gaz", "", "", "", "SSP000038901", "scrap", "1", "1", "1", "wfs", "36550.67904548247", "POLYGON ((-1.70087 48.10527, -1.70104 48.10527, -1.70138 48.10528, -1.70178 48.10529, -1.70216 48.10529, -1.70267 48.1053, -1.70267 48.1053, -1.70267 48.1053, -1.70267 48.1053, -1.70277 48.1053, -1.70"], ["615", "SSP000070701", "35.0022", "SNC LES BAUDIERES - MONIER", "", "En cours", "", "", "En cours", "35238", "RENNES", "ILLE-ET-VILAINE", "BRETAGNE", "Polygone", "-1.7322503", "48.104744", "M1 - Industries diverses", "", "", "", "SSP000070701", "scrap", "1", "1", "1", "wfs", "31617.02897667012", "POLYGON ((-1.73099 48.10378, -1.73222 48.10354, -1.73233 48.10352, -1.73258 48.10347, -1.73262 48.10358, -1.73272 48.10382, -1.73285 48.10413, -1.73247 48.1042, -1.73175 48.10434, -1.73175 48.10434, -"], ["639", "SSP000075801", "", "Ancienne décharge de Celar", "", "Clôturée", "", "", "Clôturée", "35047", "BRUZ", "ILLE-ET-VILAINE", "BRETAGNE", "Polygone", "-1.747018", "47.991306", "", "", "", "", "SSP000075801", "scrap", "1", "1", "1", "wfs", "48488.39862286107", "POLYGON ((-1.74603 47.9925, -1.74596 47.99234, -1.74595 47.99227, -1.74594 47.99221, -1.74591 47.99212, -1.74586 47.992, -1.74585 47.99197, -1.74583 47.99193, -1.74579 47.99181, -1.74578 47.99178, -1."], ["640", "SSP000075901", "", "Ancienne décharge des Garennes", "", "Clôturée", "", "", "Clôturée", "35047", "BRUZ", "ILLE-ET-VILAINE", "BRETAGNE", "Polygone", "-1.751062", "48.003235", "", "", "", "", "SSP000075901", "scrap", "1", "1", "1", "wfs", "35616.91186302368", "POLYGON ((-1.74985 48.00289, -1.74983 48.00282, -1.74977 48.00256, -1.74974 48.00243, -1.74973 48.00241, -1.7505 48.00231, -1.75107 48.00225, -1.75174 48.00216, -1.7519 48.00214, -1.75198 48.00243, -1"], ["641", "SSP000076001", "", "Ancienne décharge de Pince-Poche", "", "Clôturée", "", "", "Clôturée", "35051", "CESSON SEVIGNE", "ILLE-ET-VILAINE", "BRETAGNE", "Polygone", "-1.6060385", "48.111256", "", "", "", "", "SSP000076001", "scrap", "1", "1", "1", "wfs", "60773.49239705168", "POLYGON ((-1.60836 48.11093, -1.60843 48.11071, -1.60722 48.11076, -1.60711 48.11082, -1.60695 48.11064, -1.60717 48.11047, -1.60731 48.11034, -1.60737 48.11028, -1.60759 48.1101, -1.60771 48.11002, -"], ["642", "SSP000076201", "35.0017", "ZAC des Trois Marches", "", "Clôturée", "", "", "Clôturée", "35353", "VEZIN LE COQUET", "ILLE-ET-VILAINE", "BRETAGNE", "Polygone", "-1.7383287", "48.102287", "L13 - Entrepôts de produits dangereux", "", "", "", "SSP000076201", "scrap", "1", "1", "1", "wfs", "17612.74697742039", "POLYGON ((-1.73879 48.10186, -1.73949 48.10184, -1.73957 48.10264, -1.73957 48.10267, -1.73947 48.10267, -1.73947 48.10268, -1.73947 48.10268, -1.7383 48.10273, -1.73814 48.10285, -1.73798 48.10286, -"], ["643", "SSP000076301", "", "Ancienne décharge des Rochers", "", "Clôturée", "", "", "Clôturée", "35055", "CHANTEPIE", "ILLE-ET-VILAINE", "BRETAGNE", "Polygone", "-1.5798645", "48.08673", "", "", "", "", "SSP000076301", "scrap", "1", "1", "1", "wfs", "17188.29278201841", "POLYGON ((-1.5807 48.08626, -1.58067 48.08626, -1.58066 48.0863, -1.58066 48.08634, -1.58068 48.08641, -1.58071 48.08642, -1.58074 48.08642, -1.58075 48.08652, -1.58073 48.08652, -1.58075 48.08658, -1"], ["644", "SSP000076501", "", "Ancienne décharge de la Sillandais", "", "Clôturée", "", "", "Clôturée", "35076", "CHAVAGNE", "ILLE-ET-VILAINE", "BRETAGNE", "Polygone", "-1.7906607", "48.047592", "", "", "", "", "SSP000076501", "scrap", "1", "1", "1", "wfs", "40545.52645042408", "POLYGON ((-1.79173 48.04866, -1.78953 48.04869, -1.78953 48.04869, -1.78951 48.04869, -1.78948 48.04772, -1.78945 48.04675, -1.78949 48.04674, -1.78959 48.04671, -1.78966 48.04669, -1.78973 48.04668, "], ["645", "SSP000076601", "", "Ancienne déharge de La Drille", "", "Clôturée", "", "", "Clôturée", "35059", "LA CHAPELLE DES FOUGERETZ", "ILLE-ET-VILAINE", "BRETAGNE", "Polygone", "-1.7471737", "48.165424", "", "", "", "", "SSP000076601", "scrap", "1", "1", "1", "wfs", "4926.085765502788", "POLYGON ((-1.74763 48.16548, -1.74763 48.16551, -1.74739 48.16552, -1.74723 48.16608, -1.74704 48.16605, -1.74702 48.16597, -1.74699 48.16583, -1.74695 48.16575, -1.74692 48.16568, -1.7469 48.16558, -"], ["646", "SSP000076701", "", "PEUGEOT CITROEN AUTOMOBILES SA", "", "Clôturée", "", "", "Clôturée", "35139", "LAILLE", "ILLE-ET-VILAINE", "BRETAGNE", "Polygone", "-1.6895282", "47.98531", "", "", "", "", "SSP000076701", "scrap", "1", "1", "1", "wfs", "18356.18424974737", "POLYGON ((-1.69066 47.98498, -1.69053 47.9853, -1.69052 47.98534, -1.69042 47.9859, -1.68934 47.98597, -1.68926 47.98597, -1.689 47.986, -1.68897 47.98592, -1.6889 47.98589, -1.68889 47.98587, -1.6889"], ["647", "SSP000076801", "", "Ancienne décharge de la Haute Porte", "", "Clôturée", "", "", "Clôturée", "35139", "LAILLE", "ILLE-ET-VILAINE", "BRETAGNE", "Polygone", "-1.7286658", "47.998764", "", "", "", "", "SSP000076801", "scrap", "1", "1", "1", "wfs", "2834.784076885058", "POLYGON ((-1.72847 47.99855, -1.7285 47.99853, -1.72865 47.99849, -1.72879 47.99848, -1.72899 47.9985, -1.729 47.99863, -1.72899 47.99873, -1.72892 47.9991, -1.72864 47.99906, -1.7286 47.99898, -1.728"], ["648", "SSP000076901", "", "Ancienne décharge de Coutance", "", "Clôturée", "", "", "Clôturée", "35240", "LE RHEU", "ILLE-ET-VILAINE", "BRETAGNE", "Polygone", "-1.7553017", "48.08483", "", "", "", "", "SSP000076901", "scrap", "1", "1", "1", "wfs", "81461.66508306343", "POLYGON ((-1.75719 48.0854, -1.75674 48.08649, -1.75624 48.08656, -1.75619 48.08657, -1.75619 48.08623, -1.7559 48.08622, -1.75557 48.08622, -1.7555 48.08627, -1.75542 48.08641, -1.75542 48.08658, -1."], ["649", "SSP000077101", "", "Ancienne décharge controlée NETRA", "", "Clôturée", "", "", "Clôturée", "35240", "LE RHEU", "ILLE-ET-VILAINE", "BRETAGNE", "Polygone", "-1.7596127", "48.10717", "", "", "", "", "SSP000077101", "scrap", "1", "1", "1", "wfs", "10207.16097009383", "POLYGON ((-1.76059 48.1073, -1.75927 48.10773, -1.75914 48.10764, -1.75908 48.1076, -1.759 48.10755, -1.75891 48.1075, -1.75888 48.10748, -1.75888 48.10748, -1.75901 48.10646, -1.75901 48.10645, -1.75"], ["650", "SSP000077201", "", "Ancienne décharge de La Hardinais", "", "Clôturée", "", "", "Clôturée", "35351", "LE VERGER", "ILLE-ET-VILAINE", "BRETAGNE", "Polygone", "-1.9425589", "48.05379", "", "", "", "", "SSP000077201", "scrap", "1", "1", "1", "wfs", "46165.87489092484", "POLYGON ((-1.94324 48.05425, -1.94326 48.05431, -1.94329 48.05439, -1.94333 48.05447, -1.94362 48.0547, -1.94367 48.05475, -1.94372 48.05482, -1.94379 48.05502, -1.94377 48.05502, -1.94365 48.05506, -"], ["651", "SSP000077401", "", "Ancienne décharge des Marcades", "", "Clôturée", "", "", "Clôturée", "35180", "MINIAC SOUS BECHEREL", "ILLE-ET-VILAINE", "BRETAGNE", "Polygone", "-1.933309", "48.29555", "", "", "", "", "SSP000077401", "scrap", "1", "1", "1", "wfs", "20061.92110075834", "POLYGON ((-1.93327 48.29536, -1.93312 48.29517, -1.93335 48.2951, -1.93309 48.29477, -1.93335 48.2947, -1.93363 48.29463, -1.93399 48.29456, -1.93417 48.29455, -1.93435 48.29453, -1.93442 48.29453, -1"], ["652", "SSP000077801", "", "Ancienne décharge de la Petite Saudrais", "", "Clôturée", "", "", "Clôturée", "35206", "NOYAL CHATILLON SUR SEICHE", "ILLE-ET-VILAINE", "BRETAGNE", "Polygone", "-1.6551138", "48.045727", "", "", "", "", "SSP000077801", "scrap", "1", "1", "1", "wfs", "9525.098376716014", "POLYGON ((-1.6546 48.04517, -1.65463 48.04517, -1.65474 48.04516, -1.65488 48.04515, -1.65523 48.04513, -1.65533 48.04512, -1.65542 48.04514, -1.65554 48.04517, -1.65569 48.0452, -1.65584 48.04523, -1"], ["653", "SSP000077901", "", "Ancienne décharge du Pâtis du Coudray", "", "Clôturée", "", "", "Clôturée", "35206", "NOYAL CHATILLON SUR SEICHE", "ILLE-ET-VILAINE", "BRETAGNE", "Polygone", "-1.6596756", "48.031418", "", "", "", "", "SSP000077901", "wfs", "1", "", "1", "wfs", "7996.547049012767", "POLYGON ((-1.65937 48.03174, -1.65923 48.03176, -1.65911 48.03177, -1.65895 48.0318, -1.65893 48.03174, -1.65891 48.03168, -1.65889 48.03162, -1.65887 48.03157, -1.65886 48.03152, -1.65884 48.03146, -"], ["654", "SSP000078001", "", "Ancienne décharge de la Guibertière", "", "Clôturée", "", "", "Clôturée", "35208", "ORGERES", "ILLE-ET-VILAINE", "BRETAGNE", "Polygone", "-1.6648829", "47.976784", "", "", "", "", "SSP000078001", "scrap", "1", "1", "1", "wfs", "10844.15404283648", "POLYGON ((-1.66456 47.97646, -1.66448 47.97618, -1.66449 47.97599, -1.66464 47.97613, -1.66504 47.97632, -1.66538 47.97645, -1.66579 47.97662, -1.66587 47.97665, -1.66601 47.97676, -1.66605 47.97679, "], ["655", "SSP000078101", "", "Ancienne décharge du Bois de la Boulais", "", "Clôturée", "", "", "Clôturée", "35208", "ORGERES", "ILLE-ET-VILAINE", "BRETAGNE", "Polygone", "-1.6839772", "47.989437", "", "", "", "", "SSP000078101", "scrap", "1", "1", "1", "wfs", "6748.097908991521", "POLYGON ((-1.68325 47.98901, -1.68336 47.98903, -1.68452 47.98917, -1.68453 47.98923, -1.68453 47.98926, -1.68456 47.9893, -1.68459 47.98935, -1.6846 47.98938, -1.6846 47.98943, -1.68459 47.98954, -1."], ["656", "SSP000078601", "", "Ancienne décharge du Pont Hazard", "", "Clôturée", "", "", "Clôturée", "35275", "SAINT GILLES", "ILLE-ET-VILAINE", "BRETAGNE", "Polygone", "-1.8364152", "48.15772", "", "", "", "", "SSP000078601", "scrap", "1", "1", "1", "wfs", "6166.321776545463", "POLYGON ((-1.83694 48.1573, -1.83699 48.15733, -1.83701 48.15735, -1.83703 48.1574, -1.83703 48.15744, -1.83701 48.15746, -1.83698 48.15749, -1.83694 48.15751, -1.83689 48.15754, -1.83684 48.15755, -1"], ["657", "SSP000078701", "", "Ancienne décharge de Mille Club", "", "Clôturée", "", "", "Clôturée", "35278", "SAINT GREGOIRE", "ILLE-ET-VILAINE", "BRETAGNE", "Polygone", "-1.7115448", "48.171272", "", "", "", "", "SSP000078701", "scrap", "1", "1", "1", "wfs", "39288.78427377342", "POLYGON ((-1.70992 48.1724, -1.70994 48.17239, -1.71008 48.17082, -1.71017 48.17077, -1.71031 48.17069, -1.71034 48.17068, -1.7105 48.17066, -1.71064 48.17065, -1.71073 48.17064, -1.71141 48.17066, -1"], ["658", "SSP000079001", "", "Ancienne décharge du Poncel", "", "Clôturée", "", "", "Clôturée", "35352", "VERN SUR SEICHE", "ILLE-ET-VILAINE", "BRETAGNE", "Polygone", "-1.6059256", "48.037704", "", "", "", "", "SSP000079001", "scrap", "1", "1", "1", "wfs", "26101.56260607374", "POLYGON ((-1.60443 48.03844, -1.60438 48.0382, -1.60431 48.03788, -1.60425 48.03767, -1.60425 48.03763, -1.60425 48.03763, -1.60431 48.03762, -1.60498 48.03754, -1.6056 48.03747, -1.60553 48.03718, -1"], ["659", "SSP000079101", "", "Ancienne décharge du Lozeret", "", "Clôturée", "", "", "Clôturée", "35353", "VEZIN LE COQUET", "ILLE-ET-VILAINE", "BRETAGNE", "Polygone", "-1.7543464", "48.1117", "", "", "", "", "SSP000079101", "scrap", "1", "1", "1", "wfs", "24633.49135724797", "POLYGON ((-1.75345 48.11232, -1.75343 48.11232, -1.75351 48.11219, -1.75364 48.11196, -1.75378 48.1117, -1.75385 48.11156, -1.75397 48.11142, -1.75406 48.1113, -1.7541 48.11117, -1.75419 48.11096, -1."], ["682", "SSP000085501", "", "Ancienne décharge de la Boyère", "", "Clôturée", "", "", "Clôturée", "35310", "SAINT SAUVEUR DES LANDES", "ILLE-ET-VILAINE", "BRETAGNE", "Polygone", "-1.332963", "48.345795", "", "", "", "", "SSP000085501", "scrap", "1", "1", "1", "wfs", "6759.955591713428", "POLYGON ((-1.33337 48.34535, -1.33353 48.34617, -1.33252 48.34625, -1.33251 48.3461, -1.33245 48.34538, -1.33337 48.34535))"], ["730", "SSP000097301", "", "Ancienne décharge du Landier", "", "Clôturée", "", "", "Clôturée", "35160", "LOUTEHEL", "ILLE-ET-VILAINE", "BRETAGNE", "Polygone", "-2.0754004", "47.938343", "K21 - Décharges d'ordures ménagères", "", "", "", "SSP000097301", "scrap", "1", "1", "", "wfs", "395.3409895043221", "POLYGON ((-2.07557 47.93819, -2.07566 47.93839, -2.07546 47.93843, -2.07543 47.93836, -2.07531 47.93837, -2.0753 47.93836, -2.07529 47.93836, -2.07529 47.93835, -2.07529 47.93834, -2.07538 47.93827, -"], ["1243", "SSP000170601", "", "LG TRAITMAT", "", "Clôturée", "", "", "Clôturée", "35047", "BRUZ", "ILLE-ET-VILAINE", "BRETAGNE", "Polygone", "-1.7313865", "48.032543", "", "", "", "", "SSP000170601", "scrap", "1", "1", "1", "wfs", "16756.37852727648", "POLYGON ((-1.73205 48.03255, -1.73204 48.03257, -1.73195 48.03281, -1.73195 48.03284, -1.73192 48.03342, -1.73192 48.03348, -1.73169 48.03346, -1.73129 48.03343, -1.73102 48.03343, -1.73099 48.03333, "], ["4246", "SSP000567901", "", "Ancienne décharge de Mongison", "", "Clôturée", "", "", "Clôturée", "35278", "SAINT GREGOIRE", "ILLE-ET-VILAINE", "BRETAGNE", "Polygone", "-1.6630796", "48.157166", "", "", "", "", "SSP000567901", "scrap", "1", "1", "", "wfs", "6637.402045183777", "POLYGON ((-1.66244 48.15756, -1.66265 48.15715, -1.66281 48.15686, -1.66282 48.15684, -1.66285 48.15682, -1.66289 48.1568, -1.66293 48.1568, -1.66297 48.1568, -1.6635 48.15691, -1.66357 48.15693, -1.6"], ["5052", "SSP000837801", "35.0004", "TOTAL (ex ELF ANTAR FRANCE)", "", "Clôturée", "", "", "Clôturée", "35352", "VERN SUR SEICHE", "ILLE-ET-VILAINE", "BRETAGNE", "Point", "-1.6067357", "48.05488", "D13 - Dépôts de pétrole, produits dérivés ou gaz naturel", "", "", "", "SSP000837801", "scrap", "1", "1", "1", "wfs", "1.655830278438409", "POLYGON ((-1.60673 48.05488, -1.60673 48.05488, -1.60673 48.05488, -1.60673 48.05488, -1.60673 48.05488, -1.60673 48.05488, -1.60673 48.05487, -1.60673 48.05487, -1.60674 48.05487, -1.60674 48.05487, "], ["5417", "SSP000989001", "35.0014", "QUARON (ex-SOLVADIS France)", "", "En cours", "", "", "En cours", "35281", "SAINT JACQUES DE LA LANDE", "ILLE-ET-VILAINE", "BRETAGNE", "Point", "-1.7291169", "48.07845", "D - Chimie, parachimie, pétrole", "", "", "", "SSP000989001", "scrap", "1", "1", "", "wfs", "1.241338931548153", "POLYGON ((-1.72911 48.07845, -1.72911 48.07845, -1.72911 48.07845, -1.72911 48.07844, -1.72911 48.07844, -1.72911 48.07844, -1.72911 48.07844, -1.72912 48.07844, -1.72912 48.07844, -1.72912 48.07844, "], ["5418", "SSP000989101", "35.0015", "TRIADIS Services (ex SPEICHIM Processing)", "", "En cours", "", "", "En cours", "35281", "SAINT JACQUES DE LA LANDE", "ILLE-ET-VILAINE", "BRETAGNE", "Point", "-1.726905", "48.077934", "K42 - Régénération de solvants", "", "", "", "SSP000989101", "scrap", "1", "1", "", "wfs", "0.8275670127326357", "POLYGON ((-1.7269 48.07793, -1.7269 48.07793, -1.7269 48.07793, -1.7269 48.07793, -1.7269 48.07793, -1.7269 48.07793, -1.7269 48.07793, -1.7269 48.07793, -1.7269 48.07793, -1.72691 48.07793, -1.72691 "], ["5745", "SSP001107701", "35.0021", "STATION SERVICE TOTAL (ex Blanchet)", "", "En cours", "", "", "En cours", "35238", "RENNES", "ILLE-ET-VILAINE", "BRETAGNE", "Point", "-1.6758912", "48.084126", "L23 - Détail de carburants", "", "", "", "SSP001107701", "scrap", "1", "1", "1", "wfs", "1.654947128915174", "POLYGON ((-1.67588 48.08413, -1.67588 48.08412, -1.67588 48.08412, -1.67588 48.08412, -1.67588 48.08412, -1.67589 48.08412, -1.67589 48.08412, -1.67589 48.08412, -1.67589 48.08412, -1.67589 48.08412, "], ["14311", "SSP001107801", "35.0023", "STATION SERVICE SHELL", "", "En cours", "", "", "En cours", "35353", "VEZIN LE COQUET", "ILLE-ET-VILAINE", "BRETAGNE", "Point", "-1.7342422", "48.1241", "L23 - Détail de carburants", "", "", "", "SSP001107801", "scrap", "", "1", "1", "scraping fiche", "9820.458750586033", "POLYGON ((-1.733048 48.12354459998459, -1.7329042 48.123620299984594, -1.732666 48.12374789998459, -1.732549 48.123778199984606, -1.7323642 48.12382629998461, -1.7323111 48.12383989998462, -1.7322836 "]], "tronque": false, "nb_total": 34}</script>
+<script>
+(function(){
+  const btn = document.getElementById("theme-toggle");
+  function effectif(){
+    return document.documentElement.getAttribute("data-theme") ||
+      (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  }
+  function majIcone(){ btn.textContent = effectif() === "dark" ? "☀️" : "🌙"; }
+  btn.addEventListener("click", () => {
+    const suivant = effectif() === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", suivant);
+    try { localStorage.setItem("theme", suivant); } catch(e) {}
+    majIcone();
+  });
+  majIcone();
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+    if (!document.documentElement.getAttribute("data-theme")) majIcone();
+  });
+})();
+
+const D=JSON.parse(document.getElementById("d").textContent);
+const tbl=document.getElementById("t"),wrap=document.querySelector(".wrap");
+const nCols=D.entetes.length;
+const wrapW=wrap.clientWidth||800;
+const colW=Math.max(80,Math.floor(Math.max(wrapW,nCols*160)/nCols));
+tbl.style.width=Math.max(wrapW,nCols*160)+"px";
+document.getElementById("cols").innerHTML=D.entetes.map(()=>`<col style="width:${colW}px">`).join("");
+document.title=D.nom;document.getElementById("titre").textContent=D.nom;
+if(D.tronque){const a=document.getElementById("avert");a.style.display="";
+  a.textContent=`Prévisualisation : ${D.lignes.length.toLocaleString("fr")} premières lignes sur ${D.nb_total.toLocaleString("fr")} au total.`;}
+const geo=new Set(D.champs_geo||[]);
+const DICO=D.dictionnaire||{};
+let sc=-1,asc=true,q="";
+function esc(s){return String(s??"").replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function cell(v){const s=String(v??"").trim();return /^https?:\/\/\S+$/.test(s)?`<a href="${esc(s)}" target="_blank" rel="noopener">${esc(s)}</a>`:esc(v);}
+function rendu(){
+  let rows=D.lignes;
+  if(q){const f=q.toLowerCase();rows=rows.filter(r=>r.some(v=>String(v??"").toLowerCase().includes(f)));}
+  if(sc>=0){const col=sc,up=asc;rows=[...rows].sort((a,b)=>{
+    const va=a[col]??"",vb=b[col]??"",na=+va,nb=+vb;
+    return(!isNaN(na)&&!isNaN(nb))?(up?na-nb:nb-na):(up?String(va).localeCompare(String(vb),"fr"):String(vb).localeCompare(String(va),"fr"));
+  });}
+  const th=D.entetes.map((h,i)=>{
+    const trad=DICO[h];
+    const cls=[sc===i?(asc?"asc":"desc"):"",geo.has(h)?"geo":"",trad?"trad":""].filter(Boolean).join(" ");
+    const tip=trad?` title="${esc(h)}"`:"";
+    return`<th class="${cls}"${tip}>${esc(trad||h)}<div class="resizer"></div></th>`;
+  }).join("");
+  document.getElementById("thead").innerHTML=`<tr>${th}</tr>`;
+  document.getElementById("tbody").innerHTML=rows.map(r=>`<tr>${r.map(v=>`<td><div title="${esc(v)}">${cell(v)}</div></td>`).join("")}</tr>`).join("");
+  const n=rows.length,tot=D.lignes.length;
+  document.getElementById("info").textContent=n<tot
+    ?`${n.toLocaleString("fr")} / ${tot.toLocaleString("fr")} lignes`
+    :`${n.toLocaleString("fr")} ligne${n>1?"s":""}`;
+}
+// Sort via delegation — ignore clicks that start on the resizer handle
+tbl.addEventListener("click",e=>{
+  if(e.target.closest(".resizer"))return;
+  const th=e.target.closest("th");
+  if(!th)return;
+  const i=th.cellIndex;sc===i?asc=!asc:(sc=i,asc=true);rendu();
+});
+// Column resize
+tbl.addEventListener("mousedown",e=>{
+  const rz=e.target.closest(".resizer");
+  if(!rz)return;
+  e.preventDefault();
+  const th=rz.parentElement,idx=th.cellIndex;
+  const cols=document.querySelectorAll("#cols col");
+  const startX=e.clientX,startW=th.offsetWidth;
+  rz.classList.add("active");
+  document.body.style.cursor="col-resize";
+  function onMove(e){
+    const w=Math.max(40,startW+(e.clientX-startX));
+    cols[idx].style.width=w+"px";
+    tbl.style.width=Array.from(cols).reduce((s,c)=>s+(parseInt(c.style.width)||colW),0)+"px";
+  }
+  function onUp(){
+    rz.classList.remove("active");
+    document.body.style.cursor="";
+    document.removeEventListener("mousemove",onMove);
+    document.removeEventListener("mouseup",onUp);
+  }
+  document.addEventListener("mousemove",onMove);
+  document.addEventListener("mouseup",onUp);
+});
+document.getElementById("filtre").addEventListener("input",e=>{q=e.target.value;rendu();});
+rendu();
+</script>
+</body>
+</html>

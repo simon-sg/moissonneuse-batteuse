@@ -1,0 +1,91 @@
+{
+  "local_id": "60a5ae27-93ed-515d-9a3c-c9a356b8f552",
+  "resource_title": "Stations GNV publiques en France - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Stations GNV publiques en France — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/5a142aebb5950840f0ec2648\n\nCe jeu de données présente les stations GNV ouvertes au public et en projet en France avec leurs caractéristiques (année d'ouverture, exploitant, localisation, pompes GNC et/ou GNL, modes de paiements ... etc.) \n\n* * *"
+    }
+  ],
+  "theme": "transportation",
+  "keywords": [
+    "infrastructures",
+    "lom",
+    "mobilite",
+    "tableau-de-bord-regional",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Open Data Réseaux Énergies"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "17591875-3cd6-5c70-ae9f-fee445dff275",
+      "media_type": "FILE",
+      "media_name": "stations-gnv-rennesmetropole.csv",
+      "media_caption": "stations-gnv.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "3f7b47a8-80c2-5595-8801-b6831cd6f0ab",
+      "media_type": "FILE",
+      "media_name": "stations-gnv-rennesmetropole.json",
+      "media_caption": "stations-gnv.csv — données filtrées sur Rennes Métropole (JSON)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "f2fb6ac9-bad8-571c-9cd0-f3947206f1d8",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://odre.opendatasoft.com/api/explore/v2.1/catalog/datasets/stations-gnv/exports/csv?use_labels=true",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2026-05-27T00:00:00Z",
+    "updated": "2026-05-27T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2026-05-27T00:00:00Z",
+      "updated": "2026-05-27T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/5a142aebb5950840f0ec2648"
+  }
+}

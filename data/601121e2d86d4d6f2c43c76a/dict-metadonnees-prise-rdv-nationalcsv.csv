@@ -1,0 +1,4 @@
+Colonne;Type;Description_FR;Description_EN;Exemple
+rang_vaccinal;integer;Indique si le rendez-vous est pour la première ou la deuxième injection;Indicates whether the appointment is for the first or the second vaccine shot;1
+date_debut_semaine;date;Date du premier jour de la semaine auquel les données se réfèrent;Date of the first day of the week to which data is referring to;2021-01-25
+nb;integer;Nombre de rendez-vous réservés pour la semaine;Number of appointments booked for the week;270066

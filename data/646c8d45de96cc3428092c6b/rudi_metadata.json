@@ -1,0 +1,80 @@
+{
+  "local_id": "b21cdefd-99b6-544f-8bca-2d4221cf66d8",
+  "resource_title": "Liste des entreprises de l'ESS - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Liste des entreprises de l'ESS — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/646c8d45de96cc3428092c6b\n\n### Pourquoi une liste des entreprises de l'ESS (Economie Sociale et Solidaire) ?\n\nL’article 6 de la loi ESS confie aux **Chambres régionales de l'ESS** \"la publication et la tenue à jour de la liste des entreprises de l’ESS\". **ESS France** centralise la publication de cette liste sur son site Internet. Toutes les entreprises de l’ESS, employeuses et non employeuses, ont vocation à figurer dans la liste.\n\nCette liste est mobilisée par les établissements bancaires français pour le **livret de développement durable et solidaire (LDDS)** encadré par la loi n° 2016-1691 dite loi « Sapin II ». \n\n\n\n### Liens utiles :\nDescription des éléments du jeu de données : [**liste-des-entreprises-de-less**](https://www.ess-france.org/fr/la-liste-des-entreprises-de-less)\nDescription du LDDS : [**livret-de-developpement-durable-et-solidaire**](https://www.ess-france.org/livret-de-developpement-durable-et-solidaire-ldds)\nPour plus d'informations sur les Chambres de l'ESS en France : [**ess-france.org**](https://www.ess-france.org/)\n\n\n\n"
+    }
+  ],
+  "theme": "environment",
+  "keywords": [
+    "economie-sociale-et-solidaire",
+    "livret-de-developpement-durable-et-solidaire",
+    "observatoire-economique",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "ESS France"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "1ba732bc-29c6-51bf-b4e8-dbfbbd299454",
+      "media_type": "FILE",
+      "media_name": "entreprisesess-rennesmetropole.csv",
+      "media_caption": "entreprisesEss.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "8a5d8aa5-f9e3-58f8-8de9-09f6529fa7f5",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://static.data.gouv.fr/resources/liste-des-entreprises-de-less/20231120-102604/entreprisesess.csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2023-05-23T00:00:00Z",
+    "updated": "2023-11-20T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2023-05-23T00:00:00Z",
+      "updated": "2023-11-20T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/646c8d45de96cc3428092c6b"
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "local_id": "c4594057-0e2b-5341-beb1-a5a726a646d9",
+  "resource_title": "Annuaire des effecteurs Mon Bilan Prévention - Santé.fr - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Annuaire des effecteurs Mon Bilan Prévention - Santé.fr — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/67d29f33accc45d5c7c1dc3c\n\nProfessionnels de santé et pharmacies présentés sur la carte Santé.fr : [Mon Bilan Prévention : comment en bénéficier ? | Santé.fr](https://www.sante.fr/mon-bilan-prevention-comment-en-beneficier)\n"
+    }
+  ],
+  "theme": "health",
+  "keywords": [
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Ministère des Solidarités et de la Santé"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "c4d955fc-a08a-5e29-8b09-fe06a2f87991",
+      "media_type": "FILE",
+      "media_name": "effecteur-de-mon-bilan-prevention-open-data-2026-0-rennesmetropole.csv",
+      "media_caption": "effecteur-de-mon-bilan-prevention-open-data-2026-06-23.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "d4bb37d3-fac9-57af-8d3a-cddda4550fd7",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://static.data.gouv.fr/resources/annuaire-des-effecteurs-mon-bilan-prevention-sante-fr/20260623-041047/effecteur-de-mon-bilan-prevention-open-data-2026-06-23.csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2025-03-13T00:00:00Z",
+    "updated": "2026-06-23T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2025-03-13T00:00:00Z",
+      "updated": "2026-06-23T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/67d29f33accc45d5c7c1dc3c"
+  }
+}

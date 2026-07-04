@@ -1,0 +1,82 @@
+{
+  "local_id": "7682c87e-1d7e-59cb-8f38-f946b641128a",
+  "resource_title": "Base nationale sur les intercommunalités - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Base nationale sur les intercommunalités — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/5e1f20058b4c414d3f94460d\n\nLes données de la base nationale sur les intercommunalités (BANATIC) comportent des informations sur les intercommunalités.\n\nVous trouverez plusieurs fichiers :\n\n* **Liste des groupements** : la situation géographique, la nature juridique, la date de création, le périmètre, le profil financier ;\n* **Coordonnées des groupements** : des moyens pour contacter un groupement ;\n* **Compétences des groupements** : les compétences exercées par les groupements ;\n* **Périmètre des EPCI à fiscalité propre**.\n* **Table de passage entre codes INSEE des communes et SIREN**\n\n## Site web et exports complémentaires\n\nCes données sont publiées sur le site <https://www.banatic.interieur.gouv.fr>. Vous pourrez exporter des données uniquement pour certaines régions ou départements sur ce site.\n"
+    }
+  ],
+  "theme": "environment",
+  "keywords": [
+    "banatic",
+    "communes",
+    "competence-territoriale",
+    "competences",
+    "dgcl",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Direction générale des collectivités locales"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "839655c9-0ec2-5794-be3f-621d2af1699d",
+      "media_type": "FILE",
+      "media_name": "correspondance-code-communes-insee-et-siren-rennesmetropole.csv",
+      "media_caption": "Correspondance code communes INSEE et SIREN — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "52d9f7e7-4b4a-55b4-9f41-0a6db446bd21",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://static.data.gouv.fr/resources/base-nationale-sur-les-intercommunalites/20250312-083024/correspondance-code-commune-siren.csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2020-01-15T00:00:00Z",
+    "updated": "2025-03-18T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2020-01-15T00:00:00Z",
+      "updated": "2025-03-18T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/5e1f20058b4c414d3f94460d"
+  }
+}

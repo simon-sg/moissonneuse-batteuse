@@ -1,0 +1,93 @@
+{
+  "local_id": "f3991d47-c9ce-5759-ad03-055cf9c15298",
+  "resource_title": "Sites référencés dans Cartofriches - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Sites référencés dans Cartofriches — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/61892a26c94e39bde1dbf7ac\n\n### Contexte : le dispositif Cartofriches\n\nLe besoin principal auquel souhaite répondre Cartofriches est l'**aide au recensement les friches pour les qualifier et faciliter leur réutilisation**. \n\nEn effet, malgré l’existence de bases nationales telles que BASIAS et BASOL et d’observatoires locaux de qualité, la connaissance des sites en friche au niveau national reste jusqu’ici partielle et diffuse du fait de la diversité des cas et de l’évolution rapide des sites.\nL’objectif de Cartofriches, à terme, est ainsi d’accompagner les maîtres d’ouvrage et porteurs de projets de réhabilitation par la mise en place d’un inventaire national des friches disponibles.\n\n**La table de données produites dans le cadre de ce projet, qui rassemble données nationales et locales, est disponible en opendata.**\nAccéder à l’application de visualisation des données Cartofriches : [https://cartofriches.cerema.fr/](https://cartofriches.cerema.fr/) \n\n### Description de la table de données Cartofriches\n\nLa table de données disponible en opendata permet de référencer des sites potentiellement en friche. Le terme de « friches » est pris ici dans le sens d’espaces artificialisés et inoccupés.\n\nLa table de données contient des informations de **localisation de ces sites** (coordonnées géographiques, identifiants parcellaires, polygones géolocalisés…), mais également des **informations de contexte** (type de propriétaire, état de pollution, droit de l’urbanisme…).\nLe **descriptif des champs** est disponible ici en téléchargement (voir ci-dessous dans la partie Ressources).\n\n### Les sources ayant permis de constituer cette table\n\nAfin de constituer une base nationale d’inventaire des friches, le Cerema s'est appuyé sur plusieurs sources de données.\n\nDes **sources de données nationales** ont permis de repérer presque 3000 sites sur l’ensemble du territoire national. Le Cerema continue ce travail de recensement national, qui pour l’instant ne permet de n’avoir qu’un échantillon de toutes les friches existantes.\nLes données nationales utilisées et les informations sur les traitements sont disponibles ici : [https://artificialisation.biodiversitetousvivants.fr/cartofriches/donnees-utilisees ](https://artificialisation.biodiversitetousvivants.fr/cartofriches/donnees-utilisees )\n\nLe **rassemblement de données locales**, au plus près du terrain, permet de compléter le travail du Cerema au niveau national, et constituera à terme une forte plus-value du dispositif.\nCes données locales sont transmises par des acteurs des territoires, qui possèdent un observatoire ou réalisent des études. Les contributeurs locaux à Cartofriches sont listés ici : [https://artificialisation.biodiversitetousvivants.fr/cartofriches/observatoires-locaux](https://artificialisation.biodiversitetousvivants.fr/cartofriches/observatoires-locaux) \n\n### Qualité et limites d’utilisation des données\n\nA ce stade, la table de données n’est pas homogène sur l’ensemble du territoire national. En effet, les territoires pour lesquels des données locales existent dans Cartofriches comportent de fait plus de sites.\n\nL’intérêt de la table de données est de fournir une liste de sites potentiellement en friches : elle ne vise par l’exhaustivité.\n\nD’autre part, les champs de la table de données ont été harmonisés pour rassembler les informations provenant de sources multiples. Cela a permis de constituer une table unique, mais cela implique aussi que tous les champs ne sont pas forcément remplis.\n\n### Des mises à jour régulières à prévoir\n\nLe travail d’inventaire national et d’intégration de données locales étant continuel, des mises à jour de la présente table de données seront réalisées environ une fois par trimestre.\n\nCela permettra dans un premier temps de compléter la base avec de nouveaux sites, puis de mettre à jour les sites (rajout de nouvelles friches, suppression de friches réhabilitées).\n\n### Liens utiles\n\nArticles de présentation de Cartofriches :\n- [Qu'est-ce que cartofriches ?](https://artificialisation.biodiversitetousvivants.fr/cartofriches/presentation) \n- [Les enjeux de la revitalisation des friches](https://artificialisation.biodiversitetousvivants.fr/cartofriches/enjeux-revitalisation-friches) \n- [Cartofriches - les données utilisées](https://artificialisation.biodiversitetousvivants.fr/cartofriches/donnees-utilisees) \n- [Les observatoires locaux des friches](https://artificialisation.biodiversitetousvivants.fr/cartofriches/observatoires-locaux)"
+    }
+  ],
+  "theme": "culture",
+  "keywords": [
+    "artificialisation-des-sols",
+    "cartofriches",
+    "donnees-foncieres",
+    "foncier",
+    "friche",
+    "urbanisme",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Cerema"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "b433c099-1e6d-56bf-9155-d72417e94971",
+      "media_type": "FILE",
+      "media_name": "friches-standard-rennesmetropole.csv",
+      "media_caption": "friches-standard.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "46bb6df7-0dac-5e0d-9f58-15231d033cff",
+      "media_type": "FILE",
+      "media_name": "dict-documentation-cartofriches-sur-datafoncier.other",
+      "media_caption": "Dictionnaire des variables — Documentation Cartofriches sur Datafoncier",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "920a92c9-a709-5cc5-87be-0f5a494e7c6d",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://static.data.gouv.fr/resources/sites-references-dans-cartofriches/20260615-111607/friches-standard-2026-06-15.csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2021-11-08T00:00:00Z",
+    "updated": "2026-06-15T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2021-11-08T00:00:00Z",
+      "updated": "2026-06-15T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/61892a26c94e39bde1dbf7ac"
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "local_id": "b23ea4a4-b23d-54d9-a6f8-faa4a2ee5670",
+  "resource_title": "Cartographie des Zones Climatiques Locales (LCZ) des 88 aires urbaines de plus de 50 000 habitants de France métropolitaine - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Cartographie des Zones Climatiques Locales (LCZ) des 88 aires urbaines de plus de 50 000 habitants de France métropolita — données filtrées sur Renne"
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/6641c562e5acdb35c0e6051d\n\n> **\\[MAJ 30/06/2025] De nouvelles aires urbaines sont disponibles : Arles, Cholet, La Roche-sur-Yon, Montauban, Narbonne.**\n>\n> > **\\[MAJ 10/12/2024] Suite à des retours utilisateurs et des modifications apportées, une nouvelle version de la donnée est rendue disponible au téléchargement.**\n\n### **Cartographie des** _**Local Climate Zones**_ **(LCZ) réalisées sur les 88 aires urbaines de plus de 50 000 habitants en France métropolitaine à partir de données satellite SPOT de 2022.**\n\nLes 88 aires urbaines ont été définies à partir de la donnée [Urban Atlas 2018](https://land.copernicus.eu/en/products/urban-atlas/urban-atlas-2018) (et de données Cerema pour 5 territoires non-couverts par l'Urban Atlas \\[Arles, Cholet, La Roche-sur-Yon, Montauban, Narbonne]), et la production de cette donnée LCZ s'est basée sur la [couverture annuelle SPOT 2022](https://dinamis.data-terra.org/spot-6-7-couverture-france-metropolitaine-2022) acquise dans le cadre de DINAMIS et la [BD TOPO](https://geoservices.ign.fr/bdtopo) de l'IGN (v3.3 de décembre 2022).\n\nCette donnée LCZ peut être utilisée comme diagnostic à grande échelle du phénomène d'Îlot de Chaleur Urbain (ICU) sur votre territoire. Elle constitue un pré-diagnostic climatique tenant compte de la morphologie urbaine et de l'occupation du sol : le but est de localiser les îlots/quartiers à enjeux sur lesquels affiner les analyses et prioriser les actions.\n\n![Carte de la donnée LCZ sur le territoire métropolitain.](https://www.data.gouv.fr/fr/datasets/r/be93111a-693a-4a6d-b518-e3b2311661c2 \"Carte de la donnée LCZ sur le territoire métropolitain.\")\n\nUne visualisation des données en ligne est proposée sur le portail [Cartagene](https://cartagene.cerema.fr/portal/apps/dashboards/08066acd23974111be1584a5761fd6b9) du Cerema.\nVous pouvez utiliser ce portail pour localiser l'aire urbaine à laquelle votre territoire est rattaché et télécharger directement la donnée.\n\nLa liste des communes couvertes par chaque aire urbaine est également fournie dans un fichier CSV téléchargeable ci-dessous et consultable directement sur [explore.data.gouv.fr](https://explore.data.gouv.fr/fr/resources/fb8028d6-8018-40fa-b655-4672e8f6feaf).\n\nLa livraison est sous forme d'un dossier compressé (.zip) par aire urbaine, comprenant :\n\n* la cartographie LCZ vecteur (.shp), accompagnée d'une symbologie QGIS (.qml),\n* la cartographie LCZ rasterisée à 1,5 m (.tif), accompagnée d'une symbologie QGIS (.qml),\n* les métadonnées associées à la cartographie LCZ vecteur (.xml),\n* une carte présentant la donnée sur l'aire urbaine (.pdf),\n* un descriptif de livraison et descriptif de contenu (.pdf).\n\nPour des besoins spécifiques, la donnée agrégée à l'échelle nationale peut également être mise à disposition : [satellite@cerema.fr](mailto:satellite@cerema.fr?subject=Cartographie%20nationale%20LCZ)\n\nPour toute demande relative à cette donnée, n'hésitez pas à nous contacter : [satellite@cerema.fr](mailto:satellite@cerema.fr?subject=Cartographie%20nationale%20LCZ)\n"
+    }
+  ],
+  "theme": "culture",
+  "keywords": [
+    "2022",
+    "aire-urbaine",
+    "icu",
+    "lcz",
+    "satellite",
+    "spot",
+    "surchauffe-urbaine",
+    "urban-atlas",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Cerema"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "b0285bec-49bb-5f70-8ab0-0aa80402f41a",
+      "media_type": "FILE",
+      "media_name": "couverture-lcz-par-commune-rennesmetropole.csv",
+      "media_caption": "Couverture LCZ par commune — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "2e1d1456-eedb-5507-aca3-7faa7aa3dd56",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://static.data.gouv.fr/resources/cartographie-des-zones-climatiques-locales-lcz-des-88-aires-urbaines-de-plus-de-50-000-habitants-de-france-metropolitaine/20250630-113435/couverture-lcz.csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2024-05-13T00:00:00Z",
+    "updated": "2025-06-30T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2024-05-13T00:00:00Z",
+      "updated": "2025-06-30T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/6641c562e5acdb35c0e6051d"
+  }
+}

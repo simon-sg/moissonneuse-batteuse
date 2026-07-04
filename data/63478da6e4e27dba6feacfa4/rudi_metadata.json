@@ -1,0 +1,90 @@
+{
+  "local_id": "fabe6924-72e3-5fce-a2cf-dc2a1198f95d",
+  "resource_title": "Indices de position sociale des collèges (2016-2021) - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Indices de position sociale des collèges (2016-2021) — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/63478da6e4e27dba6feacfa4\n\nL’indice de position sociale (IPS) permet d'appréhender le statut social des élèves à partir des professions et catégories sociales (PCS) de leurs parents. Pour chaque PCS, la valeur numérique de l’IPS correspond à un résumé quantitatif d’un ensemble d’attributs socio-économiques et culturels liés à la réussite scolaire.\n\nConcrètement, pour déterminer les valeurs associées à chaque PCS, nous avons considéré la moyenne pondérée de caractéristiques telles que les diplômes, les pratiques culturelles, les conditions matérielles, le capital culturel et l’implication des parents dans la scolarité. Cette méthodologie statistique est décrite dans l’article de Rocher (2016) et s’appuie sur une méthode d’analyse de données (analyse des correspondances multiples) réalisée à partir du panel de la DEPP d’élèves entrés en sixième en 2007. Les valeurs de référence de l’IPS sont disponibles pour chaque PCS et pour chaque croisement de PCS (mère-père), cf. Rocher (2016) (table de passage disponible en pièce jointe ci-dessous).  \n\n\nAinsi, dès lors que les PCS des parents ont été recueillies, il suffit d'appliquer les valeurs de référence de l’IPS. Le niveau social d'un établissement scolaire est apprécié à travers le calcul de la moyenne des IPS des élèves qui y sont scolarisés.\n\nIl convient de rappeler que, comme tout indice synthétique, il s’agit d’un résumé simplifié de la réalité, qui ne peut rendre compte à lui seul de la complexité de la situation socio-économique et culturelle des élèves accueillis dans un établissement. \n\nEnfin, l’IPS étant basé sur les PCS déclarées par les familles et enregistrées par les établissements, il est soumis à une certaine marge d’erreur : ainsi, il est conseillé de ne pas sur-interpréter des différences de 3 points ou moins concernant les IPS moyens des établissements.\n\nL’indice d’hétérogénéité sociale d’un établissement correspond à l’écart-type de l’indice de position sociale (IPS) de ses élèves. Plus il est élevé, plus le profil social des élèves est diversifié. Cet indice est calculé depuis la rentrée 2019, uniquement pour les établissements du second degré.\n\nChamp:\n\nLe fichier fournit l’IPS moyen au sein d’un établissement ainsi que l’écart-type des IPS de ses élèves pour les collèges de France sous tutelle de l'Education Nationale, publics et privés sous contrat, calculés à partir des données de la rentrée N et pour l’ensemble des élèves de l’établissement. \n\nDans le fichier mis à disposition, chaque ligne correspond à un collège pour une année scolaire donnée. \n\nRéférence:\n\nRocher, T. (2016). Construction d’un indice de position sociale des élèves. _Éducation & formations_, DEPP, 90, pp.5-27.\n\nDauphant F., Evain F., Guillerm M., Simon C., Rocher T. (2023), L’indice de position sociale (IPS) : un outil statistique pour décrire les inégalités sociales entre établissements. _Note d’information de la Depp._"
+    }
+  ],
+  "theme": "education",
+  "keywords": [
+    "colleges",
+    "eleves",
+    "etablissements-dont-ips",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Ministères de l'Éducation nationale"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "61d1e2af-4ebb-51c7-afaa-7e19799b4864",
+      "media_type": "FILE",
+      "media_name": "fr-en-ips-colleges-rennesmetropole.csv",
+      "media_caption": "fr-en-ips_colleges.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "bf030a3d-0577-5b85-8859-2748831a6c23",
+      "media_type": "FILE",
+      "media_name": "fr-en-ips-colleges-rennesmetropole.json",
+      "media_caption": "fr-en-ips_colleges.csv — données filtrées sur Rennes Métropole (JSON)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "a1c2b8fc-3174-5e92-be4b-74feffc32704",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://data.education.gouv.fr/api/explore/v2.1/catalog/datasets/fr-en-ips_colleges/exports/csv?use_labels=true",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2022-10-05T00:00:00Z",
+    "updated": "2026-02-06T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2022-10-05T00:00:00Z",
+      "updated": "2026-02-06T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/63478da6e4e27dba6feacfa4"
+  }
+}

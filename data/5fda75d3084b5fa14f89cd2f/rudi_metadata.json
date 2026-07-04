@@ -1,0 +1,172 @@
+{
+  "local_id": "0608deea-7376-51bf-b480-efdd2763bf5c",
+  "resource_title": "Nombre de locaux adressables par communes - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Nombre de locaux adressables par communes — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/5fda75d3084b5fa14f89cd2f\n\nCe jeu de données propose un décompte du **nombre de locaux adressables par commune**, ainsi que le **nombre d'adresses associées estimées**.\n\nIl résulte du traitement du **fichier des propriétés bâties** (MAJIC/PROP) de la Direction Générale des Finances Publiques.\nSeuls les locaux pertinents pour l'adressage sont retenus.\n\nLes dernières données sont datées du **1er janvier 2023** (MAJIC et COG).\n\nLes champs disponibles sont :\n- `nom_commune` : nom de la commune (2021)\n- `code_commune` : code INSEE de la commune (2021)\n- `population` : population légale 2021\n- `nb_locaux` : nombre de locaux \"adressables\"\n- `nb_adresses_locaux` : nombre d'adresses rattachées aux locaux dans les fichiers fonciers\n\nLe jeu de données est mis à jour ponctuellement, et est disponible aux formats CSV et JSON.\n"
+    }
+  ],
+  "theme": "society",
+  "keywords": [
+    "adressage",
+    "adresses",
+    "communes",
+    "locaux",
+    "population",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "adresse.data.gouv.fr"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "783bfb89-5dee-5fe9-b837-5f5a9103c470",
+      "media_type": "FILE",
+      "media_name": "communes-locaux-adresses-2024-rennesmetropole.csv",
+      "media_caption": "communes-locaux-adresses-2024.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "eb664cae-f496-5ed0-8d68-7340ae434dbe",
+      "media_type": "FILE",
+      "media_name": "communes-locaux-adresses-2024-rennesmetropole.json",
+      "media_caption": "communes-locaux-adresses-2024.csv — données filtrées sur Rennes Métropole (JSON)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "f3c507be-cada-52cd-bf5e-fc2a7189826f",
+      "media_type": "FILE",
+      "media_name": "communes-locaux-adresses-2023-rennesmetropole.csv",
+      "media_caption": "communes-locaux-adresses-2023.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "23d41823-0fd1-5751-aa61-9148ea67b30b",
+      "media_type": "FILE",
+      "media_name": "communes-locaux-adresses-2023-rennesmetropole.json",
+      "media_caption": "communes-locaux-adresses-2023.csv — données filtrées sur Rennes Métropole (JSON)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "9a9c8801-cf47-5c1f-a3b3-baabedd562db",
+      "media_type": "FILE",
+      "media_name": "communes-locaux-adresses-2022-rennesmetropole.csv",
+      "media_caption": "communes-locaux-adresses-2022.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "8a81ddee-3325-5d8d-bf29-ef6cd818ca61",
+      "media_type": "FILE",
+      "media_name": "communes-locaux-adresses-2022-rennesmetropole.json",
+      "media_caption": "communes-locaux-adresses-2022.csv — données filtrées sur Rennes Métropole (JSON)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "5222baa6-bce6-5027-b5fb-5923a8b88ce9",
+      "media_type": "FILE",
+      "media_name": "communes-locaux-adresses-2021-rennesmetropole.csv",
+      "media_caption": "communes-locaux-adresses-2021.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "7a848815-4fb0-53e1-bbbd-903c0d9ef1ce",
+      "media_type": "FILE",
+      "media_name": "communes-locaux-adresses-2021-rennesmetropole.json",
+      "media_caption": "communes-locaux-adresses-2021.csv — données filtrées sur Rennes Métropole (JSON)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "64f0f579-af07-5d99-846f-dcd5d20d0e92",
+      "media_type": "FILE",
+      "media_name": "communes-locaux-adresses-2019-rennesmetropole.csv",
+      "media_caption": "communes-locaux-adresses-2019.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "3822ce6b-71cf-564e-9805-59009ef38a5f",
+      "media_type": "FILE",
+      "media_name": "communes-locaux-adresses-2019-rennesmetropole.json",
+      "media_caption": "communes-locaux-adresses-2019.csv — données filtrées sur Rennes Métropole (JSON)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "16147525-1f4d-5ff6-b49f-643493f206bd",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://static.data.gouv.fr/resources/nombre-de-locaux-adressables-par-communes/20240911-121358/communes-locaux-adresses-2024.csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2020-12-16T00:00:00Z",
+    "updated": "2024-09-11T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2020-12-16T00:00:00Z",
+      "updated": "2024-09-11T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/5fda75d3084b5fa14f89cd2f"
+  }
+}

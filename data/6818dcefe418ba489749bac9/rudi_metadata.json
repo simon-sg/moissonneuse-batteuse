@@ -1,0 +1,87 @@
+{
+  "local_id": "7ae8da83-0600-5f53-a95a-6bc3b672cd28",
+  "resource_title": "Indicateurs climat passé par station en Bretagne : tendances climatiques - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Indicateurs climat passé par station en Bretagne : tendances climatiques — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/6818dcefe418ba489749bac9\n\nIndicateurs de tendances climatiques par décennie sur un ensemble de stations Météo France, à partir de séries homogénéisées et de séries quotidiennes de référence. Les tendances sont calculées sur la période 1961-2014 et quand cela est possible, également sur la période 1961-2022. La position des stations Météo France est fournie avec le système de coordonnées WSG84. Les stations sélectionnées couvrent la Bretagne et les SAGE bretons.\n\n**Sources :** Météo France, 2024. Traitement : OEB, 2025. Accéder au jeu de données brutes sur le site des <a href=\"https://meteo.data.gouv.fr/datasets?topic=6571f2db0273fc306408f265\" target=\"_blank\">données publiques météorologiques produites par Météo-France.</a>\n\n**Note 1 :** pourquoi il n'y a pas de station sur mon territoire ? Ce jeu de données concerne les stations de référence Météo France pour la climatologie, c’est-à-dire uniquement des stations météo disposant de données depuis au moins 1961, jugées suffisamment fiable par Météo-France. Ces stations sont rares en Bretagne et historiquement surtout situées dans les ports.\n\n**Note 2 :** cette donnée est associée à la donnée <a href=\"https://data.bretagne-environnement.fr/datasets/indicateurs-climat-passe-indicateurs-annuels-en-bretagne-par-station-meteo\" target=\"_blank\">Indicateurs climat passé : indicateurs annuels en Bretagne par station météo</a> qui fournit les séries chronologiques annuelles de chaque indicateur entre 1961 et 2022. \n\n**Aller plus loin :** consulter la datavisualisation <a href=\"https://bretagne-environnement.fr/tableau-de-bord/tendances-climatiques-passe-adaptation-climat-bretagne\" target=\"_blank\">Climat passé - Tendances climatiques sur les stations de référence Météo France</a> réalisée par l'OEB et la méthodologie et les sources détaillées dans la <a href=\"https://doc-data-oeb.readthedocs.io/fr/latest/climat/3_doc_donnees_stations_meteo_france/\" target=\"_blank\">documentation méthodologique.</a>\n\n![](https://bretagne-environnement.fr/sites/default/files/2024-11/Europe_s_engage_RVB_xxxs%20-%20Copie.jpg)      La mission adaptation/climat de l'OEB, cofinancée par l'Union européenne, a pour objectif de mettre à disposition des indicateurs et connaissances de référence sur le changement climatique passé et futur, et ses impacts en Bretagne, aux territoires bretons et au grand public."
+    }
+  ],
+  "theme": "environment",
+  "keywords": [
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Observatoire de l'environnement en Bretagne"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "a98066bb-4a0c-547b-9ffe-4a613d8805b4",
+      "media_type": "FILE",
+      "media_name": "fichier-csv-rennesmetropole.csv",
+      "media_caption": "Fichier csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "e30f10c2-e0b5-5fae-991d-7d48e471313a",
+      "media_type": "FILE",
+      "media_name": "dict-description-des-champs.url",
+      "media_caption": "Dictionnaire des variables — Description des champs",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "e5b558be-e24b-5ac7-a25e-b64593d00f68",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://data.bretagne-environnement.fr/data-fair/api/v1/datasets/indicateurs-climat-passe-tendances-climatiques-en-bretagne-par-station-meteo/raw",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2025-05-05T00:00:00Z",
+    "updated": "2026-03-17T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2025-05-05T00:00:00Z",
+      "updated": "2026-03-17T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/6818dcefe418ba489749bac9"
+  }
+}

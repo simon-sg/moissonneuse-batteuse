@@ -1,0 +1,1121 @@
+<!doctype html>
+<html data-n-head-ssr lang="fr" data-n-head="%7B%22lang%22:%7B%22ssr%22:%22fr%22%7D%7D">
+  <head >
+    <meta data-n-head="ssr" charset="utf-8"><meta data-n-head="ssr" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui"><meta data-n-head="ssr" name="twitter:card" content="summary"><meta data-n-head="ssr" property="og:locale" content="fr_FR"><meta data-n-head="ssr" data-hid="description" name="description" content="&lt;h3&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/h3&gt;
+Ce jeu de données ouvertes, proposé dans le cadre du projet numérique “&lt;a href=&quot;https://quefairedemesdechets.ademe.fr/qui-sommes-nous/&quot;&gt;Que Faire De Mes Objets et Déchets&lt;/a&gt;” de l&#x27;ADEME, est le jeu de données de référence qui met à disposition une liste de solutions de l’économie circulaire sur l’ensemble du territoire national. 
+Le fichier agrège &lt;a href=&quot;https://quefairedemesdechets.ademe.fr/sources-donnees/&quot;&gt;différentes sources de données&lt;/a&gt; d&#x27;acteurs du réemploi, de la réparation et du tri des objets et des déchets, à destination des particuliers, tels que des éco-organismes, des organisations publiques, semi-publiques ou privées ainsi que des organisations associatives, des fédérations professionnelles et des contributions citoyennes.
+La première version de ce jeu de données a été mise en ligne en novembre 2024. "><meta data-n-head="ssr" property="og:url" content="undefined"><meta data-n-head="ssr" data-hid="og:title" property="og:title" content="Acteurs de l&#x27;économie circulaire - Que faire de mes objets et déchets"><meta data-n-head="ssr" property="og:description" content="&lt;h3&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/h3&gt;
+Ce jeu de données ouvertes, proposé dans le cadre du projet numérique “&lt;a href=&quot;https://quefairedemesdechets.ademe.fr/qui-sommes-nous/&quot;&gt;Que Faire De Mes Objets et Déchets&lt;/a&gt;” de l&#x27;ADEME, est le jeu de données de référence qui met à disposition une liste de solutions de l’économie circulaire sur l’ensemble du territoire national. 
+Le fichier agrège &lt;a href=&quot;https://quefairedemesdechets.ademe.fr/sources-donnees/&quot;&gt;différentes sources de données&lt;/a&gt; d&#x27;acteurs du réemploi, de la réparation et du tri des objets et des déchets, à destination des particuliers, tels que des éco-organismes, des organisations publiques, semi-publiques ou privées ainsi que des organisations associatives, des fédérations professionnelles et des contributions citoyennes.
+La première version de ce jeu de données a été mise en ligne en novembre 2024. "><meta data-n-head="ssr" property="og:type" content="article"><meta data-n-head="ssr" property="article:author" content="ADEME"><meta data-n-head="ssr" property="article:modified_time" content="2026-06-29T02:31:28.907Z"><meta data-n-head="ssr" property="article:published_time" content="2025-03-25T13:05:24.523Z"><meta data-n-head="ssr" data-hid="og:image" property="og:image" content="https://data.ademe.fr/data-fair/api/v1/applications/tableau-de-bord-acteurs-economie-circulaire/capture"><meta data-n-head="ssr" data-hid="og:image:width" property="og:image:width" content="800"><meta data-n-head="ssr" data-hid="og:image:height" property="og:image:height" content="450"><title>Acteurs de l&#x27;économie circulaire - Que faire de mes objets et déchets</title><base href="/"><link data-n-head="ssr" rel="canonical" href="https://data.ademe.fr/datasets/longue-vie-aux-objets-acteurs-de-leconomie-circulaire"><link data-n-head="ssr" rel="icon" type="image/x-icon" href="https://data.ademe.fr/api/v1/portals/efWMeL1ZP/assets/favicon?draft=false&amp;hash=fit-d7749fd80a.png"><style data-n-head="ssr" vmid="config-style" type="text/css">
+html {
+  overflow-y: scroll !important;
+}
+
+.v-application#app.theme--light#app {
+  background: #FFFFFF;
+}
+
+.v-btn.primary.theme--light.v-btn--has-bg {
+  background: linear-gradient(90deg, #0d47a2 0%, #093273 100%);
+}
+
+/* TODO: the next 3 rules should be deprecated and replaced by explicit coloring of buttons in components (as done in nav-link component) */
+.v-application#app.theme--light .v-btn.primary.v-btn--has-bg {
+  border: 1px solid #093273 !important;
+}
+.v-btn.secondary.theme--light.v-btn--has-bg {
+  background-color: #1775c8 !important;
+}
+.v-btn.tertiary.theme--light.v-btn--has-bg {
+  background-color: #1775c8 !important;
+}
+
+/* Apply fonts */
+@font-face {
+    font-family: 'font1';
+    src: url('https://data.ademe.fr/api/v1/portals/efWMeL1ZP/assets/font1?draft=false&hash=eb551203b0') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'font2';
+    src: url('https://data.ademe.fr/api/v1/portals/efWMeL1ZP/assets/font2?draft=false&hash=f927ded015') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+    .v-application#app {
+    font-family: "font1" !important;
+    }
+    .v-application#app .text-subtitle-1, .v-application#app .text-subtitle-2, .v-application#app .text-body-1, .v-application#app .text-button, .v-application#app .text-caption, .v-application#app .text-overline  {
+    font-family: "font1" !important;
+    }
+    .v-application#app .text-h1, .v-application#app .text-h2, .v-application#app .text-h3, .v-application#app .text-h4, .v-application#app .text-h5, .v-application#app .text-h6 {
+    font-family: "font2" !important;
+    }
+
+    /* older typography classes */
+    .v-application#app .subheading, .v-application#app .body-2, .v-application#app .body-1, .v-application#app .button, .v-application#app .caption, .v-application#app .overline {
+    font-family: "font1" !important;
+    }
+    .v-application#app .display-4, .v-application#app .display-3, .v-application#app .display-2, .v-application#app .display-1, .v-application#app .headline, .v-application#app .title {
+    font-family: "font2" !important;
+    }
+      
+
+      .v-application#app a {
+        text-decoration: none;
+      }
+
+        p>a:not(.v-btn),
+        .underline-link {
+          display: inline-block;
+          position: relative;
+        }
+        p>a:not(.v-btn):after,
+        .underline-link:after {
+          content: '';
+          position: absolute;
+          width: 45px;
+          transform: scaleX(0);
+          height: 3px;
+          bottom: 0;
+          left: 0;
+          background-color: #0d47a2;
+          transform-origin: bottom left;
+          transition: transform 0.25s ease-out;
+        }
+        .page-element a:hover:after,
+        p>a:hover:after,
+        .underline-link:hover:after,
+        .underline-link-hover:after {
+          transform: scaleX(1);
+          transform-origin: bottom left;
+          background-color: #093273;
+        }
+        .underline-link.underline-link-partial:after {
+          transform: scaleX(1);
+        }
+        .underline-link.underline-link-partial:hover:after,
+        .underline-link-hover.underline-link-partial:after {
+          transform: scaleX(2);
+        }
+        
+
+/* some police tuning */
+.v-application#app a:not(.v-tab):not(.v-list-item):not(.v-card--link) {
+  color: #0d47a2;
+}
+.v-application#app a:not(.v-tab):not(.v-list-item):not(.v-card--link):hover {
+  color: #093273;
+}
+.v-application#app .area--dark a,
+.v-application#app .area--dark a:not(.v-tab):not(.v-list-item):not(.v-card--link),
+.v-application#app .area--dark a:not(.v-tab):not(.v-list-item):not(.v-card--link):hover,
+.v-application#app .area--dark h3,
+.v-application#app .area--dark span {
+  color: white;
+}
+.v-application#app .v-btn:not(.v-btn--outlined).primary,
+.v-application#app .v-btn:not(.v-btn--outlined).secondary,
+.v-application#app .v-btn:not(.v-btn--outlined).accent,
+.v-application#app .v-btn:not(.v-btn--outlined).success,
+.v-application#app .v-btn:not(.v-btn--outlined).error,
+.v-application#app .v-btn:not(.v-btn--outlined).warning,
+.v-application#app .v-btn:not(.v-btn--outlined).info {
+  color: white;
+}
+.v-application#app .theme--dark.v-list a {
+  color: white;
+}
+.v-application#app .area--light a:not(.v-tab):not(.v-list-item),
+.v-application#app .area--light h3,
+.v-application#app .area--light span,
+.v-application#app .area--light .v-tabs-bar.primary .v-tab--active {
+  color: #0d47a2!important;
+}
+.v-application#app .primary--text {
+  color: #0d47a2!important;
+}
+.v-application#app .primary-darker--text {
+  color: #093273!important;
+}
+.v-application#app .secondary--text {
+  color: #1775c8!important;
+}
+.v-application#app .tertiary--text {
+  color: #1775c8!important;
+}
+
+/* style of the main app bar */
+
+        .theme--light.v-app-bar.main-app-bar.v-toolbar.v-sheet {
+          background: rgba(255, 255, 255, 0.9);
+        }
+        
+
+/* style of the personal and partner navigation bars */
+
+      .v-application#app.theme--light.personal-space .navigation-left {
+        border-right: 1px solid #093273 !important;
+        background: linear-gradient(90deg, #093273 0%, #2660bb 100%);
+      }
+      
+
+      .v-application#app.theme--light.partner-space .navigation-left {
+        border-right: 1px solid #093273 !important;
+        background: linear-gradient(90deg, #093273 0%, #2660bb 100%);
+      }
+      
+
+/* default radius */
+.v-application#app .v-sheet.v-card,
+.v-application#app .v-text-field--outlined:not(.v-text-field--rounded),
+.v-application#app .v-text-field--solo:not(.v-text-field--rounded),
+.v-application#app .v-btn:not(.v-btn--rounded):not(.v-btn--text):not(.v-btn--fab):not(.v-btn--icon) {
+  border-radius: 4px;
+}
+.v-application#app .v-chip.v-chip--label {
+  border-radius: 4px !important;
+}
+.v-application#app .v-btn-toggle > .v-btn.v-btn:first-child {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.v-application#app .v-btn-toggle > .v-btn.v-btn:last-child {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.v-application#app .v-menu__content {
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+.v-application#app .v-sheet.v-card.v-sheet--shaped {
+  border-top-left-radius: 24px;
+  border-bottom-right-radius: 24px;
+}
+.v-application#app .theme--light.v-sheet.primary-outlined {
+  border: 2px solid #0d47a2;
+}
+
+/* used to display descriptions in cards with bottom gradient */
+
+      .card-gradient-desc170 {
+        position: relative;
+      }
+      .card-gradient-desc170:before {
+        content:'';
+        position:absolute;
+        width:100%;
+        height:170px;
+        left:0;
+        top:0;
+        background:linear-gradient(transparent 0, transparent 76%, #FFFFFF);
+      }
+      
+
+      .card-gradient-desc130 {
+        position: relative;
+      }
+      .card-gradient-desc130:before {
+        content:'';
+        position:absolute;
+        width:100%;
+        height:130px;
+        left:0;
+        top:0;
+        background:linear-gradient(transparent 0, transparent 69%, #FFFFFF);
+      }
+      
+
+      .card-gradient-desc90 {
+        position: relative;
+      }
+      .card-gradient-desc90:before {
+        content:'';
+        position:absolute;
+        width:100%;
+        height:90px;
+        left:0;
+        top:0;
+        background:linear-gradient(transparent 0, transparent 56%, #FFFFFF);
+      }
+      
+
+      .card-gradient-desc70 {
+        position: relative;
+      }
+      .card-gradient-desc70:before {
+        content:'';
+        position:absolute;
+        width:100%;
+        height:70px;
+        left:0;
+        top:0;
+        background:linear-gradient(transparent 0, transparent 43%, #FAFAFA);
+      }
+      
+
+/* footer style */
+
+
+/* home page style */
+#app .nav-home-search input::placeholder {
+  color: #0d47a2;
+  font-weight: bold;
+}
+#app .nav-home-search .v-input__icon--append button {
+  color: #0d47a2;
+}
+        </style><style data-n-head="vuetify" type="text/css" id="vuetify-theme-stylesheet" nonce="undefined">.v-application a { color: #0d47a2; }
+.v-application .primary {
+  background-color: #0d47a2 !important;
+  border-color: #0d47a2 !important;
+}
+.v-application .primary--text {
+  color: #0d47a2 !important;
+  caret-color: #0d47a2 !important;
+}
+.v-application .primary.lighten-5 {
+  background-color: #b3c6ff !important;
+  border-color: #b3c6ff !important;
+}
+.v-application .primary--text.text--lighten-5 {
+  color: #b3c6ff !important;
+  caret-color: #b3c6ff !important;
+}
+.v-application .primary.lighten-4 {
+  background-color: #96abff !important;
+  border-color: #96abff !important;
+}
+.v-application .primary--text.text--lighten-4 {
+  color: #96abff !important;
+  caret-color: #96abff !important;
+}
+.v-application .primary.lighten-3 {
+  background-color: #7890f6 !important;
+  border-color: #7890f6 !important;
+}
+.v-application .primary--text.text--lighten-3 {
+  color: #7890f6 !important;
+  caret-color: #7890f6 !important;
+}
+.v-application .primary.lighten-2 {
+  background-color: #5b77da !important;
+  border-color: #5b77da !important;
+}
+.v-application .primary--text.text--lighten-2 {
+  color: #5b77da !important;
+  caret-color: #5b77da !important;
+}
+.v-application .primary.lighten-1 {
+  background-color: #3b5ebd !important;
+  border-color: #3b5ebd !important;
+}
+.v-application .primary--text.text--lighten-1 {
+  color: #3b5ebd !important;
+  caret-color: #3b5ebd !important;
+}
+.v-application .primary.darken-1 {
+  background-color: #003187 !important;
+  border-color: #003187 !important;
+}
+.v-application .primary--text.text--darken-1 {
+  color: #003187 !important;
+  caret-color: #003187 !important;
+}
+.v-application .primary.darken-2 {
+  background-color: #001d6d !important;
+  border-color: #001d6d !important;
+}
+.v-application .primary--text.text--darken-2 {
+  color: #001d6d !important;
+  caret-color: #001d6d !important;
+}
+.v-application .primary.darken-3 {
+  background-color: #000454 !important;
+  border-color: #000454 !important;
+}
+.v-application .primary--text.text--darken-3 {
+  color: #000454 !important;
+  caret-color: #000454 !important;
+}
+.v-application .primary.darken-4 {
+  background-color: #00003d !important;
+  border-color: #00003d !important;
+}
+.v-application .primary--text.text--darken-4 {
+  color: #00003d !important;
+  caret-color: #00003d !important;
+}
+.v-application .secondary {
+  background-color: #1e88e5 !important;
+  border-color: #1e88e5 !important;
+}
+.v-application .secondary--text {
+  color: #1e88e5 !important;
+  caret-color: #1e88e5 !important;
+}
+.v-application .secondary.lighten-5 {
+  background-color: #cfffff !important;
+  border-color: #cfffff !important;
+}
+.v-application .secondary--text.text--lighten-5 {
+  color: #cfffff !important;
+  caret-color: #cfffff !important;
+}
+.v-application .secondary.lighten-4 {
+  background-color: #b0f5ff !important;
+  border-color: #b0f5ff !important;
+}
+.v-application .secondary--text.text--lighten-4 {
+  color: #b0f5ff !important;
+  caret-color: #b0f5ff !important;
+}
+.v-application .secondary.lighten-3 {
+  background-color: #91d8ff !important;
+  border-color: #91d8ff !important;
+}
+.v-application .secondary--text.text--lighten-3 {
+  color: #91d8ff !important;
+  caret-color: #91d8ff !important;
+}
+.v-application .secondary.lighten-2 {
+  background-color: #70bdff !important;
+  border-color: #70bdff !important;
+}
+.v-application .secondary--text.text--lighten-2 {
+  color: #70bdff !important;
+  caret-color: #70bdff !important;
+}
+.v-application .secondary.lighten-1 {
+  background-color: #4da2ff !important;
+  border-color: #4da2ff !important;
+}
+.v-application .secondary--text.text--lighten-1 {
+  color: #4da2ff !important;
+  caret-color: #4da2ff !important;
+}
+.v-application .secondary.darken-1 {
+  background-color: #006fc9 !important;
+  border-color: #006fc9 !important;
+}
+.v-application .secondary--text.text--darken-1 {
+  color: #006fc9 !important;
+  caret-color: #006fc9 !important;
+}
+.v-application .secondary.darken-2 {
+  background-color: #0057ad !important;
+  border-color: #0057ad !important;
+}
+.v-application .secondary--text.text--darken-2 {
+  color: #0057ad !important;
+  caret-color: #0057ad !important;
+}
+.v-application .secondary.darken-3 {
+  background-color: #004092 !important;
+  border-color: #004092 !important;
+}
+.v-application .secondary--text.text--darken-3 {
+  color: #004092 !important;
+  caret-color: #004092 !important;
+}
+.v-application .secondary.darken-4 {
+  background-color: #002b78 !important;
+  border-color: #002b78 !important;
+}
+.v-application .secondary--text.text--darken-4 {
+  color: #002b78 !important;
+  caret-color: #002b78 !important;
+}
+.v-application .accent {
+  background-color: #ff9800 !important;
+  border-color: #ff9800 !important;
+}
+.v-application .accent--text {
+  color: #ff9800 !important;
+  caret-color: #ff9800 !important;
+}
+.v-application .accent.lighten-5 {
+  background-color: #ffffa2 !important;
+  border-color: #ffffa2 !important;
+}
+.v-application .accent--text.text--lighten-5 {
+  color: #ffffa2 !important;
+  caret-color: #ffffa2 !important;
+}
+.v-application .accent.lighten-4 {
+  background-color: #ffff85 !important;
+  border-color: #ffff85 !important;
+}
+.v-application .accent--text.text--lighten-4 {
+  color: #ffff85 !important;
+  caret-color: #ffff85 !important;
+}
+.v-application .accent.lighten-3 {
+  background-color: #ffeb69 !important;
+  border-color: #ffeb69 !important;
+}
+.v-application .accent--text.text--lighten-3 {
+  color: #ffeb69 !important;
+  caret-color: #ffeb69 !important;
+}
+.v-application .accent.lighten-2 {
+  background-color: #ffcf4d !important;
+  border-color: #ffcf4d !important;
+}
+.v-application .accent--text.text--lighten-2 {
+  color: #ffcf4d !important;
+  caret-color: #ffcf4d !important;
+}
+.v-application .accent.lighten-1 {
+  background-color: #ffb32f !important;
+  border-color: #ffb32f !important;
+}
+.v-application .accent--text.text--lighten-1 {
+  color: #ffb32f !important;
+  caret-color: #ffb32f !important;
+}
+.v-application .accent.darken-1 {
+  background-color: #df7e00 !important;
+  border-color: #df7e00 !important;
+}
+.v-application .accent--text.text--darken-1 {
+  color: #df7e00 !important;
+  caret-color: #df7e00 !important;
+}
+.v-application .accent.darken-2 {
+  background-color: #bf6400 !important;
+  border-color: #bf6400 !important;
+}
+.v-application .accent--text.text--darken-2 {
+  color: #bf6400 !important;
+  caret-color: #bf6400 !important;
+}
+.v-application .accent.darken-3 {
+  background-color: #a14c00 !important;
+  border-color: #a14c00 !important;
+}
+.v-application .accent--text.text--darken-3 {
+  color: #a14c00 !important;
+  caret-color: #a14c00 !important;
+}
+.v-application .accent.darken-4 {
+  background-color: #843300 !important;
+  border-color: #843300 !important;
+}
+.v-application .accent--text.text--darken-4 {
+  color: #843300 !important;
+  caret-color: #843300 !important;
+}
+.v-application .error {
+  background-color: #d50000 !important;
+  border-color: #d50000 !important;
+}
+.v-application .error--text {
+  color: #d50000 !important;
+  caret-color: #d50000 !important;
+}
+.v-application .error.lighten-5 {
+  background-color: #ffb082 !important;
+  border-color: #ffb082 !important;
+}
+.v-application .error--text.text--lighten-5 {
+  color: #ffb082 !important;
+  caret-color: #ffb082 !important;
+}
+.v-application .error.lighten-4 {
+  background-color: #ff9268 !important;
+  border-color: #ff9268 !important;
+}
+.v-application .error--text.text--lighten-4 {
+  color: #ff9268 !important;
+  caret-color: #ff9268 !important;
+}
+.v-application .error.lighten-3 {
+  background-color: #ff754e !important;
+  border-color: #ff754e !important;
+}
+.v-application .error--text.text--lighten-3 {
+  color: #ff754e !important;
+  caret-color: #ff754e !important;
+}
+.v-application .error.lighten-2 {
+  background-color: #ff5736 !important;
+  border-color: #ff5736 !important;
+}
+.v-application .error--text.text--lighten-2 {
+  color: #ff5736 !important;
+  caret-color: #ff5736 !important;
+}
+.v-application .error.lighten-1 {
+  background-color: #f6361d !important;
+  border-color: #f6361d !important;
+}
+.v-application .error--text.text--lighten-1 {
+  color: #f6361d !important;
+  caret-color: #f6361d !important;
+}
+.v-application .error.darken-1 {
+  background-color: #b40000 !important;
+  border-color: #b40000 !important;
+}
+.v-application .error--text.text--darken-1 {
+  color: #b40000 !important;
+  caret-color: #b40000 !important;
+}
+.v-application .error.darken-2 {
+  background-color: #950000 !important;
+  border-color: #950000 !important;
+}
+.v-application .error--text.text--darken-2 {
+  color: #950000 !important;
+  caret-color: #950000 !important;
+}
+.v-application .error.darken-3 {
+  background-color: #770000 !important;
+  border-color: #770000 !important;
+}
+.v-application .error--text.text--darken-3 {
+  color: #770000 !important;
+  caret-color: #770000 !important;
+}
+.v-application .error.darken-4 {
+  background-color: #5c0000 !important;
+  border-color: #5c0000 !important;
+}
+.v-application .error--text.text--darken-4 {
+  color: #5c0000 !important;
+  caret-color: #5c0000 !important;
+}
+.v-application .info {
+  background-color: #2196f3 !important;
+  border-color: #2196f3 !important;
+}
+.v-application .info--text {
+  color: #2196f3 !important;
+  caret-color: #2196f3 !important;
+}
+.v-application .info.lighten-5 {
+  background-color: #d4ffff !important;
+  border-color: #d4ffff !important;
+}
+.v-application .info--text.text--lighten-5 {
+  color: #d4ffff !important;
+  caret-color: #d4ffff !important;
+}
+.v-application .info.lighten-4 {
+  background-color: #b5ffff !important;
+  border-color: #b5ffff !important;
+}
+.v-application .info--text.text--lighten-4 {
+  color: #b5ffff !important;
+  caret-color: #b5ffff !important;
+}
+.v-application .info.lighten-3 {
+  background-color: #95e8ff !important;
+  border-color: #95e8ff !important;
+}
+.v-application .info--text.text--lighten-3 {
+  color: #95e8ff !important;
+  caret-color: #95e8ff !important;
+}
+.v-application .info.lighten-2 {
+  background-color: #75ccff !important;
+  border-color: #75ccff !important;
+}
+.v-application .info--text.text--lighten-2 {
+  color: #75ccff !important;
+  caret-color: #75ccff !important;
+}
+.v-application .info.lighten-1 {
+  background-color: #51b0ff !important;
+  border-color: #51b0ff !important;
+}
+.v-application .info--text.text--lighten-1 {
+  color: #51b0ff !important;
+  caret-color: #51b0ff !important;
+}
+.v-application .info.darken-1 {
+  background-color: #007cd6 !important;
+  border-color: #007cd6 !important;
+}
+.v-application .info--text.text--darken-1 {
+  color: #007cd6 !important;
+  caret-color: #007cd6 !important;
+}
+.v-application .info.darken-2 {
+  background-color: #0064ba !important;
+  border-color: #0064ba !important;
+}
+.v-application .info--text.text--darken-2 {
+  color: #0064ba !important;
+  caret-color: #0064ba !important;
+}
+.v-application .info.darken-3 {
+  background-color: #004d9f !important;
+  border-color: #004d9f !important;
+}
+.v-application .info--text.text--darken-3 {
+  color: #004d9f !important;
+  caret-color: #004d9f !important;
+}
+.v-application .info.darken-4 {
+  background-color: #003784 !important;
+  border-color: #003784 !important;
+}
+.v-application .info--text.text--darken-4 {
+  color: #003784 !important;
+  caret-color: #003784 !important;
+}
+.v-application .success {
+  background-color: #2e7d32 !important;
+  border-color: #2e7d32 !important;
+}
+.v-application .success--text {
+  color: #2e7d32 !important;
+  caret-color: #2e7d32 !important;
+}
+.v-application .success.lighten-5 {
+  background-color: #b8ffb2 !important;
+  border-color: #b8ffb2 !important;
+}
+.v-application .success--text.text--lighten-5 {
+  color: #b8ffb2 !important;
+  caret-color: #b8ffb2 !important;
+}
+.v-application .success.lighten-4 {
+  background-color: #9ceb97 !important;
+  border-color: #9ceb97 !important;
+}
+.v-application .success--text.text--lighten-4 {
+  color: #9ceb97 !important;
+  caret-color: #9ceb97 !important;
+}
+.v-application .success.lighten-3 {
+  background-color: #80ce7c !important;
+  border-color: #80ce7c !important;
+}
+.v-application .success--text.text--lighten-3 {
+  color: #80ce7c !important;
+  caret-color: #80ce7c !important;
+}
+.v-application .success.lighten-2 {
+  background-color: #65b263 !important;
+  border-color: #65b263 !important;
+}
+.v-application .success--text.text--lighten-2 {
+  color: #65b263 !important;
+  caret-color: #65b263 !important;
+}
+.v-application .success.lighten-1 {
+  background-color: #4a974a !important;
+  border-color: #4a974a !important;
+}
+.v-application .success--text.text--lighten-1 {
+  color: #4a974a !important;
+  caret-color: #4a974a !important;
+}
+.v-application .success.darken-1 {
+  background-color: #0a631a !important;
+  border-color: #0a631a !important;
+}
+.v-application .success--text.text--darken-1 {
+  color: #0a631a !important;
+  caret-color: #0a631a !important;
+}
+.v-application .success.darken-2 {
+  background-color: #004b01 !important;
+  border-color: #004b01 !important;
+}
+.v-application .success--text.text--darken-2 {
+  color: #004b01 !important;
+  caret-color: #004b01 !important;
+}
+.v-application .success.darken-3 {
+  background-color: #003300 !important;
+  border-color: #003300 !important;
+}
+.v-application .success--text.text--darken-3 {
+  color: #003300 !important;
+  caret-color: #003300 !important;
+}
+.v-application .success.darken-4 {
+  background-color: #002100 !important;
+  border-color: #002100 !important;
+}
+.v-application .success--text.text--darken-4 {
+  color: #002100 !important;
+  caret-color: #002100 !important;
+}
+.v-application .warning {
+  background-color: #d81b60 !important;
+  border-color: #d81b60 !important;
+}
+.v-application .warning--text {
+  color: #d81b60 !important;
+  caret-color: #d81b60 !important;
+}
+.v-application .warning.lighten-5 {
+  background-color: #ffbbe4 !important;
+  border-color: #ffbbe4 !important;
+}
+.v-application .warning--text.text--lighten-5 {
+  color: #ffbbe4 !important;
+  caret-color: #ffbbe4 !important;
+}
+.v-application .warning.lighten-4 {
+  background-color: #ff9dc8 !important;
+  border-color: #ff9dc8 !important;
+}
+.v-application .warning--text.text--lighten-4 {
+  color: #ff9dc8 !important;
+  caret-color: #ff9dc8 !important;
+}
+.v-application .warning.lighten-3 {
+  background-color: #ff80ad !important;
+  border-color: #ff80ad !important;
+}
+.v-application .warning--text.text--lighten-3 {
+  color: #ff80ad !important;
+  caret-color: #ff80ad !important;
+}
+.v-application .warning.lighten-2 {
+  background-color: #ff6292 !important;
+  border-color: #ff6292 !important;
+}
+.v-application .warning--text.text--lighten-2 {
+  color: #ff6292 !important;
+  caret-color: #ff6292 !important;
+}
+.v-application .warning.lighten-1 {
+  background-color: #f74379 !important;
+  border-color: #f74379 !important;
+}
+.v-application .warning--text.text--lighten-1 {
+  color: #f74379 !important;
+  caret-color: #f74379 !important;
+}
+.v-application .warning.darken-1 {
+  background-color: #b90049 !important;
+  border-color: #b90049 !important;
+}
+.v-application .warning--text.text--darken-1 {
+  color: #b90049 !important;
+  caret-color: #b90049 !important;
+}
+.v-application .warning.darken-2 {
+  background-color: #9a0032 !important;
+  border-color: #9a0032 !important;
+}
+.v-application .warning--text.text--darken-2 {
+  color: #9a0032 !important;
+  caret-color: #9a0032 !important;
+}
+.v-application .warning.darken-3 {
+  background-color: #7b001e !important;
+  border-color: #7b001e !important;
+}
+.v-application .warning--text.text--darken-3 {
+  color: #7b001e !important;
+  caret-color: #7b001e !important;
+}
+.v-application .warning.darken-4 {
+  background-color: #5e0004 !important;
+  border-color: #5e0004 !important;
+}
+.v-application .warning--text.text--darken-4 {
+  color: #5e0004 !important;
+  caret-color: #5e0004 !important;
+}
+.v-application .admin {
+  background-color: #b71c1c !important;
+  border-color: #b71c1c !important;
+}
+.v-application .admin--text {
+  color: #b71c1c !important;
+  caret-color: #b71c1c !important;
+}
+.v-application .admin.lighten-5 {
+  background-color: #ffaf95 !important;
+  border-color: #ffaf95 !important;
+}
+.v-application .admin--text.text--lighten-5 {
+  color: #ffaf95 !important;
+  caret-color: #ffaf95 !important;
+}
+.v-application .admin.lighten-4 {
+  background-color: #ff937b !important;
+  border-color: #ff937b !important;
+}
+.v-application .admin--text.text--lighten-4 {
+  color: #ff937b !important;
+  caret-color: #ff937b !important;
+}
+.v-application .admin.lighten-3 {
+  background-color: #ff7762 !important;
+  border-color: #ff7762 !important;
+}
+.v-application .admin--text.text--lighten-3 {
+  color: #ff7762 !important;
+  caret-color: #ff7762 !important;
+}
+.v-application .admin.lighten-2 {
+  background-color: #f75b4a !important;
+  border-color: #f75b4a !important;
+}
+.v-application .admin--text.text--lighten-2 {
+  color: #f75b4a !important;
+  caret-color: #f75b4a !important;
+}
+.v-application .admin.lighten-1 {
+  background-color: #d73e32 !important;
+  border-color: #d73e32 !important;
+}
+.v-application .admin--text.text--lighten-1 {
+  color: #d73e32 !important;
+  caret-color: #d73e32 !important;
+}
+.v-application .admin.darken-1 {
+  background-color: #980005 !important;
+  border-color: #980005 !important;
+}
+.v-application .admin--text.text--darken-1 {
+  color: #980005 !important;
+  caret-color: #980005 !important;
+}
+.v-application .admin.darken-2 {
+  background-color: #7a0000 !important;
+  border-color: #7a0000 !important;
+}
+.v-application .admin--text.text--darken-2 {
+  color: #7a0000 !important;
+  caret-color: #7a0000 !important;
+}
+.v-application .admin.darken-3 {
+  background-color: #5e0000 !important;
+  border-color: #5e0000 !important;
+}
+.v-application .admin--text.text--darken-3 {
+  color: #5e0000 !important;
+  caret-color: #5e0000 !important;
+}
+.v-application .admin.darken-4 {
+  background-color: #480000 !important;
+  border-color: #480000 !important;
+}
+.v-application .admin--text.text--darken-4 {
+  color: #480000 !important;
+  caret-color: #480000 !important;
+}
+.v-application .tertiary {
+  background-color: #1e88e5 !important;
+  border-color: #1e88e5 !important;
+}
+.v-application .tertiary--text {
+  color: #1e88e5 !important;
+  caret-color: #1e88e5 !important;
+}
+.v-application .tertiary.lighten-5 {
+  background-color: #cfffff !important;
+  border-color: #cfffff !important;
+}
+.v-application .tertiary--text.text--lighten-5 {
+  color: #cfffff !important;
+  caret-color: #cfffff !important;
+}
+.v-application .tertiary.lighten-4 {
+  background-color: #b0f5ff !important;
+  border-color: #b0f5ff !important;
+}
+.v-application .tertiary--text.text--lighten-4 {
+  color: #b0f5ff !important;
+  caret-color: #b0f5ff !important;
+}
+.v-application .tertiary.lighten-3 {
+  background-color: #91d8ff !important;
+  border-color: #91d8ff !important;
+}
+.v-application .tertiary--text.text--lighten-3 {
+  color: #91d8ff !important;
+  caret-color: #91d8ff !important;
+}
+.v-application .tertiary.lighten-2 {
+  background-color: #70bdff !important;
+  border-color: #70bdff !important;
+}
+.v-application .tertiary--text.text--lighten-2 {
+  color: #70bdff !important;
+  caret-color: #70bdff !important;
+}
+.v-application .tertiary.lighten-1 {
+  background-color: #4da2ff !important;
+  border-color: #4da2ff !important;
+}
+.v-application .tertiary--text.text--lighten-1 {
+  color: #4da2ff !important;
+  caret-color: #4da2ff !important;
+}
+.v-application .tertiary.darken-1 {
+  background-color: #006fc9 !important;
+  border-color: #006fc9 !important;
+}
+.v-application .tertiary--text.text--darken-1 {
+  color: #006fc9 !important;
+  caret-color: #006fc9 !important;
+}
+.v-application .tertiary.darken-2 {
+  background-color: #0057ad !important;
+  border-color: #0057ad !important;
+}
+.v-application .tertiary--text.text--darken-2 {
+  color: #0057ad !important;
+  caret-color: #0057ad !important;
+}
+.v-application .tertiary.darken-3 {
+  background-color: #004092 !important;
+  border-color: #004092 !important;
+}
+.v-application .tertiary--text.text--darken-3 {
+  color: #004092 !important;
+  caret-color: #004092 !important;
+}
+.v-application .tertiary.darken-4 {
+  background-color: #002b78 !important;
+  border-color: #002b78 !important;
+}
+.v-application .tertiary--text.text--darken-4 {
+  color: #002b78 !important;
+  caret-color: #002b78 !important;
+}</style><script data-n-head="ssr" data-hid="schema" type="application/ld+json">{"@context":"http://schema.org","@type":"Dataset","name":"Acteurs de l'économie circulaire - Que faire de mes objets et déchets","description":"<h3><strong>Description</strong></h3>\nCe jeu de données ouvertes, proposé dans le cadre du projet numérique “<a href=\"https://quefairedemesdechets.ademe.fr/qui-sommes-nous/\">Que Faire De Mes Objets et Déchets</a>” de l'ADEME, est le jeu de données de référence qui met à disposition une liste de solutions de l’économie circulaire sur l’ensemble du territoire national. \nLe fichier agrège <a href=\"https://quefairedemesdechets.ademe.fr/sources-donnees/\">différentes sources de données</a> d'acteurs du réemploi, de la réparation et du tri des objets et des déchets, à destination des particuliers, tels que des éco-organismes, des organisations publiques, semi-publiques ou privées ainsi que des organisations associatives, des fédérations professionnelles et des contributions citoyennes.\nLa première version de ce jeu de données a été mise en ligne en novembre 2024. ","author":{"@type":"Organization","name":"ADEME"},"creator":{"@type":"Organization","name":"ADEME"},"dateCreated":"2025-03-25T13:05:24.523Z","dateModified":"2026-06-29T02:31:28.907Z","sdPublisher":{"@context":"http://schema.org","@type":"Organization","name":"Koumoul","legalName":"Koumoul","url":"https://koumoul.com/","logo":"https://koumoul.com/assets/koumoul.png","foundingDate":"2017","founders":[{"@type":"Person","name":"Nicolas Bonnel","email":"nicolas.bonnel@koumoul.com","sameAs":["https://github.com/nicolas-bonnel","https://fr.linkedin.com/in/nicolas-bonnel-557a54131"]},{"@type":"Person","name":"Alban Mouton","email":"alban.mouton@koumoul.com","sameAs":["https://github.com/albanm","https://fr.linkedin.com/in/alban-mouton-56802a132"]}],"address":{"@type":"PostalAddress","streetAddress":"5, rue Joseph Le Brix","addressLocality":"Vannes","postalCode":"56000","addressCountry":"France"},"contactPoint":[{"@type":"ContactPoint","contactType":"customer service","url":"https://koumoul.com/contact","email":"contact@koumoul.com","availableLanguage":["English","French"]},{"@type":"ContactPoint","contactType":"technical support","email":"support@koumoul.com","url":"https://koumoul.com/contact","availableLanguage":["English","French"]}],"sameAs":["https://plus.google.com/108675070247986361976","https://twitter.com/Koumoul_fr","https://gitlab.com/koumoul","https://github.com/data-fair","http://codepen.io/koumoul/","http://www.data.gouv.fr/fr/organizations/koumoul-1/","https://www.facebook.com/Koumoul-868835219926301","https://hub.docker.com/u/koumoul/"]},"sdDatePublished":"2025-03-25T13:05:24.523Z","encodingFormat":"application/json","citation":"https://quefairedemesdechets.ademe.fr/sources-donnees","spatialCoverage":{"@type":"Place","geo":{"@type":"GeoShape","box":"-176.20355450548232,-22.665842911228538 167.4960077740252,51.95520216599107"}},"license":"https://www.etalab.gouv.fr/licence-ouverte-open-licence","image":{"@type":"imageObject","url":"https://data.ademe.fr/data-fair/api/v1/applications/tableau-de-bord-acteurs-economie-circulaire/capture"},"thumbnailUrl":"https://data.ademe.fr/data-fair/api/v1/applications/tableau-de-bord-acteurs-economie-circulaire/capture"}</script><link rel="preload" href="/_nuxt/c8d685a6-1ca8da7.js" as="script"><link rel="preload" href="/_nuxt/c9ad72b.js" as="script"><link rel="preload" href="/_nuxt/css/0e1f36c.css" as="style"><link rel="preload" href="/_nuxt/0515138.js" as="script"><link rel="preload" href="/_nuxt/css/704d84b.css" as="style"><link rel="preload" href="/_nuxt/c8d685a6-8470003.js" as="script"><link rel="preload" href="/_nuxt/css/0372ad1.css" as="style"><link rel="preload" href="/_nuxt/c8d685a6-033b2bd.js" as="script"><link rel="preload" href="/_nuxt/css/47903a7.css" as="style"><link rel="preload" href="/_nuxt/015d8d7.js" as="script"><link rel="preload" href="/_nuxt/css/ae59b58.css" as="style"><link rel="preload" href="/_nuxt/8fe7087.js" as="script"><link rel="preload" href="/_nuxt/css/632dc66.css" as="style"><link rel="preload" href="/_nuxt/e15899d.js" as="script"><link rel="preload" href="/_nuxt/css/4180938.css" as="style"><link rel="preload" href="/_nuxt/86fc9bc.js" as="script"><link rel="preload" href="/_nuxt/css/dd2cb3e.css" as="style"><link rel="preload" href="/_nuxt/c8d685a6-2a2bfb4.js" as="script"><link rel="stylesheet" href="/_nuxt/css/0e1f36c.css"><link rel="stylesheet" href="/_nuxt/css/704d84b.css"><link rel="stylesheet" href="/_nuxt/css/0372ad1.css"><link rel="stylesheet" href="/_nuxt/css/47903a7.css"><link rel="stylesheet" href="/_nuxt/css/ae59b58.css"><link rel="stylesheet" href="/_nuxt/css/632dc66.css"><link rel="stylesheet" href="/_nuxt/css/4180938.css"><link rel="stylesheet" href="/_nuxt/css/dd2cb3e.css">
+  </head>
+  <body >
+    <div data-server-rendered="true" id="__nuxt"><!----><div id="__layout"><div data-app="true" id="app" class="v-application v-application--is-ltr theme--light"><div class="v-application--wrap"><!----> <header data-fetch-key="0" class="v-sheet theme--light elevation-6 v-toolbar v-toolbar--extended v-app-bar v-app-bar--fixed main-app-bar mb-3 app-bar-xs area--light app-bar-fluid" style="height:65px;margin-top:0px;transform:translateY(0px);left:0px;right:0px;max-height:192px;"><div class="v-toolbar__content" style="height:1px;"></div><div class="v-toolbar__extension" style="height:64px;"><div style="float:left;"><a href="https://www.ademe.fr/" target="blank" class="mr-3" style="height:56px;display:block;"><img src="https://data.ademe.fr/api/v1/portals/efWMeL1ZP/assets/logo?draft=false&amp;hash=fit-2e58cae358.png" alt="Portail open data de l'ADEME" style="max-height:56px;max-width:0px;"></a></div> <div class="row nav-tabs-or-menu mx-0" style="overflow:hidden;"><div class="v-menu" data-v-c6f29c1c><button type="button" title="Menu de navigation" class="font-weight-bold v-btn v-btn--text v-btn--tile theme--light v-size--default" style="height:64px;" data-v-c6f29c1c><span class="v-btn__content"><i aria-hidden="true" class="v-icon notranslate mx-1 mdi mdi-menu theme--light" data-v-c6f29c1c></i> <!----></span></button><!----></div> <div class="v-tabs v-tabs--centered theme--light" style="display:none;"><div role="tablist" class="v-item-group theme--light v-slide-group v-tabs-bar v-tabs-bar--is-mobile primary--text transparent" style="height:64px;"><div class="v-slide-group__prev v-slide-group__prev--disabled"><!----></div><div class="v-slide-group__wrapper"><div class="v-slide-group__content v-tabs-bar__content"><div class="v-tabs-slider-wrapper" style="transition:none;"><div class="v-tabs-slider"></div></div> <a href="/" tabindex="0" aria-selected="false" role="tab" class="v-tab font-weight-bold grey--text text--darken-3">
+      Accueil
+    </a> <!----><a href="/datasets" aria-current="page" tabindex="0" aria-selected="false" role="tab" class="v-tab--active v-tab font-weight-bold grey--text text--darken-3">
+      Données
+    </a> <!----><a href="/applications" tabindex="0" aria-selected="false" role="tab" class="v-tab font-weight-bold grey--text text--darken-3">
+      Visualisations
+    </a> <!----><a href="/pages/acces-mcp" tabindex="0" aria-selected="false" role="tab" class="v-tab font-weight-bold grey--text text--darken-3">
+      Accès MCP
+    </a> <!----><a href="/pages/faq" tabindex="0" aria-selected="false" role="tab" class="v-tab font-weight-bold grey--text text--darken-3">
+      FAQ
+    </a> <!----><a href="/contact" tabindex="0" aria-selected="false" role="tab" class="v-tab font-weight-bold grey--text text--darken-3">
+      Contact
+    </a> <!----></div></div><div class="v-slide-group__next v-slide-group__next--disabled"><!----></div></div></div></div> <div class="v-toolbar__items"><!----> <!----></div></div></header> <main class="v-main mt-3" style="padding-top:1px;padding-right:0px;padding-bottom:0px;padding-left:0px;"><div class="v-main__wrap"><!----> <div data-fetch-key="1"><div class="container"><h1 class="text-h5 grey--text text--darken-3 my-4">Acteurs de l'économie circulaire - Que faire de mes objets et déchets</h1> <div class="row"><div class="col-md-7 col-12"><img src="https://data.ademe.fr/data-fair/api/v1/datasets/wvw1zecq4f4gyvonve5j0hr7/thumbnail?width=300&amp;height=200" alt="Acteurs de l'économie circulaire - Que faire de mes objets et déchets" class="mb-3" style="max-height:300px;max-width:95%;"> <div><h3><strong>Description</strong></h3>
+<p>Ce jeu de données ouvertes, proposé dans le cadre du projet numérique “<a href="https://quefairedemesdechets.ademe.fr/qui-sommes-nous/">Que Faire De Mes Objets et Déchets</a>” de l'ADEME, est le jeu de données de référence qui met à disposition une liste de solutions de l’économie circulaire sur l’ensemble du territoire national. 
+Le fichier agrège <a href="https://quefairedemesdechets.ademe.fr/sources-donnees/">différentes sources de données</a> d'acteurs du réemploi, de la réparation et du tri des objets et des déchets, à destination des particuliers, tels que des éco-organismes, des organisations publiques, semi-publiques ou privées ainsi que des organisations associatives, des fédérations professionnelles et des contributions citoyennes.
+La première version de ce jeu de données a été mise en ligne en novembre 2024. </p>
+<p>Pour visualiser les lieux présents dans notre jeu de données ouvertes, vous pouvez consulter <a href="https://quefairedemesdechets.ademe.fr/nos-outils/donnees-ouvertes/#:~:text=Un%20exemple%20d%27exploitation%20de%20notre%20donn%C3%A9e%20%3A%20la%20visualisation%20carte/liste%20int%C3%A9gr%C3%A9e%20dans%20notre%20site%20et%20nos%20produits%20num%C3%A9riques">cette mise en oeuvre</a>, sous forme de carte interactive, intégrée dans “<a href="https://quefairedemesdechets.ademe.fr/qui-sommes-nous/">Que Faire De Mes Objets et Déchets</a>” ou nos différents <a href="https://quefairedemesdechets.ademe.fr/nos-outils/">outils numériques de réutilisation</a> mis à votre disposition.
+ <br /></p>
+<h3><strong>Exemple de réutilisations</strong></h3>
+<p>Découvrez ci-dessous un cas de réutilisations de ce jeu de données afin de mieux appréhender les capacités de celui-ci :</p>
+<ul>
+<li><a href="https://quefairedemesdechets.ademe.fr/nos-outils/donnees-ouvertes/#:~:text=Auditer%20le%20maillage%20%C3%A9conomique%20d%27un%20territoire%20sur%20le%20secteur%20de%20l%27%C3%A9conomie%20circulaire">réaliser un audit du maillage économique d’un territoire des lieux de l’économie circulaire</a> - par exemple, 8 Fablab, cabinet de conseil, en réponse à un appel à projets de la Communauté de Communes du Val de Drôme, a réalisé un audit territorial sur ce territoire de l’ensemble des acteurs de l’économie circulaire.</li>
+</ul>
+<p> <br /> <br /></p>
+<h3><strong>Précautions d’emploi</strong></h3>
+<ul>
+<li>Ce jeu de données n’est toutefois pas, pour le moment, en capacité de référencer l’intégralité des lieux de l’économie circulaire en France. Aussi, les acteurs à destination des professionnels (B2B), les lieux d’upcycling ou de surcyclage et certaines catégories d’objets et de déchets comme les huiles alimentaires et la papèterie ne se trouvent pas dans ce jeu de données.</li>
+<li>De plus, certaines adresses peuvent ne pas être à jour. Nous oeuvrons activement à fiabiliser ces données.</li>
+</ul>
+<p> <br /> <br /></p>
+<h3><strong>Prérequis d’utilisation</strong></h3>
+<ul>
+<li><strong>Vous vous apprêtez à utiliser ces données ?</strong> ➡️ Indiquez-le nous via <a href="https://tally.so/r/7Rejq0">ce formulaire</a> en seulement 30 secondes. Ainsi, nous vous informerons en cas de changement majeur dans la gestion de notre structure de données.</li>
+<li>Dans le cadre de la réutilisation de notre jeu de données publiques, vous êtes tenus de respecter les conditions de la licence sous laquelle les données publiques ont initialement été publiées :<ul>
+<li><strong>Mentionnez-nous comme source des données, en affichant :</strong><ul>
+<li>le nom de la source des données : "<em>Que faire de mes objets &amp; déchets - ADEME</em>"</li>
+<li>la date de mise à jour de la réutilisation</li>
+<li>un lien hypertexte qui redirige vers le site <a href="https://quefairedemesdechets.ademe.fr/">quefairedemesdechets.ademe.fr</a></li>
+</ul>
+</li>
+<li>Pour chaque acteur ou lieu, la réutilisation de ces données doit notamment se faire dans le <strong>respect de la paternité</strong> des données (l'ADEME jouant le rôle d'agrégateur de ces données et de producteur de cette base de données). Ainsi, veillez, pour toute réutilisation de partie ou de l'ensemble de ces données, à bien conserver et afficher la source complète des données en reprenant les libellés de la <strong>colonne B</strong> "Paternité" pour chacune des lignes.</li>
+<li><strong>Les données et leur sens ne doivent pas être modifiées ou altérées</strong>. Toute erreur ou demande de suppression concernant une ligne de ce jeu de données peut être signalée via <a href="https://tally.so/r/3xMqd9">ce formulaire</a>. Vous pouvez contribuer à enrichir ce jeu de données, après avoir vérifié si votre adresse est manquante, via <a href="https://tally.so/r/wzy9ZZ">ce formulaire</a>.</li>
+<li><strong>Vous êtes tenus de vous conformer aux obligations légales</strong> qui découlent du <a href="https://www.economie.gouv.fr/entreprises/gerer-son-entreprise-au-quotidien/assurer-sa-cybersecurite-et-la-protection-de-ses/le">Règlement général sur la protection des données</a>. Depuis son entrée en application le 25 mai 2018, le RGPD impose à tous les professionnels un strict encadrement du traitement des données, quels que soient leur secteur et leur taille.</li>
+<li>Pour plus de détails, retrouvez le détail de la licence ci-contre.</li>
+</ul>
+</li>
+</ul>
+<p> <br /> <br /></p>
+<h3><strong>Contributions et bonnes pratiques</strong></h3>
+<ul>
+<li><p><strong>Avant de proposer des ajouts/changements</strong></p>
+<ul>
+<li>Assurez-vous que la donnée n'existe pas déjà;</li>
+<li>Vos suggestions concernent des PAV qui sont soumis à filière REP ? Merci de bien vouloir transmettre également ces modifications à l'éco-organisme agréé, dont nous relayons les données.</li>
+</ul>
+</li>
+<li><p><strong>Proposer la modification d'un lieu</strong></p>
+<ul>
+<li>Il est possible de modifier ou enrichir des informations (description, horaires, adresse...) pour un acteur ou lieu existant de la carte/liste via <a href="https://tally.so/r/3xMqd9">ce formulaire</a>, également disponible dans la fiche de cet acteur sur “<a href="https://quefairedemesdechets.ademe.fr/nos-outils/donnees-ouvertes/#:~:text=Un%20exemple%20d%27exploitation%20de%20notre%20donn%C3%A9e%20%3A%20la%20visualisation%20carte/liste%20int%C3%A9gr%C3%A9e%20dans%20notre%20site%20et%20nos%20produits%20num%C3%A9riques">Que Faire De Mes Objets et Déchets</a>” en cliquant sur "🖊️<em>Proposer une modification</em>" en bas de la fiche.</li>
+</ul>
+</li>
+<li><p><strong>Proposer l'ajout d'un lieu</strong></p>
+<ul>
+<li>Si l'acteur ou le lieu ne ressort pas, <strong>après</strong> avoir vérifié dans le jeu de données et/ou sur la visualisation carte/liste, il est possible de l'ajouter via <a href="https://tally.so/r/wzy9ZZ">ce formulaire</a>, également disponible dans “<a href="https://quefairedemesdechets.ademe.fr/nos-outils/donnees-ouvertes/#:~:text=Un%20exemple%20d%27exploitation%20de%20notre%20donn%C3%A9e%20%3A%20la%20visualisation%20carte/liste%20int%C3%A9gr%C3%A9e%20dans%20notre%20site%20et%20nos%20produits%20num%C3%A9riques">Que Faire De Mes Objets et Déchets</a>” en cliquant sur "<em>Ajouter un lieu sur la carte</em>".</li>
+</ul>
+</li>
+<li><p><strong>Proposer des modifications en masse</strong></p>
+<ul>
+<li>Pour des volumes importants de modifications, merci de bien vouloir partir d'un export de notre jeu de données en ne conservant que les lignes que vous souhaitez voir modifier, et d'utiliser un code couleur dans les cases concernées ou en créant des colonnes supplémentaires (ancienne donnée / nouvelle donnée) avant de nous renvoyer ce fichier retraité.</li>
+</ul>
+</li>
+</ul></div></div> <div class="col-md-4 offset-md-1 col-12"><div class="py-3 v-card v-sheet theme--light elevation-0" style="background-color:#FAFAFA;"><div class="row"><div class="py-0 col-md-12 col-12"><div tabindex="-1" class="v-list-item theme--light" style="min-height:36px;"><div class="v-list-item__content"><div class="v-list-item__title"><div class="v-subheader pa-0 theme--light" style="height:26px;">
+                      Taille :
+                    </div>
+                    382 551 enregistrements
+                    
+                      - 256.1 Mo
+                    </div></div></div></div> <div class="py-0 col-md-12 col-12"><div tabindex="-1" class="v-list-item theme--light"><div class="v-list-item__content"><div class="v-list-item__title">
+                    Données issues de <a href="https://quefairedemesdechets.ademe.fr/sources-donnees" rel="external" class="underline-link">cette source</a></div></div></div></div> <!----> <div class="py-0 col-md-12 col-12"><div tabindex="-1" class="v-list-item theme--light"><div class="v-list-item__content"><div class="v-list-item__title"><div class="v-subheader pa-0 theme--light" style="height:26px;">
+                      Licence :
+                    </div> <a href="https://www.etalab.gouv.fr/licence-ouverte-open-licence" rel="external" class="underline-link">Licence Ouverte / Open Licence version 2.0</a></div></div></div></div> <div class="py-0 col-md-12 col-12"><div tabindex="-1" class="v-list-item theme--light"><div class="v-list-item__content"><div class="v-list-item__title" style="white-space:normal;"><div class="v-subheader pa-0 theme--light" style="height:26px;">
+                      Mots clés :
+                    </div> <span draggable="false" class="ma-1 v-chip theme--dark v-size--small" style="background-color:#1775c8;border-color:#1775c8;"><span class="v-chip__content">
+                      économie circulaire
+                    </span></span><span draggable="false" class="ma-1 v-chip theme--dark v-size--small" style="background-color:#1775c8;border-color:#1775c8;"><span class="v-chip__content">
+                      réemploi
+                    </span></span><span draggable="false" class="ma-1 v-chip theme--dark v-size--small" style="background-color:#1775c8;border-color:#1775c8;"><span class="v-chip__content">
+                      recyclage
+                    </span></span><span draggable="false" class="ma-1 v-chip theme--dark v-size--small" style="background-color:#1775c8;border-color:#1775c8;"><span class="v-chip__content">
+                      seconde main
+                    </span></span><span draggable="false" class="ma-1 v-chip theme--dark v-size--small" style="background-color:#1775c8;border-color:#1775c8;"><span class="v-chip__content">
+                      occasion
+                    </span></span><span draggable="false" class="ma-1 v-chip theme--dark v-size--small" style="background-color:#1775c8;border-color:#1775c8;"><span class="v-chip__content">
+                      réparation
+                    </span></span><span draggable="false" class="ma-1 v-chip theme--dark v-size--small" style="background-color:#1775c8;border-color:#1775c8;"><span class="v-chip__content">
+                      Transition écologique
+                    </span></span><span draggable="false" class="ma-1 v-chip theme--dark v-size--small" style="background-color:#1775c8;border-color:#1775c8;"><span class="v-chip__content">
+                      Economie circulaire 
+                    </span></span><span draggable="false" class="ma-1 v-chip theme--dark v-size--small" style="background-color:#1775c8;border-color:#1775c8;"><span class="v-chip__content">
+                      REP 
+                    </span></span><span draggable="false" class="ma-1 v-chip theme--dark v-size--small" style="background-color:#1775c8;border-color:#1775c8;"><span class="v-chip__content">
+                      Déchets
+                    </span></span></div></div></div></div> <div class="py-0 col-md-12 col-12"><div tabindex="-1" class="v-list-item theme--light"><div class="v-list-item__content"><div class="v-list-item__title" style="white-space:normal;"><div class="v-subheader pa-0 theme--light" style="height:26px;">
+                      Couverture géographique :
+                    </div>
+                    Nationale
+                  </div></div></div></div> <div class="py-0 col-md-12 col-12"><div tabindex="-1" class="v-list-item theme--light"><div class="v-list-item__content"><div class="v-list-item__title" style="white-space:normal;"><div class="v-subheader pa-0 theme--light" style="height:26px;">
+                      Couverture temporelle :
+                    </div> 
+                      4 novembre 2024 - 29 juin 2026
+                    </div></div></div></div> <div class="py-0 col-md-12 col-12"><div tabindex="-1" class="v-list-item theme--light"><div class="v-list-item__content"><div class="v-list-item__title" style="white-space:normal;"><div class="v-subheader pa-0 theme--light" style="height:26px;">
+                      Fréquence de mise à jour :
+                    </div>
+                    chaque semaine
+                  </div></div></div></div></div> <hr role="separator" aria-orientation="horizontal" class="mt-2 mb-3 v-divider theme--light"> <div class="row ma-0 align-center"><div class="px-5 py-1 col-md-12 col-12"><div class="row"><div class="pa-0 col col-auto"><div class="v-dialog__container"><button type="button" aria-label="Aperçu du tableau" title="Aperçu du tableau" class="action-icon ml-0 v-btn v-btn--fab v-btn--has-bg v-btn--round theme--light elevation-0 v-size--small transparent pa-0" style="width:32px;height:32px;"><span class="v-btn__content"><i aria-hidden="true" class="v-icon notranslate mdi mdi-table-eye theme--light primary--text"></i></span></button><!----></div></div> <div class="pa-0 col col-auto"><a href="/datasets/longue-vie-aux-objets-acteurs-de-leconomie-circulaire/full" aria-label="Tableau plein écran" title="Tableau plein écran" class="action-icon ml-0 v-btn v-btn--fab v-btn--has-bg v-btn--round v-btn--router theme--light elevation-0 v-size--small transparent pa-0" style="width:32px;height:32px;"><span class="v-btn__content"><i aria-hidden="true" class="v-icon notranslate mdi mdi-table-large theme--light primary--text"></i></span></a></div> <div class="pa-0 col col-auto"><div class="v-dialog__container"><button type="button" aria-label="Carte générique" title="Carte générique" class="action-icon ml-0 v-btn v-btn--fab v-btn--has-bg v-btn--round theme--light elevation-0 v-size--small transparent pa-0" style="width:32px;height:32px;"><span class="v-btn__content"><i aria-hidden="true" class="v-icon notranslate mdi mdi-map-marker theme--light primary--text"></i></span></button><!----></div></div> <div class="pa-0 col col-auto"><a href="/datasets/longue-vie-aux-objets-acteurs-de-leconomie-circulaire/api-doc" aria-label="Documentation d'API" title="Documentation d'API" class="action-icon ml-0 v-btn v-btn--fab v-btn--has-bg v-btn--round v-btn--router theme--light elevation-0 v-size--small transparent pa-0" style="width:32px;height:32px;"><span class="v-btn__content"><i aria-hidden="true" class="v-icon notranslate mdi mdi-cog theme--light primary--text"></i></span></a></div> <div class="pa-0 col col-auto"><div class="v-dialog__container"><button type="button" aria-label="Téléchargement des données" title="Téléchargement des données" class="action-icon ml-0 v-btn v-btn--fab v-btn--has-bg v-btn--round theme--light elevation-0 v-size--small transparent pa-0" style="width:32px;height:32px;"><span class="v-btn__content"><i aria-hidden="true" class="v-icon notranslate mdi mdi-download theme--light primary--text"></i></span></button><!----></div></div> <div class="pa-0 col col-auto"><div class="v-dialog__container"><button type="button" aria-label="Description des champs" title="Description des champs" class="action-icon ml-0 v-btn v-btn--fab v-btn--has-bg v-btn--round theme--light elevation-0 v-size--small transparent pa-0" style="width:32px;height:32px;"><span class="v-btn__content"><i aria-hidden="true" class="v-icon notranslate mdi mdi-view-list theme--light primary--text"></i></span></button><!----></div></div> <div class="pa-0 col col-auto"><div class="v-dialog__container"><button type="button" aria-label="Intégrer dans un site" title="Intégrer dans un site" class="action-icon ml-0 v-btn v-btn--fab v-btn--has-bg v-btn--round theme--light elevation-0 v-size--small transparent pa-0" style="width:32px;height:32px;"><span class="v-btn__content"><i aria-hidden="true" class="v-icon notranslate mdi mdi-code-tags theme--light primary--text"></i></span></button><!----></div></div> <div class="pa-0 col col-auto"><div class="v-dialog__container"><button type="button" aria-label="Pièces jointes" title="Pièces jointes" class="action-icon ml-0 v-btn v-btn--fab v-btn--has-bg v-btn--round theme--light elevation-0 v-size--small transparent pa-0" style="width:32px;height:32px;"><span class="v-btn__content"><i aria-hidden="true" class="v-icon notranslate mdi mdi-attachment theme--light primary--text"></i></span></button><!----></div></div> <div class="pa-0 col col-auto"><!----></div></div></div> <div class="py-1 col-md-12 col-12"><div tabindex="-1" class="v-list-item theme--light" style="min-height:36px;"><div class="v-list-item__content py-1"><div class="v-list-item__title" style="white-space:normal;"><div class="v-subheader pa-0 theme--light" style="height:26px;">
+                      Mis à jour le 29 juin 2026
+                    </div></div></div></div></div> <div class="py-1 col-md-12 col-12"><div class="row ma-0 align-center"><div class="v-subheader theme--light" style="height:26px;">
+                  Partager :
+                </div> <div class="share-network"><!----><!----><!----><!----><!----></div></div></div></div></div></div></div> <div class="row my-3 align-center"><div class="px-5 py-3 col-md-6 order-md-1 col-12"><a href="/applications/tableau-de-bord-acteurs-economie-circulaire" class="title"><span class="underline-link">Tableau de bord Acteurs de l'économie circulaire</span> <i aria-hidden="true" class="v-icon notranslate mdi mdi-open-in-new theme--light primary--text"></i></a> <div class="mt-3"><p>Nous vous proposons cette datavisualisation pour vous faciliter l'accès au données du jeu de donneés "Acteurs de l'économie circulaire"</p></div></div> <div class="col-md-6 order-md-0 col-12 order-1"><!----></div></div> <!----> <!----> <!----> <div class="row my-4 text-center"><div class="col col-12"><a href="/datasets" class="nuxt-link-active title primary--text"><i aria-hidden="true" class="v-icon notranslate mdi mdi-reply theme--light primary--text"></i>
+   <span class="underline-link">retourner à la liste</span></a></div></div></div></div> <!----></div></main> <button type="button" title="Remonter au début de la page" aria-label="Remonter au début de la page" class="transition-swing v-btn v-btn--bottom v-btn--is-elevated v-btn--fab v-btn--fixed v-btn--has-bg v-btn--right v-btn--round theme--light v-size--large primary" style="display:none;z-index:6;"><span class="v-btn__content"><i aria-hidden="true" class="v-icon notranslate mdi mdi-chevron-up theme--light"></i></span></button> <!----> <footer class="v-footer v-sheet theme--light main-footer pa-0 area--light mt-5"><div class="v-card v-sheet theme--light rounded-0" style="width:100%;background-color:#ffffff;border-color:#ffffff;"><div class="container"><div class="row mx-0 my-2 text-center align-center justify-center"><!----> <!----></div> <!----> <div class="row mx-0 my-2"><div class="pa-0 col-sm-4 offset-sm-2 col-10 offset-2"><a href="https://agirpourlatransition.ademe.fr/conditions-generales-dutilisation">Conditions d'utilisation</a></div><div class="pa-0 col-sm-4 offset-sm-2 col-10 offset-2"><a href="https://www.ademe.fr/">Site institutionnel</a></div><div class="pa-0 col-sm-4 offset-sm-2 col-10 offset-2"><a href="https://www.ademe.fr/content/contacter">Nous contacter</a></div><div class="pa-0 col-sm-4 offset-sm-2 col-10 offset-2"><a href="https://agirpourlatransition.ademe.fr/"> Agir pour la transition écologique</a></div><div class="pa-0 col-sm-4 offset-sm-2 col-10 offset-2"><a href="https://twitter.com/ademe">Twitter</a></div><div class="pa-0 col-sm-4 offset-sm-2 col-10 offset-2"><a href="/privacy-policy">
+        Politique de confidentialité
+      </a></div></div> <!----> <!----></div> <hr role="separator" aria-orientation="horizontal" class="v-divider theme--light"> <div class="container text-center py-1"><span>©2026 — </span><strong><a href="https://koumoul.com">Koumoul</a></strong></div></div></footer></div></div></div></div><script>window.__NUXT__=(function(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,_,$,aa,ab,ac,ad,ae,af,ag,ah,ai,aj,ak,al,am,an,ao,ap,aq,ar,as,at,au,av,aw,ax,ay,az,aA,aB,aC,aD,aE,aF,aG,aH,aI,aJ,aK,aL,aM,aN,aO,aP,aQ,aR,aS,aT,aU,aV,aW,aX,aY,aZ,a_,a$,ba,bb,bc,bd,be,bf,bg,bh,bi,bj,bk,bl,bm,bn,bo,bp,bq,br,bs,bt,bu,bv,bw){bb.assets={logo:{name:"RF & ADEME.png",hash:"fit-2e58cae358.png"},home:{name:"Open data ADEME 1.png",hash:"fit-c9484ba6c9.png"},favicon:{name:"LogoAdeme2020_FR_RVB.jpg",hash:"fit-d7749fd80a.png"},font2:{name:"Marianne-ExtraBold.woff2",lastModified:"2025-10-13T13:53:30.087Z",size:41988,type:e,hash:"f927ded015"},font1:{name:"Marianne-Regular.woff2",lastModified:"2025-10-13T13:53:19.898Z",size:41328,type:e,hash:"eb551203b0"}};bb.title="Portail open data de l'ADEME";bb.authentication="optional";bb.homeImageAlwaysVisible=b;bb.metaDescription="Portail open data de l'ADEME. Accès aux jeux de données et aux visualisations des données de l'ADEME; agence de la transition écologique.";bb.themeColor="#0D47A2";bb.buttonOptions=["alwaysUnderline","hoverUnderline"];bb.infoCardBackgroundColor="lightGrey";bb.infoCardOptions=[];bb.actionCardBackgroundColor=q;bb.actionCardOptions=["hoverElevate",j];bb.radius=4;bb.elevation=o;bb.backgroundColor=q;bb.secondaryBackgroundColor="#AAA1A1";bb.secondaryColor=bc;bb.topicsBackgroundColor="individual";bb.actionCardHorizontalOptions=[j,"flat","hoverColorTitle","hoverColorBorder"];bb.actionCardHorizontalBackgroundColor=q;bb.navLinkMode="link";bb.navLinkColor=bd;bb.tertiaryColor=bc;bb.headingsFont={source:be,name:"font2",label:"Police 2 (Marianne-Bold.woff2)"};bb.bodyFont={source:be,name:"font1",label:"Police 1 (Marianne-Regular.woff2)"};bb.appBarTransparency=c;bb.appBarBehavior="stick";bb.appBarColor=q;bb.appBarActiveOptions=["slider","color"];bb.appBarFluid=c;bb.appBarFontColorPrimary=b;bb.appBarAdditionalLinks=[];bb.website=bf;bb.titleColor=bg;bb.headerColor="page";bb.headerNoTitle=b;bb.useHtmlTitle=b;bb.headerLogo2="https:\u002F\u002Fcellule-strategie-numerique-adem.gitbook.io\u002F~gitbook\u002Fimage?url=https:%2F%2F4251515518-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252F2jK8JaUieA84hk2TJR3v%252Fuploads%252FjiBdH9uzuChCqRrgYFTU%252FLogo%2520Fabrique%2520-%2520small.jpg%3Falt=media%26token=50c7bfac-218c-4947-8dec-13efab2749c3&width=768&dpr=1&quality=100&sign=4aab3d5169efc1409f0e3aa8ad197f26b472b5c5bdf2d4a28515a21abca1a87d";bb.headerHide=c;bb.footerColor="#FFFFFF";bb.footerLinks=[{type:r,href:"https:\u002F\u002Fagirpourlatransition.ademe.fr\u002Fconditions-generales-dutilisation",title:"Conditions d'utilisation"},{type:r,href:bf,title:"Site institutionnel"},{type:r,href:"https:\u002F\u002Fwww.ademe.fr\u002Fcontent\u002Fcontacter",title:"Nous contacter"},{type:r,title:" Agir pour la transition écologique",href:"https:\u002F\u002Fagirpourlatransition.ademe.fr\u002F"},{type:r,title:"Twitter",href:"https:\u002F\u002Ftwitter.com\u002Fademe"}];bb.footerImportantLinks=[];bb.footerExtraLogos=[];bb.footerLinksMode="columns";bb.footerCopyrightAsLogo=b;bb.footerSocial=c;bb.footerBackgroundImage=h;bb.footerSitemap=b;bb.footerPrivacyPolicy=c;bb.homeImageAsBanner=b;bb.description="\u003Cp\u003EÉtablissement public à caractère industriel et commercial, placé sous la tutelle conjointe des ministères en charge de la Transition écologique et solidaire et de l’Enseignement supérieur et de la Recherche, l’ADEME participe à la mise en œuvre des politiques publiques dans les domaines de l’environnement, de l’énergie et du développement durable.\u003C\u002Fp\u003E\n\u003Cp\u003EPour répondre aux obligations réglementaires (Loi pour une République numérique) mais également pour accompagner la Transition écologique, l’Agence a décidé de mettre à disposition des entreprises, des collectivités locales, des pouvoirs publics et du grand public, ses données afin de leur permettre de progresser dans leur démarche environnementale et de démultiplier les actions en faveur de la Transition écologique.\u003C\u002Fp\u003E\n\u003Cp\u003ELes données de prospective \"Transition(s) 2050\" sont accessibles sur le portail \u003Ca href=\"https:\u002F\u002Fdata-transitions2050.ademe.fr\"\u003Edata-transitions2050.ademe.fr\u003C\u002Fa\u003E\u003C\u002Fp\u003E\n";bb.showKpis=c;bb.homeDatasets={type:bh,size:o,cardLayout:s};bb.homeApplications={type:bh,size:o,cardLayout:s};bb.showTwitterTimeline=c;bb.kpiBackgroundColor=q;bb.kpiOptions=[j,"shaped"];bb.homeImageHidden=b;bb.homeSearchPosition=aA;bb.homeTopicsPosition=aA;bb.homeShowSearch=b;bb.homeShowTopics=c;bb.homeTopicsOptions=[j,bi,bj];bb.homeSearchOptions=[j,bi];bb.homeLinksOptions=[j,bj];bb.homeLinks=[];bb.homeShowLinks=b;bb.showLastNews=b;bb.homeLinksPosition=aA;bb.showEvents=b;bb.homeTemplate={type:aB};bb.datasetThumbnailContain=b;bb.datasetsPage={type:bk};bb.datasetsDefaultSort=bl;bb.datasetsCardLayout=s;bb.datasetThumbnailApplication=b;bb.datasetMetaLayout="columnsLeftLarger";bb.datasetActionsDisplay=bm;bb.datasetsOwnerFilter={type:h};bb.datasetHideDepartment=c;bb.applicationsPage={type:bk};bb.applicationsCardLayout=s;bb.applicationsDirectNavigation=b;bb.applicationActionsDisplay=bm;bb.applicationsDefaultSort=bl;bb.applicationHideDepartment=c;bb.externalReusesPage={type:h};bb.usesPage={type:h};bb.usesManagement={type:"managers"};bb.usesCardLayout=s;bb.newsPage={type:h};bb.eventsPage={type:h};bb.contactEmail="cdo@ademe.fr";bb.contactFooterColor=bg;bb.networks=["twitter","linkedin","reddit","facebook","whatsapp"];bb.personalNavigationColor=bd;bb.personalAccountPages=[];bb.personnalHidePages=[];bb.analytics={type:h};bb.updatedAt="2025-10-13T13:57:39.535Z";bb.owner={type:aj,id:ak,name:al};bn._id="efWMeL1ZP";bq[0]="organization:mMqHP1AmF";bt[0]={_id:"6a301167ab8168b8b75456b6",updated:{date:"2026-06-24T09:03:32.074Z"},navigation:{type:bu,position:bv},template:bw,title:"Accès MCP",id:"acces-mcp"};bt[1]={_id:"6717558f1adfd05460cc16b2",updated:{date:"2024-11-05T14:53:01.669Z"},navigation:{type:bu,position:bv},template:bw,title:"FAQ",id:"faq"};return {layout:aB,data:[{}],fetch:{"0":{},"1":{isMobileOnly:b,dataset:{title:"Acteurs de l'économie circulaire - Que faire de mes objets et déchets",owner:{type:aj,id:ak,name:al,department:aC,departmentName:aD},updatedAt:"2026-06-30T14:25:10.238Z",createdAt:"2025-03-25T13:05:24.523Z",updatedBy:{id:"mK3m1RJko",name:"Christian Charousset"},createdBy:{id:"rJytCgDTf",name:"Balam Saldana"},schema:[{key:t,"x-originalName":t,type:a,description:"\u003Cp\u003EIdentifiant unique de chaque ligne du fichier\u003C\u002Fp\u003E","x-cardinality":379125},{key:u,"x-originalName":u,type:a,title:e,icon:aE,"x-capabilities":{textAgg:b},maxLength:aF,description:"\u003Cp\u003ECette colonne reflète la source de la donnée. Dans le cadre de la licence ouverte 2.0, il est nécessaire de conserver et afficher le contenu de cette colonne pour toute réutilisation, afin de d'assurer la paternité.\u003C\u002Fp\u003E","x-cardinality":71,separator:g},{key:v,"x-originalName":v,type:a,description:"\u003Cp\u003ENom de l'acteur.\nSi un Nom_commercial est renseigné, c'est plutôt le Nom_commercial qu'il faut faire apparaître pour un affichage au grand public.\u003C\u002Fp\u003E","x-cardinality":193195},{key:w,"x-originalName":w,type:a,description:"\u003Cp\u003EEnseigne commerciale, le cas échéant.\nSi renseigné, c'est plutôt ce champ (et non le champ Nom) qu'il faut faire apparaître pour un affichage au grand public.\u003C\u002Fp\u003E","x-cardinality":27249},{key:k,"x-originalName":k,type:a,title:e,icon:aE,"x-capabilities":{textAgg:b},maxLength:aF,"x-refersTo":"http:\u002F\u002Fdbpedia.org\u002Fontology\u002Fsiren","x-concept":{id:k,title:"SIREN",primary:c},description:e,"x-cardinality":54831},{key:l,"x-originalName":l,type:a,description:e,"x-refersTo":"http:\u002F\u002Fwww.datatourisme.fr\u002Fontology\u002Fcore\u002F1.0\u002F#siret","x-concept":{id:l,title:"SIRET",primary:c},"x-transform":{type:a},"x-cardinality":126234},{key:aG,"x-originalName":aG,"x-extension":aH,title:"État administratif de l'établissement",description:"\u003Cp\u003EIndique si le SIRET est Actif (A) ou Fermé (F)\u003C\u002Fp\u003E",type:a,"x-capabilities":{textAgg:b,insensitive:b,text:b,textStandard:b},"x-labels":{A:"Actif",F:"Fermé"}},{key:x,"x-originalName":x,type:a,description:"\u003Cp\u003EChamp libre permettant à l'acteur de décrire sa structure et\u002Fou ses services.\u003C\u002Fp\u003E","x-cardinality":2775},{key:y,"x-originalName":y,type:a,description:"\u003Cp\u003E\u003Cstrong\u003EValeurs possibles :\u003C\u002Fstrong\u003E \n\u003Cbr \u002F\u003Epav_ponctuel : Point d'apport volontaire ponctuel\n\u003Cbr \u002F\u003Epav_prive : Point d'apport volontaire privé\n\u003Cbr \u002F\u003Epav_public : Point d'apport volontaire public\n\u003Cbr \u002F\u003Eplateforme_inertes : Plateforme inerte\n\u003Cbr \u002F\u003Eets_sante : Établissement de santé\n\u003Cbr \u002F\u003Edecheterie : Déchèterie\n\u003Cbr \u002F\u003Eacteur_digital : Acteur digital \u002F en ligne\n\u003Cbr \u002F\u003Ecommerce : Commerce\n\u003Cbr \u002F\u003Eartisan : Artisan\n\u003Cbr \u002F\u003Ecollectivite : Collectivité\n\u003Cbr \u002F\u003Eess : Structure de l'Économie Sociale et Solidaire\u003C\u002Fp\u003E","x-cardinality":11,enum:["pav_public","commerce","artisan","pav_prive","collectivite","decheterie","ess","plateforme_inertes","acteur_digital","ets_sante","pav_ponctuel"],title:"Type d'acteur"},{key:z,"x-originalName":z,type:a,description:e,"x-refersTo":"https:\u002F\u002Fschema.org\u002FWebPage","x-concept":{id:"webPage",title:"Page Web",primary:c},"x-cardinality":16285},{key:A,"x-originalName":A,type:a,description:e,"x-refersTo":"https:\u002F\u002Fwww.w3.org\u002F2006\u002Fvcard\u002Fns#tel","x-concept":{id:"tel",title:"N° de téléphone",primary:c},"x-cardinality":54703},{key:B,"x-originalName":B,type:a,description:"\u003Cp\u003EL'adresse postale de l'établissement\u003C\u002Fp\u003E","x-cardinality":331834},{key:C,"x-originalName":C,type:a,description:"\u003Cp\u003Ecomplément à l'adresse postale, le cas échéant\u003C\u002Fp\u003E","x-cardinality":28159},{key:D,"x-originalName":D,type:a,description:e,"x-refersTo":"http:\u002F\u002Fschema.org\u002FpostalCode","x-concept":{id:"postalCode",title:"Code postal",primary:c},"x-cardinality":7819},{key:E,"x-originalName":E,type:a,description:e,"x-refersTo":"http:\u002F\u002Fschema.org\u002FCity","x-concept":{id:"city",title:"Commune",primary:c},"x-cardinality":59943},{key:m,"x-originalName":m,type:F,description:e,"x-refersTo":"http:\u002F\u002Fschema.org\u002Flatitude","x-concept":{id:m,title:"Latitude",primary:c}},{key:n,"x-originalName":n,type:F,description:e,"x-refersTo":"http:\u002F\u002Fschema.org\u002Flongitude","x-concept":{id:n,title:"Longitude",primary:c}},{key:G,"x-originalName":G,type:a,description:"\u003Cp\u003E\u003Cstrong\u003EValeurs possibles :\u003C\u002Fstrong\u003E \n\u003Cbr \u002F\u003Eess (Acteur de l'économie sociale et solidaire)\n\u003Cbr \u002F\u003EBonusRepar_ASL (Bonus Réparation)\n\u003Cbr \u002F\u003Ebonusrepar_ABJ_TH (Bonus Réparation)\n\u003Cbr \u002F\u003Eecomaison (Bonus Réparation)\n\u003Cbr \u002F\u003Erefashion (Bonus Réparation)\n\u003Cbr \u002F\u003Equalirepar (Bonus Réparation)\n\u003Cbr \u002F\u003Ereparacteur (Chambre des métiers et de l'artisanat)\u003C\u002Fp\u003E","x-cardinality":7,separator:g,title:"Qualités et labels"},{key:H,"x-originalName":H,type:a,description:"\u003Cp\u003E\u003Cstrong\u003EValeurs possibles :\u003C\u002Fstrong\u003E \n\u003Cbr \u002F\u003EParticuliers, \n\u003Cbr \u002F\u003EProfessionnels, \n\u003Cbr \u002F\u003EParticuliers &amp; Professionnels\n\u003Cbr \u002F\u003E[Vide] : à interpréter comme \"Particuliers\"\u003C\u002Fp\u003E","x-cardinality":am,enum:["Particuliers","Particuliers et professionnels"]},{key:I,"x-originalName":I,type:a,description:"\u003Cp\u003E\u003Cstrong\u003EValeurs possibles :\u003C\u002Fstrong\u003E \n\t\u003Cbr \u002F\u003E1 pour 0\n\t\u003Cbr \u002F\u003E1 pour 1 (cela signifie que l'établissement peut reprendre un équipement usagé, uniquement dans le cadre d'un nouvel achat neuf)\u003C\u002Fp\u003E","x-cardinality":am},{key:J,"x-originalName":J,type:K,description:"\u003Cp\u003E\u003Cstrong\u003EValeurs possibles :\u003C\u002Fstrong\u003E \n\u003Cbr \u002F\u003ENon\n\u003Cbr \u002F\u003EOui (cela signifie que l'établissement ne propose des réparations que sur les équipements de sa marque)\u003C\u002Fp\u003E","x-cardinality":an,"x-transform":{expr:e,examples:[e],type:K}},{key:L,"x-originalName":L,type:K,description:"\u003Cp\u003E\u003Cstrong\u003EValeurs possibles :\u003C\u002Fstrong\u003E \n\u003Cbr \u002F\u003Eoui\u003Cbr \u002F\u003E\nnon\u003C\u002Fp\u003E","x-cardinality":an,"x-transform":{expr:e,examples:[e],type:K}},{key:M,"x-originalName":M,type:a,description:"\u003Cp\u003E\u003Cstrong\u003EValeurs possibles :\u003C\u002Fstrong\u003E \u003Cbr \u002F\u003E\nachat_revente_particuliers\u003Cbr \u002F\u003E\nachat_revente_professionnel\u003Cbr \u002F\u003E\nrelai_acteurs_et_evenements\u003Cbr \u002F\u003E\natelier_pour_reparer_soi_meme\u003Cbr \u002F\u003E\ndepot_vente\u003Cbr \u002F\u003E\ndon_particuliers\u003Cbr \u002F\u003E\nechanges_particuliers\u003Cbr \u002F\u003E\nespace_de_partage\u003Cbr \u002F\u003E\nlocaltion_particuliers\u003Cbr \u002F\u003E\nlocation_professionnel\u003Cbr \u002F\u003E\npartage_particuliers\u003Cbr \u002F\u003E\npieces_detachees\u003Cbr \u002F\u003E\nrecyclerie\u003Cbr \u002F\u003E\nservice_de_reparation\u003Cbr \u002F\u003E\nstructure_qui_sous_traite_la_reparation\u003Cbr \u002F\u003E\nstructure_de_collecte\u003Cbr \u002F\u003E\ntutoriels_et_diagnostics_en_ligne\u003Cbr \u002F\u003E\u003C\u002Fp\u003E","x-cardinality":17,separator:g,enum:["structure_de_collecte","service_de_reparation","espace_de_partage","achat_revente_professionnel","recyclerie","location_professionnel","atelier_pour_reparer_soi_meme","depot_vente","pieces_detachees","relai_acteurs_et_evenements","achat_revente_particuliers","tutoriels_et_diagnostics_en_ligne","don_particuliers","localtion_particuliers","echanges_particuliers","partage_particuliers","structure_qui_sous_traite_la_reparation"]},{key:N,"x-originalName":N,type:a,description:"\u003Cp\u003EListe les actions possibles à cette adresse et les catégories d'objets pris en charge.\nUne adresse peut proposer plusieurs actions, et peut prendre en charge plusieurs catégories d'objets. \n\u003Cbr \u002F\u003E\n\u003Cstrong\u003EFormat :\u003C\u002Fstrong\u003E \u003Cbr \u002F\u003E\n[{\"action\":\"action1\",\"sous_categories\":[\"objet1\",\"objet2\"]},{\"action\":\"action2\",\"sous_categories\":[\"objet1\",\"objet2\"]}]\n\u003Cbr \u002F\u003E\n\u003Cstrong\u003EActions possibles :\u003C\u002Fstrong\u003E\u003Cbr \u002F\u003E\npreter\u003Cbr \u002F\u003E\nemprunter\u003Cbr \u002F\u003E\nlouer\u003Cbr \u002F\u003E\nmettre en location\u003Cbr \u002F\u003E\nreparer\u003Cbr \u002F\u003E\nrapporter\u003Cbr \u002F\u003E\ndonner\u003Cbr \u002F\u003E\nechanger\u003Cbr \u002F\u003E\nacheter\u003Cbr \u002F\u003E\nrevendre\u003Cbr \u002F\u003E\ntrier\u003C\u002Fp\u003E\n\u003Cp\u003E\u003Cstrong\u003ECatégories possibles - Code :\u003C\u002Fstrong\u003E\u003Cbr \u002F\u003E\naccessoire_et_meuble_de_jardin\t\u003Cbr \u002F\u003E\nampoule\t\u003Cbr \u002F\u003E\nautre_equipement_electronique\t\u003Cbr \u002F\u003E\nautres_pmcb\t\u003Cbr \u002F\u003E\nbateau\t\u003Cbr \u002F\u003E\nbatteries_de_mtl\t\u003Cbr \u002F\u003E\nbatterie_de_voitures_pour_demarrage\t\u003Cbr \u002F\u003E\nbatteries_et_piles_portables\t\u003Cbr \u002F\u003E\nbeton_pmcb_produits_et_materiaux_de_construction_du_batiment\t\u003Cbr \u002F\u003E\nbijou_et_montre\t\u003Cbr \u002F\u003E\nbiodechets\t\u003Cbr \u002F\u003E\nbois_pmcb_produits_et_materiaux_de_construction_du_batiment\t\u003Cbr \u002F\u003E\nbouchons_en_liege\t\u003Cbr \u002F\u003E\nbouteilles_plastique\t\u003Cbr \u002F\u003E\ncartouches\t\u003Cbr \u002F\u003E\ncd_dvd_et_jeu_video\t\u003Cbr \u002F\u003E\nchaussures\t\u003Cbr \u002F\u003E\ncheveux \u003Cbr \u002F\u003E\ndechets_dangereux_de_pmcb_produits_et_materiaux_de_construction_du_batiment\t\u003Cbr \u002F\u003E\ndechets_de_peintures_vernis_encres_et_colles_produits_chimiques\t\u003Cbr \u002F\u003E\ndechets_de_produits_chimiques\t\u003Cbr \u002F\u003E\ndechets_de_produits_chimiques_acides\t\u003Cbr \u002F\u003E\ndechets_de_produits_chimiques_basiques\t\u003Cbr \u002F\u003E\ndechets_phytosanitaires_menagers_produits_chimiques\t\u003Cbr \u002F\u003E\ndechets_verts\t\u003Cbr \u002F\u003E\ndecoration\t\u003Cbr \u002F\u003E\ndecorations_textiles_elements_d_ameublement\t\u003Cbr \u002F\u003E\ndasri\t\u003Cbr \u002F\u003E\necran\t\u003Cbr \u002F\u003E\nemballage_carton\t\u003Cbr \u002F\u003E\nemballage_metal\t\u003Cbr \u002F\u003E\nemballage_plastique\t\u003Cbr \u002F\u003E\nemballage_verre\t\u003Cbr \u002F\u003E\nemballage_reemployable\t\u003Cbr \u002F\u003E\nautres_emballages_menagers\t\u003Cbr \u002F\u003E\nencombrants_menagers_divers\t\u003Cbr \u002F\u003E\ngros_electromenager_hors_refrigerant\t\u003Cbr \u002F\u003E\ngros_electromenager_refrigerant\t\u003Cbr \u002F\u003E\nhuiles_lubrifiantes\t\u003Cbr \u002F\u003E\nhuisseries_produits_et_materiaux_de_construction_du_batiment\t\u003Cbr \u002F\u003E\ninstrument_de_musique\t\u003Cbr \u002F\u003E\ninstrument_musique_electrique\t\u003Cbr \u002F\u003E\njels_mobilite_electrique\t\u003Cbr \u002F\u003E\njouet\t\u003Cbr \u002F\u003E\nlaine_de_roche_produits_et_materiaux_de_construction_du_batiment\t\u003Cbr \u002F\u003E\nlaine_de_verre_produits_et_materiaux_de_construction_du_batiment\t\u003Cbr \u002F\u003E\nlinge_de_maison\t\u003Cbr \u002F\u003E\nliterie_elements_d_ameublement\t\u003Cbr \u002F\u003E\nlivre\t\u003Cbr \u002F\u003E\nluminaire\t\u003Cbr \u002F\u003E\nlunettes_de_vue_aides_techniques\t\u003Cbr \u002F\u003E\nmachines_et_appareils_motorises_thermiques\t\u003Cbr \u002F\u003E\nmaroquinerie\t\u003Cbr \u002F\u003E\nmateriau_du_batiment_reemployable\t\u003Cbr \u002F\u003E\nmateriel_de_sport_hors_velo\t\u003Cbr \u002F\u003E\nmateriel_hifi_et_video\t\u003Cbr \u002F\u003E\nmateriel_informatique\t\u003Cbr \u002F\u003E\nmateriel_medical\t\u003Cbr \u002F\u003E\nmateriel_photo_et_cinema\t\u003Cbr \u002F\u003E\nmedicaments\t\u003Cbr \u002F\u003E\nmélange_d_inertes_produits_et_materiaux_de_construction_du_batiment\t\u003Cbr \u002F\u003E\nmembranes_bitumineuses_pmcb_produits_et_materiaux_de_construction_du_batiment\t\u003Cbr \u002F\u003E\nmetal_pmcb_produits_et_materiaux_de_construction_du_batiment\t\u003Cbr \u002F\u003E\nmeuble\t\u003Cbr \u002F\u003E\noutil_de_bricolage_et_jardinage\t\u003Cbr \u002F\u003E\nabj_electrique\t\u003Cbr \u002F\u003E\nabj_outillage_du_peintre_usage\t\u003Cbr \u002F\u003E\npalette\t\u003Cbr \u002F\u003E\npanneaux_photovoltaiques\t\u003Cbr \u002F\u003E\npapeterie\t\u003Cbr \u002F\u003E\npapiers_graphiques\t\u003Cbr \u002F\u003E\npetit_electromenager\t\u003Cbr \u002F\u003E\npetits_appareils_extincteurs\t\u003Cbr \u002F\u003E\nplastiques_pmcb_produits_et_materiaux_de_construction_du_batiment\t\u003Cbr \u002F\u003E\nplatre_pmcb_produits_et_materiaux_de_construction_du_batiment\t\u003Cbr \u002F\u003E\npneu\t\u003Cbr \u002F\u003E\npoele_casserole\t\u003Cbr \u002F\u003E\nproduits_chimiques_solvants\t\u003Cbr \u002F\u003E\nproduits_pyrotechniques\t\u003Cbr \u002F\u003E\npuericulture\t\u003Cbr \u002F\u003E\nrembourres_d_assise_ou_de_couchage_elements_d_ameublement\t\u003Cbr \u002F\u003E\nsieges_elements_d_ameublement\t\u003Cbr \u002F\u003E\nsmartphone_tablette_et_console\t\u003Cbr \u002F\u003E\nvaisselle\t\u003Cbr \u002F\u003E\nvehicule\t\u003Cbr \u002F\u003E\nvelo\t\u003Cbr \u002F\u003E\nvetement\t\u003Cbr \u002F\u003E\u003C\u002Fp\u003E\n\u003Cp\u003E\u003Cstrong\u003ECatégories possibles - Libellé :\u003C\u002Fstrong\u003E\u003Cbr \u002F\u003E\nAccessoire et meuble de jardin\u003Cbr \u002F\u003E\nAmpoule\u003Cbr \u002F\u003E\nAutre équipement électronique\u003Cbr \u002F\u003E\nAutres PMCB (Produits de construction d'origine végétale, animale, ou autres déchets de PMCB non-séparables)\u003Cbr \u002F\u003E\nBateau\u003Cbr \u002F\u003E\nBatteries de moyens de transport Légers (MTL)\u003Cbr \u002F\u003E\nBatteries de voitures pour démarrage, éclairage &amp; allumage (SLI)\u003Cbr \u002F\u003E\nBatteries &amp; piles portables\u003Cbr \u002F\u003E\nBéton (Bâtiment)\u003Cbr \u002F\u003E\nBijou et montre\u003Cbr \u002F\u003E\nBiodéchets &amp; déchets alimentaires\u003Cbr \u002F\u003E\nBois (Matériaux du Bâtiment)\u003Cbr \u002F\u003E\nBouchons en liège\u003Cbr \u002F\u003E\nBouteille plastique\u003Cbr \u002F\u003E\nCartouches d'encre\u003Cbr \u002F\u003E\nCD, DVD et jeu vidéo\u003Cbr \u002F\u003E\nChaussures\u003Cbr \u002F\u003E\nDéchets dangereux du bâtiment\u003Cbr \u002F\u003E\nDéchets de peintures, vernis, encres et colles - Produits chimiques\u003Cbr \u002F\u003E\nDéchets de produits chimiques\u003Cbr \u002F\u003E\nDéchets de produits chimiques acides\u003Cbr \u002F\u003E\nDéchets de produits chimiques basiques\u003Cbr \u002F\u003E\nDéchets phytosanitaires ménagers - Produits chimiques\u003Cbr \u002F\u003E\nDéchets verts\u003Cbr \u002F\u003E\nDécoration\u003Cbr \u002F\u003E\nDécoration textile - Éléments d'ameublement\u003Cbr \u002F\u003E\nDispositifs Médicaux Perforants \u002F Déchets d'Activités de Soins à Risque Infectieux (DASRI)\u003Cbr \u002F\u003E\nÉcran\u003Cbr \u002F\u003E\nEmballage en carton\u003Cbr \u002F\u003E\nEmballage en métal\u003Cbr \u002F\u003E\nEmballage en plastique\u003Cbr \u002F\u003E\nEmballage en verre\u003Cbr \u002F\u003E\nEmballage réemployable\u003Cbr \u002F\u003E\nEmballages ménagers multimatériaux\u003Cbr \u002F\u003E\nEncombrants ménagers divers\u003Cbr \u002F\u003E\nGros électroménager (hors réfrigérant)\u003Cbr \u002F\u003E\nGros électroménager (réfrigérant)\u003Cbr \u002F\u003E\nHuiles lubrifiantes\u003Cbr \u002F\u003E\nHuisseries (Bâtiment)\u003Cbr \u002F\u003E\nInstrument de musique\u003Cbr \u002F\u003E\nInstrument de musique électrique\u003Cbr \u002F\u003E\nJELS (Jouets, équipements de loisirs et de sport) - Mobilité\u003Cbr \u002F\u003E\nJouet\u003Cbr \u002F\u003E\nLaine de roche (Bâtiment)\u003Cbr \u002F\u003E\nLaine de verre (Bâtiment)\u003Cbr \u002F\u003E\nLinge de maison\u003Cbr \u002F\u003E\nLiterie - Éléments d'ameublement\u003Cbr \u002F\u003E\nLivre\u003Cbr \u002F\u003E\nLuminaire\u003Cbr \u002F\u003E\nLunettes de vue\u003Cbr \u002F\u003E\nMachines et appareils motorisés thermiques\u003Cbr \u002F\u003E\nMaroquinerie\u003Cbr \u002F\u003E\nMatériau du bâtiment réemployable\u003Cbr \u002F\u003E\nMatériel de sport (hors vélo)\u003Cbr \u002F\u003E\nMatériel hifi et vidéo\u003Cbr \u002F\u003E\nMatériel informatique\u003Cbr \u002F\u003E\nMatériel médical\u003Cbr \u002F\u003E\nmatériel photo et cinéma\u003Cbr \u002F\u003E\nMédicaments non utilisés\u003Cbr \u002F\u003E\nMélange d’inertes (Bâtiment)\u003Cbr \u002F\u003E\nMembranes bitumineuses (Bâtiment)\u003Cbr \u002F\u003E\nMétal (Matériaux du Bâtiment)\u003Cbr \u002F\u003E\nMeuble\u003Cbr \u002F\u003E\nOutil de bricolage et jardinage\u003Cbr \u002F\u003E\nOutil de bricolage et jardinage électrique\u003Cbr \u002F\u003E\nOutillage du peintre usagé\u003Cbr \u002F\u003E\nPalette\u003Cbr \u002F\u003E\nPanneaux photovoltaïques\u003Cbr \u002F\u003E\nPapier graphique\u003Cbr \u002F\u003E\nPetit électroménager\u003Cbr \u002F\u003E\nPetits appareils extincteurs\u003Cbr \u002F\u003E\nPlastiques (Matériaux du bâtiment)\u003Cbr \u002F\u003E\nPlâtre (Bâtiment)\u003Cbr \u002F\u003E\nPneu\u003Cbr \u002F\u003E\nPoêle et casserole\u003Cbr \u002F\u003E\nProduits chimiques - Solvants\u003Cbr \u002F\u003E\nProduits pyrotechniques\u003Cbr \u002F\u003E\nPuériculture\u003Cbr \u002F\u003E\nRembourrés d'assise ou de couchage - Éléments d'ameublement\u003Cbr \u002F\u003E\nSièges - Éléments d'ameublement\u003Cbr \u002F\u003E\nSmartphone, tablette et console\u003Cbr \u002F\u003E\nVaisselle\u003Cbr \u002F\u003E\nVéhicule\u003Cbr \u002F\u003E\nVélo\u003Cbr \u002F\u003E\nVêtement\u003Cbr \u002F\u003E\u003C\u002Fp\u003E","x-cardinality":390,separator:ao},{key:O,"x-originalName":O,type:a,format:aI,description:"\u003Cp\u003EDate de la dernière modification (mise à jour, correction, etc) sur cet acteur.\u003C\u002Fp\u003E","x-cardinality":731},{key:P,"x-originalName":P,type:a,"x-display":d,"x-capabilities":{index:b,values:b,insensitive:b},description:"\u003Cp\u003ECatégorie(s) d'objets pouvant être empruntés\u003C\u002Fp\u003E",separator:g},{key:Q,"x-originalName":Q,type:a,"x-display":d,"x-capabilities":{index:b,values:b,insensitive:b},description:"\u003Cp\u003ECatégorie(s) d'objets pouvant être prêtés\u003C\u002Fp\u003E",separator:g},{key:R,"x-originalName":R,type:a,"x-display":d,"x-capabilities":{index:b,values:b,insensitive:b},description:"\u003Cp\u003ECatégorie(s) d'objets pouvant être loués\u003C\u002Fp\u003E",separator:g},{key:S,"x-originalName":S,type:a,"x-display":d,"x-capabilities":{index:b,values:b,insensitive:b},description:"\u003Cp\u003ECatégorie(s) d'objets pouvant être mis en location\u003C\u002Fp\u003E",separator:g},{key:T,"x-originalName":T,type:a,"x-display":d,"x-capabilities":{index:b,values:b,insensitive:b},description:"\u003Cp\u003ECatégorie(s) d'objets pouvant être réparés\u003C\u002Fp\u003E",separator:g},{key:U,"x-originalName":U,type:a,"x-display":d,"x-capabilities":{index:b,values:b,insensitive:b},description:"\u003Cp\u003ECatégorie(s) d'objets pouvant être donnés\u003C\u002Fp\u003E",separator:g},{key:V,"x-originalName":V,type:a,"x-display":d,"x-capabilities":{index:b,values:b,insensitive:b},description:"\u003Cp\u003ECatégorie(s) d'objets pouvant être triés\u003C\u002Fp\u003E",separator:g},{key:W,"x-originalName":W,type:a,"x-display":d,"x-capabilities":{index:b,values:b,insensitive:b},description:"\u003Cp\u003ECatégorie(s) d'objets pouvant être échangés\u003C\u002Fp\u003E",separator:g},{key:X,"x-originalName":X,type:a,"x-display":d,"x-capabilities":{index:b,values:b,insensitive:b},description:"\u003Cp\u003ECatégorie(s) d'objets pouvant être revendus\u003C\u002Fp\u003E",separator:g},{key:Y,"x-originalName":Y,type:a,"x-display":d,"x-capabilities":{index:b,values:b,insensitive:b},description:"\u003Cp\u003ECatégorie(s) d'objets pouvant être achetés de seconde main\u003C\u002Fp\u003E",separator:g},{key:Z,"x-originalName":Z,type:a,"x-cardinality":am,description:"\u003Cp\u003ECatégorie(s) d'objets pouvant être rapportés (typiquement : les emballages réemployables)\u003C\u002Fp\u003E"},{key:_,"x-originalName":_,type:a,"x-cardinality":o,description:"\u003Cp\u003E\u003Cstrong\u003EValeurs possibles :\u003C\u002Fstrong\u003E \n\u003Cbr \u002F\u003E SUR_PLACE\n\u003Cbr \u002F\u003ESUR_PLACE_OU_A_DOMICILE\n\u003Cbr \u002F\u003EA_DOMICILE\u003C\u002Fp\u003E\n\u003Cp\u003ESi la valeur est A_DOMICILE, cela veut dire que l'acteur intervient uniquement à domicile (pas en boutique). Dans ce cas, ne \u003Cstrong\u003Epas\u003C\u002Fstrong\u003E afficher cet acteur sur une carte. Son adresse correspond potentiellement à son domicile personnel, et ne doit pas être exposée.\u003C\u002Fp\u003E",enum:["SUR_PLACE","SUR_PLACE_OU_A_DOMICILE","A_DOMICILE"]},{key:$,"x-originalName":$,type:a,"x-cardinality":213,description:"\u003Cp\u003ESi l'acteur propose un service à domicile, alors ce champ est renseigné pour indiquer le périmètre d'intervention (= territoire sur lequel l'acteur peut intervenir). Ce périmètre peut être défini de 2 façons : \n\u003Cbr \u002F\u003E\nsoit kilométrique (par rapport à ses coordonnées GPS). Ex : [{\"type\": \"KILOMETRIQUE\", \"valeur\": \"10\"}]\n\u003Cbr \u002F\u003E\nsoit un ou plusieurs départements. Ex :  [{\"type\": \"DEPARTEMENTAL\", \"valeur\": \"35\"}]\u003C\u002Fp\u003E",separator:ao},{key:aa,"x-originalName":aa,type:a,"x-cardinality":65,description:"\u003Cp\u003EFormat libre.\u003C\u002Fp\u003E"},{key:ab,"x-originalName":ab,type:a,"x-display":d,"x-capabilities":{index:b,values:b,insensitive:b},description:"\u003Cp\u003EHoraires au format libre.\u003C\u002Fp\u003E"},{key:ac,"x-originalName":ac,type:a,"x-cardinality":797,description:"\u003Cp\u003EHoraires au format OSM \u003Ca href=\"https:\u002F\u002Fwiki.openstreetmap.org\u002Fwiki\u002FFR:Key:opening_hours\"\u003Ehttps:\u002F\u002Fwiki.openstreetmap.org\u002Fwiki\u002FFR:Key:opening_hours\u003C\u002Fa\u003E\u003C\u002Fp\u003E","x-refersTo":"https:\u002F\u002Fschema.org\u002FopeningHours",separator:"; ","x-concept":{id:"openingHours",title:"Horaires d'ouverture",primary:c}},{key:ad,"x-originalName":ad,type:a,"x-display":d,"x-capabilities":{index:b,values:b,insensitive:b},description:"\u003Cp\u003EIdentifiant initial dans la base de données de la (ou les) source. \u003C\u002Fp\u003E",separator:ao},{key:ae,"x-originalName":ae,type:a,"x-cardinality":27926,description:"\u003Cp\u003EIdentifiant de la commune (INSEE)\u003C\u002Fp\u003E","x-refersTo":"http:\u002F\u002Frdf.insee.fr\u002Fdef\u002Fgeo#codeCommune","x-concept":{id:"codeCommune",title:"Code commune",primary:c},title:"Code Commune"},{key:af,"x-originalName":af,type:a,"x-cardinality":1253,description:"\u003Cp\u003EIdentifiant de la collectivité (EPCI)\u003C\u002Fp\u003E","x-refersTo":"http:\u002F\u002Frdf.insee.fr\u002Fdef\u002Fgeo#EtablissementPublicDeCooperationIntercommunale","x-concept":{id:"codeEPCI",title:aJ,primary:c},title:aJ},{key:ag,"x-originalName":ag,type:a,"x-cardinality":1250,description:"\u003Cp\u003ENom de la collectivité (EPCI)\u003C\u002Fp\u003E","x-refersTo":"http:\u002F\u002Fwww.w3.org\u002F2000\u002F01\u002Frdf-schema#label","x-concept":{id:"label",title:"Libellé",primary:c},title:"Nom EPCI"},{key:"nom_region","x-originalName":aK,"x-extension":ap,title:"Nom région",description:"\u003Cp\u003ENom de la région dans laquelle se trouve cet établissement\u003C\u002Fp\u003E",type:a,"x-refersTo":"https:\u002F\u002Fschema.org\u002FaddressRegion","x-capabilities":{},"x-concept":{id:"region",title:"Région",primary:c}},{key:aq,"x-originalName":aq,"x-extension":ar,title:"Nom département",description:"\u003Cp\u003ENom du département dans lequel se trouve cet établissement\u003C\u002Fp\u003E",type:a,"x-refersTo":"http:\u002F\u002Frdf.insee.fr\u002Fdef\u002Fgeo#Departement","x-capabilities":{},"x-concept":{id:"departement",title:"Département",primary:c}},{key:aL,"x-originalName":aL,"x-extension":ap,title:aM,description:"\u003Cp\u003ECode de la région dans laquelle se trouve cet établissement\u003C\u002Fp\u003E",type:a,"x-refersTo":"http:\u002F\u002Frdf.insee.fr\u002Fdef\u002Fgeo#codeRegion","x-capabilities":{},"x-concept":{id:"codeRegion",title:aM,primary:c}},{key:aN,"x-originalName":aN,"x-extension":ar,title:aO,description:"\u003Cp\u003ECode du département dans lequel se trouve cet établissement\u003C\u002Fp\u003E",type:a,"x-refersTo":"http:\u002F\u002Frdf.insee.fr\u002Fdef\u002Fgeo#codeDepartement","x-capabilities":{},"x-concept":{id:"codeDepartement",title:aO,primary:c}},{key:"_reverse_geoloc-region._error",type:a,"x-originalName":as,"x-extension":ap,title:at,description:au,"x-calculated":c},{key:"_reverse_geoloc-departement._error",type:a,"x-originalName":as,"x-extension":ar,title:at,description:au,"x-calculated":c},{key:"_siret_infos._error",type:a,"x-originalName":as,"x-extension":aH,title:at,description:au,"x-calculated":c},{"x-calculated":c,key:"_geopoint",type:a,title:"Coordonnée géographique",description:"\u003Cp\u003ECentroïde au format \"lat,lon\"\u003C\u002Fp\u003E","x-refersTo":"http:\u002F\u002Fwww.w3.org\u002F2003\u002F01\u002Fgeo\u002Fwgs84_pos#lat_long","x-concept":{id:"latLon",title:"Latitude \u002F Longitude",primary:c}},{"x-calculated":c,key:"_id",type:a,format:"uri-reference",title:"Identifiant",description:"\u003Cp\u003EIdentifiant unique parmi toutes les lignes du jeu de données\u003C\u002Fp\u003E"},{"x-calculated":c,key:"_i",type:i,title:"Numéro de ligne",description:"\u003Cp\u003EIndice de la ligne dans le fichier d'origine\u003C\u002Fp\u003E"},{"x-calculated":c,key:"_rand",type:i,title:"Nombre aléatoire",description:"\u003Cp\u003EUn nombre aléatoire associé à la ligne qui permet d'obtenir un tri aléatoire par exemple\u003C\u002Fp\u003E"}],status:"finalized",id:"wvw1zecq4f4gyvonve5j0hr7",slug:"longue-vie-aux-objets-acteurs-de-leconomie-circulaire",bbox:[-176.20355450548232,-22.665842911228538,167.4960077740252,51.95520216599107],count:382551,dataUpdatedAt:"2026-06-29T02:31:28.907Z",dataUpdatedBy:{id:"apiKey:QsU6yCHgyXq4fj-SOIvK-",name:"Processings"},file:{name:av,size:aw,mimetype:ah,encoding:aP,schema:[{key:t,"x-originalName":t,type:a},{key:u,"x-originalName":u,type:a,"x-display":d},{key:ad,"x-originalName":ad,type:a,"x-display":d},{key:v,"x-originalName":v,type:a},{key:w,"x-originalName":w,type:a},{key:k,"x-originalName":k,type:i},{key:l,"x-originalName":l,type:i},{key:x,"x-originalName":x,type:a,"x-display":d},{key:y,"x-originalName":y,type:a},{key:z,"x-originalName":z,type:a},{key:A,"x-originalName":A,type:a},{key:B,"x-originalName":B,type:a},{key:C,"x-originalName":C,type:a,"x-display":d},{key:D,"x-originalName":D,type:i},{key:E,"x-originalName":E,type:a},{key:ae,"x-originalName":ae,type:a},{key:af,"x-originalName":af,type:i},{key:ag,"x-originalName":ag,type:a},{key:m,"x-originalName":m,type:F},{key:n,"x-originalName":n,type:F},{key:G,"x-originalName":G,type:a},{key:H,"x-originalName":H,type:a},{key:I,"x-originalName":I,type:a},{key:J,"x-originalName":J,type:a},{key:L,"x-originalName":L,type:a},{key:M,"x-originalName":M,type:a,"x-display":d},{key:aa,"x-originalName":aa,type:a,"x-display":d},{key:ab,"x-originalName":ab,type:a,"x-display":d},{key:ac,"x-originalName":ac,type:a},{key:_,"x-originalName":_,type:a},{key:$,"x-originalName":$,type:a,"x-display":d},{key:N,"x-originalName":N,type:a,"x-display":d},{key:P,"x-originalName":P,type:a,"x-display":d},{key:Q,"x-originalName":Q,type:a,"x-display":d},{key:R,"x-originalName":R,type:a,"x-display":d},{key:S,"x-originalName":S,type:a,"x-display":d},{key:T,"x-originalName":T,type:a,"x-display":d},{key:U,"x-originalName":U,type:a,"x-display":d},{key:V,"x-originalName":V,type:a,"x-display":d},{key:W,"x-originalName":W,type:a,"x-display":d},{key:X,"x-originalName":X,type:a,"x-display":d},{key:Y,"x-originalName":Y,type:a,"x-display":d},{key:Z,"x-originalName":Z,type:a},{key:O,"x-originalName":O,type:a,format:aI}],props:{linesDelimiter:"\n",fieldsDelimiter:",",escapeChar:aQ,quote:aQ}},finalizedAt:"2026-06-29T03:22:15.124Z",originalFile:{name:av,size:aw,mimetype:ah,encoding:aP},storage:{size:589239186,dataFiles:[{name:av,key:"original",title:"Fichier d'origine",mimetype:ah,size:aw,updatedAt:"2026-06-29T03:22:47.000Z"},{name:"acteurs-full.csv",key:"full",title:"Fichier enrichi CSV",mimetype:ah,size:aR,updatedAt:"2026-06-29T03:22:31.000Z"}],indexed:{size:aR,parts:["full-file"]},attachments:{size:p,count:p},metadataAttachments:{size:86393647,count:o},masterData:{size:p,count:p}},description:"\u003Ch3\u003E\u003Cstrong\u003EDescription\u003C\u002Fstrong\u003E\u003C\u002Fh3\u003E\n\u003Cp\u003ECe jeu de données ouvertes, proposé dans le cadre du projet numérique “\u003Ca href=\"https:\u002F\u002Fquefairedemesdechets.ademe.fr\u002Fqui-sommes-nous\u002F\"\u003EQue Faire De Mes Objets et Déchets\u003C\u002Fa\u003E” de l'ADEME, est le jeu de données de référence qui met à disposition une liste de solutions de l’économie circulaire sur l’ensemble du territoire national. \nLe fichier agrège \u003Ca href=\"https:\u002F\u002Fquefairedemesdechets.ademe.fr\u002Fsources-donnees\u002F\"\u003Edifférentes sources de données\u003C\u002Fa\u003E d'acteurs du réemploi, de la réparation et du tri des objets et des déchets, à destination des particuliers, tels que des éco-organismes, des organisations publiques, semi-publiques ou privées ainsi que des organisations associatives, des fédérations professionnelles et des contributions citoyennes.\nLa première version de ce jeu de données a été mise en ligne en novembre 2024. \u003C\u002Fp\u003E\n\u003Cp\u003EPour visualiser les lieux présents dans notre jeu de données ouvertes, vous pouvez consulter \u003Ca href=\"https:\u002F\u002Fquefairedemesdechets.ademe.fr\u002Fnos-outils\u002Fdonnees-ouvertes\u002F#:~:text=Un%20exemple%20d%27exploitation%20de%20notre%20donn%C3%A9e%20%3A%20la%20visualisation%20carte\u002Fliste%20int%C3%A9gr%C3%A9e%20dans%20notre%20site%20et%20nos%20produits%20num%C3%A9riques\"\u003Ecette mise en oeuvre\u003C\u002Fa\u003E, sous forme de carte interactive, intégrée dans “\u003Ca href=\"https:\u002F\u002Fquefairedemesdechets.ademe.fr\u002Fqui-sommes-nous\u002F\"\u003EQue Faire De Mes Objets et Déchets\u003C\u002Fa\u003E” ou nos différents \u003Ca href=\"https:\u002F\u002Fquefairedemesdechets.ademe.fr\u002Fnos-outils\u002F\"\u003Eoutils numériques de réutilisation\u003C\u002Fa\u003E mis à votre disposition.\n \u003Cbr \u002F\u003E\u003C\u002Fp\u003E\n\u003Ch3\u003E\u003Cstrong\u003EExemple de réutilisations\u003C\u002Fstrong\u003E\u003C\u002Fh3\u003E\n\u003Cp\u003EDécouvrez ci-dessous un cas de réutilisations de ce jeu de données afin de mieux appréhender les capacités de celui-ci :\u003C\u002Fp\u003E\n\u003Cul\u003E\n\u003Cli\u003E\u003Ca href=\"https:\u002F\u002Fquefairedemesdechets.ademe.fr\u002Fnos-outils\u002Fdonnees-ouvertes\u002F#:~:text=Auditer%20le%20maillage%20%C3%A9conomique%20d%27un%20territoire%20sur%20le%20secteur%20de%20l%27%C3%A9conomie%20circulaire\"\u003Eréaliser un audit du maillage économique d’un territoire des lieux de l’économie circulaire\u003C\u002Fa\u003E - par exemple, 8 Fablab, cabinet de conseil, en réponse à un appel à projets de la Communauté de Communes du Val de Drôme, a réalisé un audit territorial sur ce territoire de l’ensemble des acteurs de l’économie circulaire.\u003C\u002Fli\u003E\n\u003C\u002Ful\u003E\n\u003Cp\u003E \u003Cbr \u002F\u003E \u003Cbr \u002F\u003E\u003C\u002Fp\u003E\n\u003Ch3\u003E\u003Cstrong\u003EPrécautions d’emploi\u003C\u002Fstrong\u003E\u003C\u002Fh3\u003E\n\u003Cul\u003E\n\u003Cli\u003ECe jeu de données n’est toutefois pas, pour le moment, en capacité de référencer l’intégralité des lieux de l’économie circulaire en France. Aussi, les acteurs à destination des professionnels (B2B), les lieux d’upcycling ou de surcyclage et certaines catégories d’objets et de déchets comme les huiles alimentaires et la papèterie ne se trouvent pas dans ce jeu de données.\u003C\u002Fli\u003E\n\u003Cli\u003EDe plus, certaines adresses peuvent ne pas être à jour. Nous oeuvrons activement à fiabiliser ces données.\u003C\u002Fli\u003E\n\u003C\u002Ful\u003E\n\u003Cp\u003E \u003Cbr \u002F\u003E \u003Cbr \u002F\u003E\u003C\u002Fp\u003E\n\u003Ch3\u003E\u003Cstrong\u003EPrérequis d’utilisation\u003C\u002Fstrong\u003E\u003C\u002Fh3\u003E\n\u003Cul\u003E\n\u003Cli\u003E\u003Cstrong\u003EVous vous apprêtez à utiliser ces données ?\u003C\u002Fstrong\u003E ➡️ Indiquez-le nous via \u003Ca href=\"https:\u002F\u002Ftally.so\u002Fr\u002F7Rejq0\"\u003Ece formulaire\u003C\u002Fa\u003E en seulement 30 secondes. Ainsi, nous vous informerons en cas de changement majeur dans la gestion de notre structure de données.\u003C\u002Fli\u003E\n\u003Cli\u003EDans le cadre de la réutilisation de notre jeu de données publiques, vous êtes tenus de respecter les conditions de la licence sous laquelle les données publiques ont initialement été publiées :\u003Cul\u003E\n\u003Cli\u003E\u003Cstrong\u003EMentionnez-nous comme source des données, en affichant :\u003C\u002Fstrong\u003E\u003Cul\u003E\n\u003Cli\u003Ele nom de la source des données : \"\u003Cem\u003EQue faire de mes objets &amp; déchets - ADEME\u003C\u002Fem\u003E\"\u003C\u002Fli\u003E\n\u003Cli\u003Ela date de mise à jour de la réutilisation\u003C\u002Fli\u003E\n\u003Cli\u003Eun lien hypertexte qui redirige vers le site \u003Ca href=\"https:\u002F\u002Fquefairedemesdechets.ademe.fr\u002F\"\u003Equefairedemesdechets.ademe.fr\u003C\u002Fa\u003E\u003C\u002Fli\u003E\n\u003C\u002Ful\u003E\n\u003C\u002Fli\u003E\n\u003Cli\u003EPour chaque acteur ou lieu, la réutilisation de ces données doit notamment se faire dans le \u003Cstrong\u003Erespect de la paternité\u003C\u002Fstrong\u003E des données (l'ADEME jouant le rôle d'agrégateur de ces données et de producteur de cette base de données). Ainsi, veillez, pour toute réutilisation de partie ou de l'ensemble de ces données, à bien conserver et afficher la source complète des données en reprenant les libellés de la \u003Cstrong\u003Ecolonne B\u003C\u002Fstrong\u003E \"Paternité\" pour chacune des lignes.\u003C\u002Fli\u003E\n\u003Cli\u003E\u003Cstrong\u003ELes données et leur sens ne doivent pas être modifiées ou altérées\u003C\u002Fstrong\u003E. Toute erreur ou demande de suppression concernant une ligne de ce jeu de données peut être signalée via \u003Ca href=\"https:\u002F\u002Ftally.so\u002Fr\u002F3xMqd9\"\u003Ece formulaire\u003C\u002Fa\u003E. Vous pouvez contribuer à enrichir ce jeu de données, après avoir vérifié si votre adresse est manquante, via \u003Ca href=\"https:\u002F\u002Ftally.so\u002Fr\u002Fwzy9ZZ\"\u003Ece formulaire\u003C\u002Fa\u003E.\u003C\u002Fli\u003E\n\u003Cli\u003E\u003Cstrong\u003EVous êtes tenus de vous conformer aux obligations légales\u003C\u002Fstrong\u003E qui découlent du \u003Ca href=\"https:\u002F\u002Fwww.economie.gouv.fr\u002Fentreprises\u002Fgerer-son-entreprise-au-quotidien\u002Fassurer-sa-cybersecurite-et-la-protection-de-ses\u002Fle\"\u003ERèglement général sur la protection des données\u003C\u002Fa\u003E. Depuis son entrée en application le 25 mai 2018, le RGPD impose à tous les professionnels un strict encadrement du traitement des données, quels que soient leur secteur et leur taille.\u003C\u002Fli\u003E\n\u003Cli\u003EPour plus de détails, retrouvez le détail de la licence ci-contre.\u003C\u002Fli\u003E\n\u003C\u002Ful\u003E\n\u003C\u002Fli\u003E\n\u003C\u002Ful\u003E\n\u003Cp\u003E \u003Cbr \u002F\u003E \u003Cbr \u002F\u003E\u003C\u002Fp\u003E\n\u003Ch3\u003E\u003Cstrong\u003EContributions et bonnes pratiques\u003C\u002Fstrong\u003E\u003C\u002Fh3\u003E\n\u003Cul\u003E\n\u003Cli\u003E\u003Cp\u003E\u003Cstrong\u003EAvant de proposer des ajouts\u002Fchangements\u003C\u002Fstrong\u003E\u003C\u002Fp\u003E\n\u003Cul\u003E\n\u003Cli\u003EAssurez-vous que la donnée n'existe pas déjà;\u003C\u002Fli\u003E\n\u003Cli\u003EVos suggestions concernent des PAV qui sont soumis à filière REP ? Merci de bien vouloir transmettre également ces modifications à l'éco-organisme agréé, dont nous relayons les données.\u003C\u002Fli\u003E\n\u003C\u002Ful\u003E\n\u003C\u002Fli\u003E\n\u003Cli\u003E\u003Cp\u003E\u003Cstrong\u003EProposer la modification d'un lieu\u003C\u002Fstrong\u003E\u003C\u002Fp\u003E\n\u003Cul\u003E\n\u003Cli\u003EIl est possible de modifier ou enrichir des informations (description, horaires, adresse...) pour un acteur ou lieu existant de la carte\u002Fliste via \u003Ca href=\"https:\u002F\u002Ftally.so\u002Fr\u002F3xMqd9\"\u003Ece formulaire\u003C\u002Fa\u003E, également disponible dans la fiche de cet acteur sur “\u003Ca href=\"https:\u002F\u002Fquefairedemesdechets.ademe.fr\u002Fnos-outils\u002Fdonnees-ouvertes\u002F#:~:text=Un%20exemple%20d%27exploitation%20de%20notre%20donn%C3%A9e%20%3A%20la%20visualisation%20carte\u002Fliste%20int%C3%A9gr%C3%A9e%20dans%20notre%20site%20et%20nos%20produits%20num%C3%A9riques\"\u003EQue Faire De Mes Objets et Déchets\u003C\u002Fa\u003E” en cliquant sur \"🖊️\u003Cem\u003EProposer une modification\u003C\u002Fem\u003E\" en bas de la fiche.\u003C\u002Fli\u003E\n\u003C\u002Ful\u003E\n\u003C\u002Fli\u003E\n\u003Cli\u003E\u003Cp\u003E\u003Cstrong\u003EProposer l'ajout d'un lieu\u003C\u002Fstrong\u003E\u003C\u002Fp\u003E\n\u003Cul\u003E\n\u003Cli\u003ESi l'acteur ou le lieu ne ressort pas, \u003Cstrong\u003Eaprès\u003C\u002Fstrong\u003E avoir vérifié dans le jeu de données et\u002Fou sur la visualisation carte\u002Fliste, il est possible de l'ajouter via \u003Ca href=\"https:\u002F\u002Ftally.so\u002Fr\u002Fwzy9ZZ\"\u003Ece formulaire\u003C\u002Fa\u003E, également disponible dans “\u003Ca href=\"https:\u002F\u002Fquefairedemesdechets.ademe.fr\u002Fnos-outils\u002Fdonnees-ouvertes\u002F#:~:text=Un%20exemple%20d%27exploitation%20de%20notre%20donn%C3%A9e%20%3A%20la%20visualisation%20carte\u002Fliste%20int%C3%A9gr%C3%A9e%20dans%20notre%20site%20et%20nos%20produits%20num%C3%A9riques\"\u003EQue Faire De Mes Objets et Déchets\u003C\u002Fa\u003E” en cliquant sur \"\u003Cem\u003EAjouter un lieu sur la carte\u003C\u002Fem\u003E\".\u003C\u002Fli\u003E\n\u003C\u002Ful\u003E\n\u003C\u002Fli\u003E\n\u003Cli\u003E\u003Cp\u003E\u003Cstrong\u003EProposer des modifications en masse\u003C\u002Fstrong\u003E\u003C\u002Fp\u003E\n\u003Cul\u003E\n\u003Cli\u003EPour des volumes importants de modifications, merci de bien vouloir partir d'un export de notre jeu de données en ne conservant que les lignes que vous souhaitez voir modifier, et d'utiliser un code couleur dans les cases concernées ou en créant des colonnes supplémentaires (ancienne donnée \u002F nouvelle donnée) avant de nous renvoyer ce fichier retraité.\u003C\u002Fli\u003E\n\u003C\u002Ful\u003E\n\u003C\u002Fli\u003E\n\u003C\u002Ful\u003E",license:{href:"https:\u002F\u002Fwww.etalab.gouv.fr\u002Flicence-ouverte-open-licence",title:"Licence Ouverte \u002F Open Licence version 2.0"},topics:[{title:"Economie circulaire et déchets",color:"#0070C0FF",id:"d2-r8c-q5eow8euuircng9bp",icon:{name:"trash-can-outline",svgPath:"M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"}}],origin:"https:\u002F\u002Fquefairedemesdechets.ademe.fr\u002Fsources-donnees",spatial:"Nationale",keywords:["économie circulaire","réemploi","recyclage","seconde main","occasion","réparation","Transition écologique","Economie circulaire ","REP ","Déchets"],publicationSites:["data-fair-portals:efWMeL1ZP",aS,aS],requestedPublicationSites:[],publications:[],frequency:"weekly",summary:"Ce jeu de données recense les adresses de l'économie circulaire en France (Réemploi, réparation, recyclage,  tri et dépôt des vêtements, emballages, jouets, articles de sport, équipements électriques et électroniques...). L'objectif est de faire connaître ces lieux pour encourager les citoyens à adopter ces pratiques et leur faciliter le passage à l'action pour ces gestes de réparation, réemploi et tri de leurs objets et déchets du quotidien. \nCes données servent notamment à alimenter la carte des lieux présentée aux internautes sur https:\u002F\u002Fquefairedemesdechets.ademe.fr\u002F une fois qu'ils ont renseigné une adresse (ainsi, la carte zoome sur le territoire demandé, et affiche les points d'intérêt à proximité).\n\nServeur MCP du portail data.ademe.fr : https:\u002F\u002Fdata.ademe.fr\u002Fmcp-server\u002Fdatasets\u002Fmcp\n",attachments:[{includeInCatalogPublications:c,type:ax,url:"https:\u002F\u002Fgithub.com\u002Fincubateur-ademe\u002Fquefairedemesobjets\u002Fblob\u002Fmain\u002Fdocs\u002Freference\u002Fopendata\u002Fpolitique-de-version-du-jeu-de-donnees-open-data.md#politique-de-version-du-jeu-de-donn%C3%A9es-open-data",title:"Politique de version du jeu de données Open Data",description:e},{includeInCatalogPublications:c,title:"Changelog \u002F Journal de modifications",type:ax,url:"https:\u002F\u002Fpad.numerique.gouv.fr\u002Fs\u002FidKBBCjty#Changelog-Longue-Vie-Aux-Objets---Acteurs-de-l%E2%80%99%C3%A9conomie-circulaire---ADEME",description:e},{title:"Visualisez ces données sous forme de cartographie",type:ax,url:"https:\u002F\u002Fquefairedemesdechets.ademe.fr\u002Fnos-outils\u002Fdonnees-ouvertes\u002F#:~:text=Un%20exemple%20d%27exploitation%20de%20notre%20donn%C3%A9e%20%3A%20la%20visualisation%20carte\u002Fliste%20int%C3%A9gr%C3%A9e%20dans%20notre%20site%20et%20nos%20produits%20num%C3%A9riques",includeInCatalogPublications:c,description:e},{title:aT,type:ay,name:aT,size:12064,mimetype:aU,updatedAt:"2026-05-25T14:53:56.199Z",description:"\u003Cp\u003ECe fichier liste les sources de données que vous retrouvez dans la colonne \"Paternité\" du jeu de données. Ce fichier inclut, en plus, une URL pour chaque source. \nDans le cadre de votre obligation de mention de la paternité, ceci vous permet, en plus, d'inclure un hyperlien pour chaque source, afin de donner du contexte au crédit de chaque source.\u003C\u002Fp\u003E",includeInCatalogPublications:c,url:"https:\u002F\u002Fdata.ademe.fr\u002Fdata-fair\u002Fapi\u002Fv1\u002Fdatasets\u002Fwvw1zecq4f4gyvonve5j0hr7\u002Fmetadata-attachments\u002FSources de données - Que Faire De Mes Objets Et Déchets.xlsx"},{title:aV,type:ay,name:aV,size:7610,mimetype:aU,updatedAt:"2026-05-29T09:01:43.537Z",description:"\u003Cp\u003ECe fichier liste les catégories des colonnes : \u003C\u002Fp\u003E\n\u003Cul\u003E\n\u003Cli\u003Epropositions_de_service\u003C\u002Fli\u003E\n\u003Cli\u003Eemprunter, preter, louer, mettre en location, reparer, donner, trier, echanger, revendre, acheter, rapporter\u003C\u002Fli\u003E\n\u003C\u002Ful\u003E",includeInCatalogPublications:c,url:"https:\u002F\u002Fdata.ademe.fr\u002Fdata-fair\u002Fapi\u002Fv1\u002Fdatasets\u002Fwvw1zecq4f4gyvonve5j0hr7\u002Fmetadata-attachments\u002FPropositions de services - Catégories d'Objets et Déchets - Que Faire De Mes Objets Et Déchets.xlsx"},{mimetype:"application\u002Fgeo+json",name:"geojson.geojson",size:86373973,updatedAt:"2026-06-29T05:01:39.671Z",type:ay,title:"Export (geojson)",description:e,url:"https:\u002F\u002Fdata.ademe.fr\u002Fdata-fair\u002Fapi\u002Fv1\u002Fdatasets\u002Fwvw1zecq4f4gyvonve5j0hr7\u002Fmetadata-attachments\u002Fgeojson.geojson"}],extras:{applications:[{updatedAt:"2026-03-03T12:46:26.202Z",id:"NGFnifidufCvdheMT2zRW",slug:"infos-territoires-lvao"},{updatedAt:"2026-02-19T12:53:19.978Z",id:"Df172M5ljplBMpXBt8K9j",slug:"graphiques-longuevieauxobjets"},{updatedAt:"2026-06-17T09:48:57.730Z",id:"UVS4Jp8zlBXxiRhAw-6wI",slug:"infos-territoires-dep-test"},{updatedAt:"2026-03-03T09:25:49.551Z",id:"SOPyLYYk0w4YjRJ4ymIIQ",slug:"acteurs-de-leconomie-circulaire-longue-vie-aux-objets-nombre-dacteurslieux-recenses-par-region"},{updatedAt:"2026-02-19T15:49:06.219Z",id:"25cYahND3nWlS_zku8T1K",slug:"metriques"},{updatedAt:"2026-06-29T09:01:47.516Z",id:aW,slug:aX},{updatedAt:"2026-02-19T13:33:12.711Z",id:"nBfhumUBbfNFyT0ZNdnKs",slug:"graphiques-avec-nicolas"},{updatedAt:"2026-03-03T12:48:57.532Z",id:"HFpqDE7XmXwL3qkmeP7Bm",slug:"acteurs-de-leconomie-circulaire-longue-vie-aux-objets-nombre-dacteurslieux-recenses-par-epci"},{updatedAt:"2026-06-29T07:51:54.351Z",id:"lNTq49pZo34RPonRt8-Ds",slug:"reparateurs-de-leconomie-circulaire-longue-vie-aux-objets-nombre-dacteurslieux-recenses-par-region-copie"},{updatedAt:"2026-06-29T08:13:55.156Z",id:"uCerSDY870SMlz8iGG8wl",slug:"reparateurs"}]},extensions:[{active:c,type:az,remoteService:"dataset:contours-des-departements",action:"masterData_bulkSearch_reverse-geoloc-departement",select:["nom_dep","insee_dep"],overwrite:{nom_dep:{"x-originalName":aq}},propertyPrefix:"_reverse_geoloc-departement",error:e,progress:p},{active:c,type:az,remoteService:"dataset:contours-des-regions",action:"masterData_bulkSearch_reverse-geoloc-region",select:["insee_reg","nom_reg"],overwrite:{nom_reg:{"x-originalName":aK}},propertyPrefix:"_reverse_geoloc-region"},{active:c,type:az,remoteService:"dataset:sirene",action:"masterData_bulkSearch_siret-infos",select:["etatAdministratifEtablissement"],overwrite:{},propertyPrefix:"_siret_infos"}],temporal:{start:"2024-11-04",end:"2026-06-29"},image:"https:\u002F\u002Ffichiers.numerique.gouv.fr\u002Fmedia\u002Fpreview\u002Fitem\u002F48cd48f7-c1d8-4d94-9d58-4ce3e4055b09\u002FQFDMDO_snapshot_3.jpg",relatedDatasets:[{id:"que-faire-de-mes-dechets-liens",title:"Que faire de mes déchets - Liens"}],userPermissions:[aY,aZ,"readSchema","readSafeSchema","readLines","getGeoAgg","getValuesAgg","getValues","getMetricAgg","getSimpleMetricsAgg","getWordsAgg","getMinAgg","getMaxAgg","downloadOriginalData","downloadFullData",a_,"realtime-transactions","readLine","readLineRevisions","readRevisions","bulkSearch","listDataFiles","downloadDataFile","downloadMetadataAttachment",a$,"getReadApiKey","readCompatODSRecords","readCompatODSExports"],public:c,visibility:ba,previews:[{id:"table",title:"Tableau",href:"https:\u002F\u002Fdata.ademe.fr\u002Fdata-fair\u002Fembed\u002Fdataset\u002Flongue-vie-aux-objets-acteurs-de-leconomie-circulaire\u002Ftable"},{id:"map",title:"Carte",href:"https:\u002F\u002Fdata.ademe.fr\u002Fdata-fair\u002Fembed\u002Fdataset\u002Flongue-vie-aux-objets-acteurs-de-leconomie-circulaire\u002Fmap"},{id:"map-bounds",title:"Enveloppe géographique",href:"https:\u002F\u002Fdata.ademe.fr\u002Fdata-fair\u002Fembed\u002Fdataset\u002Flongue-vie-aux-objets-acteurs-de-leconomie-circulaire\u002Fmap-bounds"}],href:"https:\u002F\u002Fdata.ademe.fr\u002Fdata-fair\u002Fapi\u002Fv1\u002Fdatasets\u002Flongue-vie-aux-objets-acteurs-de-leconomie-circulaire",page:"https:\u002F\u002Fdata.ademe.fr\u002Fdatasets\u002Flongue-vie-aux-objets-acteurs-de-leconomie-circulaire",thumbnail:"https:\u002F\u002Fdata.ademe.fr\u002Fdata-fair\u002Fapi\u002Fv1\u002Fdatasets\u002Fwvw1zecq4f4gyvonve5j0hr7\u002Fthumbnail?width=300&height=200"},applications:{count:an,results:[{owner:{type:aj,id:ak,name:al,department:aC,departmentName:aD},title:"Tableau de bord Acteurs de l'économie circulaire",url:"https:\u002F\u002Fcdn.jsdelivr.net\u002Fnpm\u002F@data-fair\u002Fapp-dashboards@0.11\u002Fdist\u002F",id:aW,slug:aX,description:"\u003Cp\u003ENous vous proposons cette datavisualisation pour vous faciliter l'accès au données du jeu de donneés \"Acteurs de l'économie circulaire\"\u003C\u002Fp\u003E",userPermissions:[aY,aZ,"readConfig",a_,"readBaseApp","readCapture","readPrint",a$],public:c,visibility:ba,href:"https:\u002F\u002Fdata.ademe.fr\u002Fdata-fair\u002Fapi\u002Fv1\u002Fapplications\u002Ftableau-de-bord-acteurs-economie-circulaire",page:"https:\u002F\u002Fdata.ademe.fr\u002Fapplications\u002Ftableau-de-bord-acteurs-economie-circulaire",exposedUrl:"https:\u002F\u002Fdata.ademe.fr\u002Fdata-fair\u002Fapp\u002Ftableau-de-bord-acteurs-economie-circulaire"}]},uses:[]}},error:f,state:{config:bb,portal:bn,draft:b,initialQuery:bo,textDark:"#212121",breadcrumbs:f,publicUrl:ai,publicBaseUrl:ai,mainPublicUrl:bp,html:c,inPortal:c,concepts:f,userPartners:f,whiteLabelOwners:bq,childBreadcrumbsRouteName:f,childBreadcrumbItems:f,processingsBasePath:br,notifyBasePath:bs,pageImages:{},navigation:{pages:bt,datasetsList:f,applicationsList:f,usesList:f,publicUrl:ai,publicBaseUrl:ai,mainPublicUrl:bp,processingsBasePath:br,notifyBasePath:bs,initialQuery:bo,draft:b,portal:bn,html:c,inPortal:c,config:bb,whiteLabelOwners:bq},style:{},session:{user:f,initialized:c,directoryUrl:"https:\u002F\u002Fdata.ademe.fr\u002Fsimple-directory",logoutRedirectUrl:f,cookieName:"id_token",interval:10000,sameSite:f,activeAccountDetails:f,reloadAfterAccountChange:c},i18n:{routeParams:{}},pages:bt},serverRendered:c,routePath:"\u002Fdatasets\u002Flongue-vie-aux-objets-acteurs-de-leconomie-circulaire",config:{_app:{basePath:"\u002F",assetsPath:"\u002F_nuxt\u002F",cdnURL:f}}}}("string",false,true,"textarea","",null," | ","none","integer","outlined","siren","siret","latitude","longitude",3,0,"white","external","dense","identifiant","paternite","nom","nom_commercial","description","type_dacteur","site_web","telephone","adresse","complement_dadresse","code_postal","ville","number","qualites_et_labels","public_accueilli","reprise","exclusivite_de_reprisereparation","boolean","uniquement_sur_rdv","type_de_services","propositions_de_services","date_de_derniere_modification","emprunter","preter","louer","mettreenlocation","reparer","donner","trier","echanger","revendre","acheter","rapporter","lieu_prestation","perimetreadomicile","consignes_dacces","horaires_description","horaires_osm","identifiants_des_contributeurs","code_commune","code_epci","nom_epci","text\u002Fcsv","https:\u002F\u002Fdata.ademe.fr","organization","g1pKfMqaE","ADEME",2,1,", ","dataset:contours-des-regions\u002FmasterData_bulkSearch_reverse-geoloc-region","nom_departement","dataset:contours-des-departements\u002FmasterData_bulkSearch_reverse-geoloc-departement","_error","Erreur de récupération de données de référence","\u003Cp\u003EUne erreur lors de la récupération des informations depuis un service distant\u003C\u002Fp\u003E","acteurs.csv",246700073,"url","file","remoteService","belowKpi","default","qfdmo","QFDMO","mdi-text-short",200,"_siret_infos.etatAdministratifEtablissement","dataset:sirene\u002FmasterData_bulkSearch_siret-infos","date","Code EPCI","nom_région","_reverse_geoloc-region.insee_reg","Code région","_reverse_geoloc-departement.insee_dep","Code département","UTF-8","\"",256145466,"data-fair-portals:d60479cb-366f-4dc4-9f3f-1e9dd1a76c97","Sources de données - Que Faire De Mes Objets Et Déchets.xlsx","application\u002Fvnd.openxmlformats-officedocument.spreadsheetml.sheet","Propositions de services - Catégories d'Objets et Déchets - Que Faire De Mes Objets Et Déchets.xlsx","cevT6A9zLkLIjNGUTUNh4","tableau-de-bord-acteurs-economie-circulaire","list","readDescription","readApiDoc","downloadAttachment","public",{},"#1E88E5","primary","assets","https:\u002F\u002Fwww.ademe.fr\u002F","grey","lasts","rounded","elevate","infiniteScroll","createdAt","icon",{},{},"https:\u002F\u002Fkoumoul.com\u002Fdata-fair-portals",Array(1),"\u002Fprocessings","\u002Fevents",Array(2),"direct",10,"blank"));</script><script src="/_nuxt/c8d685a6-1ca8da7.js" defer></script><script src="/_nuxt/c8d685a6-033b2bd.js" defer></script><script src="/_nuxt/015d8d7.js" defer></script><script src="/_nuxt/8fe7087.js" defer></script><script src="/_nuxt/e15899d.js" defer></script><script src="/_nuxt/86fc9bc.js" defer></script><script src="/_nuxt/c8d685a6-2a2bfb4.js" defer></script><script src="/_nuxt/c9ad72b.js" defer></script><script src="/_nuxt/0515138.js" defer></script><script src="/_nuxt/c8d685a6-8470003.js" defer></script>
+  </body>
+</html>

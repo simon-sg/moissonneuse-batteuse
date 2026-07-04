@@ -4,6 +4,7 @@ Pour chaque candidat : téléchargement complet → filtrage RM → filtered.csv
 Les 23 candidats sans champ de filtrage connu sont sautés (à traiter manuellement).
 """
 
+import bz2
 import csv
 import glob
 import gzip
@@ -22,7 +23,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from connectors.datagouv import get_dataset_metadata
 from connectors.sirene import obtenir_sirens_rm
-from filters.geographic import est_dans_rm, est_commune_rm, normaliser
+from filters.geographic import est_dans_rm, est_commune_rm, normaliser, est_circonscription_rm
 from conf.communes_rm import CODES_POSTAUX_RM, CODES_INSEE_RM, COMMUNES_RM
 from translation.datagouv_to_rudi import traduire_metadonnees
 from state import charger_state, sauvegarder_state, dataset_a_change
@@ -37,6 +38,8 @@ def _chemin_cache(url: str) -> str:
 
 EPCI_SIREN_RM = "243500139"
 _RE_CP_35 = re.compile(r"\b(35\d{3})\b")
+# Regex pour un WKT "POINT(lon lat)" (colonne centroïde) — groupes en ordre X Y
+_RE_WKT_POINT = re.compile(r"^POINT\s*\(\s*(-?\d+\.?\d*)\s+(-?\d+\.?\d*)\s*\)$", re.IGNORECASE)
 _COMMUNES_NORM_RM = {normaliser(c) for c in COMMUNES_RM}
 _RM_LAT_MIN, _RM_LAT_MAX = 47.80, 48.35
 _RM_LON_MIN, _RM_LON_MAX = -2.00, -1.30  # aligné sur discover.py (dérive -2.15 corrigée)
@@ -70,13 +73,18 @@ def est_epci_rm(code: str) -> bool:
 
 def est_point_rm(lat_val: str, lon_val: str | None) -> bool:
     """Mirroir de discover.py::est_point_rm. Si lon_val is None, lat_val est au format
-    combiné "lat,lon"."""
+    combiné "lat,lon" ou un WKT "POINT(lon lat)" (colonne centroïde)."""
     try:
         if lon_val is None:
-            parties = str(lat_val).replace(";", ",").split(",")
-            if len(parties) < 2:
-                return False
-            lat, lon = float(parties[0]), float(parties[1])
+            texte = str(lat_val).strip()
+            m = _RE_WKT_POINT.match(texte)
+            if m:
+                lon, lat = float(m.group(1)), float(m.group(2))
+            else:
+                parties = texte.replace(";", ",").split(",")
+                if len(parties) < 2:
+                    return False
+                lat, lon = float(parties[0]), float(parties[1])
         else:
             lat, lon = float(lat_val), float(lon_val)
     except (ValueError, TypeError):
@@ -112,7 +120,8 @@ def _resoudre_champ(champ: str | None, colonnes_norm: dict) -> str | None:
 
 def _ligne_est_rm(row: dict, champ_cp, champ_ville, champ_iris, champ_adresse,
                    champ_siren=None, sirens_rm=None,
-                   champ_epci=None, champ_lat=None, champ_lon=None) -> bool:
+                   champ_epci=None, champ_lat=None, champ_lon=None,
+                   champ_circonscription=None) -> bool:
     if champ_iris:
         return est_valeur_commune_rm(str(row.get(champ_iris, "")))
     if champ_adresse:
@@ -125,6 +134,8 @@ def _ligne_est_rm(row: dict, champ_cp, champ_ville, champ_iris, champ_adresse,
     if champ_lat:
         lon_val = str(row.get(champ_lon, "")).strip() if champ_lon else None
         return est_point_rm(str(row.get(champ_lat, "")).strip(), lon_val)
+    if champ_circonscription:
+        return est_circonscription_rm(str(row.get(champ_circonscription, "")))
     cp = str(row.get(champ_cp, "")).strip() if champ_cp else ""
     ville = str(row.get(champ_ville, "")).strip() if champ_ville else ""
     if champ_cp and champ_ville:
@@ -137,12 +148,13 @@ def _ligne_est_rm(row: dict, champ_cp, champ_ville, champ_iris, champ_adresse,
 
 
 def _resoudre_champs(fieldnames: list[str], champ_cp, champ_ville, champ_iris,
-                     champ_adresse, champ_siren, champ_epci=None, champ_lat=None, champ_lon=None):
+                     champ_adresse, champ_siren, champ_epci=None, champ_lat=None, champ_lon=None,
+                     champ_circonscription=None):
     """Résout les noms de champs configurés vers les noms réels des colonnes CSV.
 
     Retourne un tuple (champ_cp, champ_ville, champ_iris, champ_adresse, champ_siren,
-    champ_epci, champ_lat, champ_lon) avec les noms réels tels qu'ils apparaissent dans le
-    fichier, ou les originaux si la résolution échoue.
+    champ_epci, champ_lat, champ_lon, champ_circonscription) avec les noms réels tels
+    qu'ils apparaissent dans le fichier, ou les originaux si la résolution échoue.
     """
     norm = {normaliser(k): k for k in fieldnames}
     return (
@@ -154,6 +166,7 @@ def _resoudre_champs(fieldnames: list[str], champ_cp, champ_ville, champ_iris,
         _resoudre_champ(champ_epci, norm),
         _resoudre_champ(champ_lat, norm),
         _resoudre_champ(champ_lon, norm),
+        _resoudre_champ(champ_circonscription, norm),
     )
 
 
@@ -209,7 +222,7 @@ def _detecter_encodage(chemin: str) -> str:
 
 def filtrer_csv(chemin: str, champ_cp, champ_ville, champ_iris, champ_adresse,
                  champ_siren=None, champ_epci=None, champ_lat=None,
-                 champ_lon=None) -> tuple[list[dict], list[str]]:
+                 champ_lon=None, champ_circonscription=None) -> tuple[list[dict], list[str]]:
     """Filtre un CSV en streaming ligne par ligne — ne charge pas le fichier entier en mémoire."""
     sirens_rm = obtenir_sirens_rm() if champ_siren else None
     encoding = _detecter_encodage(chemin)
@@ -220,17 +233,17 @@ def filtrer_csv(chemin: str, champ_cp, champ_ville, champ_iris, champ_adresse,
         reader = csv.DictReader(f, delimiter=delimiteur)
         # DictReader lit le header au premier accès à .fieldnames (avant l'itération des lignes).
         entetes = list(reader.fieldnames or [])
-        cp, vil, iris, adr, sir, epci, lat, lon = _resoudre_champs(
+        cp, vil, iris, adr, sir, epci, lat, lon, circo = _resoudre_champs(
             entetes, champ_cp, champ_ville, champ_iris, champ_adresse, champ_siren,
-            champ_epci, champ_lat, champ_lon)
+            champ_epci, champ_lat, champ_lon, champ_circonscription)
         lignes = [dict(row) for row in reader
-                  if _ligne_est_rm(row, cp, vil, iris, adr, sir, sirens_rm, epci, lat, lon)]
+                  if _ligne_est_rm(row, cp, vil, iris, adr, sir, sirens_rm, epci, lat, lon, circo)]
     return lignes, entetes
 
 
 def filtrer_csv_bytes(contenu: bytes, champ_cp, champ_ville, champ_iris, champ_adresse,
                        champ_siren=None, champ_epci=None, champ_lat=None,
-                       champ_lon=None) -> tuple[list[dict], list[str]]:
+                       champ_lon=None, champ_circonscription=None) -> tuple[list[dict], list[str]]:
     """Filtre depuis bytes en mémoire — uniquement pour les membres extraits d'un ZIP."""
     sirens_rm = obtenir_sirens_rm() if champ_siren else None
     encoding = _detecter_encodage_bytes(contenu[:8192])
@@ -238,17 +251,17 @@ def filtrer_csv_bytes(contenu: bytes, champ_cp, champ_ville, champ_iris, champ_a
     delimiteur = _detecter_delimiteur(texte[:4096])
     reader = csv.DictReader(io.StringIO(texte), delimiter=delimiteur)
     entetes = list(reader.fieldnames or [])
-    cp, vil, iris, adr, sir, epci, lat, lon = _resoudre_champs(
+    cp, vil, iris, adr, sir, epci, lat, lon, circo = _resoudre_champs(
         entetes, champ_cp, champ_ville, champ_iris, champ_adresse, champ_siren,
-        champ_epci, champ_lat, champ_lon)
+        champ_epci, champ_lat, champ_lon, champ_circonscription)
     lignes = [dict(row) for row in reader
-              if _ligne_est_rm(row, cp, vil, iris, adr, sir, sirens_rm, epci, lat, lon)]
+              if _ligne_est_rm(row, cp, vil, iris, adr, sir, sirens_rm, epci, lat, lon, circo)]
     return lignes, entetes
 
 
 def filtrer_json(chemin: str, champ_cp, champ_ville, champ_iris, champ_adresse,
                   champ_siren=None, champ_epci=None, champ_lat=None,
-                  champ_lon=None) -> list[dict]:
+                  champ_lon=None, champ_circonscription=None) -> list[dict]:
     sirens_rm = obtenir_sirens_rm() if champ_siren else None
     with open(chemin, encoding="utf-8") as f:
         data = json.load(f)
@@ -265,7 +278,7 @@ def filtrer_json(chemin: str, champ_cp, champ_ville, champ_iris, champ_adresse,
         raise ValueError("Contenu JSON non reconnu (ni liste ni dict)")
     return [row for row in rows
             if _ligne_est_rm(row, champ_cp, champ_ville, champ_iris, champ_adresse, champ_siren,
-                             sirens_rm, champ_epci, champ_lat, champ_lon)]
+                             sirens_rm, champ_epci, champ_lat, champ_lon, champ_circonscription)]
 
 
 def _extraire_csvs_zip(chemin: str) -> list[tuple[str, bytes]]:
@@ -280,7 +293,7 @@ def _extraire_csvs_zip(chemin: str) -> list[tuple[str, bytes]]:
 
 def filtrer_parquet(url: str, champ_cp, champ_ville, champ_iris, champ_adresse,
                     champ_siren=None, champ_epci=None, champ_lat=None,
-                    champ_lon=None) -> tuple[list[dict], list[str]]:
+                    champ_lon=None, champ_circonscription=None) -> tuple[list[dict], list[str]]:
     """Filtre un fichier Parquet distant en HTTP sans téléchargement complet.
 
     Utilise pyarrow + fsspec pour lire uniquement les row groups dont les statistiques
@@ -300,7 +313,7 @@ def filtrer_parquet(url: str, champ_cp, champ_ville, champ_iris, champ_adresse,
 
     sirens_rm = obtenir_sirens_rm() if champ_siren else None
     champ_filtre = (champ_iris or champ_cp or champ_siren or champ_ville or champ_adresse
-                    or champ_epci or champ_lat)
+                    or champ_epci or champ_lat or champ_circonscription)
 
     with fsspec.open(url, "rb") as f:
         pf = pq.ParquetFile(f)
@@ -308,12 +321,12 @@ def filtrer_parquet(url: str, champ_cp, champ_ville, champ_iris, champ_adresse,
         md = pf.metadata
 
         # Résoudre le nom de champ contre les colonnes réelles du schéma
-        _, _, iris_r, _, _, _, _, _ = _resoudre_champs(schema_names, champ_cp, champ_ville,
+        _, _, iris_r, _, _, _, _, _, _ = _resoudre_champs(schema_names, champ_cp, champ_ville,
                                                champ_iris, champ_adresse, champ_siren,
-                                               champ_epci, champ_lat, champ_lon)
-        cp_r, vil_r, _, adr_r, sir_r, _, _, _ = _resoudre_champs(schema_names, champ_cp, champ_ville,
+                                               champ_epci, champ_lat, champ_lon, champ_circonscription)
+        cp_r, vil_r, _, adr_r, sir_r, _, _, _, _ = _resoudre_champs(schema_names, champ_cp, champ_ville,
                                                           None, champ_adresse, champ_siren,
-                                                          champ_epci, champ_lat, champ_lon)
+                                                          champ_epci, champ_lat, champ_lon, champ_circonscription)
         champ_filtre_r = iris_r or cp_r or sir_r or vil_r or adr_r or champ_filtre
 
         # Déterminer les valeurs cibles pour les statistiques de row groups
@@ -348,22 +361,22 @@ def filtrer_parquet(url: str, champ_cp, champ_ville, champ_iris, champ_adresse,
 
         lignes: list[dict] = []
         entetes: list[str] = []
-        cp_r = vil_r = iris_r = adr_r = sir_r = epci_r = lat_r = lon_r = None
+        cp_r = vil_r = iris_r = adr_r = sir_r = epci_r = lat_r = lon_r = circo_r = None
 
         for rgi in rgs_a_lire:
             table = pf.read_row_group(rgi)
             if not entetes:
                 entetes = table.schema.names
-                cp_r, vil_r, iris_r, adr_r, sir_r, epci_r, lat_r, lon_r = _resoudre_champs(
+                cp_r, vil_r, iris_r, adr_r, sir_r, epci_r, lat_r, lon_r, circo_r = _resoudre_champs(
                     entetes, champ_cp, champ_ville, champ_iris, champ_adresse, champ_siren,
-                    champ_epci, champ_lat, champ_lon)
+                    champ_epci, champ_lat, champ_lon, champ_circonscription)
             # to_pydict() retourne {col: [valeurs...]} — déjà en RAM pour ce row group
             cols = table.to_pydict()
             n = table.num_rows
             for i in range(n):
                 row = {k: str(v[i]) if v[i] is not None else "" for k, v in cols.items()}
                 if _ligne_est_rm(row, cp_r, vil_r, iris_r, adr_r, sir_r, sirens_rm,
-                                  epci_r, lat_r, lon_r):
+                                  epci_r, lat_r, lon_r, circo_r):
                     lignes.append(row)
 
     return lignes, entetes
@@ -371,7 +384,7 @@ def filtrer_parquet(url: str, champ_cp, champ_ville, champ_iris, champ_adresse,
 
 def filtrer_gz(chemin: str, champ_cp, champ_ville, champ_iris, champ_adresse,
                champ_siren=None, champ_epci=None, champ_lat=None,
-               champ_lon=None) -> tuple[list[dict], list[str]]:
+               champ_lon=None, champ_circonscription=None) -> tuple[list[dict], list[str]]:
     """Décompresse un GZ en streaming et filtre les lignes RM sans tout charger en mémoire."""
     sirens_rm = obtenir_sirens_rm() if champ_siren else None
     with gzip.open(chemin, "rb") as gz:
@@ -381,17 +394,37 @@ def filtrer_gz(chemin: str, champ_cp, champ_ville, champ_iris, champ_adresse,
     with gzip.open(chemin, "rt", encoding=encoding, errors="replace", newline="") as gz:
         reader = csv.DictReader(gz, delimiter=delimiteur)
         entetes = list(reader.fieldnames or [])
-        cp, vil, iris, adr, sir, epci, lat, lon = _resoudre_champs(
+        cp, vil, iris, adr, sir, epci, lat, lon, circo = _resoudre_champs(
             entetes, champ_cp, champ_ville, champ_iris, champ_adresse, champ_siren,
-            champ_epci, champ_lat, champ_lon)
+            champ_epci, champ_lat, champ_lon, champ_circonscription)
         lignes = [dict(row) for row in reader
-                  if _ligne_est_rm(row, cp, vil, iris, adr, sir, sirens_rm, epci, lat, lon)]
+                  if _ligne_est_rm(row, cp, vil, iris, adr, sir, sirens_rm, epci, lat, lon, circo)]
+    return lignes, entetes
+
+
+def filtrer_bz2(chemin: str, champ_cp, champ_ville, champ_iris, champ_adresse,
+                champ_siren=None, champ_epci=None, champ_lat=None,
+                champ_lon=None, champ_circonscription=None) -> tuple[list[dict], list[str]]:
+    """Décompresse un BZ2 en streaming et filtre les lignes RM (même logique que filtrer_gz())."""
+    sirens_rm = obtenir_sirens_rm() if champ_siren else None
+    with bz2.open(chemin, "rb") as bz:
+        sample_bytes = bz.read(8192)
+    encoding = _detecter_encodage_bytes(sample_bytes)
+    delimiteur = _detecter_delimiteur(sample_bytes.decode(encoding, errors="replace")[:4096])
+    with bz2.open(chemin, "rt", encoding=encoding, errors="replace", newline="") as bz:
+        reader = csv.DictReader(bz, delimiter=delimiteur)
+        entetes = list(reader.fieldnames or [])
+        cp, vil, iris, adr, sir, epci, lat, lon, circo = _resoudre_champs(
+            entetes, champ_cp, champ_ville, champ_iris, champ_adresse, champ_siren,
+            champ_epci, champ_lat, champ_lon, champ_circonscription)
+        lignes = [dict(row) for row in reader
+                  if _ligne_est_rm(row, cp, vil, iris, adr, sir, sirens_rm, epci, lat, lon, circo)]
     return lignes, entetes
 
 
 def filtrer_xlsx(chemin: str, champ_cp, champ_ville, champ_iris, champ_adresse,
                   champ_siren=None, champ_epci=None, champ_lat=None,
-                  champ_lon=None) -> list[dict]:
+                  champ_lon=None, champ_circonscription=None) -> list[dict]:
     """Extrait et filtre les lignes Rennes Métropole d'un fichier XLSX."""
     try:
         import openpyxl
@@ -408,15 +441,15 @@ def filtrer_xlsx(chemin: str, champ_cp, champ_ville, champ_iris, champ_adresse,
     if len(lignes_brutes) < 2:
         return []
     entetes = [str(c or "").strip() for c in lignes_brutes[0]]
-    cp, vil, iris, adr, sir, epci, lat, lon = _resoudre_champs(
+    cp, vil, iris, adr, sir, epci, lat, lon, circo = _resoudre_champs(
         entetes, champ_cp, champ_ville, champ_iris, champ_adresse, champ_siren,
-        champ_epci, champ_lat, champ_lon)
+        champ_epci, champ_lat, champ_lon, champ_circonscription)
     rows = [
         dict(zip(entetes, [str(v or "").strip() for v in row]))
         for row in lignes_brutes[1:]
     ]
     return [r for r in rows
-            if _ligne_est_rm(r, cp, vil, iris, adr, sir, sirens_rm, epci, lat, lon)]
+            if _ligne_est_rm(r, cp, vil, iris, adr, sir, sirens_rm, epci, lat, lon, circo)]
 
 
 def sauvegarder_csv(lignes: list[dict], chemin: str) -> None:
@@ -467,6 +500,7 @@ def analyser_ressources(metadata: dict) -> dict:
             continue
         fmt_r = (r.get("format") or "").lower()
         titre_lower = (r.get("title") or "").lower()
+        url_lower = (r.get("url") or "").lower().split("?")[0]
 
         if _est_dictionnaire_titre(r):
             dicts.append(r)
@@ -476,6 +510,8 @@ def analyser_ressources(metadata: dict) -> dict:
             csvs_fmt.append((r, "zip"))
         elif ".gz" in titre_lower or fmt_r == "gz":
             csvs_fmt.append((r, "gz"))
+        elif ".bz2" in titre_lower or fmt_r == "bz2" or url_lower.endswith(".bz2"):
+            csvs_fmt.append((r, "bz2"))
         elif fmt_r == "parquet":
             csvs_fmt.append((r, "parquet"))
         elif fmt_r == "xlsx":
@@ -511,9 +547,9 @@ def _slugifier(titre: str) -> str:
 def filtrer_toutes_ressources(
     ressources_fmt: list[tuple[dict, str]],
     champ_cp, champ_ville, champ_iris, champ_adresse, champ_siren=None,
-    champ_epci=None, champ_lat=None, champ_lon=None,
+    champ_epci=None, champ_lat=None, champ_lon=None, champ_circonscription=None,
 ) -> list[tuple[dict, list[dict], list[str]]]:
-    """Télécharge et filtre chaque ressource (CSV, ZIP, GZ, XLSX, JSON).
+    """Télécharge et filtre chaque ressource (CSV, ZIP, GZ, BZ2, XLSX, JSON).
     Retourne [(ressource, lignes_rm, entetes)] — un ZIP peut produire plusieurs entrées."""
     resultats = []
     multi = len(ressources_fmt) > 1
@@ -527,7 +563,8 @@ def filtrer_toutes_ressources(
             if fmt == "parquet":
                 lignes, entetes = filtrer_parquet(r["url"], champ_cp, champ_ville,
                                                   champ_iris, champ_adresse, champ_siren,
-                                                  champ_epci, champ_lat, champ_lon)
+                                                  champ_epci, champ_lat, champ_lon,
+                                                  champ_circonscription)
                 resultats.append((r, lignes, entetes))
                 if multi:
                     print(f"    → {len(lignes)} lignes RM")
@@ -557,31 +594,41 @@ def filtrer_toutes_ressources(
                                                   errors="replace", newline="")
                             reader = csv.DictReader(tf, delimiter=delimiteur)
                             entetes = list(reader.fieldnames or [])
-                            cp, vil, iris, adr, sir, epci, lat, lon = _resoudre_champs(
+                            cp, vil, iris, adr, sir, epci, lat, lon, circo = _resoudre_champs(
                                 entetes, champ_cp, champ_ville, champ_iris,
-                                champ_adresse, champ_siren, champ_epci, champ_lat, champ_lon)
+                                champ_adresse, champ_siren, champ_epci, champ_lat, champ_lon,
+                                champ_circonscription)
                             lignes = [dict(row) for row in reader
                                       if _ligne_est_rm(row, cp, vil, iris, adr, sir, sirens_rm,
-                                                        epci, lat, lon)]
+                                                        epci, lat, lon, circo)]
                         r_m = {**r, "title": os.path.basename(nom_membre)}
                         if len(noms_csv) > 1:
                             print(f"    ↳ {nom_membre}: {len(lignes)} lignes RM")
                         entrees.append((r_m, lignes, entetes))
             elif fmt == "gz":
                 lignes, entetes = filtrer_gz(chemin, champ_cp, champ_ville, champ_iris, champ_adresse,
-                                              champ_siren, champ_epci, champ_lat, champ_lon)
+                                              champ_siren, champ_epci, champ_lat, champ_lon,
+                                              champ_circonscription)
+                entrees = [(r, lignes, entetes)]
+            elif fmt == "bz2":
+                lignes, entetes = filtrer_bz2(chemin, champ_cp, champ_ville, champ_iris, champ_adresse,
+                                               champ_siren, champ_epci, champ_lat, champ_lon,
+                                               champ_circonscription)
                 entrees = [(r, lignes, entetes)]
             elif fmt == "xlsx":
                 lignes = filtrer_xlsx(chemin, champ_cp, champ_ville, champ_iris, champ_adresse,
-                                       champ_siren, champ_epci, champ_lat, champ_lon)
+                                       champ_siren, champ_epci, champ_lat, champ_lon,
+                                       champ_circonscription)
                 entrees = [(r, lignes, [])]
             elif fmt == "json":
                 lignes = filtrer_json(chemin, champ_cp, champ_ville, champ_iris, champ_adresse,
-                                       champ_siren, champ_epci, champ_lat, champ_lon)
+                                       champ_siren, champ_epci, champ_lat, champ_lon,
+                                       champ_circonscription)
                 entrees = [(r, lignes, [])]
             else:  # csv
                 lignes, entetes = filtrer_csv(chemin, champ_cp, champ_ville, champ_iris, champ_adresse,
-                                               champ_siren, champ_epci, champ_lat, champ_lon)
+                                               champ_siren, champ_epci, champ_lat, champ_lon,
+                                               champ_circonscription)
                 entrees = [(r, lignes, entetes)]
 
             resultats.extend(entrees)
@@ -611,6 +658,7 @@ def traiter_candidat(candidat: dict, state: dict) -> dict:
     champ_epci = candidat.get("champ_epci")
     champ_lat = candidat.get("champ_lat")
     champ_lon = candidat.get("champ_lon")
+    champ_circonscription = candidat.get("champ_circonscription")
 
     metadata = get_dataset_metadata(dataset_id)
     last_modified = metadata.get("last_modified", "")
@@ -641,7 +689,8 @@ def traiter_candidat(candidat: dict, state: dict) -> dict:
         print(f"  {len(analyse['csvs'])} ressources [{fmts}] — téléchargées séparément")
 
     resultats = filtrer_toutes_ressources(analyse["csvs"], champ_cp, champ_ville, champ_iris, champ_adresse,
-                                           champ_siren, champ_epci, champ_lat, champ_lon)
+                                           champ_siren, champ_epci, champ_lat, champ_lon,
+                                           champ_circonscription)
 
     # Sauvegarder un fichier filtré par ressource (+ JSON régénéré si la source en avait)
     fichiers_data = []   # [(nom, nb_rm, ressource)]
@@ -675,7 +724,7 @@ def traiter_candidat(candidat: dict, state: dict) -> dict:
 
     if not fichiers_data:
         champ_cherche = (champ_iris or champ_ville or champ_cp or champ_adresse or champ_siren
-                         or champ_epci or champ_lat)
+                         or champ_epci or champ_lat or champ_circonscription)
         # Vérifier la présence avec résolution normalisée (le champ peut avoir une casse différente)
         if champ_cherche and dernieres_entetes:
             norm_entetes = {normaliser(k): k for k in dernieres_entetes}
@@ -747,7 +796,8 @@ def main():
     # Pré-tri immédiat des candidats sans champ géo (pas de thread pour eux)
     a_traiter = []
     for candidat in candidats:
-        if not any(candidat.get(c) for c in ("champ_cp", "champ_ville", "champ_iris", "champ_adresse", "champ_siren")):
+        if not any(candidat.get(c) for c in ("champ_cp", "champ_ville", "champ_iris", "champ_adresse",
+                                              "champ_siren", "champ_circonscription")):
             resultats["sautes"].append({"dataset_id": candidat["dataset_id"], "titre": candidat["titre"]})
         else:
             a_traiter.append(candidat)

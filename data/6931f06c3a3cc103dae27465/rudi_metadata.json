@@ -1,0 +1,100 @@
+{
+  "local_id": "2cbfe5af-341d-52c9-9a4b-62852e895650",
+  "resource_title": "Émissions de gaz à effet de serre annuelles par secteur - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Émissions de gaz à effet de serre annuelles par secteur — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/6931f06c3a3cc103dae27465\n\nContexte\n\nL’inventaire national est réalisé par le Centre Interprofessionnel Technique d’Etudes de la Pollution Atmosphérique (Citepa) à partir de diverses sources, notamment globales comme les statistiques nationales. Des données locales/territoriales sont également utilisées par le Citepa, comme les informations des sites émetteurs les plus importants. Il est ainsi possible d’utiliser à la fois des informations déjà spatialisées et des indicateurs pour décomposer le résultat national des émissions de GES au niveau communal (pour les agréger ensuite par EPCI).\n\nLe Ministère en charge de l’Environnement a donc chargé le Citepa d’une mission de « territorialisation » – ou « spatialisation » - de son inventaire national de GES au format SNBC/SECTEN (SECTeurs économiques et Energie). La résolution spatiale est communale, structures stables dans le temps et ensuite agrégeables par EPCI.\n\n\nObjectif de l’Inventaire GES Territorialisé (IGT)\n\nCet inventaire territorialisé, dit « IGT » pour « Inventaire de Gaz à effet de serre Territorialisé » a vocation à donner les ordres de grandeurs pertinents, mais sans chercher le niveau de finesse/précision des travaux d’inventaires réalisés au niveau territorial (ex. Inventaires des OREGES - Observatoires Régionaux de l’Energie ou encore des AASQA - Association agréée de surveillance de la qualité de l'air), ou national à hautes résolutions spatiales et temporelles (projet de grande ampleur type Inventaire National Spatialisé (INS)). Il pourrait constituer un inventaire « par défaut » pour les collectivités qui n’auraient pas accès à des inventaires GES territoriaux déjà bien établis. Il pourra aussi servir à comparer des territoires entre eux, puisque tous les territoires sont estimés avec la même méthode et les mêmes données.\n\nIl ne s’agit donc pas d’un inventaire « bottom-up » réalisé à un niveau territorial fin mais bien de la décomposition territoriale de l’inventaire « top-down » réalisé au niveau national. La somme des émissions des entités territoriales de l’IGT n’est pas complètement cohérente avec les émissions totales nationales, car elle exclut les émissions liées à la production d’électricité exportée (affectées à une commune fictive, dite étranger) et les émissions et absorptions de l’UTCATF.\n\nDeux rapports ont pour l'instant été réalisés. Un premier conduit en 2020 pour les années 2016 et 2018 et un second en 2023 pour l'année 2021. Attention à la comparaison entre ces données car la méthodologie a évoluée."
+    }
+  ],
+  "theme": "environment",
+  "keywords": [
+    "ecospheres-indicateurs",
+    "ecospheres-indicateurs-enjeu-attenuation-climat",
+    "ecospheres-indicateurs-maille-commune",
+    "ecospheres-indicateurs-maille-departement",
+    "ecospheres-indicateurs-maille-epci",
+    "ecospheres-indicateurs-maille-region",
+    "ecospheres-indicateurs-producteur-citepa",
+    "ecospheres-indicateurs-secteur-transverse",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Ecolab"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "24da00e7-0c0e-5a77-a4c7-a81182edecca",
+      "media_type": "FILE",
+      "media_name": "emissions-de-gaz-a-effet-de-serre-annuelles-par-se-rennesmetropole.csv",
+      "media_caption": "Émissions de gaz à effet de serre annuelles par secteur - commune — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "0921bfce-7102-5e24-aae5-d5736b2ba7b8",
+      "media_type": "FILE",
+      "media_name": "dict-description-des-champs.csv",
+      "media_caption": "Dictionnaire des variables — Description des champs",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "8a031a6c-7eac-56ed-a347-fe6365847863",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://static.data.gouv.fr/resources/emissions-de-gaz-a-effet-de-serre-annuelles-par-secteur/20260325-015420/description-des-champs.csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2025-12-04T00:00:00Z",
+    "updated": "2026-07-04T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "CUSTOM",
+      "custom_licence_label": [
+        {
+          "lang": "fr",
+          "text": "fr-lo"
+        }
+      ],
+      "custom_licence_uri": "https://www.data.gouv.fr/datasets/6931f06c3a3cc103dae27465"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2025-12-04T00:00:00Z",
+      "updated": "2026-07-04T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/6931f06c3a3cc103dae27465"
+  }
+}

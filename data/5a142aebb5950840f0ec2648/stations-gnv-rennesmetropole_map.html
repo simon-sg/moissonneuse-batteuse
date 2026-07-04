@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title></title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>(function(){try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<style>
+:root{--bg:#f5f6f8;--card:#fff;--txt:#1c2733;--muted:#667;--accent:#0b6e99;--bord:#e2e6ea;
+      --btn-bg:#eef3f6;--btn-bord:#c8d6e0;--btn-hover:#d4ecf7}
+:root[data-theme="dark"]{--bg:#10151b;--card:#1a222b;--txt:#dbe2e8;--muted:#8996a3;--accent:#4fb3da;--bord:#29323c;
+      --btn-bg:#1c2932;--btn-bord:#2f4552;--btn-hover:#26404d}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#10151b;--card:#1a222b;--txt:#dbe2e8;--muted:#8996a3;--accent:#4fb3da;--bord:#29323c;
+      --btn-bg:#1c2932;--btn-bord:#2f4552;--btn-hover:#26404d}
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+     background:var(--bg);color:var(--txt);display:flex;flex-direction:column;height:100vh}
+header{background:var(--card);border-bottom:1px solid var(--bord);padding:8px 16px;
+       display:flex;flex-wrap:wrap;gap:8px;align-items:center;flex-shrink:0}
+h1{font-size:.9rem;font-weight:600;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#info{color:var(--muted);font-size:.82rem;white-space:nowrap}
+#btn-plus{background:var(--btn-bg);border:1px solid var(--btn-bord);border-radius:6px;padding:4px 12px;
+          font-size:.8rem;cursor:pointer;color:var(--accent);white-space:nowrap;flex-shrink:0}
+#btn-plus:hover{background:var(--btn-hover)}
+#btn-plus:disabled{opacity:.5;cursor:wait}
+#theme-toggle{background:none;border:1px solid var(--bord);border-radius:6px;padding:4px 9px;
+              cursor:pointer;font-size:.9rem;line-height:1;color:var(--txt);flex-shrink:0}
+#theme-toggle:hover{background:var(--bg)}
+#carte{flex:1}
+.leaflet-popup-content{min-width:160px;max-width:320px;font-size:.8rem}
+.leaflet-popup-content table{border-collapse:collapse;width:100%}
+.leaflet-popup-content td{padding:3px 6px;vertical-align:top;border-bottom:1px solid var(--bord);word-break:break-word}
+.leaflet-popup-content td:first-child{color:var(--muted);font-weight:600;white-space:nowrap;padding-right:10px}
+</style>
+</head>
+<body>
+<header>
+  <h1 id="titre"></h1>
+  <span id="info"></span>
+  <button id="btn-plus" style="display:none" onclick="chargerPlus()"></button>
+  <button id="theme-toggle" title="Basculer thème clair/sombre" aria-label="Basculer thème clair/sombre">🌙</button>
+</header>
+<div id="carte"></div>
+<script id="d" type="application/json">{"nom": "stations-gnv-rennesmetropole.csv", "type": "points", "points": [[48.147625, -1.705715, {"Statut": "ouverte", "Année ouverture": "2023", "Exploitant": "Bretagne Mobilité GNV", "Rue": "lieu-dit La Talmousiere", "Code postal": "35760", "Commune": "MONTGERMONT", "Département": "Ille-et-Vilaine", "Région": "Bretagne", "Carburant": "GNC", "Paiement": "CB,carte abonné", "Accès PL": "oui", "Mois ouverture": "janvier", "Pays": "France", "GNL": "non", "GNC": "oui", "BioGNC": "oui", "Paiement cash": "non", "Paiement CB": "oui", "Paiement carte abonné": "oui", "Coordonnées géographique": "48.147625, -1.705715", "Code Region": "53", "kpi_ouverture": "1", "Code INSEE": "35189", "Carburant(s)": "GNC; bioGNC"}], [48.060619, -1.610851, {"Statut": "ouverte", "Année ouverture": "2020", "Exploitant": "AVIA - PRIMAGAZ", "Rue": "Z.A. les Mottais", "Code postal": "35770", "Commune": "VERN SUR SEICHE", "Département": "Ille-et-Vilaine", "Région": "Bretagne", "Carburant": "GNL , GNC", "Paiement": "CB,carte abonné", "Accès PL": "oui", "Mois ouverture": "août", "Pays": "France", "GNL": "oui", "GNC": "oui", "BioGNC": "non", "Paiement cash": "non", "Paiement CB": "oui", "Paiement carte abonné": "oui", "Coordonnées géographique": "48.060619, -1.610851", "Code Region": "53", "kpi_ouverture": "1", "Code INSEE": "35352", "Carburant(s)": "GNL; GNC"}], [48.095431, -1.625106, {"Statut": "ouverte", "Année ouverture": "2018", "Exploitant": "GN Drive", "Rue": "14 rue de Breil", "Code postal": "35135", "Commune": "CHANTEPIE", "Département": "Ille-et-Vilaine", "Région": "Bretagne", "Carburant": "GNC", "Paiement": "carte abonné", "Accès PL": "oui", "Mois ouverture": "juin", "Pays": "France", "GNL": "non", "GNC": "oui", "BioGNC": "oui", "Paiement cash": "non", "Paiement CB": "non", "Paiement carte abonné": "oui", "Coordonnées géographique": "48.095431, -1.625106", "Code Region": "53", "kpi_ouverture": "1", "Code INSEE": "35055", "Carburant(s)": "GNC; bioGNC"}], [48.051391, -1.716867, {"Statut": "ouverte", "Année ouverture": "2023", "Exploitant": "Bretagne Mobilité GNV", "Rue": "2 rue Edmé Mariotte", "Code postal": "35131", "Commune": "CHARTRES DE BRETAGNE", "Département": "Ille-et-Vilaine", "Région": "Bretagne", "Carburant": "GNC", "Paiement": "CB,carte abonné", "Accès PL": "oui", "Mois ouverture": "avril", "Pays": "France", "GNL": "non", "GNC": "oui", "BioGNC": "oui", "Paiement cash": "non", "Paiement CB": "oui", "Paiement carte abonné": "oui", "Coordonnées géographique": "48.051391, -1.716867", "Code Region": "53", "kpi_ouverture": "1", "Code INSEE": "35066", "Carburant(s)": "GNC; bioGNC"}], [48.0991293, -1.6252361, {"Statut": "ouverte", "Année ouverture": "2019", "Exploitant": "AS24", "Rue": "rue de la frébardière", "Code postal": "35000", "Commune": "RENNES", "Département": "Ille-et-Vilaine", "Région": "Bretagne", "Carburant": "GNC", "Paiement": "carte abonné", "Accès PL": "oui", "Mois ouverture": "décembre", "Pays": "France", "GNL": "non", "GNC": "non", "BioGNC": "oui", "Paiement cash": "non", "Paiement CB": "non", "Paiement carte abonné": "oui", "Coordonnées géographique": "48.0991293, -1.6252361", "Code Region": "53", "kpi_ouverture": "1", "Code INSEE": "35238", "Carburant(s)": "100% bioGNC"}], [48.0991, -1.6255, {"Statut": "ouverte", "Année ouverture": "2019", "Exploitant": "AS24", "Rue": "ZI de Chantepie", "Code postal": "35135", "Commune": "CHANTEPIE", "Département": "Ille-et-Vilaine", "Région": "Bretagne", "Carburant": "GNC", "Paiement": "carte abonné", "Accès PL": "oui", "Mois ouverture": "décembre", "Pays": "France", "GNL": "non", "GNC": "oui", "BioGNC": "oui", "Paiement cash": "non", "Paiement CB": "non", "Paiement carte abonné": "oui", "Coordonnées géographique": "48.0991, -1.6255", "Code Region": "53", "kpi_ouverture": "1", "Code INSEE": "35055", "Carburant(s)": "GNC; bioGNC"}], [48.088143, -1.78488, {"Statut": "ouverte", "Année ouverture": "2018", "Exploitant": "ENGIE Solutions", "Rue": "ZAC les Cormiers - Rue des Cormiers", "Code postal": "35650", "Commune": "LE RHEU", "Département": "Ille-et-Vilaine", "Région": "Bretagne", "Carburant": "GNC", "Paiement": "CB,carte abonné", "Accès PL": "oui", "Mois ouverture": "juin", "Pays": "France", "GNL": "non", "GNC": "oui", "BioGNC": "non", "Paiement cash": "non", "Paiement CB": "oui", "Paiement carte abonné": "oui", "Coordonnées géographique": "48.088143, -1.78488", "Code Region": "53", "kpi_ouverture": "1", "Code INSEE": "35240", "Carburant(s)": "GNC"}]], "nb_total": 7, "tronque": false}</script>
+<script>
+function themeEffectif(){
+  return document.documentElement.getAttribute("data-theme") ||
+    (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+}
+function urlFond(theme){
+  return "https://{s}.basemaps.cartocdn.com/" + (theme==="dark"?"dark_all":"light_all") + "/{z}/{x}/{y}{r}.png";
+}
+
+const D=JSON.parse(document.getElementById("d").textContent);
+document.title=D.nom;
+document.getElementById("titre").textContent=D.nom;
+
+const map=L.map("carte");
+let fond=L.tileLayer(urlFond(themeEffectif()),{
+  attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+  subdomains:"abcd",maxZoom:19
+}).addTo(map);
+
+(function(){
+  const btn = document.getElementById("theme-toggle");
+  function majIcone(){ btn.textContent = themeEffectif() === "dark" ? "☀️" : "🌙"; }
+  btn.addEventListener("click", () => {
+    const suivant = themeEffectif() === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", suivant);
+    try { localStorage.setItem("theme", suivant); } catch(e) {}
+    map.removeLayer(fond);
+    fond = L.tileLayer(urlFond(suivant),{
+      attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      subdomains:"abcd",maxZoom:19
+    }).addTo(map);
+    majIcone();
+  });
+  majIcone();
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+    if (!document.documentElement.getAttribute("data-theme")) majIcone();
+  });
+})();
+
+function esc(s){return String(s??"").replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+function mkPopup(props){
+  if(!props||!Object.keys(props).length)return"";
+  const rows=Object.entries(props).filter(([,v])=>v!=null&&v!=="").slice(0,30)
+    .map(([k,v])=>`<tr><td>${esc(k)}</td><td>${esc(String(v).slice(0,300))}</td></tr>`).join("");
+  return`<table>${rows}</table>`;
+}
+
+const PT={radius:7,color:"#0b6e99",weight:1.5,fillColor:"#1a8bbf",fillOpacity:.75};
+
+function ajouterPoints(pts){
+  pts.forEach(([lat,lon,props])=>L.circleMarker([lat,lon],PT).bindPopup(mkPopup(props)).addTo(map));
+}
+function ajouterGeoJSON(features){
+  L.geoJSON({type:"FeatureCollection",features},{
+    style:{color:"#0b6e99",weight:2,fillColor:"#1a8bbf",fillOpacity:.35},
+    pointToLayer:(_,ll)=>L.circleMarker(ll,PT),
+    onEachFeature:(f,lyr)=>{if(f.properties)lyr.bindPopup(mkPopup(f.properties));}
+  }).addTo(map);
+}
+
+// Chargement initial : premiers 5 000 seulement
+const BATCH=5000;
+let layer;
+if(D.type==="points"){
+  layer=L.featureGroup(D.points.slice(0,BATCH).map(([lat,lon,props])=>
+    L.circleMarker([lat,lon],PT).bindPopup(mkPopup(props))
+  )).addTo(map);
+}else{
+  layer=L.geoJSON({type:"FeatureCollection",features:D.geojson.features.slice(0,BATCH)},{
+    style:{color:"#0b6e99",weight:2,fillColor:"#1a8bbf",fillOpacity:.35},
+    pointToLayer:(_,ll)=>L.circleMarker(ll,PT),
+    onEachFeature:(f,lyr)=>{if(f.properties)lyr.bindPopup(mkPopup(f.properties));}
+  }).addTo(map);
+}
+try{const b=layer.getBounds();if(b.isValid())map.fitBounds(b.pad(0.1));else map.setView([48.1,-1.68],11);}
+catch{map.setView([48.1,-1.68],11);}
+
+// Toutes les données sont embarquées dans D — pas de fetch nécessaire
+const allItems = D.type==="geojson" ? D.geojson.features : D.points;
+let offset = Math.min(BATCH, allItems.length);  // rendu initial
+
+function majInfo(){
+  const n=offset, tot=D.nb_total;
+  document.getElementById("info").textContent=
+    n<tot ? `${n.toLocaleString("fr")} / ${tot.toLocaleString("fr")} éléments`
+          : `${n.toLocaleString("fr")} élément${n>1?"s":""}`;
+}
+function majBouton(){
+  const btn=document.getElementById("btn-plus");
+  const restant=allItems.length-offset;
+  if(restant<=0){btn.style.display="none";return;}
+  btn.style.display="";
+  btn.textContent=`Afficher 5 000 de plus (${restant.toLocaleString("fr")} restants)`;
+}
+
+function chargerPlus(){
+  const batch=allItems.slice(offset, offset+BATCH);
+  if(D.type==="geojson") ajouterGeoJSON(batch); else ajouterPoints(batch);
+  offset+=batch.length;
+  majInfo(); majBouton();
+}
+
+majInfo();
+if(D.tronque) majBouton();
+</script>
+</body>
+</html>

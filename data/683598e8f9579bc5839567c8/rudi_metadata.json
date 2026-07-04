@@ -1,0 +1,87 @@
+{
+  "local_id": "92423540-763e-5e8a-b60b-15358be39dc3",
+  "resource_title": "REP - Liste des membres adhérents des éco-organismes en fin d’année - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "REP - Liste des membres adhérents des éco-organismes en fin d’année — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/683598e8f9579bc5839567c8\n\nLe jeu de données comprend la mise à jour annuelle de la liste des adhérents des éco-organismes, conformément à l’article L. 541-10-14 du Code de l’environnement. Le jeu de données concerne les filières REP : ABJ, ASL, EEE, BPS, DISP-MED, EA, EMPAP, EPRO, JOUET, LUB, MNU, PA, PCHIM, PMCB, PNEU, TLC, TABAC, TSUU, VEHICULE.\n\nIl s’agit des adhésions valides au 31 décembre de chaque année. Dans le cas des adhésions qui se sont terminées au 31/12, l’information est précisée dans la colonne sur la date de fin.\n\nPour utiliser ce jeu de données, téléchargez le [**référentiel**](https://data.ademe.fr/data-fair/api/v1/datasets/7xrfi2s5qbywcv7ac-o6yf8z/metadata-attachments/Codes_libell%C3%A9s_Liste_producteurs_SYDEREP.xlsx) utilisé.\n\nEn complément de cette liste, l’ADEME met à disposition la liste des producteurs des filières à Responsabilité élargie du producteur (REP) enregistrés dans SYDEREP avec leur identifiant unique (IDU) : [consulter la liste](https://data.ademe.fr/datasets/rep-producteurs-idu).\n\nPour le producteur, l’IDU est la preuve qu’il est bien enregistré au registre pour une filière, conformément à l’article L. 541-10-13 du Code de l'environnement. Pour l’ADEME, il sert à faciliter le suivi et le contrôle du respect des obligations de REP qui incombent à ces producteurs, ainsi qu’à identifier les producteurs en système individuel et les producteurs adhérents à un éco-organisme qui sont éligibles à la redevance annuelle. Ainsi, pour les filières en vigueur, le vendeur d'un produit relevant du principe de REP peut communiquer à l'acheteur, à la demande de ce dernier, l'IDU sous lequel est enregistré le producteur qui remplit pour ce produit les obligations de REP (cf. L. 541-10-10 du code de l'environnement).\n\n\n[![Donnez votre avis sur ce jeu de données](https://images.gitbook.com/__img/dpr=2,width=760,onerror=redirect,format=auto,signature=1475354846/https%3A%2F%2Ffiles.gitbook.com%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252F2jK8JaUieA84hk2TJR3v%252Fuploads%252Ft2DLqA9NGK6aJMaDyKzl%252FBanni%25C3%25A8reOpendataV2.png%3Falt%3Dmedia%26token%3D705526a8-910d-4739-8f7b-9191587d5d68)](https://response.questback.com/dynamic/ademe/xmz3vvsmmx/answer?sid=mymRJpCTou&amp;Jeu=1)\n\n### **Règles d’actualisation des données**\n\nLes données sont actualisées à partir des mises à jour effectuées par les éco-organismes sur SYDEREP qui enregistrent leur liste d’adhérents. Pour les producteurs en système collectif, la suppression de l’IDU se fait à la seule initiative de l’éco-organisme qui a la responsabilité de cette décision. Cette liste ne reflète pas les producteurs qui ont effectué une déclaration de données sur SYDEREP.\n\nPoint d'attention : l'ouverture du fichier CSV dans Excel peut perturber l'affichage par défaut du SIRET et nécessiter de changer le format d'affichage de la colonne.\n\nL'ADEME a prévu une mise à jour trimestrielle de ce jeu de données au 31/01, 30/04, 31/07 et 31/10.\nLa date de la mise à jour est précisée sur l'étiquette du jeu de données. \n\n\n### Généralités sur les filières REP\n\nL’État a confié à l’ADEME la mise en place et la gestion des registres de déclarations annuelles obligatoires des metteurs sur le marché relevant des filières REP suivantes :\n* Article de bricolage et de jardinage (ABJ) ;\n* Articles de sport et loisirs (ASL) ;\n* Bateaux de plaisance ou de sport (BPS) ;\n* Dispositifs Médicaux perforants des patients en auto-traitement (DISP-MED) ;\n* Eléments d’ameublement (EA) ;\n* Equipements électriques et électroniques (EEE) ;\n* Emballages ménagers et papiers graphiques (EMPAP) ;\n* Emballages professionnels (EPRO) ;\n* Huiles lubrifiantes ou industrielles (LUB) ;\n* Jouets (JOUET) ;\n* Médicaments non utilisés (MNU) ;\n* Piles et accumulateurs (PA) ;\n* Pneumatiques (PNEU) ;\n* Produits chimiques (PCHIM) ;\n* Produits ou matériaux de construction du secteur du bâtiment (PMCB) ;\n* Produits du tabac (TABAC) ;\n* Textiles d’habillement, linge de maison et chaussures (TLC) ;\n* Voitures particulières, camionnettes, véhicules à moteurs à 2 ou 3 roues et quadricycles (VEHICULE).\n<p>\n</p>\n\nCette liste va s’enrichir au fur et à mesure de l’entrée en vigueur de la loi AGEC avec les nouvelles filières à venir.\n<p>\n</p>\n\nCes registres sont gérés dans l’application [SYDEREP](https://syderep.ademe.fr/), permettant aux éco-organismes ou aux producteurs en système individuel, le renseignement direct de leurs données.\n\nCes registres ayant pour objet la mesure de la performance globale au niveau national de chacune des filières REP, l’ADEME établit et publie annuellement un état des lieux des filières et différentes publications avec un certain nombre d’indicateurs agrégés, complétés d'éléments d'analyses qualitatives provenant des acteurs de chaque filière.\n\n### Jeux de données disponibles sur les filières REP\n\nDes données issues de ces registres sont aujourd’hui disponibles sur [https://data.ademe.fr](https://data.ademe.fr/) :\n* La liste des producteurs enregistrés dans SYDEREP avec leur identifiant unique ;\n* La liste des membres adhérents des éco-organismes. La mise à jour de cette liste a lieu une fois par an, en juin de chaque année ;\n* Les quantités mises sur le marché pour les filières BPS, DISPMED, EA, EEE, EMBM, LUB, MNU, PA, PAP, PCHIM, PNEU, TABAC et TLC ;\n* Les tonnages collectés pour les filières BPS, DISPMED, EA, EEE,MNU, PA, PCHIM, PNEU, TLC et VEHICULE.\nainsi que certains indicateurs, au fur et à mesure de leur mise à disposition.\n<p>\n</p>\n\n**Retrouvez l'ensemble des [ressources disponibles des filières REP](https://filieres-rep.ademe.fr/filieres-REP) sur le site dédié [filieres-rep.ademe.fr](https://filieres-rep.ademe.fr/)**"
+    }
+  ],
+  "theme": "culture",
+  "keywords": [
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "ADEME"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "274564e8-eadc-5de4-bb50-07b6ff8b7c6d",
+      "media_type": "FILE",
+      "media_name": "fichier-csv-rennesmetropole.csv",
+      "media_caption": "Fichier csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "07a742a0-1176-58dc-a091-2d44ba115d15",
+      "media_type": "FILE",
+      "media_name": "dict-description-des-champs.url",
+      "media_caption": "Dictionnaire des variables — Description des champs",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "3f84b00e-32f0-5f2c-9526-765b962f109c",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://data.ademe.fr/data-fair/api/v1/datasets/rep-adherents-eo-fin-annee/raw",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2025-05-27T00:00:00Z",
+    "updated": "2026-06-30T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2025-05-27T00:00:00Z",
+      "updated": "2026-06-30T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/683598e8f9579bc5839567c8"
+  }
+}

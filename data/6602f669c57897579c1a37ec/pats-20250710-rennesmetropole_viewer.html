@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title></title>
+<script>(function(){try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<style>
+:root{--bg:#f5f6f8;--card:#fff;--txt:#1c2733;--muted:#667;--accent:#0b6e99;--bord:#e2e6ea;
+      --avert-bg:#fff8e1;--avert-bord:#ffe082;--avert-txt:#6d4c00;
+      --geo-bg:#eaf4fb;--geo-hover:#d4ecf7;--stripe:#fafbfc;--row-hover:#eef6fb;
+      --resizer:rgba(11,110,153,.35);--td-bord:#f0f2f4}
+:root[data-theme="dark"]{--bg:#10151b;--card:#1a222b;--txt:#dbe2e8;--muted:#8996a3;--accent:#4fb3da;--bord:#29323c;
+      --avert-bg:#3a2f10;--avert-bord:#6b5418;--avert-txt:#e8c96a;
+      --geo-bg:#16303c;--geo-hover:#1d3f4d;--stripe:#161d24;--row-hover:#17242c;
+      --resizer:rgba(79,179,218,.35);--td-bord:#232c35}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#10151b;--card:#1a222b;--txt:#dbe2e8;--muted:#8996a3;--accent:#4fb3da;--bord:#29323c;
+      --avert-bg:#3a2f10;--avert-bord:#6b5418;--avert-txt:#e8c96a;
+      --geo-bg:#16303c;--geo-hover:#1d3f4d;--stripe:#161d24;--row-hover:#17242c;
+      --resizer:rgba(79,179,218,.35);--td-bord:#232c35}
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+     background:var(--bg);color:var(--txt);display:flex;flex-direction:column;height:100vh}
+header{background:var(--card);border-bottom:1px solid var(--bord);padding:10px 16px;
+       display:flex;flex-wrap:wrap;gap:10px;align-items:center;flex-shrink:0}
+h1{font-size:.9rem;font-weight:600;flex:1;min-width:150px;
+   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#filtre{padding:7px 11px;font-size:.9rem;border:1px solid var(--bord);
+        border-radius:6px;width:220px;background:var(--card);color:var(--txt)}
+#info{color:var(--muted);font-size:.82rem;white-space:nowrap}
+#theme-toggle{background:none;border:1px solid var(--bord);border-radius:6px;padding:5px 10px;
+              cursor:pointer;font-size:.9rem;line-height:1;color:var(--txt);flex-shrink:0}
+#theme-toggle:hover{background:var(--bg)}
+.avert{background:var(--avert-bg);border-bottom:1px solid var(--avert-bord);padding:5px 16px;
+       font-size:.8rem;color:var(--avert-txt);flex-shrink:0}
+.wrap{flex:1;overflow:auto}
+table{border-collapse:collapse;font-size:.82rem;table-layout:fixed}
+thead{position:sticky;top:0;z-index:2;background:var(--card);box-shadow:0 1px 0 var(--bord)}
+th{padding:8px 12px;text-align:left;cursor:pointer;user-select:none;color:var(--muted);font-weight:600;
+   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative}
+th:hover{background:var(--bg);color:var(--txt)}
+th.asc::after{content:" ↑";color:var(--accent)}
+th.desc::after{content:" ↓";color:var(--accent)}
+th.geo{color:var(--accent);background:var(--geo-bg)}
+th.geo:hover{background:var(--geo-hover)}
+th.trad{text-decoration:underline dotted;text-decoration-color:var(--accent);text-underline-offset:3px}
+td{padding:0;border-bottom:1px solid var(--td-bord)}
+td div{padding:5px 12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+td div a{color:var(--accent);text-decoration:none}
+td div a:hover{text-decoration:underline}
+tr:nth-child(even) td{background:var(--stripe)}
+tr:hover td{background:var(--row-hover)}
+.resizer{position:absolute;right:0;top:0;width:5px;height:100%;cursor:col-resize;z-index:1}
+.resizer:hover,.resizer.active{background:var(--resizer)}
+</style>
+</head>
+<body>
+<header>
+  <h1 id="titre"></h1>
+  <input id="filtre" type="search" placeholder="Filtrer toutes les colonnes…">
+  <span id="info"></span>
+  <button id="theme-toggle" title="Basculer thème clair/sombre" aria-label="Basculer thème clair/sombre">🌙</button>
+</header>
+<div id="avert" class="avert" style="display:none"></div>
+<div class="wrap"><table id="t"><colgroup id="cols"></colgroup><thead id="thead"></thead><tbody id="tbody"></tbody></table></div>
+<script id="d" type="application/json">{"nom": "pats-20250710-rennesmetropole.csv", "champs_geo": ["communes_nom", "contact_adresse_postale", "communes_code_insee"], "dictionnaire": {}, "entetes": ["id", "lien_vers_la_fiche_pat", "nom_administratif", "nom_usuel", "regions", "departement", "epci", "communes_code_insee", "communes_nom", "identifications_de_territoires_specifiques", "nombre_dhabitants_permanents_du_territoire", "nombre_dhabitants_durant_les_saisons_touristiques", "nombre_de_communes_du_territoire", "densite_de_population_hab_km2", "surface_des_communes_du_territoire_en_km2", "surface_du_territoire_artificialisee", "pourcentage_de_chomage", "revenu_median", "nombre_dassociations_luttant_contre_la_precarite_alimentaire", "nombre_dassociations_luttant_contre_la_precarite_alimentaire_par_10_km2", "nombre_dassociations_luttant_contre_la_precarite_alimentaire_par_1000_habitants", "sau_en_hectares", "sau_en_hectares_en_bio", "pourcentage_de_la_sau", "pourcentage_de_la_sau_en_bio", "pourcentage_de_la_surface_des_prairies_permanentes", "pourcentage_de_la_surface_des_cultures_de_legumineuses", "nombre_dexploitations_agricoles", "nombre_dexploitations_agricoles_certifiee_bio", "microgrammes_de_produits_phytopharmaceutiques_par_litre_deau", "milligrammes_de_nitrates_par_litre_deau", "m3_deau_utilise_pour_lirragation", "evolution_de_lirrigation_depuis_5_ans", "metres_de_haie_par_hectare_de_sau", "nombre_denseignes_de_distribution", "nombre_denseignes_de_distribution_de_gms", "nombre_demplois_dans_la_transformation", "evolution_du_nombre_demplois_dans_la_transformation_entre_2018_et_2023", "nombre_de_cantines_inscrites", "nombre_de_restaurants_collectifs_sur_le_territoire_qui_ont_fait_leur_teledeclaration_sur_ma_cantine", "repartition_des_exploitations_par_otex_toutes_exploitations", "repartition_des_exploitations_par_otex_grandes_cultures", "repartition_des_exploitations_par_otex_maraichage_ou_horticulture", "repartition_des_exploitations_par_otex_viticulture", "repartition_des_exploitations_par_otex_cultures_fruitieres_ou_autres_cultures_permanentes", "repartition_des_exploitations_par_otex_bovins_lait", "repartition_des_exploitations_par_otex_bovins_viande", "repartition_des_exploitations_par_otex_bovins_mixtes", "repartition_des_exploitations_par_otex_ovins_et_ou_caprins_et_ou_autres_herbivores", "repartition_des_exploitations_par_otex_porcins_et_ou_volailles", "repartition_des_exploitations_par_otex_polyculture_et_ou_polyelevage_et_ou_non_classe", "taux_de_pauvrete_du_territoire", "nombre_de_personnes_inscrites_a_laide_alimentaire", "pourcentage_de_vulnerabilite_lie_aux_catastrophes_naturelles_des_10_dernieres_annees", "nombre_de_captage_prioritaire_grenelle_dans_le_perimetre", "emission_de_ges", "evolution_de_lindice_dabondance_des_oiseaux_des_milieux_agricoles", "indicateur_quantitatif_supplementaire_1_nom", "indicateur_quantitatif_supplementaire_1_donnee_quantitative", "indicateur_quantitatif_supplementaire_1_unite", "indicateur_quantitatif_supplementaire_1_description", "indicateur_quantitatif_supplementaire_2_nom", "indicateur_quantitatif_supplementaire_2_donnee_quantitative", "indicateur_quantitatif_supplementaire_2_unite", "indicateur_quantitatif_supplementaire_2_description", "indicateur_quantitatif_supplementaire_3_nom", "indicateur_quantitatif_supplementaire_3_donnee_quantitative", "indicateur_quantitatif_supplementaire_3_unite", "indicateur_quantitatif_supplementaire_3_description", "indicateur_quantitatif_supplementaire_4_nom", "indicateur_quantitatif_supplementaire_4_donnee_quantitative", "indicateur_quantitatif_supplementaire_4_unite", "indicateur_quantitatif_supplementaire_4_description", "indicateur_quantitatif_supplementaire_5_nom", "indicateur_quantitatif_supplementaire_5_donnee_quantitative", "indicateur_quantitatif_supplementaire_5_unite", "indicateur_quantitatif_supplementaire_5_description", "descriptions_libre_des_enjeux_du_territoire_par_le_porteur", "les_etapes_cles_conduites_et_realisees", "niveaux_de_labelisation", "annee_dobtention_de_la_derniere_labellisation", "laureat_du_aap_pna", "annee_de_signature_de_la_convention", "numero_de_convention_ademe_maa", "equivalent_temps_plein_consacre_a_la_gestion_et_lanimation_du_pat_par_an", "porteur_point_dentree_du_pat", "porteur_point_dentree_du_pat_type", "porteur_point_dentree_du_pat_direction", "co_porteur_2", "co_porteur_type_2", "co_porteur_direction_2", "co_porteur_3", "co_porteur_type_3", "co_porteur_direction_3", "nom_de_linstance_de_decision", "partenaires_de_linstance_de_decision_1_type", "partenaires_de_linstance_de_decision_1_noms", "partenaires_de_linstance_de_decision_2_type", "partenaires_de_linstance_de_decision_2_noms", "partenaires_de_linstance_de_decision_3_type", "partenaires_de_linstance_de_decision_3_noms", "partenaires_de_linstance_de_decision_4_type", "partenaires_de_linstance_de_decision_4_noms", "partenaires_de_linstance_de_decision_5_type", "partenaires_de_linstance_de_decision_5_noms", "partenaires_de_linstance_de_decision_6_type", "partenaires_de_linstance_de_decision_6_noms", "partenaires_de_linstance_de_decision_7_type", "partenaires_de_linstance_de_decision_7_noms", "partenaires_de_linstance_de_decision_8_type", "partenaires_de_linstance_de_decision_8_noms", "partenaires_de_linstance_de_decision_9_type", "partenaires_de_linstance_de_decision_9_noms", "partenaires_de_linstance_de_decision_10_type", "partenaires_de_linstance_de_decision_10_noms", "partenaires_de_linstance_de_decision_11_type", "partenaires_de_linstance_de_decision_11_noms", "partenaires_de_linstance_de_decision_12_type", "partenaires_de_linstance_de_decision_12_noms", "autres_partenaires_engages_1_type", "autres_partenaires_engages_1_noms", "autres_partenaires_engages_2_type", "autres_partenaires_engages_2_noms", "autres_partenaires_engages_3_type", "autres_partenaires_engages_3_noms", "autres_partenaires_engages_4_type", "autres_partenaires_engages_4_noms", "autres_partenaires_engages_5_type", "autres_partenaires_engages_5_noms", "autres_partenaires_engages_6_type", "autres_partenaires_engages_6_noms", "autres_partenaires_engages_7_type", "autres_partenaires_engages_7_noms", "autres_partenaires_engages_8_type", "autres_partenaires_engages_8_noms", "autres_partenaires_engages_9_type", "autres_partenaires_engages_9_noms", "autres_partenaires_engages_10_type", "autres_partenaires_engages_10_noms", "autres_partenaires_engages_11_type", "autres_partenaires_engages_11_noms", "autres_partenaires_engages_12_type", "autres_partenaires_engages_12_noms", "les_dispositifs_financiers", "les_dispositifs_financiers_precisions", "objectifs_strategiques_1", "objectifs_strategiques_2", "objectifs_strategiques_3", "objectifs_strategiques_4", "objectifs_strategiques_5", "axes_thematiques", "les_demarches_territoriales_1", "les_demarches_territoriales_1_precisions", "les_demarches_territoriales_2", "les_demarches_territoriales_2_precisions", "les_demarches_territoriales_3", "les_demarches_territoriales_3_precisions", "les_demarches_territoriales_4", "les_demarches_territoriales_4_precisions", "les_demarches_territoriales_5", "les_demarches_territoriales_5_precisions", "les_demarches_territoriales_6", "les_demarches_territoriales_6_precisions", "les_demarches_territoriales_7", "les_demarches_territoriales_7_precisions", "les_demarches_territoriales_8", "les_demarches_territoriales_8_precisions", "les_demarches_territoriales_9", "les_demarches_territoriales_9_precisions", "les_demarches_territoriales_10", "les_demarches_territoriales_10_precisions", "les_demarches_territoriales_11", "les_demarches_territoriales_11_precisions", "les_demarches_territoriales_12", "les_demarches_territoriales_12_precisions", "les_demarches_territoriales_13", "les_demarches_territoriales_13_precisions", "les_demarches_territoriales_14", "les_demarches_territoriales_14_precisions", "les_demarches_territoriales_15", "les_demarches_territoriales_15_precisions", "actions_de_cooperation_avec_dautres_pat", "actions_de_cooperation_avec_dautres_pat_description", "actions_de_cooperation_interterritoriale", "actions_de_cooperation_interterritoriale_description", "liste_des_reseaux_dont_le_pat_est_membre_reseau_regional_des_pat", "liste_des_reseaux_dont_le_pat_est_membre_autres_reseaux", "un_dispositif_de_suivi_evaluation_a_t_il_ete_mis_en_place", "methodes_devaluations_1", "methodes_devaluations_2", "methodes_devaluations_3", "methodes_devaluations_4", "methodes_devaluations_5", "methodes_devaluations_6", "methodes_devaluations_precisions", "contact_nom_du_service", "contact_structure", "contact_adresse_postale", "contact_adresse_code_postal", "contact_adresse_ville", "contact_telephone", "contact_2_nom_du_service", "contact_2_structure", "contact_2_adresse_postale", "contact_2_adresse_code_postal", "contact_2_adresse_ville", "contact_2_telephone", "lien_vers_le_site_du_porteur", "lien_vers_le_site_du_pat", "ressources_1_lien", "ressources_1_description", "ressources_2_lien", "ressources_2_description", "ressources_3_lien", "ressources_3_description", "ressources_4_lien", "ressources_4_description", "ressources_5_lien", "ressources_5_description", "ressources_6_lien", "ressources_6_description", "ressources_7_lien", "ressources_7_description", "ressources_8_lien", "ressources_8_description", "ressources_9_lien", "ressources_9_description", "ressources_10_lien", "ressources_10_description", "ressources_11_lien", "ressources_11_description", "documents_1_lien", "documents_1_description", "documents_2_lien", "documents_2_description", "documents_3_lien", "documents_3_description", "documents_4_lien", "documents_4_description", "documents_5_lien", "documents_5_description", "documents_6_lien", "documents_6_description", "documents_7_lien", "documents_7_description", "documents_8_lien", "documents_8_description", "documents_9_lien", "documents_9_description", "documents_10_lien", "documents_10_description", "documents_11_lien", "documents_11_description", "date_de_validation_de_la_fiche"], "lignes": [["1659", "https://france-pat.fr/pat/pad-de-la-ville-de-rennes/", "PAT de la Ville de Rennes", "PAD de la Ville de Rennes", "Bretagne", "Ille-et-Vilaine", "", "35238", "Rennes", "", "225 081", "", "1", "4 471,94", "50,33", "156,02", "10,52", "22 000", "23", "4,57", "0,10", "475,99", "199,32", "9,46", "41,87", "22,82", "8,36", "12", "11", "0,00", "0,00", "0,00", "non renseigné", "182,08", "338", "48", "1 556", "-9,48%", "198", "146", "12", "2", "3", "0", "1", "2", "0", "0", "1", "1", "2", "19", "5000", "", "", "2,19", "", "Surface agricole utile", "405", "ha", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "La Ville de Rennes fait partie des villes pionnières dans la transition alimentaire en développant depuis 2016 une politique forte, le Plan Alimentaire Durable (PAD), qui s'inscrit aujourd'hui dans la", "Concertation, Stratégie du projet construite et validée, Premier plan d'action établi par une délibération, Mise en oeuvre du premier plan d'action, Second plan d'action établi par une délibération", "Labellisation Niveau 2", "2021", "Oui", "2022", "", "3", "Commune de Rennes", "Communes", "Direction des Moyens et des Achats, Service Restauration Durable", "", "", "", "", "", "", "GT Ressources", "Collectivités territoriales, État", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "Collectivités territoriales, État", "Draff Bretagne, Département Ille et Vilaine, Collectivité Eau du Bassin Rennais, Rennes Métropole", "Acteurs de la recherche et de l'enseignement", "INRAE, Institut Agro, Terralim", "Acteurs de la production agricole dont foncier", "Agrobio 35, FRAB, IBB, Chambre d'Agriculture, Fr Civam, ", "Acteurs de la distribution alimentaire", "Manger Bio 35, Terres de Sources", "Acteurs du social", "Coeurs résistants, Banque alimentaire, Secours populaire, St Benoit Labre, Epicerie Gartuite Rennes 2, La Cohue, Le petit Blosneur, Avenir, ", "Acteurs environnementaux", "Les Cols Vert, La Basse Cour, La Garden Party, ", "", "", "", "", "", "", "", "", "", "", "", "", "Le Programme National pour l’Alimentation (PNA) et ses déclinaisons régionales, Les aides des Régions, Politique de la ville et contrat de ville, Plan de relance", "", "Défi #1 : Faire des restaurants collectifs des lieux d'accès égalitaires à une alimentation durable", "Défi #2 : Développer et accompagner les solidarités alimentaires", "Défi #3 : Co-construire le paysage nourricier rennais", "Défi #4 : Cultiver une citoyenneté alimentaire", "Défi #5 : Animer un écosystème d'acteurs", "Économie alimentaire dont structuration des filières, Éducation alimentaire, Nutrition et santé, Justice sociale dont lutte contre la précarité alimentaire, Environnement dont lutte contre le gaspilla", "PCAET", "07.02 -Renforcer la performance énergétique des services publics : • l’utilisation du levier de la commandepublique pour accompagner des filières spécifiques.08.04 -Renforcer le lien avec le territoir", "PLU(i)", "Soutenir et développer les projets d’agriculture vivrière en ville et installer de nouveaux paysans", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "Oui", "PAT de Rennes métropole : mise en place de permanences diététiques pour les bénéficiaires de structures d'aide alimentaire, travail en commun autour de la restauration collective, programme Terres de ", "Oui", "Foodtrail, Pacte de Milan, ALTAA", "Réseau des PAT Bretons", "Cralim, Pacte de Milan", "", "Autre (champ libre)", "", "", "", "", "", "tableau de suivi indicateurs", "", "", "", "", "", "", "", "", "", "", "", "", "", "https://metropole.rennes.fr/lagriculture-et-lalimentation", "https://www.calameo.com/rennes-ville-et-metropole/read/005416234f7ff3156c0c7?enablejsapi=1etpage=1", "Plan d'action PAD#2", "https://metropole.rennes.fr/rennes-cultive-son-jardin", "Article agriculture urbaine à Rennes", "https://metropole.rennes.fr/tout-savoir-sur-la-restauration-scolaire", "Page restauration scolaire", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "13/08/2024"], ["1663", "https://france-pat.fr/pat/pat-de-rennes-metropole/", "PAT de Rennes Métropole", "PAT de Rennes Métropole", "Bretagne", "Ille-et-Vilaine", "", "35079,35131,35216,35080,35266,35081,35250,35047,35065,35066,35120,35204,35238,35363,35032,35051,35189,35088,35139,35206,35240,35275,35001,35055,35208,35351,35210,35278,35315,35352,35353,35022,35039,35", "Bécherel, Brécé, La Chapelle-Chaussée, Chavagne, Langan, Romillé, Thorigné-Fouillard, La Chapelle-des-Fougeretz, Mordelles, Saint-Jacques-de-la-Lande, Betton, Miniac-sous-Bécherel, Chevaigné, L'Hermit", "", "467 858", "", "43", "657,87", "711,17", "1 446,95", "8,83", "22 000", "33", "0,46", "0,07", "37 384,64", "5 555,08", "52,57", "14,86", "17,08", "2,55", "719", "149", "14,06", "1,41", "277 867,34", "en hausse de 39,57%", "112,77", "565", "99", "4 261", "-0,07%", "380", "259", "719", "146", "64", "0", "13", "195", "63", "17", "52", "81", "88", "13.3", "", "", "1", "2,99", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "Le chantier \"Agriculture et Alimentation Durables\" a été défini en 2020 comme un des chantiers prioritaires. Le PAT comporte un cadre stratégique \"Pour une agriculture et une alimentation durables\" et", "Concertation, Stratégie du projet construite et validée, Premier plan d'action établi par une délibération", "Labellisation Niveau 2", "2024", "Non", "", "", "6", "Rennes Métropole", "Intercommunalité", "Mission Agriculture et Alimentation Durables", "", "", "", "", "", "", "Groupe projet, COPIL, Temps fort des partenaires", "Collectivités territoriales, État", "DRAAF, ADEME, Région Bretagne, Département d'Ille-et-Vilaine, Pays de Rennes, Collectivité Eau du Bassin Rennais, Eaux et Vilaine", "Acteurs de la recherche et de l'enseignement", "Valorial", "Acteurs de la production agricole dont foncier", "Chambre d'agriculture de Bretagne, Agrobio 35, CIVAM Installation-Transmission, Solidarité Paysans, SAFER", "Acteurs de la transformation agroalimentaire", "CMA Bretagne, CCI Bretagne, Initiatives Bio Bretagne", "Représentants des consommateurs", "MCE", "Acteurs environnementaux", "AirBreizh", "Autres", "Audiar (Agence d'urbanisme de Rennes), Initiative Rennes, We Ker, Valorial, Centre culinaire conseil, France Travail", "", "", "", "", "", "", "", "", "", "", "Acteurs de la recherche et de l'enseignement", "Institut Agro Rennes-Angers, Sciences Po Rennes", "Acteurs de la restauration collective", "les 43 communes de Rennes Métropole", "Acteurs de la distribution alimentaire", "Banque Alimentaire de Rennes", "Acteurs du social", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "Le Programme National pour l’Alimentation (PNA) et ses déclinaisons régionales, Plan de relance", "", "- Doubler l’intervention foncière de Rennes Métropole pour permettre l’installation en agriculture durable. - Engager 100% du patrimoine foncier de Rennes Métropole en bio. - Amener 25% des agriculteu", "", "", "", "", "Économie alimentaire dont structuration des filières, Tourisme, mise en valeur du patrimoine alimentaire et gastronomie, Éducation alimentaire, Nutrition et santé, Justice sociale dont lutte contre la", "PCAET", "Le PCAET en cours de révision comprendra des actions communes avec le PAT.Dans le volet sur l'atténuation des émissions de GES, plusieurs actions sont inscrites telles que le développement et le maint", "SRADDET", "Les objectifs en matières de réduction des GES dans le PAT reprend les objectifs du SRADDET. ", "PLU(i)", "Le PAT de Rennes Métropole est parfaitement articulé autour du PLUI, notamment en ce qui concerne la préservation des terres agricoles du territoire. ", "SCOT", "Les actions du PAT sont également en lien avec le SCOT du Pays de Rennes sur la préservation des terres agricoles, la valorisation des circuits-courts.", "CLS", "Le contrat local de santé de Rennes Métropole, en cours d'élaboration, inscrira des actions communes avec le PAT notamment : les permanences diététiques, l'expérimentation de distribution de paniers b", "Autres", "Le PAT de Rennes Métropole a été co-construit en lien avec toutes les autres politiques publiques portées par la collectivité : économie circulaire, eau et biodiversité, solidarités...", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "Oui", "Dans le cadre du réseau des PAT breton, Conseil de gouvernance alimentaire (Département), Terres de Sources.", "Oui", "Dans le cadre du contrat de coopération, 4 axes identifiés : les mobilités, l'aménagement et le développement économique, les transitions écologiques, le tourisme. 16 EPCI : les communautés de commune", "Réseau des PAT bretons", "RNPAT, Terres en Ville, Territoires bio pilote, REGAL", "", "Autre (champ libre)", "", "", "", "", "", "La thématique \" agriculture et alimentation \" a été identifiée en début de mandat comme un des sujets potentiels du programme d'évaluation interne de Rennes Métropole. Cela signifie que suite à la val", "Mission Agriculture et Alimentation Durables", "Rennes Métropole", "4 avenue Henri Fréville", "35200", "Rennes", "-", "", "", "", "", "", "", "https://metropole.rennes.fr/lagriculture-et-lalimentation", "", "https://www.calameo.com/rennes-ville-et-metropole/read/005416234b022db53072b?enablejsapi=1etpage=1", "Stratégie \"Pour une agriculture et une alimentation durables\"", "https://www.calameo.com/rennes-ville-et-metropole/read/00541623442010047bfb0", "Plan d'actions 2023-2027 - \"Agir sur toute la chaîne alimentaire\"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "https://france-pat.fr/wp-content/uploads/2024/09/01_Synthese_diagnostics_concertation_2021.pdf", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "18/12/2024"]], "tronque": false, "nb_total": 2}</script>
+<script>
+(function(){
+  const btn = document.getElementById("theme-toggle");
+  function effectif(){
+    return document.documentElement.getAttribute("data-theme") ||
+      (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  }
+  function majIcone(){ btn.textContent = effectif() === "dark" ? "☀️" : "🌙"; }
+  btn.addEventListener("click", () => {
+    const suivant = effectif() === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", suivant);
+    try { localStorage.setItem("theme", suivant); } catch(e) {}
+    majIcone();
+  });
+  majIcone();
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+    if (!document.documentElement.getAttribute("data-theme")) majIcone();
+  });
+})();
+
+const D=JSON.parse(document.getElementById("d").textContent);
+const tbl=document.getElementById("t"),wrap=document.querySelector(".wrap");
+const nCols=D.entetes.length;
+const wrapW=wrap.clientWidth||800;
+const colW=Math.max(80,Math.floor(Math.max(wrapW,nCols*160)/nCols));
+tbl.style.width=Math.max(wrapW,nCols*160)+"px";
+document.getElementById("cols").innerHTML=D.entetes.map(()=>`<col style="width:${colW}px">`).join("");
+document.title=D.nom;document.getElementById("titre").textContent=D.nom;
+if(D.tronque){const a=document.getElementById("avert");a.style.display="";
+  a.textContent=`Prévisualisation : ${D.lignes.length.toLocaleString("fr")} premières lignes sur ${D.nb_total.toLocaleString("fr")} au total.`;}
+const geo=new Set(D.champs_geo||[]);
+const DICO=D.dictionnaire||{};
+let sc=-1,asc=true,q="";
+function esc(s){return String(s??"").replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function cell(v){const s=String(v??"").trim();return /^https?:\/\/\S+$/.test(s)?`<a href="${esc(s)}" target="_blank" rel="noopener">${esc(s)}</a>`:esc(v);}
+function rendu(){
+  let rows=D.lignes;
+  if(q){const f=q.toLowerCase();rows=rows.filter(r=>r.some(v=>String(v??"").toLowerCase().includes(f)));}
+  if(sc>=0){const col=sc,up=asc;rows=[...rows].sort((a,b)=>{
+    const va=a[col]??"",vb=b[col]??"",na=+va,nb=+vb;
+    return(!isNaN(na)&&!isNaN(nb))?(up?na-nb:nb-na):(up?String(va).localeCompare(String(vb),"fr"):String(vb).localeCompare(String(va),"fr"));
+  });}
+  const th=D.entetes.map((h,i)=>{
+    const trad=DICO[h];
+    const cls=[sc===i?(asc?"asc":"desc"):"",geo.has(h)?"geo":"",trad?"trad":""].filter(Boolean).join(" ");
+    const tip=trad?` title="${esc(h)}"`:"";
+    return`<th class="${cls}"${tip}>${esc(trad||h)}<div class="resizer"></div></th>`;
+  }).join("");
+  document.getElementById("thead").innerHTML=`<tr>${th}</tr>`;
+  document.getElementById("tbody").innerHTML=rows.map(r=>`<tr>${r.map(v=>`<td><div title="${esc(v)}">${cell(v)}</div></td>`).join("")}</tr>`).join("");
+  const n=rows.length,tot=D.lignes.length;
+  document.getElementById("info").textContent=n<tot
+    ?`${n.toLocaleString("fr")} / ${tot.toLocaleString("fr")} lignes`
+    :`${n.toLocaleString("fr")} ligne${n>1?"s":""}`;
+}
+// Sort via delegation — ignore clicks that start on the resizer handle
+tbl.addEventListener("click",e=>{
+  if(e.target.closest(".resizer"))return;
+  const th=e.target.closest("th");
+  if(!th)return;
+  const i=th.cellIndex;sc===i?asc=!asc:(sc=i,asc=true);rendu();
+});
+// Column resize
+tbl.addEventListener("mousedown",e=>{
+  const rz=e.target.closest(".resizer");
+  if(!rz)return;
+  e.preventDefault();
+  const th=rz.parentElement,idx=th.cellIndex;
+  const cols=document.querySelectorAll("#cols col");
+  const startX=e.clientX,startW=th.offsetWidth;
+  rz.classList.add("active");
+  document.body.style.cursor="col-resize";
+  function onMove(e){
+    const w=Math.max(40,startW+(e.clientX-startX));
+    cols[idx].style.width=w+"px";
+    tbl.style.width=Array.from(cols).reduce((s,c)=>s+(parseInt(c.style.width)||colW),0)+"px";
+  }
+  function onUp(){
+    rz.classList.remove("active");
+    document.body.style.cursor="";
+    document.removeEventListener("mousemove",onMove);
+    document.removeEventListener("mouseup",onUp);
+  }
+  document.addEventListener("mousemove",onMove);
+  document.addEventListener("mouseup",onUp);
+});
+document.getElementById("filtre").addEventListener("input",e=>{q=e.target.value;rendu();});
+rendu();
+</script>
+</body>
+</html>

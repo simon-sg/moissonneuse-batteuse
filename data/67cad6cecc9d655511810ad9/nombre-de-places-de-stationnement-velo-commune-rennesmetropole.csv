@@ -1,0 +1,865 @@
+date_mesure,geocode_commune,libelle_commune,type_accroche,valeur
+2022-01-01T00:00:00.000,35281,Saint-Jacques-de-la-Lande,cadre,0.0
+2025-01-01T00:00:00.000,35120,Gévezé,sans accroche,0.0
+2022-01-01T00:00:00.000,35180,Miniac-sous-Bécherel,roue,0.0
+2023-01-01T00:00:00.000,35132,Hirel,sans accroche,0.0
+2024-01-01T00:00:00.000,35351,Le Verger,cadre et roue,0.0
+2025-01-01T00:00:00.000,35136,Janzé,cadre et roue,50.0
+2025-01-01T00:00:00.000,35058,La Chapelle-Chaussée,roue,8.0
+2022-01-01T00:00:00.000,35216,Parthenay-de-Bretagne,cadre et roue,0.0
+2023-01-01T00:00:00.000,35080,Cintré,cadre et roue,12.0
+2024-01-01T00:00:00.000,35139,Laillé,cadre,0.0
+2023-01-01T00:00:00.000,35208,Orgères,roue,5.0
+2024-01-01T00:00:00.000,35200,Moutiers,sans accroche,0.0
+2023-01-01T00:00:00.000,35230,Poilley,roue,0.0
+2022-01-01T00:00:00.000,35160,Loutehel,cadre,0.0
+2025-01-01T00:00:00.000,35055,Chantepie,sans accroche,32.0
+2024-01-01T00:00:00.000,35135,Irodouër,cadre et roue,0.0
+2022-01-01T00:00:00.000,35189,Montgermont,sans accroche,8.0
+2022-01-01T00:00:00.000,35310,Saint-Sauveur-des-Landes,sans accroche,0.0
+2022-01-01T00:00:00.000,35032,Bourgbarré,roue,18.0
+2022-01-01T00:00:00.000,35160,Loutehel,sans accroche,0.0
+2025-01-01T00:00:00.000,35132,Hirel,cadre et roue,4.0
+2022-01-01T00:00:00.000,35334,Thorigné-Fouillard,sans accroche,47.0
+2025-01-01T00:00:00.000,35189,Montgermont,sans accroche,8.0
+2024-01-01T00:00:00.000,35131,L'Hermitage,roue,8.0
+2023-01-01T00:00:00.000,35352,Vern-sur-Seiche,roue,34.0
+2023-01-01T00:00:00.000,35144,Langan,cadre et roue,0.0
+2024-01-01T00:00:00.000,35200,Moutiers,roue,0.0
+2022-01-01T00:00:00.000,35022,Bécherel,roue,0.0
+2023-01-01T00:00:00.000,35120,Gévezé,cadre,0.0
+2025-01-01T00:00:00.000,35190,Monthault,cadre et roue,0.0
+2025-01-01T00:00:00.000,35230,Poilley,roue,0.0
+2025-01-01T00:00:00.000,35136,Janzé,sans accroche,12.0
+2022-01-01T00:00:00.000,35278,Saint-Grégoire,sans accroche,6.0
+2024-01-01T00:00:00.000,35132,Hirel,cadre et roue,0.0
+2022-01-01T00:00:00.000,35278,Saint-Grégoire,cadre et roue,108.0
+2025-01-01T00:00:00.000,35079,Chevaigné,roue,11.0
+2023-01-01T00:00:00.000,35001,Acigné,cadre,0.0
+2024-01-01T00:00:00.000,35136,Janzé,roue,53.0
+2025-01-01T00:00:00.000,35032,Bourgbarré,roue,26.0
+2022-01-01T00:00:00.000,35136,Janzé,roue,0.0
+2024-01-01T00:00:00.000,35230,Poilley,cadre,0.0
+2024-01-01T00:00:00.000,35059,La Chapelle-des-Fougeretz,cadre,0.0
+2023-01-01T00:00:00.000,35051,Cesson-Sévigné,cadre,22.0
+2022-01-01T00:00:00.000,35079,Chevaigné,roue,0.0
+2024-01-01T00:00:00.000,35081,Clayes,sans accroche,0.0
+2025-01-01T00:00:00.000,35120,Gévezé,roue,5.0
+2022-01-01T00:00:00.000,35066,Chartres-de-Bretagne,cadre,0.0
+2023-01-01T00:00:00.000,35088,Corps-Nuds,cadre et roue,50.0
+2023-01-01T00:00:00.000,35216,Parthenay-de-Bretagne,cadre,0.0
+2023-01-01T00:00:00.000,35235,Rannée,cadre et roue,0.0
+2025-01-01T00:00:00.000,35131,L'Hermitage,roue,8.0
+2024-01-01T00:00:00.000,35210,Pacé,cadre et roue,80.0
+2025-01-01T00:00:00.000,35275,Saint-Gilles,cadre et roue,10.0
+2024-01-01T00:00:00.000,35281,Saint-Jacques-de-la-Lande,cadre,0.0
+2024-01-01T00:00:00.000,35055,Chantepie,roue,28.0
+2022-01-01T00:00:00.000,35363,Pont-Péan,cadre et roue,10.0
+2024-01-01T00:00:00.000,35136,Janzé,cadre et roue,18.0
+2023-01-01T00:00:00.000,35055,Chantepie,sans accroche,22.0
+2023-01-01T00:00:00.000,35131,L'Hermitage,sans accroche,6.0
+2023-01-01T00:00:00.000,35066,Chartres-de-Bretagne,roue,60.0
+2023-01-01T00:00:00.000,35136,Janzé,roue,53.0
+2022-01-01T00:00:00.000,35238,Rennes,roue,450.0
+2025-01-01T00:00:00.000,35136,Janzé,cadre,0.0
+2023-01-01T00:00:00.000,35235,Rannée,sans accroche,8.0
+2022-01-01T00:00:00.000,35245,Romillé,cadre et roue,0.0
+2022-01-01T00:00:00.000,35139,Laillé,cadre et roue,0.0
+2023-01-01T00:00:00.000,35039,Brécé,roue,0.0
+2022-01-01T00:00:00.000,35039,Brécé,cadre et roue,1.0
+2022-01-01T00:00:00.000,35131,L'Hermitage,cadre,0.0
+2023-01-01T00:00:00.000,35245,Romillé,sans accroche,0.0
+2022-01-01T00:00:00.000,35001,Acigné,roue,8.0
+2024-01-01T00:00:00.000,35170,Mecé,roue,0.0
+2023-01-01T00:00:00.000,35079,Chevaigné,roue,11.0
+2024-01-01T00:00:00.000,35351,Le Verger,cadre,0.0
+2024-01-01T00:00:00.000,35245,Romillé,cadre et roue,0.0
+2024-01-01T00:00:00.000,35170,Mecé,cadre et roue,0.0
+2022-01-01T00:00:00.000,35058,La Chapelle-Chaussée,roue,0.0
+2023-01-01T00:00:00.000,35080,Cintré,sans accroche,14.0
+2024-01-01T00:00:00.000,35065,La Chapelle-Thouarault,cadre,0.0
+2022-01-01T00:00:00.000,35058,La Chapelle-Chaussée,cadre et roue,0.0
+2023-01-01T00:00:00.000,35310,Saint-Sauveur-des-Landes,roue,0.0
+2025-01-01T00:00:00.000,35206,Noyal-Châtillon-sur-Seiche,roue,0.0
+2024-01-01T00:00:00.000,35079,Chevaigné,cadre et roue,10.0
+2023-01-01T00:00:00.000,35081,Clayes,roue,0.0
+2024-01-01T00:00:00.000,35170,Mecé,sans accroche,0.0
+2025-01-01T00:00:00.000,35180,Miniac-sous-Bécherel,cadre et roue,0.0
+2022-01-01T00:00:00.000,35001,Acigné,cadre,0.0
+2022-01-01T00:00:00.000,35351,Le Verger,roue,0.0
+2022-01-01T00:00:00.000,35081,Clayes,cadre,0.0
+2022-01-01T00:00:00.000,35065,La Chapelle-Thouarault,cadre et roue,0.0
+2025-01-01T00:00:00.000,35196,Mordelles,cadre et roue,79.0
+2023-01-01T00:00:00.000,35079,Chevaigné,cadre,0.0
+2023-01-01T00:00:00.000,35200,Moutiers,cadre et roue,0.0
+2025-01-01T00:00:00.000,35245,Romillé,cadre,0.0
+2023-01-01T00:00:00.000,35189,Montgermont,sans accroche,8.0
+2025-01-01T00:00:00.000,35088,Corps-Nuds,cadre et roue,60.0
+2024-01-01T00:00:00.000,35051,Cesson-Sévigné,cadre,22.0
+2025-01-01T00:00:00.000,35281,Saint-Jacques-de-la-Lande,cadre,0.0
+2023-01-01T00:00:00.000,35196,Mordelles,sans accroche,12.0
+2024-01-01T00:00:00.000,35208,Orgères,cadre,0.0
+2025-01-01T00:00:00.000,35240,Le Rheu,cadre et roue,66.0
+2024-01-01T00:00:00.000,35139,Laillé,sans accroche,0.0
+2022-01-01T00:00:00.000,35059,La Chapelle-des-Fougeretz,cadre,0.0
+2024-01-01T00:00:00.000,35334,Thorigné-Fouillard,roue,0.0
+2022-01-01T00:00:00.000,35080,Cintré,roue,0.0
+2025-01-01T00:00:00.000,35088,Corps-Nuds,roue,0.0
+2022-01-01T00:00:00.000,35310,Saint-Sauveur-des-Landes,cadre et roue,0.0
+2024-01-01T00:00:00.000,35334,Thorigné-Fouillard,sans accroche,16.0
+2025-01-01T00:00:00.000,35204,Nouvoitou,sans accroche,0.0
+2022-01-01T00:00:00.000,35058,La Chapelle-Chaussée,cadre,0.0
+2024-01-01T00:00:00.000,35039,Brécé,roue,0.0
+2022-01-01T00:00:00.000,35352,Vern-sur-Seiche,cadre,0.0
+2025-01-01T00:00:00.000,35051,Cesson-Sévigné,sans accroche,321.0
+2023-01-01T00:00:00.000,35047,Bruz,roue,41.0
+2022-01-01T00:00:00.000,35139,Laillé,cadre,0.0
+2025-01-01T00:00:00.000,35230,Poilley,cadre,0.0
+2023-01-01T00:00:00.000,35351,Le Verger,roue,0.0
+2023-01-01T00:00:00.000,35189,Montgermont,cadre,8.0
+2023-01-01T00:00:00.000,35088,Corps-Nuds,roue,0.0
+2023-01-01T00:00:00.000,35190,Monthault,roue,0.0
+2022-01-01T00:00:00.000,35196,Mordelles,roue,5.0
+2025-01-01T00:00:00.000,35079,Chevaigné,sans accroche,10.0
+2025-01-01T00:00:00.000,35238,Rennes,cadre,360.0
+2022-01-01T00:00:00.000,35196,Mordelles,cadre,0.0
+2024-01-01T00:00:00.000,35240,Le Rheu,roue,15.0
+2025-01-01T00:00:00.000,35132,Hirel,roue,0.0
+2022-01-01T00:00:00.000,35039,Brécé,roue,0.0
+2022-01-01T00:00:00.000,35081,Clayes,cadre et roue,4.0
+2023-01-01T00:00:00.000,35180,Miniac-sous-Bécherel,sans accroche,0.0
+2022-01-01T00:00:00.000,35200,Moutiers,sans accroche,0.0
+2024-01-01T00:00:00.000,35132,Hirel,cadre,0.0
+2024-01-01T00:00:00.000,35204,Nouvoitou,roue,10.0
+2025-01-01T00:00:00.000,35066,Chartres-de-Bretagne,cadre,0.0
+2024-01-01T00:00:00.000,35066,Chartres-de-Bretagne,cadre et roue,32.0
+2022-01-01T00:00:00.000,35230,Poilley,cadre et roue,0.0
+2022-01-01T00:00:00.000,35250,Saint-Armel,cadre et roue,0.0
+2023-01-01T00:00:00.000,35238,Rennes,sans accroche,3904.0
+2022-01-01T00:00:00.000,35235,Rannée,roue,0.0
+2022-01-01T00:00:00.000,35144,Langan,cadre,0.0
+2025-01-01T00:00:00.000,35039,Brécé,sans accroche,0.0
+2024-01-01T00:00:00.000,35275,Saint-Gilles,roue,6.0
+2023-01-01T00:00:00.000,35001,Acigné,roue,8.0
+2023-01-01T00:00:00.000,35001,Acigné,sans accroche,26.0
+2025-01-01T00:00:00.000,35363,Pont-Péan,cadre et roue,10.0
+2025-01-01T00:00:00.000,35024,Betton,sans accroche,58.0
+2024-01-01T00:00:00.000,35066,Chartres-de-Bretagne,roue,54.0
+2022-01-01T00:00:00.000,35144,Langan,cadre et roue,0.0
+2024-01-01T00:00:00.000,35250,Saint-Armel,roue,42.0
+2022-01-01T00:00:00.000,35250,Saint-Armel,cadre,0.0
+2024-01-01T00:00:00.000,35310,Saint-Sauveur-des-Landes,roue,0.0
+2022-01-01T00:00:00.000,35024,Betton,sans accroche,174.0
+2023-01-01T00:00:00.000,35180,Miniac-sous-Bécherel,cadre et roue,0.0
+2023-01-01T00:00:00.000,35206,Noyal-Châtillon-sur-Seiche,cadre,0.0
+2024-01-01T00:00:00.000,35058,La Chapelle-Chaussée,cadre et roue,0.0
+2024-01-01T00:00:00.000,35150,Lécousse,cadre,0.0
+2023-01-01T00:00:00.000,35136,Janzé,cadre et roue,18.0
+2024-01-01T00:00:00.000,35024,Betton,roue,24.0
+2023-01-01T00:00:00.000,35039,Brécé,sans accroche,0.0
+2024-01-01T00:00:00.000,35315,Saint-Sulpice-la-Forêt,sans accroche,5.0
+2022-01-01T00:00:00.000,35150,Lécousse,roue,0.0
+2025-01-01T00:00:00.000,35278,Saint-Grégoire,roue,74.0
+2024-01-01T00:00:00.000,35022,Bécherel,cadre et roue,0.0
+2023-01-01T00:00:00.000,35139,Laillé,cadre,0.0
+2024-01-01T00:00:00.000,35240,Le Rheu,cadre,8.0
+2024-01-01T00:00:00.000,35080,Cintré,cadre et roue,52.0
+2022-01-01T00:00:00.000,35206,Noyal-Châtillon-sur-Seiche,cadre,0.0
+2022-01-01T00:00:00.000,35170,Mecé,sans accroche,0.0
+2024-01-01T00:00:00.000,35080,Cintré,sans accroche,26.0
+2023-01-01T00:00:00.000,35058,La Chapelle-Chaussée,roue,8.0
+2023-01-01T00:00:00.000,35206,Noyal-Châtillon-sur-Seiche,sans accroche,14.0
+2025-01-01T00:00:00.000,35189,Montgermont,cadre et roue,20.0
+2025-01-01T00:00:00.000,35080,Cintré,sans accroche,26.0
+2023-01-01T00:00:00.000,35189,Montgermont,cadre et roue,20.0
+2022-01-01T00:00:00.000,35190,Monthault,cadre,0.0
+2025-01-01T00:00:00.000,35190,Monthault,roue,0.0
+2025-01-01T00:00:00.000,35353,Vezin-le-Coquet,cadre et roue,54.0
+2023-01-01T00:00:00.000,35039,Brécé,cadre et roue,1.0
+2024-01-01T00:00:00.000,35353,Vezin-le-Coquet,roue,5.0
+2025-01-01T00:00:00.000,35051,Cesson-Sévigné,cadre et roue,748.0
+2023-01-01T00:00:00.000,35206,Noyal-Châtillon-sur-Seiche,cadre et roue,14.0
+2023-01-01T00:00:00.000,35135,Irodouër,roue,7.0
+2025-01-01T00:00:00.000,35310,Saint-Sauveur-des-Landes,cadre,0.0
+2022-01-01T00:00:00.000,35135,Irodouër,cadre et roue,0.0
+2023-01-01T00:00:00.000,35230,Poilley,cadre,0.0
+2022-01-01T00:00:00.000,35189,Montgermont,cadre,8.0
+2025-01-01T00:00:00.000,35047,Bruz,sans accroche,20.0
+2022-01-01T00:00:00.000,35235,Rannée,cadre et roue,0.0
+2022-01-01T00:00:00.000,35080,Cintré,cadre et roue,12.0
+2025-01-01T00:00:00.000,35189,Montgermont,roue,0.0
+2022-01-01T00:00:00.000,35200,Moutiers,roue,0.0
+2025-01-01T00:00:00.000,35039,Brécé,roue,0.0
+2022-01-01T00:00:00.000,35088,Corps-Nuds,cadre,0.0
+2022-01-01T00:00:00.000,35245,Romillé,cadre,0.0
+2023-01-01T00:00:00.000,35210,Pacé,roue,0.0
+2025-01-01T00:00:00.000,35216,Parthenay-de-Bretagne,sans accroche,0.0
+2023-01-01T00:00:00.000,35065,La Chapelle-Thouarault,roue,0.0
+2025-01-01T00:00:00.000,35238,Rennes,roue,740.0
+2025-01-01T00:00:00.000,35032,Bourgbarré,cadre,0.0
+2023-01-01T00:00:00.000,35351,Le Verger,cadre,0.0
+2023-01-01T00:00:00.000,35216,Parthenay-de-Bretagne,roue,0.0
+2022-01-01T00:00:00.000,35180,Miniac-sous-Bécherel,cadre et roue,0.0
+2022-01-01T00:00:00.000,35266,Saint-Erblon,cadre,0.0
+2023-01-01T00:00:00.000,35055,Chantepie,roue,28.0
+2024-01-01T00:00:00.000,35206,Noyal-Châtillon-sur-Seiche,sans accroche,14.0
+2025-01-01T00:00:00.000,35210,Pacé,cadre,36.0
+2025-01-01T00:00:00.000,35266,Saint-Erblon,cadre et roue,28.0
+2023-01-01T00:00:00.000,35136,Janzé,sans accroche,12.0
+2022-01-01T00:00:00.000,35230,Poilley,sans accroche,0.0
+2023-01-01T00:00:00.000,35065,La Chapelle-Thouarault,sans accroche,14.0
+2022-01-01T00:00:00.000,35315,Saint-Sulpice-la-Forêt,cadre,0.0
+2023-01-01T00:00:00.000,35022,Bécherel,cadre et roue,0.0
+2023-01-01T00:00:00.000,35266,Saint-Erblon,cadre,0.0
+2023-01-01T00:00:00.000,35204,Nouvoitou,cadre et roue,40.0
+2022-01-01T00:00:00.000,35351,Le Verger,sans accroche,0.0
+2025-01-01T00:00:00.000,35022,Bécherel,roue,3.0
+2025-01-01T00:00:00.000,35250,Saint-Armel,sans accroche,2.0
+2023-01-01T00:00:00.000,35216,Parthenay-de-Bretagne,sans accroche,0.0
+2022-01-01T00:00:00.000,35230,Poilley,roue,0.0
+2025-01-01T00:00:00.000,35315,Saint-Sulpice-la-Forêt,cadre et roue,26.0
+2023-01-01T00:00:00.000,35136,Janzé,cadre,0.0
+2022-01-01T00:00:00.000,35196,Mordelles,sans accroche,12.0
+2024-01-01T00:00:00.000,35065,La Chapelle-Thouarault,roue,0.0
+2023-01-01T00:00:00.000,35278,Saint-Grégoire,cadre,14.0
+2024-01-01T00:00:00.000,35076,Chavagne,cadre,0.0
+2025-01-01T00:00:00.000,35363,Pont-Péan,sans accroche,14.0
+2023-01-01T00:00:00.000,35047,Bruz,cadre,0.0
+2023-01-01T00:00:00.000,35275,Saint-Gilles,sans accroche,0.0
+2023-01-01T00:00:00.000,35055,Chantepie,cadre,24.0
+2022-01-01T00:00:00.000,35024,Betton,cadre,8.0
+2023-01-01T00:00:00.000,35024,Betton,roue,16.0
+2024-01-01T00:00:00.000,35088,Corps-Nuds,cadre et roue,60.0
+2024-01-01T00:00:00.000,35238,Rennes,roue,674.0
+2024-01-01T00:00:00.000,35245,Romillé,roue,6.0
+2025-01-01T00:00:00.000,35051,Cesson-Sévigné,roue,145.0
+2025-01-01T00:00:00.000,35150,Lécousse,roue,6.0
+2024-01-01T00:00:00.000,35315,Saint-Sulpice-la-Forêt,roue,6.0
+2022-01-01T00:00:00.000,35216,Parthenay-de-Bretagne,sans accroche,0.0
+2022-01-01T00:00:00.000,35144,Langan,roue,0.0
+2025-01-01T00:00:00.000,35022,Bécherel,cadre et roue,0.0
+2023-01-01T00:00:00.000,35058,La Chapelle-Chaussée,cadre et roue,0.0
+2025-01-01T00:00:00.000,35230,Poilley,cadre et roue,0.0
+2022-01-01T00:00:00.000,35310,Saint-Sauveur-des-Landes,roue,0.0
+2025-01-01T00:00:00.000,35352,Vern-sur-Seiche,roue,34.0
+2023-01-01T00:00:00.000,35135,Irodouër,cadre,0.0
+2023-01-01T00:00:00.000,35353,Vezin-le-Coquet,cadre et roue,26.0
+2023-01-01T00:00:00.000,35281,Saint-Jacques-de-la-Lande,cadre,0.0
+2025-01-01T00:00:00.000,35200,Moutiers,cadre,0.0
+2024-01-01T00:00:00.000,35055,Chantepie,cadre,16.0
+2024-01-01T00:00:00.000,35120,Gévezé,roue,5.0
+2022-01-01T00:00:00.000,35208,Orgères,sans accroche,0.0
+2025-01-01T00:00:00.000,35208,Orgères,cadre,0.0
+2025-01-01T00:00:00.000,35024,Betton,cadre et roue,284.0
+2024-01-01T00:00:00.000,35120,Gévezé,sans accroche,0.0
+2025-01-01T00:00:00.000,35059,La Chapelle-des-Fougeretz,cadre et roue,8.0
+2024-01-01T00:00:00.000,35250,Saint-Armel,cadre,0.0
+2022-01-01T00:00:00.000,35351,Le Verger,cadre,0.0
+2024-01-01T00:00:00.000,35144,Langan,sans accroche,0.0
+2025-01-01T00:00:00.000,35144,Langan,cadre,0.0
+2025-01-01T00:00:00.000,35206,Noyal-Châtillon-sur-Seiche,cadre et roue,28.0
+2024-01-01T00:00:00.000,35210,Pacé,sans accroche,0.0
+2023-01-01T00:00:00.000,35363,Pont-Péan,cadre et roue,10.0
+2024-01-01T00:00:00.000,35363,Pont-Péan,cadre,0.0
+2023-01-01T00:00:00.000,35275,Saint-Gilles,cadre et roue,0.0
+2023-01-01T00:00:00.000,35196,Mordelles,roue,28.0
+2023-01-01T00:00:00.000,35160,Loutehel,cadre et roue,0.0
+2022-01-01T00:00:00.000,35001,Acigné,cadre et roue,120.0
+2022-01-01T00:00:00.000,35238,Rennes,sans accroche,4222.0
+2024-01-01T00:00:00.000,35250,Saint-Armel,sans accroche,2.0
+2025-01-01T00:00:00.000,35334,Thorigné-Fouillard,cadre et roue,114.0
+2022-01-01T00:00:00.000,35120,Gévezé,sans accroche,0.0
+2024-01-01T00:00:00.000,35081,Clayes,roue,0.0
+2023-01-01T00:00:00.000,35150,Lécousse,roue,0.0
+2025-01-01T00:00:00.000,35210,Pacé,cadre et roue,80.0
+2024-01-01T00:00:00.000,35066,Chartres-de-Bretagne,cadre,0.0
+2023-01-01T00:00:00.000,35058,La Chapelle-Chaussée,cadre,0.0
+2025-01-01T00:00:00.000,35216,Parthenay-de-Bretagne,cadre,0.0
+2024-01-01T00:00:00.000,35200,Moutiers,cadre et roue,0.0
+2025-01-01T00:00:00.000,35144,Langan,sans accroche,0.0
+2022-01-01T00:00:00.000,35131,L'Hermitage,cadre et roue,0.0
+2024-01-01T00:00:00.000,35170,Mecé,cadre,0.0
+2022-01-01T00:00:00.000,35240,Le Rheu,sans accroche,0.0
+2022-01-01T00:00:00.000,35310,Saint-Sauveur-des-Landes,cadre,0.0
+2025-01-01T00:00:00.000,35208,Orgères,sans accroche,0.0
+2025-01-01T00:00:00.000,35245,Romillé,sans accroche,10.0
+2023-01-01T00:00:00.000,35250,Saint-Armel,cadre et roue,0.0
+2024-01-01T00:00:00.000,35024,Betton,cadre,11.0
+2023-01-01T00:00:00.000,35135,Irodouër,cadre et roue,0.0
+2025-01-01T00:00:00.000,35189,Montgermont,cadre,8.0
+2023-01-01T00:00:00.000,35051,Cesson-Sévigné,sans accroche,127.0
+2023-01-01T00:00:00.000,35131,L'Hermitage,cadre et roue,0.0
+2023-01-01T00:00:00.000,35266,Saint-Erblon,cadre et roue,0.0
+2024-01-01T00:00:00.000,35039,Brécé,cadre,0.0
+2025-01-01T00:00:00.000,35281,Saint-Jacques-de-la-Lande,sans accroche,346.0
+2025-01-01T00:00:00.000,35160,Loutehel,cadre,0.0
+2022-01-01T00:00:00.000,35131,L'Hermitage,roue,8.0
+2023-01-01T00:00:00.000,35066,Chartres-de-Bretagne,sans accroche,16.0
+2023-01-01T00:00:00.000,35281,Saint-Jacques-de-la-Lande,roue,29.0
+2024-01-01T00:00:00.000,35245,Romillé,sans accroche,0.0
+2024-01-01T00:00:00.000,35353,Vezin-le-Coquet,cadre,76.0
+2022-01-01T00:00:00.000,35079,Chevaigné,cadre,0.0
+2023-01-01T00:00:00.000,35065,La Chapelle-Thouarault,cadre,0.0
+2022-01-01T00:00:00.000,35352,Vern-sur-Seiche,cadre et roue,111.0
+2023-01-01T00:00:00.000,35189,Montgermont,roue,0.0
+2025-01-01T00:00:00.000,35240,Le Rheu,roue,15.0
+2022-01-01T00:00:00.000,35180,Miniac-sous-Bécherel,cadre,0.0
+2024-01-01T00:00:00.000,35150,Lécousse,roue,0.0
+2025-01-01T00:00:00.000,35275,Saint-Gilles,roue,6.0
+2023-01-01T00:00:00.000,35131,L'Hermitage,cadre,0.0
+2025-01-01T00:00:00.000,35058,La Chapelle-Chaussée,cadre et roue,0.0
+2022-01-01T00:00:00.000,35208,Orgères,roue,5.0
+2025-01-01T00:00:00.000,35055,Chantepie,cadre,16.0
+2023-01-01T00:00:00.000,35210,Pacé,cadre,36.0
+2023-01-01T00:00:00.000,35024,Betton,sans accroche,121.0
+2025-01-01T00:00:00.000,35278,Saint-Grégoire,sans accroche,17.0
+2024-01-01T00:00:00.000,35278,Saint-Grégoire,cadre,14.0
+2025-01-01T00:00:00.000,35352,Vern-sur-Seiche,sans accroche,88.0
+2022-01-01T00:00:00.000,35024,Betton,roue,16.0
+2024-01-01T00:00:00.000,35206,Noyal-Châtillon-sur-Seiche,cadre,0.0
+2025-01-01T00:00:00.000,35235,Rannée,sans accroche,8.0
+2025-01-01T00:00:00.000,35235,Rannée,roue,0.0
+2022-01-01T00:00:00.000,35245,Romillé,roue,6.0
+2023-01-01T00:00:00.000,35076,Chavagne,sans accroche,16.0
+2024-01-01T00:00:00.000,35238,Rennes,cadre et roue,11536.0
+2024-01-01T00:00:00.000,35352,Vern-sur-Seiche,cadre,0.0
+2025-01-01T00:00:00.000,35240,Le Rheu,sans accroche,0.0
+2023-01-01T00:00:00.000,35076,Chavagne,cadre,0.0
+2023-01-01T00:00:00.000,35208,Orgères,sans accroche,0.0
+2023-01-01T00:00:00.000,35032,Bourgbarré,cadre et roue,10.0
+2025-01-01T00:00:00.000,35204,Nouvoitou,cadre et roue,40.0
+2025-01-01T00:00:00.000,35170,Mecé,cadre,0.0
+2023-01-01T00:00:00.000,35170,Mecé,roue,0.0
+2025-01-01T00:00:00.000,35080,Cintré,cadre,0.0
+2025-01-01T00:00:00.000,35055,Chantepie,roue,32.0
+2023-01-01T00:00:00.000,35131,L'Hermitage,roue,8.0
+2025-01-01T00:00:00.000,35024,Betton,cadre,11.0
+2022-01-01T00:00:00.000,35180,Miniac-sous-Bécherel,sans accroche,0.0
+2022-01-01T00:00:00.000,35135,Irodouër,cadre,0.0
+2023-01-01T00:00:00.000,35278,Saint-Grégoire,cadre et roue,122.0
+2025-01-01T00:00:00.000,35136,Janzé,roue,83.0
+2025-01-01T00:00:00.000,35081,Clayes,cadre et roue,4.0
+2025-01-01T00:00:00.000,35076,Chavagne,cadre,0.0
+2024-01-01T00:00:00.000,35204,Nouvoitou,cadre et roue,40.0
+2022-01-01T00:00:00.000,35150,Lécousse,sans accroche,0.0
+2022-01-01T00:00:00.000,35139,Laillé,sans accroche,0.0
+2022-01-01T00:00:00.000,35120,Gévezé,cadre et roue,10.0
+2022-01-01T00:00:00.000,35250,Saint-Armel,roue,6.0
+2024-01-01T00:00:00.000,35180,Miniac-sous-Bécherel,sans accroche,0.0
+2024-01-01T00:00:00.000,35190,Monthault,roue,0.0
+2023-01-01T00:00:00.000,35079,Chevaigné,cadre et roue,0.0
+2024-01-01T00:00:00.000,35310,Saint-Sauveur-des-Landes,sans accroche,0.0
+2022-01-01T00:00:00.000,35352,Vern-sur-Seiche,sans accroche,81.0
+2024-01-01T00:00:00.000,35132,Hirel,sans accroche,0.0
+2024-01-01T00:00:00.000,35079,Chevaigné,roue,11.0
+2023-01-01T00:00:00.000,35160,Loutehel,cadre,0.0
+2022-01-01T00:00:00.000,35208,Orgères,cadre,0.0
+2023-01-01T00:00:00.000,35170,Mecé,cadre et roue,0.0
+2023-01-01T00:00:00.000,35310,Saint-Sauveur-des-Landes,cadre et roue,0.0
+2023-01-01T00:00:00.000,35240,Le Rheu,cadre,8.0
+2022-01-01T00:00:00.000,35170,Mecé,roue,0.0
+2024-01-01T00:00:00.000,35204,Nouvoitou,cadre,0.0
+2024-01-01T00:00:00.000,35275,Saint-Gilles,cadre,0.0
+2025-01-01T00:00:00.000,35131,L'Hermitage,sans accroche,6.0
+2023-01-01T00:00:00.000,35363,Pont-Péan,cadre,0.0
+2024-01-01T00:00:00.000,35180,Miniac-sous-Bécherel,cadre,0.0
+2024-01-01T00:00:00.000,35363,Pont-Péan,sans accroche,14.0
+2023-01-01T00:00:00.000,35022,Bécherel,roue,3.0
+2024-01-01T00:00:00.000,35160,Loutehel,roue,0.0
+2022-01-01T00:00:00.000,35210,Pacé,sans accroche,6.0
+2023-01-01T00:00:00.000,35132,Hirel,cadre,0.0
+2024-01-01T00:00:00.000,35189,Montgermont,sans accroche,8.0
+2022-01-01T00:00:00.000,35032,Bourgbarré,sans accroche,0.0
+2024-01-01T00:00:00.000,35022,Bécherel,sans accroche,6.0
+2025-01-01T00:00:00.000,35266,Saint-Erblon,sans accroche,0.0
+2023-01-01T00:00:00.000,35200,Moutiers,sans accroche,0.0
+2024-01-01T00:00:00.000,35136,Janzé,sans accroche,12.0
+2024-01-01T00:00:00.000,35081,Clayes,cadre,0.0
+2024-01-01T00:00:00.000,35235,Rannée,roue,0.0
+2022-01-01T00:00:00.000,35066,Chartres-de-Bretagne,cadre et roue,16.0
+2023-01-01T00:00:00.000,35310,Saint-Sauveur-des-Landes,sans accroche,0.0
+2022-01-01T00:00:00.000,35278,Saint-Grégoire,cadre,14.0
+2025-01-01T00:00:00.000,35022,Bécherel,sans accroche,6.0
+2025-01-01T00:00:00.000,35250,Saint-Armel,cadre et roue,0.0
+2025-01-01T00:00:00.000,35058,La Chapelle-Chaussée,sans accroche,0.0
+2023-01-01T00:00:00.000,35150,Lécousse,sans accroche,0.0
+2022-01-01T00:00:00.000,35059,La Chapelle-des-Fougeretz,sans accroche,0.0
+2025-01-01T00:00:00.000,35088,Corps-Nuds,cadre,0.0
+2022-01-01T00:00:00.000,35088,Corps-Nuds,sans accroche,0.0
+2022-01-01T00:00:00.000,35204,Nouvoitou,cadre et roue,36.0
+2023-01-01T00:00:00.000,35059,La Chapelle-des-Fougeretz,sans accroche,0.0
+2022-01-01T00:00:00.000,35334,Thorigné-Fouillard,roue,0.0
+2025-01-01T00:00:00.000,35200,Moutiers,sans accroche,0.0
+2023-01-01T00:00:00.000,35001,Acigné,cadre et roue,120.0
+2025-01-01T00:00:00.000,35210,Pacé,roue,12.0
+2024-01-01T00:00:00.000,35266,Saint-Erblon,sans accroche,0.0
+2024-01-01T00:00:00.000,35065,La Chapelle-Thouarault,sans accroche,14.0
+2023-01-01T00:00:00.000,35334,Thorigné-Fouillard,cadre,0.0
+2024-01-01T00:00:00.000,35144,Langan,cadre,0.0
+2025-01-01T00:00:00.000,35208,Orgères,roue,5.0
+2025-01-01T00:00:00.000,35132,Hirel,sans accroche,0.0
+2024-01-01T00:00:00.000,35150,Lécousse,cadre et roue,0.0
+2024-01-01T00:00:00.000,35240,Le Rheu,sans accroche,0.0
+2025-01-01T00:00:00.000,35315,Saint-Sulpice-la-Forêt,roue,6.0
+2024-01-01T00:00:00.000,35189,Montgermont,cadre et roue,20.0
+2022-01-01T00:00:00.000,35216,Parthenay-de-Bretagne,cadre,0.0
+2023-01-01T00:00:00.000,35310,Saint-Sauveur-des-Landes,cadre,0.0
+2025-01-01T00:00:00.000,35150,Lécousse,sans accroche,0.0
+2022-01-01T00:00:00.000,35315,Saint-Sulpice-la-Forêt,sans accroche,5.0
+2022-01-01T00:00:00.000,35200,Moutiers,cadre et roue,0.0
+2025-01-01T00:00:00.000,35180,Miniac-sous-Bécherel,cadre,0.0
+2024-01-01T00:00:00.000,35363,Pont-Péan,cadre et roue,10.0
+2024-01-01T00:00:00.000,35352,Vern-sur-Seiche,roue,34.0
+2022-01-01T00:00:00.000,35238,Rennes,cadre,365.0
+2023-01-01T00:00:00.000,35240,Le Rheu,sans accroche,0.0
+2023-01-01T00:00:00.000,35144,Langan,sans accroche,0.0
+2023-01-01T00:00:00.000,35065,La Chapelle-Thouarault,cadre et roue,0.0
+2024-01-01T00:00:00.000,35216,Parthenay-de-Bretagne,cadre,0.0
+2025-01-01T00:00:00.000,35351,Le Verger,sans accroche,0.0
+2023-01-01T00:00:00.000,35135,Irodouër,sans accroche,0.0
+2024-01-01T00:00:00.000,35206,Noyal-Châtillon-sur-Seiche,roue,0.0
+2023-01-01T00:00:00.000,35353,Vezin-le-Coquet,roue,5.0
+2025-01-01T00:00:00.000,35058,La Chapelle-Chaussée,cadre,0.0
+2022-01-01T00:00:00.000,35266,Saint-Erblon,sans accroche,0.0
+2024-01-01T00:00:00.000,35080,Cintré,roue,0.0
+2025-01-01T00:00:00.000,35135,Irodouër,roue,7.0
+2023-01-01T00:00:00.000,35266,Saint-Erblon,roue,0.0
+2022-01-01T00:00:00.000,35190,Monthault,sans accroche,0.0
+2023-01-01T00:00:00.000,35022,Bécherel,sans accroche,6.0
+2025-01-01T00:00:00.000,35001,Acigné,sans accroche,32.0
+2024-01-01T00:00:00.000,35058,La Chapelle-Chaussée,roue,8.0
+2022-01-01T00:00:00.000,35235,Rannée,sans accroche,8.0
+2022-01-01T00:00:00.000,35250,Saint-Armel,sans accroche,0.0
+2022-01-01T00:00:00.000,35281,Saint-Jacques-de-la-Lande,sans accroche,46.0
+2022-01-01T00:00:00.000,35059,La Chapelle-des-Fougeretz,cadre et roue,4.0
+2022-01-01T00:00:00.000,35196,Mordelles,cadre et roue,31.0
+2023-01-01T00:00:00.000,35190,Monthault,cadre,0.0
+2022-01-01T00:00:00.000,35076,Chavagne,cadre,0.0
+2022-01-01T00:00:00.000,35136,Janzé,cadre et roue,0.0
+2025-01-01T00:00:00.000,35352,Vern-sur-Seiche,cadre,0.0
+2025-01-01T00:00:00.000,35250,Saint-Armel,cadre,0.0
+2022-01-01T00:00:00.000,35275,Saint-Gilles,cadre et roue,0.0
+2024-01-01T00:00:00.000,35047,Bruz,cadre,0.0
+2024-01-01T00:00:00.000,35001,Acigné,cadre,0.0
+2024-01-01T00:00:00.000,35281,Saint-Jacques-de-la-Lande,cadre et roue,464.0
+2025-01-01T00:00:00.000,35334,Thorigné-Fouillard,roue,0.0
+2022-01-01T00:00:00.000,35076,Chavagne,cadre et roue,10.0
+2023-01-01T00:00:00.000,35180,Miniac-sous-Bécherel,cadre,0.0
+2025-01-01T00:00:00.000,35055,Chantepie,cadre et roue,112.0
+2022-01-01T00:00:00.000,35024,Betton,cadre et roue,152.0
+2022-01-01T00:00:00.000,35315,Saint-Sulpice-la-Forêt,cadre et roue,26.0
+2024-01-01T00:00:00.000,35208,Orgères,roue,5.0
+2024-01-01T00:00:00.000,35235,Rannée,sans accroche,8.0
+2023-01-01T00:00:00.000,35059,La Chapelle-des-Fougeretz,roue,0.0
+2024-01-01T00:00:00.000,35032,Bourgbarré,cadre et roue,10.0
+2025-01-01T00:00:00.000,35310,Saint-Sauveur-des-Landes,sans accroche,0.0
+2024-01-01T00:00:00.000,35278,Saint-Grégoire,cadre et roue,214.0
+2025-01-01T00:00:00.000,35278,Saint-Grégoire,cadre,14.0
+2024-01-01T00:00:00.000,35230,Poilley,cadre et roue,0.0
+2022-01-01T00:00:00.000,35210,Pacé,cadre et roue,24.0
+2025-01-01T00:00:00.000,35216,Parthenay-de-Bretagne,cadre et roue,6.0
+2023-01-01T00:00:00.000,35352,Vern-sur-Seiche,sans accroche,81.0
+2023-01-01T00:00:00.000,35132,Hirel,cadre et roue,0.0
+2025-01-01T00:00:00.000,35245,Romillé,cadre et roue,0.0
+2023-01-01T00:00:00.000,35080,Cintré,cadre,0.0
+2022-01-01T00:00:00.000,35047,Bruz,sans accroche,20.0
+2024-01-01T00:00:00.000,35190,Monthault,cadre,0.0
+2024-01-01T00:00:00.000,35022,Bécherel,roue,3.0
+2025-01-01T00:00:00.000,35315,Saint-Sulpice-la-Forêt,cadre,0.0
+2025-01-01T00:00:00.000,35081,Clayes,roue,0.0
+2022-01-01T00:00:00.000,35315,Saint-Sulpice-la-Forêt,roue,6.0
+2025-01-01T00:00:00.000,35275,Saint-Gilles,cadre,0.0
+2024-01-01T00:00:00.000,35032,Bourgbarré,cadre,0.0
+2024-01-01T00:00:00.000,35206,Noyal-Châtillon-sur-Seiche,cadre et roue,28.0
+2024-01-01T00:00:00.000,35210,Pacé,cadre,36.0
+2025-01-01T00:00:00.000,35144,Langan,roue,0.0
+2025-01-01T00:00:00.000,35001,Acigné,cadre,0.0
+2025-01-01T00:00:00.000,35170,Mecé,sans accroche,0.0
+2022-01-01T00:00:00.000,35240,Le Rheu,cadre et roue,38.0
+2025-01-01T00:00:00.000,35047,Bruz,cadre,0.0
+2024-01-01T00:00:00.000,35139,Laillé,roue,15.0
+2025-01-01T00:00:00.000,35076,Chavagne,cadre et roue,28.0
+2023-01-01T00:00:00.000,35230,Poilley,sans accroche,0.0
+2025-01-01T00:00:00.000,35079,Chevaigné,cadre et roue,10.0
+2023-01-01T00:00:00.000,35266,Saint-Erblon,sans accroche,0.0
+2024-01-01T00:00:00.000,35334,Thorigné-Fouillard,cadre et roue,102.0
+2023-01-01T00:00:00.000,35206,Noyal-Châtillon-sur-Seiche,roue,0.0
+2023-01-01T00:00:00.000,35058,La Chapelle-Chaussée,sans accroche,0.0
+2022-01-01T00:00:00.000,35206,Noyal-Châtillon-sur-Seiche,roue,0.0
+2025-01-01T00:00:00.000,35032,Bourgbarré,cadre et roue,10.0
+2022-01-01T00:00:00.000,35059,La Chapelle-des-Fougeretz,roue,0.0
+2023-01-01T00:00:00.000,35278,Saint-Grégoire,roue,72.0
+2024-01-01T00:00:00.000,35047,Bruz,cadre et roue,276.0
+2024-01-01T00:00:00.000,35160,Loutehel,sans accroche,0.0
+2025-01-01T00:00:00.000,35180,Miniac-sous-Bécherel,roue,0.0
+2025-01-01T00:00:00.000,35190,Monthault,sans accroche,0.0
+2025-01-01T00:00:00.000,35059,La Chapelle-des-Fougeretz,cadre,0.0
+2022-01-01T00:00:00.000,35334,Thorigné-Fouillard,cadre,0.0
+2024-01-01T00:00:00.000,35353,Vezin-le-Coquet,sans accroche,41.0
+2025-01-01T00:00:00.000,35281,Saint-Jacques-de-la-Lande,cadre et roue,567.0
+2025-01-01T00:00:00.000,35208,Orgères,cadre et roue,20.0
+2022-01-01T00:00:00.000,35266,Saint-Erblon,roue,0.0
+2022-01-01T00:00:00.000,35245,Romillé,sans accroche,0.0
+2022-01-01T00:00:00.000,35278,Saint-Grégoire,roue,72.0
+2024-01-01T00:00:00.000,35281,Saint-Jacques-de-la-Lande,sans accroche,276.0
+2023-01-01T00:00:00.000,35190,Monthault,sans accroche,0.0
+2023-01-01T00:00:00.000,35080,Cintré,roue,0.0
+2024-01-01T00:00:00.000,35120,Gévezé,cadre et roue,10.0
+2025-01-01T00:00:00.000,35080,Cintré,roue,0.0
+2024-01-01T00:00:00.000,35076,Chavagne,roue,33.0
+2023-01-01T00:00:00.000,35363,Pont-Péan,roue,0.0
+2022-01-01T00:00:00.000,35230,Poilley,cadre,0.0
+2025-01-01T00:00:00.000,35278,Saint-Grégoire,cadre et roue,232.0
+2025-01-01T00:00:00.000,35066,Chartres-de-Bretagne,roue,54.0
+2023-01-01T00:00:00.000,35204,Nouvoitou,sans accroche,0.0
+2024-01-01T00:00:00.000,35281,Saint-Jacques-de-la-Lande,roue,167.0
+2024-01-01T00:00:00.000,35189,Montgermont,cadre,8.0
+2022-01-01T00:00:00.000,35275,Saint-Gilles,sans accroche,0.0
+2023-01-01T00:00:00.000,35055,Chantepie,cadre et roue,46.0
+2022-01-01T00:00:00.000,35281,Saint-Jacques-de-la-Lande,cadre et roue,262.0
+2024-01-01T00:00:00.000,35051,Cesson-Sévigné,cadre et roue,678.0
+2025-01-01T00:00:00.000,35065,La Chapelle-Thouarault,cadre,0.0
+2022-01-01T00:00:00.000,35022,Bécherel,cadre et roue,0.0
+2024-01-01T00:00:00.000,35310,Saint-Sauveur-des-Landes,cadre et roue,0.0
+2025-01-01T00:00:00.000,35310,Saint-Sauveur-des-Landes,cadre et roue,0.0
+2024-01-01T00:00:00.000,35024,Betton,sans accroche,113.0
+2024-01-01T00:00:00.000,35088,Corps-Nuds,sans accroche,8.0
+2023-01-01T00:00:00.000,35204,Nouvoitou,roue,10.0
+2023-01-01T00:00:00.000,35315,Saint-Sulpice-la-Forêt,cadre,0.0
+2023-01-01T00:00:00.000,35081,Clayes,sans accroche,0.0
+2025-01-01T00:00:00.000,35032,Bourgbarré,sans accroche,0.0
+2024-01-01T00:00:00.000,35059,La Chapelle-des-Fougeretz,sans accroche,0.0
+2023-01-01T00:00:00.000,35315,Saint-Sulpice-la-Forêt,cadre et roue,26.0
+2024-01-01T00:00:00.000,35132,Hirel,roue,0.0
+2022-01-01T00:00:00.000,35150,Lécousse,cadre et roue,0.0
+2024-01-01T00:00:00.000,35055,Chantepie,cadre et roue,112.0
+2023-01-01T00:00:00.000,35076,Chavagne,cadre et roue,28.0
+2022-01-01T00:00:00.000,35120,Gévezé,roue,5.0
+2024-01-01T00:00:00.000,35190,Monthault,sans accroche,0.0
+2022-01-01T00:00:00.000,35135,Irodouër,roue,7.0
+2023-01-01T00:00:00.000,35250,Saint-Armel,sans accroche,0.0
+2022-01-01T00:00:00.000,35055,Chantepie,cadre et roue,46.0
+2022-01-01T00:00:00.000,35047,Bruz,cadre,0.0
+2023-01-01T00:00:00.000,35353,Vezin-le-Coquet,sans accroche,47.0
+2025-01-01T00:00:00.000,35081,Clayes,sans accroche,0.0
+2022-01-01T00:00:00.000,35065,La Chapelle-Thouarault,cadre,0.0
+2024-01-01T00:00:00.000,35144,Langan,cadre et roue,0.0
+2023-01-01T00:00:00.000,35352,Vern-sur-Seiche,cadre,0.0
+2024-01-01T00:00:00.000,35076,Chavagne,cadre et roue,28.0
+2022-01-01T00:00:00.000,35352,Vern-sur-Seiche,roue,34.0
+2024-01-01T00:00:00.000,35353,Vezin-le-Coquet,cadre et roue,36.0
+2025-01-01T00:00:00.000,35170,Mecé,cadre et roue,0.0
+2024-01-01T00:00:00.000,35216,Parthenay-de-Bretagne,roue,0.0
+2024-01-01T00:00:00.000,35150,Lécousse,sans accroche,0.0
+2023-01-01T00:00:00.000,35245,Romillé,cadre et roue,0.0
+2022-01-01T00:00:00.000,35204,Nouvoitou,roue,10.0
+2023-01-01T00:00:00.000,35275,Saint-Gilles,roue,0.0
+2025-01-01T00:00:00.000,35047,Bruz,cadre et roue,307.0
+2023-01-01T00:00:00.000,35204,Nouvoitou,cadre,0.0
+2022-01-01T00:00:00.000,35170,Mecé,cadre et roue,0.0
+2022-01-01T00:00:00.000,35204,Nouvoitou,cadre,0.0
+2025-01-01T00:00:00.000,35216,Parthenay-de-Bretagne,roue,0.0
+2025-01-01T00:00:00.000,35160,Loutehel,sans accroche,0.0
+2022-01-01T00:00:00.000,35055,Chantepie,sans accroche,22.0
+2024-01-01T00:00:00.000,35334,Thorigné-Fouillard,cadre,0.0
+2025-01-01T00:00:00.000,35238,Rennes,sans accroche,2701.0
+2024-01-01T00:00:00.000,35131,L'Hermitage,sans accroche,6.0
+2023-01-01T00:00:00.000,35196,Mordelles,cadre et roue,69.0
+2025-01-01T00:00:00.000,35065,La Chapelle-Thouarault,cadre et roue,0.0
+2025-01-01T00:00:00.000,35245,Romillé,roue,6.0
+2023-01-01T00:00:00.000,35210,Pacé,sans accroche,6.0
+2022-01-01T00:00:00.000,35051,Cesson-Sévigné,cadre,22.0
+2025-01-01T00:00:00.000,35240,Le Rheu,cadre,8.0
+2024-01-01T00:00:00.000,35135,Irodouër,sans accroche,0.0
+2023-01-01T00:00:00.000,35047,Bruz,cadre et roue,276.0
+2022-01-01T00:00:00.000,35079,Chevaigné,sans accroche,10.0
+2022-01-01T00:00:00.000,35001,Acigné,sans accroche,26.0
+2022-01-01T00:00:00.000,35047,Bruz,cadre et roue,274.0
+2024-01-01T00:00:00.000,35058,La Chapelle-Chaussée,cadre,0.0
+2022-01-01T00:00:00.000,35120,Gévezé,cadre,0.0
+2023-01-01T00:00:00.000,35120,Gévezé,sans accroche,0.0
+2023-01-01T00:00:00.000,35081,Clayes,cadre,0.0
+2022-01-01T00:00:00.000,35081,Clayes,sans accroche,0.0
+2022-01-01T00:00:00.000,35353,Vezin-le-Coquet,cadre,76.0
+2023-01-01T00:00:00.000,35334,Thorigné-Fouillard,sans accroche,47.0
+2024-01-01T00:00:00.000,35190,Monthault,cadre et roue,0.0
+2025-01-01T00:00:00.000,35310,Saint-Sauveur-des-Landes,roue,0.0
+2025-01-01T00:00:00.000,35204,Nouvoitou,roue,10.0
+2024-01-01T00:00:00.000,35250,Saint-Armel,cadre et roue,0.0
+2025-01-01T00:00:00.000,35363,Pont-Péan,roue,0.0
+2024-01-01T00:00:00.000,35047,Bruz,roue,41.0
+2023-01-01T00:00:00.000,35051,Cesson-Sévigné,cadre et roue,328.0
+2025-01-01T00:00:00.000,35351,Le Verger,cadre,0.0
+2023-01-01T00:00:00.000,35139,Laillé,sans accroche,0.0
+2024-01-01T00:00:00.000,35051,Cesson-Sévigné,sans accroche,322.0
+2022-01-01T00:00:00.000,35065,La Chapelle-Thouarault,sans accroche,14.0
+2025-01-01T00:00:00.000,35001,Acigné,cadre et roue,202.0
+2022-01-01T00:00:00.000,35051,Cesson-Sévigné,sans accroche,121.0
+2022-01-01T00:00:00.000,35139,Laillé,roue,0.0
+2025-01-01T00:00:00.000,35150,Lécousse,cadre,0.0
+2024-01-01T00:00:00.000,35160,Loutehel,cadre et roue,0.0
+2024-01-01T00:00:00.000,35278,Saint-Grégoire,sans accroche,17.0
+2024-01-01T00:00:00.000,35120,Gévezé,cadre,0.0
+2024-01-01T00:00:00.000,35080,Cintré,cadre,0.0
+2023-01-01T00:00:00.000,35200,Moutiers,cadre,0.0
+2024-01-01T00:00:00.000,35351,Le Verger,roue,0.0
+2025-01-01T00:00:00.000,35353,Vezin-le-Coquet,cadre,76.0
+2022-01-01T00:00:00.000,35022,Bécherel,sans accroche,6.0
+2024-01-01T00:00:00.000,35024,Betton,cadre et roue,203.0
+2022-01-01T00:00:00.000,35206,Noyal-Châtillon-sur-Seiche,cadre et roue,14.0
+2025-01-01T00:00:00.000,35120,Gévezé,cadre,0.0
+2024-01-01T00:00:00.000,35352,Vern-sur-Seiche,cadre et roue,121.0
+2023-01-01T00:00:00.000,35245,Romillé,roue,6.0
+2024-01-01T00:00:00.000,35204,Nouvoitou,sans accroche,0.0
+2023-01-01T00:00:00.000,35200,Moutiers,roue,0.0
+2023-01-01T00:00:00.000,35066,Chartres-de-Bretagne,cadre,0.0
+2023-01-01T00:00:00.000,35238,Rennes,roue,509.0
+2022-01-01T00:00:00.000,35132,Hirel,cadre,0.0
+2022-01-01T00:00:00.000,35055,Chantepie,cadre,24.0
+2022-01-01T00:00:00.000,35051,Cesson-Sévigné,roue,45.0
+2025-01-01T00:00:00.000,35275,Saint-Gilles,sans accroche,0.0
+2023-01-01T00:00:00.000,35230,Poilley,cadre et roue,0.0
+2022-01-01T00:00:00.000,35208,Orgères,cadre et roue,20.0
+2023-01-01T00:00:00.000,35059,La Chapelle-des-Fougeretz,cadre et roue,4.0
+2023-01-01T00:00:00.000,35081,Clayes,cadre et roue,4.0
+2022-01-01T00:00:00.000,35131,L'Hermitage,sans accroche,6.0
+2024-01-01T00:00:00.000,35240,Le Rheu,cadre et roue,66.0
+2024-01-01T00:00:00.000,35059,La Chapelle-des-Fougeretz,roue,0.0
+2023-01-01T00:00:00.000,35240,Le Rheu,roue,15.0
+2025-01-01T00:00:00.000,35001,Acigné,roue,16.0
+2024-01-01T00:00:00.000,35310,Saint-Sauveur-des-Landes,cadre,0.0
+2023-01-01T00:00:00.000,35132,Hirel,roue,0.0
+2023-01-01T00:00:00.000,35024,Betton,cadre et roue,181.0
+2022-01-01T00:00:00.000,35200,Moutiers,cadre,0.0
+2022-01-01T00:00:00.000,35081,Clayes,roue,0.0
+2023-01-01T00:00:00.000,35351,Le Verger,sans accroche,0.0
+2024-01-01T00:00:00.000,35088,Corps-Nuds,roue,0.0
+2024-01-01T00:00:00.000,35266,Saint-Erblon,cadre et roue,28.0
+2025-01-01T00:00:00.000,35351,Le Verger,roue,0.0
+2024-01-01T00:00:00.000,35032,Bourgbarré,sans accroche,0.0
+2024-01-01T00:00:00.000,35189,Montgermont,roue,0.0
+2024-01-01T00:00:00.000,35278,Saint-Grégoire,roue,72.0
+2023-01-01T00:00:00.000,35180,Miniac-sous-Bécherel,roue,0.0
+2023-01-01T00:00:00.000,35120,Gévezé,cadre et roue,10.0
+2022-01-01T00:00:00.000,35058,La Chapelle-Chaussée,sans accroche,0.0
+2025-01-01T00:00:00.000,35353,Vezin-le-Coquet,roue,5.0
+2022-01-01T00:00:00.000,35275,Saint-Gilles,cadre,0.0
+2023-01-01T00:00:00.000,35250,Saint-Armel,cadre,0.0
+2023-01-01T00:00:00.000,35170,Mecé,cadre,0.0
+2023-01-01T00:00:00.000,35351,Le Verger,cadre et roue,0.0
+2024-01-01T00:00:00.000,35136,Janzé,cadre,0.0
+2023-01-01T00:00:00.000,35235,Rannée,roue,0.0
+2022-01-01T00:00:00.000,35132,Hirel,roue,0.0
+2023-01-01T00:00:00.000,35245,Romillé,cadre,0.0
+2023-01-01T00:00:00.000,35059,La Chapelle-des-Fougeretz,cadre,0.0
+2024-01-01T00:00:00.000,35238,Rennes,cadre,360.0
+2022-01-01T00:00:00.000,35281,Saint-Jacques-de-la-Lande,roue,29.0
+2024-01-01T00:00:00.000,35230,Poilley,sans accroche,0.0
+2025-01-01T00:00:00.000,35150,Lécousse,cadre et roue,2.0
+2022-01-01T00:00:00.000,35206,Noyal-Châtillon-sur-Seiche,sans accroche,14.0
+2024-01-01T00:00:00.000,35315,Saint-Sulpice-la-Forêt,cadre,0.0
+2025-01-01T00:00:00.000,35065,La Chapelle-Thouarault,sans accroche,14.0
+2022-01-01T00:00:00.000,35334,Thorigné-Fouillard,cadre et roue,58.0
+2022-01-01T00:00:00.000,35210,Pacé,cadre,36.0
+2023-01-01T00:00:00.000,35039,Brécé,cadre,0.0
+2023-01-01T00:00:00.000,35315,Saint-Sulpice-la-Forêt,roue,6.0
+2023-01-01T00:00:00.000,35139,Laillé,cadre et roue,66.0
+2023-01-01T00:00:00.000,35208,Orgères,cadre,0.0
+2023-01-01T00:00:00.000,35278,Saint-Grégoire,sans accroche,12.0
+2025-01-01T00:00:00.000,35334,Thorigné-Fouillard,sans accroche,4.0
+2024-01-01T00:00:00.000,35363,Pont-Péan,roue,0.0
+2025-01-01T00:00:00.000,35081,Clayes,cadre,0.0
+2023-01-01T00:00:00.000,35235,Rannée,cadre,0.0
+2022-01-01T00:00:00.000,35066,Chartres-de-Bretagne,roue,18.0
+2022-01-01T00:00:00.000,35204,Nouvoitou,sans accroche,0.0
+2023-01-01T00:00:00.000,35240,Le Rheu,cadre et roue,66.0
+2023-01-01T00:00:00.000,35076,Chavagne,roue,33.0
+2024-01-01T00:00:00.000,35088,Corps-Nuds,cadre,0.0
+2025-01-01T00:00:00.000,35135,Irodouër,cadre et roue,0.0
+2025-01-01T00:00:00.000,35353,Vezin-le-Coquet,sans accroche,41.0
+2023-01-01T00:00:00.000,35334,Thorigné-Fouillard,cadre et roue,63.0
+2025-01-01T00:00:00.000,35363,Pont-Péan,cadre,0.0
+2022-01-01T00:00:00.000,35136,Janzé,cadre,0.0
+2025-01-01T00:00:00.000,35235,Rannée,cadre,0.0
+2022-01-01T00:00:00.000,35266,Saint-Erblon,cadre et roue,0.0
+2024-01-01T00:00:00.000,35131,L'Hermitage,cadre,0.0
+2024-01-01T00:00:00.000,35058,La Chapelle-Chaussée,sans accroche,0.0
+2022-01-01T00:00:00.000,35080,Cintré,sans accroche,14.0
+2023-01-01T00:00:00.000,35238,Rennes,cadre et roue,8395.0
+2024-01-01T00:00:00.000,35047,Bruz,sans accroche,20.0
+2023-01-01T00:00:00.000,35150,Lécousse,cadre,0.0
+2022-01-01T00:00:00.000,35351,Le Verger,cadre et roue,0.0
+2025-01-01T00:00:00.000,35047,Bruz,roue,53.0
+2024-01-01T00:00:00.000,35076,Chavagne,sans accroche,16.0
+2025-01-01T00:00:00.000,35080,Cintré,cadre et roue,52.0
+2025-01-01T00:00:00.000,35088,Corps-Nuds,sans accroche,8.0
+2023-01-01T00:00:00.000,35066,Chartres-de-Bretagne,cadre et roue,16.0
+2024-01-01T00:00:00.000,35039,Brécé,sans accroche,0.0
+2024-01-01T00:00:00.000,35039,Brécé,cadre et roue,1.0
+2024-01-01T00:00:00.000,35196,Mordelles,cadre,0.0
+2022-01-01T00:00:00.000,35076,Chavagne,sans accroche,16.0
+2025-01-01T00:00:00.000,35196,Mordelles,cadre,0.0
+2023-01-01T00:00:00.000,35353,Vezin-le-Coquet,cadre,76.0
+2023-01-01T00:00:00.000,35120,Gévezé,roue,5.0
+2022-01-01T00:00:00.000,35088,Corps-Nuds,cadre et roue,50.0
+2024-01-01T00:00:00.000,35208,Orgères,cadre et roue,20.0
+2024-01-01T00:00:00.000,35210,Pacé,roue,6.0
+2023-01-01T00:00:00.000,35088,Corps-Nuds,cadre,0.0
+2024-01-01T00:00:00.000,35266,Saint-Erblon,roue,0.0
+2025-01-01T00:00:00.000,35206,Noyal-Châtillon-sur-Seiche,cadre,20.0
+2025-01-01T00:00:00.000,35235,Rannée,cadre et roue,0.0
+2024-01-01T00:00:00.000,35144,Langan,roue,0.0
+2022-01-01T00:00:00.000,35353,Vezin-le-Coquet,roue,5.0
+2025-01-01T00:00:00.000,35139,Laillé,cadre,0.0
+2025-01-01T00:00:00.000,35160,Loutehel,cadre et roue,0.0
+2024-01-01T00:00:00.000,35022,Bécherel,cadre,0.0
+2025-01-01T00:00:00.000,35180,Miniac-sous-Bécherel,sans accroche,0.0
+2025-01-01T00:00:00.000,35315,Saint-Sulpice-la-Forêt,sans accroche,5.0
+2022-01-01T00:00:00.000,35210,Pacé,roue,0.0
+2022-01-01T00:00:00.000,35240,Le Rheu,roue,11.0
+2022-01-01T00:00:00.000,35032,Bourgbarré,cadre,0.0
+2025-01-01T00:00:00.000,35039,Brécé,cadre et roue,1.0
+2025-01-01T00:00:00.000,35196,Mordelles,roue,28.0
+2024-01-01T00:00:00.000,35051,Cesson-Sévigné,roue,110.0
+2023-01-01T00:00:00.000,35047,Bruz,sans accroche,20.0
+2024-01-01T00:00:00.000,35238,Rennes,sans accroche,3326.0
+2022-01-01T00:00:00.000,35170,Mecé,cadre,0.0
+2024-01-01T00:00:00.000,35180,Miniac-sous-Bécherel,roue,0.0
+2023-01-01T00:00:00.000,35051,Cesson-Sévigné,roue,81.0
+2025-01-01T00:00:00.000,35210,Pacé,sans accroche,0.0
+2022-01-01T00:00:00.000,35136,Janzé,sans accroche,0.0
+2025-01-01T00:00:00.000,35066,Chartres-de-Bretagne,cadre et roue,44.0
+2024-01-01T00:00:00.000,35216,Parthenay-de-Bretagne,sans accroche,0.0
+2025-01-01T00:00:00.000,35160,Loutehel,roue,0.0
+2024-01-01T00:00:00.000,35079,Chevaigné,cadre,0.0
+2023-01-01T00:00:00.000,35150,Lécousse,cadre et roue,0.0
+2022-01-01T00:00:00.000,35032,Bourgbarré,cadre et roue,10.0
+2025-01-01T00:00:00.000,35120,Gévezé,cadre et roue,10.0
+2022-01-01T00:00:00.000,35353,Vezin-le-Coquet,sans accroche,57.0
+2022-01-01T00:00:00.000,35065,La Chapelle-Thouarault,roue,0.0
+2024-01-01T00:00:00.000,35196,Mordelles,cadre et roue,79.0
+2022-01-01T00:00:00.000,35160,Loutehel,cadre et roue,0.0
+2024-01-01T00:00:00.000,35001,Acigné,roue,8.0
+2024-01-01T00:00:00.000,35235,Rannée,cadre,0.0
+2024-01-01T00:00:00.000,35275,Saint-Gilles,cadre et roue,0.0
+2025-01-01T00:00:00.000,35230,Poilley,sans accroche,0.0
+2025-01-01T00:00:00.000,35139,Laillé,roue,15.0
+2023-01-01T00:00:00.000,35032,Bourgbarré,sans accroche,0.0
+2023-01-01T00:00:00.000,35144,Langan,roue,0.0
+2024-01-01T00:00:00.000,35032,Bourgbarré,roue,26.0
+2023-01-01T00:00:00.000,35216,Parthenay-de-Bretagne,cadre et roue,0.0
+2022-01-01T00:00:00.000,35275,Saint-Gilles,roue,0.0
+2025-01-01T00:00:00.000,35204,Nouvoitou,cadre,0.0
+2022-01-01T00:00:00.000,35076,Chavagne,roue,3.0
+2022-01-01T00:00:00.000,35132,Hirel,cadre et roue,0.0
+2024-01-01T00:00:00.000,35065,La Chapelle-Thouarault,cadre et roue,0.0
+2025-01-01T00:00:00.000,35334,Thorigné-Fouillard,cadre,0.0
+2022-01-01T00:00:00.000,35235,Rannée,cadre,0.0
+2022-01-01T00:00:00.000,35363,Pont-Péan,roue,0.0
+2023-01-01T00:00:00.000,35196,Mordelles,cadre,0.0
+2024-01-01T00:00:00.000,35001,Acigné,sans accroche,26.0
+2022-01-01T00:00:00.000,35160,Loutehel,roue,0.0
+2023-01-01T00:00:00.000,35160,Loutehel,roue,0.0
+2024-01-01T00:00:00.000,35245,Romillé,cadre,0.0
+2023-01-01T00:00:00.000,35024,Betton,cadre,8.0
+2023-01-01T00:00:00.000,35079,Chevaigné,sans accroche,10.0
+2023-01-01T00:00:00.000,35275,Saint-Gilles,cadre,0.0
+2024-01-01T00:00:00.000,35352,Vern-sur-Seiche,sans accroche,83.0
+2025-01-01T00:00:00.000,35352,Vern-sur-Seiche,cadre et roue,121.0
+2023-01-01T00:00:00.000,35160,Loutehel,sans accroche,0.0
+2022-01-01T00:00:00.000,35150,Lécousse,cadre,0.0
+2022-01-01T00:00:00.000,35144,Langan,sans accroche,0.0
+2024-01-01T00:00:00.000,35351,Le Verger,sans accroche,0.0
+2024-01-01T00:00:00.000,35275,Saint-Gilles,sans accroche,0.0
+2025-01-01T00:00:00.000,35066,Chartres-de-Bretagne,sans accroche,8.0
+2025-01-01T00:00:00.000,35039,Brécé,cadre,0.0
+2022-01-01T00:00:00.000,35190,Monthault,roue,0.0
+2023-01-01T00:00:00.000,35238,Rennes,cadre,425.0
+2023-01-01T00:00:00.000,35352,Vern-sur-Seiche,cadre et roue,121.0
+2025-01-01T00:00:00.000,35059,La Chapelle-des-Fougeretz,sans accroche,0.0
+2023-01-01T00:00:00.000,35281,Saint-Jacques-de-la-Lande,sans accroche,165.0
+2025-01-01T00:00:00.000,35079,Chevaigné,cadre,0.0
+2022-01-01T00:00:00.000,35047,Bruz,roue,41.0
+2024-01-01T00:00:00.000,35235,Rannée,cadre et roue,0.0
+2022-01-01T00:00:00.000,35039,Brécé,cadre,0.0
+2022-01-01T00:00:00.000,35353,Vezin-le-Coquet,cadre et roue,16.0
+2022-01-01T00:00:00.000,35363,Pont-Péan,cadre,0.0
+2023-01-01T00:00:00.000,35210,Pacé,cadre et roue,24.0
+2023-01-01T00:00:00.000,35032,Bourgbarré,roue,18.0
+2024-01-01T00:00:00.000,35315,Saint-Sulpice-la-Forêt,cadre et roue,26.0
+2022-01-01T00:00:00.000,35190,Monthault,cadre et roue,0.0
+2025-01-01T00:00:00.000,35059,La Chapelle-des-Fougeretz,roue,5.0
+2025-01-01T00:00:00.000,35196,Mordelles,sans accroche,12.0
+2024-01-01T00:00:00.000,35160,Loutehel,cadre,0.0
+2025-01-01T00:00:00.000,35250,Saint-Armel,roue,42.0
+2022-01-01T00:00:00.000,35240,Le Rheu,cadre,8.0
+2025-01-01T00:00:00.000,35051,Cesson-Sévigné,cadre,22.0
+2024-01-01T00:00:00.000,35230,Poilley,roue,0.0
+2025-01-01T00:00:00.000,35131,L'Hermitage,cadre,0.0
+2022-01-01T00:00:00.000,35022,Bécherel,cadre,0.0
+2023-01-01T00:00:00.000,35022,Bécherel,cadre,0.0
+2023-01-01T00:00:00.000,35170,Mecé,sans accroche,0.0
+2022-01-01T00:00:00.000,35189,Montgermont,cadre et roue,20.0
+2025-01-01T00:00:00.000,35135,Irodouër,cadre,0.0
+2025-01-01T00:00:00.000,35206,Noyal-Châtillon-sur-Seiche,sans accroche,20.0
+2024-01-01T00:00:00.000,35180,Miniac-sous-Bécherel,cadre et roue,0.0
+2023-01-01T00:00:00.000,35144,Langan,cadre,0.0
+2022-01-01T00:00:00.000,35088,Corps-Nuds,roue,0.0
+2024-01-01T00:00:00.000,35081,Clayes,cadre et roue,4.0
+2025-01-01T00:00:00.000,35076,Chavagne,sans accroche,16.0
+2022-01-01T00:00:00.000,35216,Parthenay-de-Bretagne,roue,0.0
+2024-01-01T00:00:00.000,35200,Moutiers,cadre,0.0
+2024-01-01T00:00:00.000,35135,Irodouër,cadre,0.0
+2023-01-01T00:00:00.000,35032,Bourgbarré,cadre,0.0
+2025-01-01T00:00:00.000,35170,Mecé,roue,0.0
+2025-01-01T00:00:00.000,35131,L'Hermitage,cadre et roue,2.0
+2024-01-01T00:00:00.000,35079,Chevaigné,sans accroche,10.0
+2023-01-01T00:00:00.000,35334,Thorigné-Fouillard,roue,0.0
+2025-01-01T00:00:00.000,35266,Saint-Erblon,cadre,0.0
+2025-01-01T00:00:00.000,35132,Hirel,cadre,0.0
+2024-01-01T00:00:00.000,35055,Chantepie,sans accroche,32.0
+2024-01-01T00:00:00.000,35135,Irodouër,roue,7.0
+2024-01-01T00:00:00.000,35059,La Chapelle-des-Fougeretz,cadre et roue,4.0
+2025-01-01T00:00:00.000,35144,Langan,cadre et roue,0.0
+2023-01-01T00:00:00.000,35088,Corps-Nuds,sans accroche,0.0
+2025-01-01T00:00:00.000,35139,Laillé,cadre et roue,66.0
+2022-01-01T00:00:00.000,35066,Chartres-de-Bretagne,sans accroche,16.0
+2024-01-01T00:00:00.000,35066,Chartres-de-Bretagne,sans accroche,8.0
+2024-01-01T00:00:00.000,35001,Acigné,cadre et roue,120.0
+2024-01-01T00:00:00.000,35208,Orgères,sans accroche,0.0
+2023-01-01T00:00:00.000,35281,Saint-Jacques-de-la-Lande,cadre et roue,332.0
+2025-01-01T00:00:00.000,35190,Monthault,cadre,0.0
+2025-01-01T00:00:00.000,35135,Irodouër,sans accroche,0.0
+2025-01-01T00:00:00.000,35076,Chavagne,roue,33.0
+2024-01-01T00:00:00.000,35196,Mordelles,roue,28.0
+2025-01-01T00:00:00.000,35351,Le Verger,cadre et roue,0.0
+2025-01-01T00:00:00.000,35024,Betton,roue,24.0
+2025-01-01T00:00:00.000,35139,Laillé,sans accroche,0.0
+2024-01-01T00:00:00.000,35216,Parthenay-de-Bretagne,cadre et roue,6.0
+2022-01-01T00:00:00.000,35079,Chevaigné,cadre et roue,0.0
+2022-01-01T00:00:00.000,35132,Hirel,sans accroche,0.0
+2023-01-01T00:00:00.000,35363,Pont-Péan,sans accroche,14.0
+2025-01-01T00:00:00.000,35266,Saint-Erblon,roue,0.0
+2023-01-01T00:00:00.000,35208,Orgères,cadre et roue,20.0
+2024-01-01T00:00:00.000,35131,L'Hermitage,cadre et roue,2.0
+2023-01-01T00:00:00.000,35139,Laillé,roue,15.0
+2025-01-01T00:00:00.000,35281,Saint-Jacques-de-la-Lande,roue,167.0
+2023-01-01T00:00:00.000,35250,Saint-Armel,roue,42.0
+2022-01-01T00:00:00.000,35039,Brécé,sans accroche,0.0
+2024-01-01T00:00:00.000,35139,Laillé,cadre et roue,66.0
+2025-01-01T00:00:00.000,35065,La Chapelle-Thouarault,roue,0.0
+2025-01-01T00:00:00.000,35022,Bécherel,cadre,0.0
+2025-01-01T00:00:00.000,35238,Rennes,cadre et roue,12786.0
+2025-01-01T00:00:00.000,35200,Moutiers,cadre et roue,0.0
+2022-01-01T00:00:00.000,35055,Chantepie,roue,28.0
+2022-01-01T00:00:00.000,35238,Rennes,cadre et roue,7513.0
+2024-01-01T00:00:00.000,35196,Mordelles,sans accroche,12.0
+2023-01-01T00:00:00.000,35190,Monthault,cadre et roue,0.0
+2022-01-01T00:00:00.000,35051,Cesson-Sévigné,cadre et roue,250.0
+2024-01-01T00:00:00.000,35266,Saint-Erblon,cadre,0.0
+2023-01-01T00:00:00.000,35315,Saint-Sulpice-la-Forêt,sans accroche,5.0
+2025-01-01T00:00:00.000,35200,Moutiers,roue,0.0
+2022-01-01T00:00:00.000,35080,Cintré,cadre,0.0
+2022-01-01T00:00:00.000,35189,Montgermont,roue,0.0
+2022-01-01T00:00:00.000,35135,Irodouër,sans accroche,0.0
+2022-01-01T00:00:00.000,35363,Pont-Péan,sans accroche,14.0

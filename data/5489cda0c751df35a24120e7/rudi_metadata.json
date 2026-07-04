@@ -1,0 +1,90 @@
+{
+  "local_id": "0396c721-21ee-51bc-8692-664f32d1ff93",
+  "resource_title": "Compétence territoriale gendarmerie et police nationales - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Compétence territoriale gendarmerie et police nationales — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/5489cda0c751df35a24120e7\n\nCe fichier d'export définit les zones de compétence de la gendarmerie et de la police nationales.\nLa structure est faite des champs suivants : le code commune, le libellé de commune, l'institution, l'id_service, le service, le code postal de base de la commune, la liste des codes postaux de la commune."
+    }
+  ],
+  "theme": "location",
+  "keywords": [
+    "anfsi",
+    "commune",
+    "communes",
+    "competence-territoriale",
+    "competences-territoriales",
+    "decoupage",
+    "decoupage-territorial",
+    "gendarmerie",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Ministère de l'intérieur"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "3cd6db8c-47df-5c21-ad8a-42796e8b516d",
+      "media_type": "FILE",
+      "media_name": "export-competence-territoriale-pn-gn-rennesmetropole.csv",
+      "media_caption": "export-competence-territoriale-pn-gn.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "37be0b4b-4178-5956-a228-b3ce52a8377a",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://static.data.gouv.fr/resources/competence-territoriale-gendarmerie-et-police-nationales/20260704-030028/export-competence-territoriale-pn-gn.csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2014-12-11T00:00:00Z",
+    "updated": "2026-07-04T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "CUSTOM",
+      "custom_licence_label": [
+        {
+          "lang": "fr",
+          "text": "fr-lo"
+        }
+      ],
+      "custom_licence_uri": "https://www.data.gouv.fr/datasets/5489cda0c751df35a24120e7"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2014-12-11T00:00:00Z",
+      "updated": "2026-07-04T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/5489cda0c751df35a24120e7"
+  }
+}

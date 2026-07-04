@@ -1,0 +1,169 @@
+{
+  "local_id": "6d47037a-632c-55d2-baaa-6c5a1e21dd06",
+  "resource_title": "Météo-France : données SIM — Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Météo-France : données SIM — données géographiques pour Rennes Métropole (WFS)"
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Service WFS filtré sur Rennes Métropole (43 communes, EPCI 243500139).\n\nSource : https://geobretagne.fr/geoserver/dreal_b/wfs\n\nJeu de données du thème « environnement », produit par Direction régionale de l'environnement, de l'aménagement et du logement de Bretagne, limité aux communes de Rennes Métropole. Les enregistrements comportent les champs suivants : remarque, resolu, service, auteur."
+    }
+  ],
+  "theme": "environment",
+  "keywords": [
+    "rennes métropole",
+    "géographique",
+    "wfs"
+  ],
+  "producer": {
+    "organization_name": "Direction régionale de l'environnement, de l'aménagement et du logement de Bretagne"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "481e6e53-df7c-58e3-b0cc-ea0d81343468",
+      "media_type": "FILE",
+      "media_name": "ae_annotation_edit.geojson",
+      "media_caption": "dreal_b:ae_annotation_edit — GeoJSON filtré Rennes Métropole",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "be46c373-d55c-536b-9464-9aefc28529ae",
+      "media_type": "FILE",
+      "media_name": "route_accidents_mortels.geojson",
+      "media_caption": "dreal_b:route_accidents_mortels — GeoJSON filtré Rennes Métropole",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "9395dcb0-e06d-58b0-9f23-afddd3fd91db",
+      "media_type": "FILE",
+      "media_name": "N2000_Action.geojson",
+      "media_caption": "dreal_b:N2000_Action — GeoJSON filtré Rennes Métropole",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "b2948109-de74-5903-9fbd-14e8bf7259f8",
+      "media_type": "FILE",
+      "media_name": "l_agences_urbanisme.geojson",
+      "media_caption": "dreal_b:l_agences_urbanisme — GeoJSON filtré Rennes Métropole",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "5e43475f-6511-57f8-b984-2b44dcad983b",
+      "media_type": "FILE",
+      "media_name": "aire_alimentation_captages_prioritaires.geojson",
+      "media_caption": "dreal_b:aire_alimentation_captages_prioritaires — GeoJSON filtré Rennes Métropole",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "fdf19c73-ab22-5e46-8d4d-24190ab492f6",
+      "media_type": "FILE",
+      "media_name": "l_aires_attraction_villes_communes.geojson",
+      "media_caption": "dreal_b:l_aires_attraction_villes_communes — GeoJSON filtré Rennes Métropole",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "5376a79d-0dca-5f09-beec-5ff842600866",
+      "media_type": "FILE",
+      "media_name": "geophyteau_depassement_pnec_par_station.geojson",
+      "media_caption": "dreal_b:geophyteau_depassement_pnec_par_station — GeoJSON filtré Rennes Métropole",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "3054f6f2-f92d-5c97-ac5b-30fbfda040c2",
+      "media_type": "FILE",
+      "media_name": "l_article_302_5_cch.geojson",
+      "media_caption": "dreal_b:l_article_302_5_cch — GeoJSON filtré Rennes Métropole",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "2c20591a-6b21-555c-a7af-6fc06071290a",
+      "media_type": "FILE",
+      "media_name": "hydrometrie_archives_qmj.geojson",
+      "media_caption": "dreal_b:hydrometrie_archives_qmj — GeoJSON filtré Rennes Métropole",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "6cfccb43-1638-5392-b8ea-41371be71698",
+      "media_type": "FILE",
+      "media_name": "APB_polygones.geojson",
+      "media_caption": "dreal_b:APB_polygones — GeoJSON filtré Rennes Métropole",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "99c0e333-72b2-567c-b91a-a5037694990b",
+      "media_type": "SERVICE",
+      "media_name": "service-wfs",
+      "media_caption": "Service WFS source",
+      "connector": {
+        "url": "https://geobretagne.fr/geoserver/dreal_b/wfs?SERVICE=WFS&REQUEST=GetCapabilities",
+        "interface_contract": "wfs"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2026-07-04T17:57:07Z",
+    "updated": "2026-07-04T17:57:07Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2026-07-04T17:57:07Z",
+      "updated": "2026-07-04T17:57:07Z"
+    },
+    "metadata_source": "https://geobretagne.fr/geoserver/dreal_b/wfs"
+  }
+}

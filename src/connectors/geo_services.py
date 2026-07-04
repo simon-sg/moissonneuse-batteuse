@@ -74,17 +74,26 @@ def wfs_telecharger_rm(url_base: str, typename: str,
     Télécharge les features WFS dans la bbox de Rennes Métropole.
     Essaie WFS 2.0.0 → 1.1.0 → 1.0.0. Retourne un dict GeoJSON ou None.
     """
+    # srsName force la reprojection des géométries en sortie vers WGS84 : sans ce
+    # paramètre, certains serveurs (ex. GeoServer Atmo France) renvoient les coordonnées
+    # dans leur CRS de stockage natif (ex. EPSG:3857 en mètres) tout en produisant un
+    # GeoJSON syntaxiquement valide — la carte Leaflet du catalogue interprète alors ces
+    # mètres comme des degrés lon/lat, ce qui la casse silencieusement (points hors de
+    # toute bbox plausible).
     sep = _sep(url_base)
     tentatives = [
         {"SERVICE": "WFS", "VERSION": "2.0.0", "REQUEST": "GetFeature",
          "TYPENAMES": typename, "BBOX": f"{_RM_BBOX},EPSG:4326",
-         "outputFormat": "application/json", "count": str(max_features)},
+         "outputFormat": "application/json", "count": str(max_features),
+         "srsName": "EPSG:4326"},
         {"SERVICE": "WFS", "VERSION": "1.1.0", "REQUEST": "GetFeature",
          "TYPENAME": typename, "BBOX": f"{_RM_BBOX},EPSG:4326",
-         "outputFormat": "application/json", "MAXFEATURES": str(max_features)},
+         "outputFormat": "application/json", "MAXFEATURES": str(max_features),
+         "srsName": "EPSG:4326"},
         {"SERVICE": "WFS", "VERSION": "1.0.0", "REQUEST": "GetFeature",
          "TYPENAME": typename, "BBOX": _RM_BBOX,
-         "outputFormat": "GeoJSON", "MAXFEATURES": str(max_features)},
+         "outputFormat": "GeoJSON", "MAXFEATURES": str(max_features),
+         "srsName": "EPSG:4326"},
     ]
     for params in tentatives:
         try:
@@ -109,7 +118,8 @@ def wfs_signature(url_base: str, typename: str, max_features: int = 10000,
     sep = _sep(url_base)
     params = {"SERVICE": "WFS", "VERSION": "2.0.0", "REQUEST": "GetFeature",
               "TYPENAMES": typename, "BBOX": f"{_RM_BBOX},EPSG:4326",
-              "outputFormat": "application/json", "count": str(max_features)}
+              "outputFormat": "application/json", "count": str(max_features),
+              "srsName": "EPSG:4326"}
     return _signature_head(f"{url_base}{sep}{urlencode(params)}", timeout=timeout)
 
 

@@ -1,0 +1,109 @@
+{
+  "local_id": "1bd8fcb7-1817-533e-bc4f-29a7751f153d",
+  "resource_title": "Communes, cantons et Epci 2025 - Admin Express COG PLUS IGN - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Communes, cantons et Epci 2025 - Admin Express COG PLUS IGN — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/685ab87ea35cf447867fd96a\n\nVersions nouvellement simplifiées par l'IGN des référentiels géographiques communes, cantons électoraux et EPCI.\n\nIci mis à disposition en geoparquet, geoJSON (EPSG 4326), et topojson (EPSG 4326 et 2154)\n"
+    }
+  ],
+  "theme": "townPlanning",
+  "keywords": [
+    "cog",
+    "donnees-ouvertes",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "icem7"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "f70b9fd8-0eae-5ecf-b1de-4dad443ecf80",
+      "media_type": "FILE",
+      "media_name": "a-com2025parquet-rennesmetropole.csv",
+      "media_caption": "a_com2025.parquet — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "0d51e9d8-a31d-5d7f-8f9e-0469102ef373",
+      "media_type": "FILE",
+      "media_name": "a-com2025parquet-rennesmetropole.json",
+      "media_caption": "a_com2025.parquet — données filtrées sur Rennes Métropole (JSON)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "0840755a-8dbd-5295-85d2-66b728af11d2",
+      "media_type": "FILE",
+      "media_name": "a-epci2025parquet-rennesmetropole.csv",
+      "media_caption": "a_epci2025.parquet — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "153db150-fd85-5693-a183-4958bebcbfb0",
+      "media_type": "FILE",
+      "media_name": "a-epci2025parquet-rennesmetropole.json",
+      "media_caption": "a_epci2025.parquet — données filtrées sur Rennes Métropole (JSON)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "caf89388-f5f3-5f7d-bff7-0f4bb995c780",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://static.data.gouv.fr/resources/communes-et-epci-2025-admin-express-cog-plus-ign/20250624-144024/a-com2025-topo.json",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2025-06-24T00:00:00Z",
+    "updated": "2025-06-26T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2025-06-24T00:00:00Z",
+      "updated": "2025-06-26T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/685ab87ea35cf447867fd96a"
+  }
+}

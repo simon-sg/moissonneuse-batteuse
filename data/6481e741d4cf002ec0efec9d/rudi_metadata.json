@@ -1,0 +1,150 @@
+{
+  "local_id": "3b785ebe-31f0-5196-ad50-ee3d04d189f2",
+  "resource_title": "Données des élections agrégées - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Données des élections agrégées — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/6481e741d4cf002ec0efec9d\n\n> /!\\ la structure des données a évolué en janvier 2026\n\nCe jeu de données contient deux fichiers créés à partir des fichiers contenant les résultats des élections, publiés par le Ministère de l'Intérieur et des Outre-mer :\n- Résultats généraux (general-results.csv) : contient les chiffres de participation, de votes blancs et nuls, par bureau de vote, pour chaque élection.\n- Résultats par candidat (candidats-results.csv) : contient les résultats des votes pour chaque candidat par bureau de vote.\n\nLa colonne id_election contient l'information de l'élection concernée (année, type, tour), par exemple : 2022_pres_t1 pour le premier tour de l'élection présidentielle de 2022.\nLes deux tables sont rapprochables par les colonnes id_election et id_brut_miom. Ces données sont également rapprochables du [Répertoire électoral unique](https://www.data.gouv.fr/fr/datasets/bureaux-de-vote-et-adresses-de-leurs-electeurs/) publié par l'INSEE. Les jointures se font par l'intermédiaire de la [table de conversion des identifiants des bureaux de vote (table-bv-reu.csv)](https://www.data.gouv.fr/fr/datasets/bureaux-de-vote-et-adresses-de-leurs-electeurs/).\n\nLe code permettant de mettre à jour ce jeu de données est ouvert et disponible [ici](https://github.com/datagouv/datagouvfr_data_pipelines/tree/main/data_processing/elections).\n\n### Sources des données agrégées\n- [Municipales 2026 T2](https://www.data.gouv.fr/datasets/elections-municipales-2026-resultats-du-second-tour)\n- [Municipales 2026 T1](https://www.data.gouv.fr/datasets/elections-municipales-2026-resultats-du-premier-tour)\n- [Législatives 2024 T2](https://www.data.gouv.fr/fr/datasets/elections-legislatives-des-30-juin-et-7-juillet-2024-resultats-definitifs-du-2nd-tour/)\n- [Législatives 2024 T1](https://www.data.gouv.fr/fr/datasets/elections-legislatives-des-30-juin-et-7-juillet-2024-resultats-definitifs-du-1er-tour/)\n- [Européennes 2024](https://www.data.gouv.fr/fr/datasets/resultats-des-elections-europeennes-du-9-juin-2024/)\n- [Législatives 2022 T2](https://www.data.gouv.fr/datasets/elections-legislatives-des-12-et-19-juin-2022-resultats-definitifs-du-second-tour)\n- [Législatives 2022 T1](https://www.data.gouv.fr/datasets/elections-legislatives-des-12-et-19-juin-2022-resultats-definitifs-du-premier-tour)\n- [Présidentielle 2022 T2](https://www.data.gouv.fr/fr/datasets/election-presidentielle-des-10-et-24-avril-2022-resultats-definitifs-du-2nd-tour/)\n- [Présidentielle 2022 T1](https://www.data.gouv.fr/fr/datasets/election-presidentielle-des-10-et-24-avril-2022-resultats-definitifs-du-1er-tour/)\n- [Régionales 2021 T2](https://www.data.gouv.fr/fr/datasets/elections-regionales-2021-resultats-du-2eme-tour/)\n- [Régionales 2021 T1](https://www.data.gouv.fr/fr/datasets/elections-regionales-2021-resultats-du-1er-tour-1/)\n- [Départementales 2021 T2](https://www.data.gouv.fr/fr/datasets/elections-departementales-2021-resultats-du-2eme-tour/)\n- [Départementales 2021 T1](https://www.data.gouv.fr/fr/datasets/elections-departementales-2021-resultats-du-1er-tour/)\n- [Municipales 2020 T2](https://www.data.gouv.fr/fr/datasets/municipales-2020-resultats-2nd-tour/)\n- [Municipales 2020 T1](https://www.data.gouv.fr/fr/datasets/elections-municipales-2020-resultats-1er-tour/)\n- [Européennes 2019](https://www.data.gouv.fr/fr/datasets/resultats-des-elections-europeennes-2019/)\n- [Législatives 2017 T2](https://www.data.gouv.fr/fr/datasets/elections-legislatives-des-11-et-18-juin-2017-resultats-du-2nd-tour-par-bureaux-de-vote/)\n- [Législatives 2017 T1](https://www.data.gouv.fr/fr/datasets/elections-legislatives-des-11-et-18-juin-2017-resultats-par-bureaux-de-vote-du-1er-tour/)\n- [Présidentielle 2017 T2](https://www.data.gouv.fr/fr/datasets/election-presidentielle-des-23-avril-et-7-mai-2017-resultats-definitifs-du-2nd-tour-par-bureaux-de-vote/)\n- [Présidentielle 2017 T1](https://www.data.gouv.fr/fr/datasets/election-presidentielle-des-23-avril-et-7-mai-2017-resultats-definitifs-du-1er-tour-par-bureaux-de-vote/)\n- [Départementales 2015](https://www.data.gouv.fr/fr/datasets/elections-departementales-2015-resultats-par-bureaux-de-vote/)\n- [Régionales 2015 T2](https://www.data.gouv.fr/fr/datasets/elections-regionales-2015-et-des-assemblees-de-corse-de-guyane-et-de-martinique-resultats-par-bureaux-de-vote-tour-2/)\n- [Régionales 2015 T1](https://www.data.gouv.fr/fr/datasets/elections-regionales-2015-et-des-assemblees-de-corse-de-guyane-et-de-martinique-resultats-par-bureaux-de-vote-tour-1/)\n- [Européennes 2014](https://www.data.gouv.fr/fr/datasets/elections-europeennes-2014-resultats-par-bureaux-de-vote/)\n- [Municipales 2014](https://www.data.gouv.fr/fr/datasets/elections-municipales-2014-resultats-par-bureaux-de-vote/)\n- [Législatives 2012](https://www.data.gouv.fr/fr/datasets/elections-legislatives-2012-resultats-par-bureaux-de-vote/)\n- [Présidentielle 2012](https://www.data.gouv.fr/fr/datasets/election-presidentielle-2012-resultats-par-bureaux-de-vote-1/)\n- [Cantonales 2011](https://www.data.gouv.fr/fr/datasets/elections-cantonales-2011-resultats-par-bureaux-de-vote/)\n- [Régionales 2010](https://www.data.gouv.fr/fr/datasets/elections-regionales-2010-resultats-par-bureaux-de-vote/)\n- [Européennes 2009](https://www.data.gouv.fr/fr/datasets/elections-europeennes-2009-resultats-par-bureaux-de-vote/)\n- [Cantonales 2008](https://www.data.gouv.fr/fr/datasets/elections-cantonales-2008-resultats-par-bureaux-de-vote/)\n- [Municipales 2008](https://www.data.gouv.fr/fr/datasets/elections-municipales-2008-communes-de-plus-de-3-500-habitants-resultats-par-bureaux-de-vote-1/) (uniquement les communes de plus de 3500 habitants ; votes blancs et nuls réunis dans la colonne `Nuls`)\n- [Législatives 2007](https://www.data.gouv.fr/fr/datasets/elections-legislatives-2007-resultats-par-bureaux-de-vote/)\n- [Présidentielle 2007](https://www.data.gouv.fr/fr/datasets/election-presidentielle-2007-resultats-par-bureaux-de-vote/)\n- [Européennes 2004](https://www.data.gouv.fr/fr/datasets/elections-europeennes-2004-resultats-par-bureaux-de-vote/)\n- [Régionales 2004](https://www.data.gouv.fr/fr/datasets/elections-regionales-2004-resultats-par-bureaux-de-vote/)\n- [Cantonales 2004](https://www.data.gouv.fr/fr/datasets/elections-cantonales-2004-resultats-par-bureaux-de-vote/)\n- [Législatives 2002](https://www.data.gouv.fr/fr/datasets/elections-legislatives-2002-resultats-par-bureaux-de-vote/)\n- [Présidentielle 2002](https://www.data.gouv.fr/fr/datasets/election-presidentielle-2002-resultats-par-bureaux-de-vote/)\n- [Cantonales 2001](https://www.data.gouv.fr/fr/datasets/elections-cantonales-2001-resultats-par-bureaux-de-vote/)\n- ~~[Municipales 2001](https://www.data.gouv.fr/datasets/elections-municipales-2001-resultats-572156)~~ (pas de données au niveau bureau de vote)\n- [Européennes 1999](https://www.data.gouv.fr/fr/datasets/elections-europeennes-1999-resultats-par-bureaux-de-vote/)"
+    }
+  ],
+  "theme": "citizenship",
+  "keywords": [
+    "agregation",
+    "democratie",
+    "elections",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "data.gouv.fr"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "c6a25e17-859c-564b-a72e-135b7c63f507",
+      "media_type": "FILE",
+      "media_name": "resultats-generaux-rennesmetropole.csv",
+      "media_caption": "Résultats généraux — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "2a9516b5-bb82-554e-981c-c503cdc2e7cb",
+      "media_type": "FILE",
+      "media_name": "resultats-generaux-rennesmetropole.json",
+      "media_caption": "Résultats généraux — données filtrées sur Rennes Métropole (JSON)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "0a769325-4806-5d6e-980e-05bc4d2116be",
+      "media_type": "FILE",
+      "media_name": "resultats-par-candidat-rennesmetropole.csv",
+      "media_caption": "Résultats par candidat — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "740d887b-54ff-5494-9c2f-950acc884c76",
+      "media_type": "FILE",
+      "media_name": "resultats-par-candidat-rennesmetropole.json",
+      "media_caption": "Résultats par candidat — données filtrées sur Rennes Métropole (JSON)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "c6a25e17-859c-564b-a72e-135b7c63f507",
+      "media_type": "FILE",
+      "media_name": "resultats-generaux-rennesmetropole.csv",
+      "media_caption": "Résultats généraux — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "2a9516b5-bb82-554e-981c-c503cdc2e7cb",
+      "media_type": "FILE",
+      "media_name": "resultats-generaux-rennesmetropole.json",
+      "media_caption": "Résultats généraux — données filtrées sur Rennes Métropole (JSON)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "0a769325-4806-5d6e-980e-05bc4d2116be",
+      "media_type": "FILE",
+      "media_name": "resultats-par-candidat-rennesmetropole.csv",
+      "media_caption": "Résultats par candidat — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "740d887b-54ff-5494-9c2f-950acc884c76",
+      "media_type": "FILE",
+      "media_name": "resultats-par-candidat-rennesmetropole.json",
+      "media_caption": "Résultats par candidat — données filtrées sur Rennes Métropole (JSON)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "6fdf3109-6ed8-5cd2-9e7f-4c72b3b9485a",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://static.data.gouv.fr/resources/donnees-des-elections-agregees/20260324-132009/nuances.csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2023-06-08T00:00:00Z",
+    "updated": "2026-04-05T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2023-06-08T00:00:00Z",
+      "updated": "2026-04-05T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/6481e741d4cf002ec0efec9d"
+  }
+}

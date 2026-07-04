@@ -1,0 +1,80 @@
+{
+  "local_id": "98ea07c7-d01b-5877-a5cc-7fe14b987a1d",
+  "resource_title": "Fake - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Fake — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/fake-id\n\nJeu de données du thème « social », produit par Producteur inconnu, limité aux communes de Rennes Métropole."
+    }
+  ],
+  "theme": "society",
+  "keywords": [
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Producteur inconnu"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "2bd0040b-d814-5385-b2cd-55f857575260",
+      "media_type": "FILE",
+      "media_name": "fake-id-rennesmtropole.json",
+      "media_caption": "fake-id-rennesmtropole.json — données filtrées sur Rennes Métropole (JSON)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "7891b56b-7572-58b3-b268-65b614defbe0",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "http://x/data.json",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "updated": "2024-01-01T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "CUSTOM",
+      "custom_licence_label": [
+        {
+          "lang": "fr",
+          "text": ""
+        }
+      ],
+      "custom_licence_uri": "https://www.data.gouv.fr/datasets/fake-id"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "updated": "2024-01-01T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/fake-id"
+  }
+}

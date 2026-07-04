@@ -1,0 +1,1091 @@
+<!doctype html>
+<html data-n-head-ssr lang="fr" data-n-head="%7B%22lang%22:%7B%22ssr%22:%22fr%22%7D%7D">
+  <head >
+    <meta data-n-head="ssr" charset="utf-8"><meta data-n-head="ssr" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui"><meta data-n-head="ssr" name="twitter:card" content="summary"><meta data-n-head="ssr" property="og:locale" content="fr_FR"><meta data-n-head="ssr" data-hid="og:image" property="og:image" content="https://data.ademe.fr/api/v1/portals/efWMeL1ZP/assets/home?draft=false&amp;hash=fit-c9484ba6c9.png"><meta data-n-head="ssr" data-hid="og:image:width" property="og:image:width" content="567"><meta data-n-head="ssr" data-hid="og:image:height" property="og:image:height" content="383"><meta data-n-head="ssr" data-hid="description" name="description" content="Le jeu de données comprend la mise à jour annuelle de la liste des adhérents des éco-organismes, conformément à l’article L. 541-10-14 du Code de l’environnement. Le jeu de données concerne les filières REP : ABJ, ASL, EEE, BPS, DISP-MED, EA, EMPAP, EPRO, JOUET, LUB, MNU, PA, PCHIM, PMCB, PNEU, TLC, TABAC, TSUU, VEHICULE."><meta data-n-head="ssr" property="og:url" content="undefined"><meta data-n-head="ssr" data-hid="og:title" property="og:title" content="REP - Liste des membres adhérents des éco-organismes en fin d’année"><meta data-n-head="ssr" property="og:description" content="Le jeu de données comprend la mise à jour annuelle de la liste des adhérents des éco-organismes, conformément à l’article L. 541-10-14 du Code de l’environnement. Le jeu de données concerne les filières REP : ABJ, ASL, EEE, BPS, DISP-MED, EA, EMPAP, EPRO, JOUET, LUB, MNU, PA, PCHIM, PMCB, PNEU, TLC, TABAC, TSUU, VEHICULE."><meta data-n-head="ssr" property="og:type" content="article"><meta data-n-head="ssr" property="article:author" content="ADEME"><meta data-n-head="ssr" property="article:modified_time" content="2026-05-02T16:57:30.589Z"><meta data-n-head="ssr" property="article:published_time" content="2025-05-27T09:48:54.211Z"><title>REP - Liste des membres adhérents des éco-organismes en fin d’année</title><base href="/"><link data-n-head="ssr" rel="canonical" href="https://data.ademe.fr/datasets/rep-adherents-eo-fin-annee"><link data-n-head="ssr" rel="icon" type="image/x-icon" href="https://data.ademe.fr/api/v1/portals/efWMeL1ZP/assets/favicon?draft=false&amp;hash=fit-d7749fd80a.png"><style data-n-head="ssr" vmid="config-style" type="text/css">
+html {
+  overflow-y: scroll !important;
+}
+
+.v-application#app.theme--light#app {
+  background: #FFFFFF;
+}
+
+.v-btn.primary.theme--light.v-btn--has-bg {
+  background: linear-gradient(90deg, #0d47a2 0%, #093273 100%);
+}
+
+/* TODO: the next 3 rules should be deprecated and replaced by explicit coloring of buttons in components (as done in nav-link component) */
+.v-application#app.theme--light .v-btn.primary.v-btn--has-bg {
+  border: 1px solid #093273 !important;
+}
+.v-btn.secondary.theme--light.v-btn--has-bg {
+  background-color: #1775c8 !important;
+}
+.v-btn.tertiary.theme--light.v-btn--has-bg {
+  background-color: #1775c8 !important;
+}
+
+/* Apply fonts */
+@font-face {
+    font-family: 'font1';
+    src: url('https://data.ademe.fr/api/v1/portals/efWMeL1ZP/assets/font1?draft=false&hash=eb551203b0') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'font2';
+    src: url('https://data.ademe.fr/api/v1/portals/efWMeL1ZP/assets/font2?draft=false&hash=f927ded015') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+    .v-application#app {
+    font-family: "font1" !important;
+    }
+    .v-application#app .text-subtitle-1, .v-application#app .text-subtitle-2, .v-application#app .text-body-1, .v-application#app .text-button, .v-application#app .text-caption, .v-application#app .text-overline  {
+    font-family: "font1" !important;
+    }
+    .v-application#app .text-h1, .v-application#app .text-h2, .v-application#app .text-h3, .v-application#app .text-h4, .v-application#app .text-h5, .v-application#app .text-h6 {
+    font-family: "font2" !important;
+    }
+
+    /* older typography classes */
+    .v-application#app .subheading, .v-application#app .body-2, .v-application#app .body-1, .v-application#app .button, .v-application#app .caption, .v-application#app .overline {
+    font-family: "font1" !important;
+    }
+    .v-application#app .display-4, .v-application#app .display-3, .v-application#app .display-2, .v-application#app .display-1, .v-application#app .headline, .v-application#app .title {
+    font-family: "font2" !important;
+    }
+      
+
+      .v-application#app a {
+        text-decoration: none;
+      }
+
+        p>a:not(.v-btn),
+        .underline-link {
+          display: inline-block;
+          position: relative;
+        }
+        p>a:not(.v-btn):after,
+        .underline-link:after {
+          content: '';
+          position: absolute;
+          width: 45px;
+          transform: scaleX(0);
+          height: 3px;
+          bottom: 0;
+          left: 0;
+          background-color: #0d47a2;
+          transform-origin: bottom left;
+          transition: transform 0.25s ease-out;
+        }
+        .page-element a:hover:after,
+        p>a:hover:after,
+        .underline-link:hover:after,
+        .underline-link-hover:after {
+          transform: scaleX(1);
+          transform-origin: bottom left;
+          background-color: #093273;
+        }
+        .underline-link.underline-link-partial:after {
+          transform: scaleX(1);
+        }
+        .underline-link.underline-link-partial:hover:after,
+        .underline-link-hover.underline-link-partial:after {
+          transform: scaleX(2);
+        }
+        
+
+/* some police tuning */
+.v-application#app a:not(.v-tab):not(.v-list-item):not(.v-card--link) {
+  color: #0d47a2;
+}
+.v-application#app a:not(.v-tab):not(.v-list-item):not(.v-card--link):hover {
+  color: #093273;
+}
+.v-application#app .area--dark a,
+.v-application#app .area--dark a:not(.v-tab):not(.v-list-item):not(.v-card--link),
+.v-application#app .area--dark a:not(.v-tab):not(.v-list-item):not(.v-card--link):hover,
+.v-application#app .area--dark h3,
+.v-application#app .area--dark span {
+  color: white;
+}
+.v-application#app .v-btn:not(.v-btn--outlined).primary,
+.v-application#app .v-btn:not(.v-btn--outlined).secondary,
+.v-application#app .v-btn:not(.v-btn--outlined).accent,
+.v-application#app .v-btn:not(.v-btn--outlined).success,
+.v-application#app .v-btn:not(.v-btn--outlined).error,
+.v-application#app .v-btn:not(.v-btn--outlined).warning,
+.v-application#app .v-btn:not(.v-btn--outlined).info {
+  color: white;
+}
+.v-application#app .theme--dark.v-list a {
+  color: white;
+}
+.v-application#app .area--light a:not(.v-tab):not(.v-list-item),
+.v-application#app .area--light h3,
+.v-application#app .area--light span,
+.v-application#app .area--light .v-tabs-bar.primary .v-tab--active {
+  color: #0d47a2!important;
+}
+.v-application#app .primary--text {
+  color: #0d47a2!important;
+}
+.v-application#app .primary-darker--text {
+  color: #093273!important;
+}
+.v-application#app .secondary--text {
+  color: #1775c8!important;
+}
+.v-application#app .tertiary--text {
+  color: #1775c8!important;
+}
+
+/* style of the main app bar */
+
+        .theme--light.v-app-bar.main-app-bar.v-toolbar.v-sheet {
+          background: rgba(255, 255, 255, 0.9);
+        }
+        
+
+/* style of the personal and partner navigation bars */
+
+      .v-application#app.theme--light.personal-space .navigation-left {
+        border-right: 1px solid #093273 !important;
+        background: linear-gradient(90deg, #093273 0%, #2660bb 100%);
+      }
+      
+
+      .v-application#app.theme--light.partner-space .navigation-left {
+        border-right: 1px solid #093273 !important;
+        background: linear-gradient(90deg, #093273 0%, #2660bb 100%);
+      }
+      
+
+/* default radius */
+.v-application#app .v-sheet.v-card,
+.v-application#app .v-text-field--outlined:not(.v-text-field--rounded),
+.v-application#app .v-text-field--solo:not(.v-text-field--rounded),
+.v-application#app .v-btn:not(.v-btn--rounded):not(.v-btn--text):not(.v-btn--fab):not(.v-btn--icon) {
+  border-radius: 4px;
+}
+.v-application#app .v-chip.v-chip--label {
+  border-radius: 4px !important;
+}
+.v-application#app .v-btn-toggle > .v-btn.v-btn:first-child {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.v-application#app .v-btn-toggle > .v-btn.v-btn:last-child {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.v-application#app .v-menu__content {
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+.v-application#app .v-sheet.v-card.v-sheet--shaped {
+  border-top-left-radius: 24px;
+  border-bottom-right-radius: 24px;
+}
+.v-application#app .theme--light.v-sheet.primary-outlined {
+  border: 2px solid #0d47a2;
+}
+
+/* used to display descriptions in cards with bottom gradient */
+
+      .card-gradient-desc170 {
+        position: relative;
+      }
+      .card-gradient-desc170:before {
+        content:'';
+        position:absolute;
+        width:100%;
+        height:170px;
+        left:0;
+        top:0;
+        background:linear-gradient(transparent 0, transparent 76%, #FFFFFF);
+      }
+      
+
+      .card-gradient-desc130 {
+        position: relative;
+      }
+      .card-gradient-desc130:before {
+        content:'';
+        position:absolute;
+        width:100%;
+        height:130px;
+        left:0;
+        top:0;
+        background:linear-gradient(transparent 0, transparent 69%, #FFFFFF);
+      }
+      
+
+      .card-gradient-desc90 {
+        position: relative;
+      }
+      .card-gradient-desc90:before {
+        content:'';
+        position:absolute;
+        width:100%;
+        height:90px;
+        left:0;
+        top:0;
+        background:linear-gradient(transparent 0, transparent 56%, #FFFFFF);
+      }
+      
+
+      .card-gradient-desc70 {
+        position: relative;
+      }
+      .card-gradient-desc70:before {
+        content:'';
+        position:absolute;
+        width:100%;
+        height:70px;
+        left:0;
+        top:0;
+        background:linear-gradient(transparent 0, transparent 43%, #FAFAFA);
+      }
+      
+
+/* footer style */
+
+
+/* home page style */
+#app .nav-home-search input::placeholder {
+  color: #0d47a2;
+  font-weight: bold;
+}
+#app .nav-home-search .v-input__icon--append button {
+  color: #0d47a2;
+}
+        </style><style data-n-head="vuetify" type="text/css" id="vuetify-theme-stylesheet" nonce="undefined">.v-application a { color: #0d47a2; }
+.v-application .primary {
+  background-color: #0d47a2 !important;
+  border-color: #0d47a2 !important;
+}
+.v-application .primary--text {
+  color: #0d47a2 !important;
+  caret-color: #0d47a2 !important;
+}
+.v-application .primary.lighten-5 {
+  background-color: #b3c6ff !important;
+  border-color: #b3c6ff !important;
+}
+.v-application .primary--text.text--lighten-5 {
+  color: #b3c6ff !important;
+  caret-color: #b3c6ff !important;
+}
+.v-application .primary.lighten-4 {
+  background-color: #96abff !important;
+  border-color: #96abff !important;
+}
+.v-application .primary--text.text--lighten-4 {
+  color: #96abff !important;
+  caret-color: #96abff !important;
+}
+.v-application .primary.lighten-3 {
+  background-color: #7890f6 !important;
+  border-color: #7890f6 !important;
+}
+.v-application .primary--text.text--lighten-3 {
+  color: #7890f6 !important;
+  caret-color: #7890f6 !important;
+}
+.v-application .primary.lighten-2 {
+  background-color: #5b77da !important;
+  border-color: #5b77da !important;
+}
+.v-application .primary--text.text--lighten-2 {
+  color: #5b77da !important;
+  caret-color: #5b77da !important;
+}
+.v-application .primary.lighten-1 {
+  background-color: #3b5ebd !important;
+  border-color: #3b5ebd !important;
+}
+.v-application .primary--text.text--lighten-1 {
+  color: #3b5ebd !important;
+  caret-color: #3b5ebd !important;
+}
+.v-application .primary.darken-1 {
+  background-color: #003187 !important;
+  border-color: #003187 !important;
+}
+.v-application .primary--text.text--darken-1 {
+  color: #003187 !important;
+  caret-color: #003187 !important;
+}
+.v-application .primary.darken-2 {
+  background-color: #001d6d !important;
+  border-color: #001d6d !important;
+}
+.v-application .primary--text.text--darken-2 {
+  color: #001d6d !important;
+  caret-color: #001d6d !important;
+}
+.v-application .primary.darken-3 {
+  background-color: #000454 !important;
+  border-color: #000454 !important;
+}
+.v-application .primary--text.text--darken-3 {
+  color: #000454 !important;
+  caret-color: #000454 !important;
+}
+.v-application .primary.darken-4 {
+  background-color: #00003d !important;
+  border-color: #00003d !important;
+}
+.v-application .primary--text.text--darken-4 {
+  color: #00003d !important;
+  caret-color: #00003d !important;
+}
+.v-application .secondary {
+  background-color: #1e88e5 !important;
+  border-color: #1e88e5 !important;
+}
+.v-application .secondary--text {
+  color: #1e88e5 !important;
+  caret-color: #1e88e5 !important;
+}
+.v-application .secondary.lighten-5 {
+  background-color: #cfffff !important;
+  border-color: #cfffff !important;
+}
+.v-application .secondary--text.text--lighten-5 {
+  color: #cfffff !important;
+  caret-color: #cfffff !important;
+}
+.v-application .secondary.lighten-4 {
+  background-color: #b0f5ff !important;
+  border-color: #b0f5ff !important;
+}
+.v-application .secondary--text.text--lighten-4 {
+  color: #b0f5ff !important;
+  caret-color: #b0f5ff !important;
+}
+.v-application .secondary.lighten-3 {
+  background-color: #91d8ff !important;
+  border-color: #91d8ff !important;
+}
+.v-application .secondary--text.text--lighten-3 {
+  color: #91d8ff !important;
+  caret-color: #91d8ff !important;
+}
+.v-application .secondary.lighten-2 {
+  background-color: #70bdff !important;
+  border-color: #70bdff !important;
+}
+.v-application .secondary--text.text--lighten-2 {
+  color: #70bdff !important;
+  caret-color: #70bdff !important;
+}
+.v-application .secondary.lighten-1 {
+  background-color: #4da2ff !important;
+  border-color: #4da2ff !important;
+}
+.v-application .secondary--text.text--lighten-1 {
+  color: #4da2ff !important;
+  caret-color: #4da2ff !important;
+}
+.v-application .secondary.darken-1 {
+  background-color: #006fc9 !important;
+  border-color: #006fc9 !important;
+}
+.v-application .secondary--text.text--darken-1 {
+  color: #006fc9 !important;
+  caret-color: #006fc9 !important;
+}
+.v-application .secondary.darken-2 {
+  background-color: #0057ad !important;
+  border-color: #0057ad !important;
+}
+.v-application .secondary--text.text--darken-2 {
+  color: #0057ad !important;
+  caret-color: #0057ad !important;
+}
+.v-application .secondary.darken-3 {
+  background-color: #004092 !important;
+  border-color: #004092 !important;
+}
+.v-application .secondary--text.text--darken-3 {
+  color: #004092 !important;
+  caret-color: #004092 !important;
+}
+.v-application .secondary.darken-4 {
+  background-color: #002b78 !important;
+  border-color: #002b78 !important;
+}
+.v-application .secondary--text.text--darken-4 {
+  color: #002b78 !important;
+  caret-color: #002b78 !important;
+}
+.v-application .accent {
+  background-color: #ff9800 !important;
+  border-color: #ff9800 !important;
+}
+.v-application .accent--text {
+  color: #ff9800 !important;
+  caret-color: #ff9800 !important;
+}
+.v-application .accent.lighten-5 {
+  background-color: #ffffa2 !important;
+  border-color: #ffffa2 !important;
+}
+.v-application .accent--text.text--lighten-5 {
+  color: #ffffa2 !important;
+  caret-color: #ffffa2 !important;
+}
+.v-application .accent.lighten-4 {
+  background-color: #ffff85 !important;
+  border-color: #ffff85 !important;
+}
+.v-application .accent--text.text--lighten-4 {
+  color: #ffff85 !important;
+  caret-color: #ffff85 !important;
+}
+.v-application .accent.lighten-3 {
+  background-color: #ffeb69 !important;
+  border-color: #ffeb69 !important;
+}
+.v-application .accent--text.text--lighten-3 {
+  color: #ffeb69 !important;
+  caret-color: #ffeb69 !important;
+}
+.v-application .accent.lighten-2 {
+  background-color: #ffcf4d !important;
+  border-color: #ffcf4d !important;
+}
+.v-application .accent--text.text--lighten-2 {
+  color: #ffcf4d !important;
+  caret-color: #ffcf4d !important;
+}
+.v-application .accent.lighten-1 {
+  background-color: #ffb32f !important;
+  border-color: #ffb32f !important;
+}
+.v-application .accent--text.text--lighten-1 {
+  color: #ffb32f !important;
+  caret-color: #ffb32f !important;
+}
+.v-application .accent.darken-1 {
+  background-color: #df7e00 !important;
+  border-color: #df7e00 !important;
+}
+.v-application .accent--text.text--darken-1 {
+  color: #df7e00 !important;
+  caret-color: #df7e00 !important;
+}
+.v-application .accent.darken-2 {
+  background-color: #bf6400 !important;
+  border-color: #bf6400 !important;
+}
+.v-application .accent--text.text--darken-2 {
+  color: #bf6400 !important;
+  caret-color: #bf6400 !important;
+}
+.v-application .accent.darken-3 {
+  background-color: #a14c00 !important;
+  border-color: #a14c00 !important;
+}
+.v-application .accent--text.text--darken-3 {
+  color: #a14c00 !important;
+  caret-color: #a14c00 !important;
+}
+.v-application .accent.darken-4 {
+  background-color: #843300 !important;
+  border-color: #843300 !important;
+}
+.v-application .accent--text.text--darken-4 {
+  color: #843300 !important;
+  caret-color: #843300 !important;
+}
+.v-application .error {
+  background-color: #d50000 !important;
+  border-color: #d50000 !important;
+}
+.v-application .error--text {
+  color: #d50000 !important;
+  caret-color: #d50000 !important;
+}
+.v-application .error.lighten-5 {
+  background-color: #ffb082 !important;
+  border-color: #ffb082 !important;
+}
+.v-application .error--text.text--lighten-5 {
+  color: #ffb082 !important;
+  caret-color: #ffb082 !important;
+}
+.v-application .error.lighten-4 {
+  background-color: #ff9268 !important;
+  border-color: #ff9268 !important;
+}
+.v-application .error--text.text--lighten-4 {
+  color: #ff9268 !important;
+  caret-color: #ff9268 !important;
+}
+.v-application .error.lighten-3 {
+  background-color: #ff754e !important;
+  border-color: #ff754e !important;
+}
+.v-application .error--text.text--lighten-3 {
+  color: #ff754e !important;
+  caret-color: #ff754e !important;
+}
+.v-application .error.lighten-2 {
+  background-color: #ff5736 !important;
+  border-color: #ff5736 !important;
+}
+.v-application .error--text.text--lighten-2 {
+  color: #ff5736 !important;
+  caret-color: #ff5736 !important;
+}
+.v-application .error.lighten-1 {
+  background-color: #f6361d !important;
+  border-color: #f6361d !important;
+}
+.v-application .error--text.text--lighten-1 {
+  color: #f6361d !important;
+  caret-color: #f6361d !important;
+}
+.v-application .error.darken-1 {
+  background-color: #b40000 !important;
+  border-color: #b40000 !important;
+}
+.v-application .error--text.text--darken-1 {
+  color: #b40000 !important;
+  caret-color: #b40000 !important;
+}
+.v-application .error.darken-2 {
+  background-color: #950000 !important;
+  border-color: #950000 !important;
+}
+.v-application .error--text.text--darken-2 {
+  color: #950000 !important;
+  caret-color: #950000 !important;
+}
+.v-application .error.darken-3 {
+  background-color: #770000 !important;
+  border-color: #770000 !important;
+}
+.v-application .error--text.text--darken-3 {
+  color: #770000 !important;
+  caret-color: #770000 !important;
+}
+.v-application .error.darken-4 {
+  background-color: #5c0000 !important;
+  border-color: #5c0000 !important;
+}
+.v-application .error--text.text--darken-4 {
+  color: #5c0000 !important;
+  caret-color: #5c0000 !important;
+}
+.v-application .info {
+  background-color: #2196f3 !important;
+  border-color: #2196f3 !important;
+}
+.v-application .info--text {
+  color: #2196f3 !important;
+  caret-color: #2196f3 !important;
+}
+.v-application .info.lighten-5 {
+  background-color: #d4ffff !important;
+  border-color: #d4ffff !important;
+}
+.v-application .info--text.text--lighten-5 {
+  color: #d4ffff !important;
+  caret-color: #d4ffff !important;
+}
+.v-application .info.lighten-4 {
+  background-color: #b5ffff !important;
+  border-color: #b5ffff !important;
+}
+.v-application .info--text.text--lighten-4 {
+  color: #b5ffff !important;
+  caret-color: #b5ffff !important;
+}
+.v-application .info.lighten-3 {
+  background-color: #95e8ff !important;
+  border-color: #95e8ff !important;
+}
+.v-application .info--text.text--lighten-3 {
+  color: #95e8ff !important;
+  caret-color: #95e8ff !important;
+}
+.v-application .info.lighten-2 {
+  background-color: #75ccff !important;
+  border-color: #75ccff !important;
+}
+.v-application .info--text.text--lighten-2 {
+  color: #75ccff !important;
+  caret-color: #75ccff !important;
+}
+.v-application .info.lighten-1 {
+  background-color: #51b0ff !important;
+  border-color: #51b0ff !important;
+}
+.v-application .info--text.text--lighten-1 {
+  color: #51b0ff !important;
+  caret-color: #51b0ff !important;
+}
+.v-application .info.darken-1 {
+  background-color: #007cd6 !important;
+  border-color: #007cd6 !important;
+}
+.v-application .info--text.text--darken-1 {
+  color: #007cd6 !important;
+  caret-color: #007cd6 !important;
+}
+.v-application .info.darken-2 {
+  background-color: #0064ba !important;
+  border-color: #0064ba !important;
+}
+.v-application .info--text.text--darken-2 {
+  color: #0064ba !important;
+  caret-color: #0064ba !important;
+}
+.v-application .info.darken-3 {
+  background-color: #004d9f !important;
+  border-color: #004d9f !important;
+}
+.v-application .info--text.text--darken-3 {
+  color: #004d9f !important;
+  caret-color: #004d9f !important;
+}
+.v-application .info.darken-4 {
+  background-color: #003784 !important;
+  border-color: #003784 !important;
+}
+.v-application .info--text.text--darken-4 {
+  color: #003784 !important;
+  caret-color: #003784 !important;
+}
+.v-application .success {
+  background-color: #2e7d32 !important;
+  border-color: #2e7d32 !important;
+}
+.v-application .success--text {
+  color: #2e7d32 !important;
+  caret-color: #2e7d32 !important;
+}
+.v-application .success.lighten-5 {
+  background-color: #b8ffb2 !important;
+  border-color: #b8ffb2 !important;
+}
+.v-application .success--text.text--lighten-5 {
+  color: #b8ffb2 !important;
+  caret-color: #b8ffb2 !important;
+}
+.v-application .success.lighten-4 {
+  background-color: #9ceb97 !important;
+  border-color: #9ceb97 !important;
+}
+.v-application .success--text.text--lighten-4 {
+  color: #9ceb97 !important;
+  caret-color: #9ceb97 !important;
+}
+.v-application .success.lighten-3 {
+  background-color: #80ce7c !important;
+  border-color: #80ce7c !important;
+}
+.v-application .success--text.text--lighten-3 {
+  color: #80ce7c !important;
+  caret-color: #80ce7c !important;
+}
+.v-application .success.lighten-2 {
+  background-color: #65b263 !important;
+  border-color: #65b263 !important;
+}
+.v-application .success--text.text--lighten-2 {
+  color: #65b263 !important;
+  caret-color: #65b263 !important;
+}
+.v-application .success.lighten-1 {
+  background-color: #4a974a !important;
+  border-color: #4a974a !important;
+}
+.v-application .success--text.text--lighten-1 {
+  color: #4a974a !important;
+  caret-color: #4a974a !important;
+}
+.v-application .success.darken-1 {
+  background-color: #0a631a !important;
+  border-color: #0a631a !important;
+}
+.v-application .success--text.text--darken-1 {
+  color: #0a631a !important;
+  caret-color: #0a631a !important;
+}
+.v-application .success.darken-2 {
+  background-color: #004b01 !important;
+  border-color: #004b01 !important;
+}
+.v-application .success--text.text--darken-2 {
+  color: #004b01 !important;
+  caret-color: #004b01 !important;
+}
+.v-application .success.darken-3 {
+  background-color: #003300 !important;
+  border-color: #003300 !important;
+}
+.v-application .success--text.text--darken-3 {
+  color: #003300 !important;
+  caret-color: #003300 !important;
+}
+.v-application .success.darken-4 {
+  background-color: #002100 !important;
+  border-color: #002100 !important;
+}
+.v-application .success--text.text--darken-4 {
+  color: #002100 !important;
+  caret-color: #002100 !important;
+}
+.v-application .warning {
+  background-color: #d81b60 !important;
+  border-color: #d81b60 !important;
+}
+.v-application .warning--text {
+  color: #d81b60 !important;
+  caret-color: #d81b60 !important;
+}
+.v-application .warning.lighten-5 {
+  background-color: #ffbbe4 !important;
+  border-color: #ffbbe4 !important;
+}
+.v-application .warning--text.text--lighten-5 {
+  color: #ffbbe4 !important;
+  caret-color: #ffbbe4 !important;
+}
+.v-application .warning.lighten-4 {
+  background-color: #ff9dc8 !important;
+  border-color: #ff9dc8 !important;
+}
+.v-application .warning--text.text--lighten-4 {
+  color: #ff9dc8 !important;
+  caret-color: #ff9dc8 !important;
+}
+.v-application .warning.lighten-3 {
+  background-color: #ff80ad !important;
+  border-color: #ff80ad !important;
+}
+.v-application .warning--text.text--lighten-3 {
+  color: #ff80ad !important;
+  caret-color: #ff80ad !important;
+}
+.v-application .warning.lighten-2 {
+  background-color: #ff6292 !important;
+  border-color: #ff6292 !important;
+}
+.v-application .warning--text.text--lighten-2 {
+  color: #ff6292 !important;
+  caret-color: #ff6292 !important;
+}
+.v-application .warning.lighten-1 {
+  background-color: #f74379 !important;
+  border-color: #f74379 !important;
+}
+.v-application .warning--text.text--lighten-1 {
+  color: #f74379 !important;
+  caret-color: #f74379 !important;
+}
+.v-application .warning.darken-1 {
+  background-color: #b90049 !important;
+  border-color: #b90049 !important;
+}
+.v-application .warning--text.text--darken-1 {
+  color: #b90049 !important;
+  caret-color: #b90049 !important;
+}
+.v-application .warning.darken-2 {
+  background-color: #9a0032 !important;
+  border-color: #9a0032 !important;
+}
+.v-application .warning--text.text--darken-2 {
+  color: #9a0032 !important;
+  caret-color: #9a0032 !important;
+}
+.v-application .warning.darken-3 {
+  background-color: #7b001e !important;
+  border-color: #7b001e !important;
+}
+.v-application .warning--text.text--darken-3 {
+  color: #7b001e !important;
+  caret-color: #7b001e !important;
+}
+.v-application .warning.darken-4 {
+  background-color: #5e0004 !important;
+  border-color: #5e0004 !important;
+}
+.v-application .warning--text.text--darken-4 {
+  color: #5e0004 !important;
+  caret-color: #5e0004 !important;
+}
+.v-application .admin {
+  background-color: #b71c1c !important;
+  border-color: #b71c1c !important;
+}
+.v-application .admin--text {
+  color: #b71c1c !important;
+  caret-color: #b71c1c !important;
+}
+.v-application .admin.lighten-5 {
+  background-color: #ffaf95 !important;
+  border-color: #ffaf95 !important;
+}
+.v-application .admin--text.text--lighten-5 {
+  color: #ffaf95 !important;
+  caret-color: #ffaf95 !important;
+}
+.v-application .admin.lighten-4 {
+  background-color: #ff937b !important;
+  border-color: #ff937b !important;
+}
+.v-application .admin--text.text--lighten-4 {
+  color: #ff937b !important;
+  caret-color: #ff937b !important;
+}
+.v-application .admin.lighten-3 {
+  background-color: #ff7762 !important;
+  border-color: #ff7762 !important;
+}
+.v-application .admin--text.text--lighten-3 {
+  color: #ff7762 !important;
+  caret-color: #ff7762 !important;
+}
+.v-application .admin.lighten-2 {
+  background-color: #f75b4a !important;
+  border-color: #f75b4a !important;
+}
+.v-application .admin--text.text--lighten-2 {
+  color: #f75b4a !important;
+  caret-color: #f75b4a !important;
+}
+.v-application .admin.lighten-1 {
+  background-color: #d73e32 !important;
+  border-color: #d73e32 !important;
+}
+.v-application .admin--text.text--lighten-1 {
+  color: #d73e32 !important;
+  caret-color: #d73e32 !important;
+}
+.v-application .admin.darken-1 {
+  background-color: #980005 !important;
+  border-color: #980005 !important;
+}
+.v-application .admin--text.text--darken-1 {
+  color: #980005 !important;
+  caret-color: #980005 !important;
+}
+.v-application .admin.darken-2 {
+  background-color: #7a0000 !important;
+  border-color: #7a0000 !important;
+}
+.v-application .admin--text.text--darken-2 {
+  color: #7a0000 !important;
+  caret-color: #7a0000 !important;
+}
+.v-application .admin.darken-3 {
+  background-color: #5e0000 !important;
+  border-color: #5e0000 !important;
+}
+.v-application .admin--text.text--darken-3 {
+  color: #5e0000 !important;
+  caret-color: #5e0000 !important;
+}
+.v-application .admin.darken-4 {
+  background-color: #480000 !important;
+  border-color: #480000 !important;
+}
+.v-application .admin--text.text--darken-4 {
+  color: #480000 !important;
+  caret-color: #480000 !important;
+}
+.v-application .tertiary {
+  background-color: #1e88e5 !important;
+  border-color: #1e88e5 !important;
+}
+.v-application .tertiary--text {
+  color: #1e88e5 !important;
+  caret-color: #1e88e5 !important;
+}
+.v-application .tertiary.lighten-5 {
+  background-color: #cfffff !important;
+  border-color: #cfffff !important;
+}
+.v-application .tertiary--text.text--lighten-5 {
+  color: #cfffff !important;
+  caret-color: #cfffff !important;
+}
+.v-application .tertiary.lighten-4 {
+  background-color: #b0f5ff !important;
+  border-color: #b0f5ff !important;
+}
+.v-application .tertiary--text.text--lighten-4 {
+  color: #b0f5ff !important;
+  caret-color: #b0f5ff !important;
+}
+.v-application .tertiary.lighten-3 {
+  background-color: #91d8ff !important;
+  border-color: #91d8ff !important;
+}
+.v-application .tertiary--text.text--lighten-3 {
+  color: #91d8ff !important;
+  caret-color: #91d8ff !important;
+}
+.v-application .tertiary.lighten-2 {
+  background-color: #70bdff !important;
+  border-color: #70bdff !important;
+}
+.v-application .tertiary--text.text--lighten-2 {
+  color: #70bdff !important;
+  caret-color: #70bdff !important;
+}
+.v-application .tertiary.lighten-1 {
+  background-color: #4da2ff !important;
+  border-color: #4da2ff !important;
+}
+.v-application .tertiary--text.text--lighten-1 {
+  color: #4da2ff !important;
+  caret-color: #4da2ff !important;
+}
+.v-application .tertiary.darken-1 {
+  background-color: #006fc9 !important;
+  border-color: #006fc9 !important;
+}
+.v-application .tertiary--text.text--darken-1 {
+  color: #006fc9 !important;
+  caret-color: #006fc9 !important;
+}
+.v-application .tertiary.darken-2 {
+  background-color: #0057ad !important;
+  border-color: #0057ad !important;
+}
+.v-application .tertiary--text.text--darken-2 {
+  color: #0057ad !important;
+  caret-color: #0057ad !important;
+}
+.v-application .tertiary.darken-3 {
+  background-color: #004092 !important;
+  border-color: #004092 !important;
+}
+.v-application .tertiary--text.text--darken-3 {
+  color: #004092 !important;
+  caret-color: #004092 !important;
+}
+.v-application .tertiary.darken-4 {
+  background-color: #002b78 !important;
+  border-color: #002b78 !important;
+}
+.v-application .tertiary--text.text--darken-4 {
+  color: #002b78 !important;
+  caret-color: #002b78 !important;
+}</style><script data-n-head="ssr" data-hid="schema" type="application/ld+json">{"@context":"http://schema.org","@type":"Dataset","name":"REP - Liste des membres adhérents des éco-organismes en fin d’année","description":"Le jeu de données comprend la mise à jour annuelle de la liste des adhérents des éco-organismes, conformément à l’article L. 541-10-14 du Code de l’environnement. Le jeu de données concerne les filières REP : ABJ, ASL, EEE, BPS, DISP-MED, EA, EMPAP, EPRO, JOUET, LUB, MNU, PA, PCHIM, PMCB, PNEU, TLC, TABAC, TSUU, VEHICULE.","author":{"@type":"Organization","name":"ADEME"},"creator":{"@type":"Organization","name":"ADEME"},"dateCreated":"2025-05-27T09:48:54.211Z","dateModified":"2026-05-02T16:57:30.589Z","sdPublisher":{"@context":"http://schema.org","@type":"Organization","name":"Koumoul","legalName":"Koumoul","url":"https://koumoul.com/","logo":"https://koumoul.com/assets/koumoul.png","foundingDate":"2017","founders":[{"@type":"Person","name":"Nicolas Bonnel","email":"nicolas.bonnel@koumoul.com","sameAs":["https://github.com/nicolas-bonnel","https://fr.linkedin.com/in/nicolas-bonnel-557a54131"]},{"@type":"Person","name":"Alban Mouton","email":"alban.mouton@koumoul.com","sameAs":["https://github.com/albanm","https://fr.linkedin.com/in/alban-mouton-56802a132"]}],"address":{"@type":"PostalAddress","streetAddress":"5, rue Joseph Le Brix","addressLocality":"Vannes","postalCode":"56000","addressCountry":"France"},"contactPoint":[{"@type":"ContactPoint","contactType":"customer service","url":"https://koumoul.com/contact","email":"contact@koumoul.com","availableLanguage":["English","French"]},{"@type":"ContactPoint","contactType":"technical support","email":"support@koumoul.com","url":"https://koumoul.com/contact","availableLanguage":["English","French"]}],"sameAs":["https://plus.google.com/108675070247986361976","https://twitter.com/Koumoul_fr","https://gitlab.com/koumoul","https://github.com/data-fair","http://codepen.io/koumoul/","http://www.data.gouv.fr/fr/organizations/koumoul-1/","https://www.facebook.com/Koumoul-868835219926301","https://hub.docker.com/u/koumoul/"]},"sdDatePublished":"2025-05-27T09:48:54.211Z","encodingFormat":"application/json","citation":"ADEME / Syderep","license":"https://www.etalab.gouv.fr/licence-ouverte-open-licence"}</script><link rel="preload" href="/_nuxt/c8d685a6-1ca8da7.js" as="script"><link rel="preload" href="/_nuxt/c9ad72b.js" as="script"><link rel="preload" href="/_nuxt/css/0e1f36c.css" as="style"><link rel="preload" href="/_nuxt/0515138.js" as="script"><link rel="preload" href="/_nuxt/css/704d84b.css" as="style"><link rel="preload" href="/_nuxt/c8d685a6-8470003.js" as="script"><link rel="preload" href="/_nuxt/css/0372ad1.css" as="style"><link rel="preload" href="/_nuxt/c8d685a6-033b2bd.js" as="script"><link rel="preload" href="/_nuxt/css/47903a7.css" as="style"><link rel="preload" href="/_nuxt/015d8d7.js" as="script"><link rel="preload" href="/_nuxt/css/ae59b58.css" as="style"><link rel="preload" href="/_nuxt/8fe7087.js" as="script"><link rel="preload" href="/_nuxt/css/632dc66.css" as="style"><link rel="preload" href="/_nuxt/e15899d.js" as="script"><link rel="preload" href="/_nuxt/css/4180938.css" as="style"><link rel="preload" href="/_nuxt/86fc9bc.js" as="script"><link rel="preload" href="/_nuxt/css/dd2cb3e.css" as="style"><link rel="preload" href="/_nuxt/c8d685a6-2a2bfb4.js" as="script"><link rel="stylesheet" href="/_nuxt/css/0e1f36c.css"><link rel="stylesheet" href="/_nuxt/css/704d84b.css"><link rel="stylesheet" href="/_nuxt/css/0372ad1.css"><link rel="stylesheet" href="/_nuxt/css/47903a7.css"><link rel="stylesheet" href="/_nuxt/css/ae59b58.css"><link rel="stylesheet" href="/_nuxt/css/632dc66.css"><link rel="stylesheet" href="/_nuxt/css/4180938.css"><link rel="stylesheet" href="/_nuxt/css/dd2cb3e.css">
+  </head>
+  <body >
+    <div data-server-rendered="true" id="__nuxt"><!----><div id="__layout"><div data-app="true" id="app" class="v-application v-application--is-ltr theme--light"><div class="v-application--wrap"><!----> <header data-fetch-key="0" class="v-sheet theme--light elevation-6 v-toolbar v-toolbar--extended v-app-bar v-app-bar--fixed main-app-bar mb-3 app-bar-xs area--light app-bar-fluid" style="height:65px;margin-top:0px;transform:translateY(0px);left:0px;right:0px;max-height:192px;"><div class="v-toolbar__content" style="height:1px;"></div><div class="v-toolbar__extension" style="height:64px;"><div style="float:left;"><a href="https://www.ademe.fr/" target="blank" class="mr-3" style="height:56px;display:block;"><img src="https://data.ademe.fr/api/v1/portals/efWMeL1ZP/assets/logo?draft=false&amp;hash=fit-2e58cae358.png" alt="Portail open data de l'ADEME" style="max-height:56px;max-width:0px;"></a></div> <div class="row nav-tabs-or-menu mx-0" style="overflow:hidden;"><div class="v-menu" data-v-c6f29c1c><button type="button" title="Menu de navigation" class="font-weight-bold v-btn v-btn--text v-btn--tile theme--light v-size--default" style="height:64px;" data-v-c6f29c1c><span class="v-btn__content"><i aria-hidden="true" class="v-icon notranslate mx-1 mdi mdi-menu theme--light" data-v-c6f29c1c></i> <!----></span></button><!----></div> <div class="v-tabs v-tabs--centered theme--light" style="display:none;"><div role="tablist" class="v-item-group theme--light v-slide-group v-tabs-bar v-tabs-bar--is-mobile primary--text transparent" style="height:64px;"><div class="v-slide-group__prev v-slide-group__prev--disabled"><!----></div><div class="v-slide-group__wrapper"><div class="v-slide-group__content v-tabs-bar__content"><div class="v-tabs-slider-wrapper" style="transition:none;"><div class="v-tabs-slider"></div></div> <a href="/" tabindex="0" aria-selected="false" role="tab" class="v-tab font-weight-bold grey--text text--darken-3">
+      Accueil
+    </a> <!----><a href="/datasets" aria-current="page" tabindex="0" aria-selected="false" role="tab" class="v-tab--active v-tab font-weight-bold grey--text text--darken-3">
+      Données
+    </a> <!----><a href="/applications" tabindex="0" aria-selected="false" role="tab" class="v-tab font-weight-bold grey--text text--darken-3">
+      Visualisations
+    </a> <!----><a href="/pages/acces-mcp" tabindex="0" aria-selected="false" role="tab" class="v-tab font-weight-bold grey--text text--darken-3">
+      Accès MCP
+    </a> <!----><a href="/pages/faq" tabindex="0" aria-selected="false" role="tab" class="v-tab font-weight-bold grey--text text--darken-3">
+      FAQ
+    </a> <!----><a href="/contact" tabindex="0" aria-selected="false" role="tab" class="v-tab font-weight-bold grey--text text--darken-3">
+      Contact
+    </a> <!----></div></div><div class="v-slide-group__next v-slide-group__next--disabled"><!----></div></div></div></div> <div class="v-toolbar__items"><!----> <!----></div></div></header> <main class="v-main mt-3" style="padding-top:1px;padding-right:0px;padding-bottom:0px;padding-left:0px;"><div class="v-main__wrap"><!----> <div data-fetch-key="1"><div class="container"><h1 class="text-h5 grey--text text--darken-3 my-4">REP - Liste des membres adhérents des éco-organismes en fin d’année</h1> <div class="row"><div class="col-md-7 col-12"><!----> <div><p>Le jeu de données comprend la mise à jour annuelle de la liste des adhérents des éco-organismes, conformément à l’article L. 541-10-14 du Code de l’environnement. Le jeu de données concerne les filières REP : ABJ, ASL, EEE, BPS, DISP-MED, EA, EMPAP, EPRO, JOUET, LUB, MNU, PA, PCHIM, PMCB, PNEU, TLC, TABAC, TSUU, VEHICULE.</p>
+<p>Il s’agit des adhésions valides au 31 décembre de chaque année. Dans le cas des adhésions qui se sont terminées au 31/12, l’information est précisée dans la colonne sur la date de fin.</p>
+<p>Pour utiliser ce jeu de données, téléchargez le <a href="https://data.ademe.fr/data-fair/api/v1/datasets/7xrfi2s5qbywcv7ac-o6yf8z/metadata-attachments/Codes_libell%C3%A9s_Liste_producteurs_SYDEREP.xlsx"><strong>référentiel</strong></a> utilisé.</p>
+<p>En complément de cette liste, l’ADEME met à disposition la liste des producteurs des filières à Responsabilité élargie du producteur (REP) enregistrés dans SYDEREP avec leur identifiant unique (IDU) : <a href="https://data.ademe.fr/datasets/rep-producteurs-idu">consulter la liste</a>.</p>
+<p>Pour le producteur, l’IDU est la preuve qu’il est bien enregistré au registre pour une filière, conformément à l’article L. 541-10-13 du Code de l'environnement. Pour l’ADEME, il sert à faciliter le suivi et le contrôle du respect des obligations de REP qui incombent à ces producteurs, ainsi qu’à identifier les producteurs en système individuel et les producteurs adhérents à un éco-organisme qui sont éligibles à la redevance annuelle. Ainsi, pour les filières en vigueur, le vendeur d'un produit relevant du principe de REP peut communiquer à l'acheteur, à la demande de ce dernier, l'IDU sous lequel est enregistré le producteur qui remplit pour ce produit les obligations de REP (cf. L. 541-10-10 du code de l'environnement).</p>
+<p><a href="https://response.questback.com/dynamic/ademe/xmz3vvsmmx/answer?sid=mymRJpCTou&amp;Jeu=1"><img src="https://images.gitbook.com/__img/dpr=2,width=760,onerror=redirect,format=auto,signature=1475354846/https%3A%2F%2Ffiles.gitbook.com%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252F2jK8JaUieA84hk2TJR3v%252Fuploads%252Ft2DLqA9NGK6aJMaDyKzl%252FBanni%25C3%25A8reOpendataV2.png%3Falt%3Dmedia%26token%3D705526a8-910d-4739-8f7b-9191587d5d68" alt="Donnez votre avis sur ce jeu de données" /></a></p>
+<h3><strong>Règles d’actualisation des données</strong></h3>
+<p>Les données sont actualisées à partir des mises à jour effectuées par les éco-organismes sur SYDEREP qui enregistrent leur liste d’adhérents. Pour les producteurs en système collectif, la suppression de l’IDU se fait à la seule initiative de l’éco-organisme qui a la responsabilité de cette décision. Cette liste ne reflète pas les producteurs qui ont effectué une déclaration de données sur SYDEREP.</p>
+<p>Point d'attention : l'ouverture du fichier CSV dans Excel peut perturber l'affichage par défaut du SIRET et nécessiter de changer le format d'affichage de la colonne.</p>
+<p>L'ADEME a prévu une mise à jour trimestrielle de ce jeu de données au 31/01, 30/04, 31/07 et 31/10.
+La date de la mise à jour est précisée sur l'étiquette du jeu de données. </p>
+<h3>Généralités sur les filières REP</h3>
+<p>L’État a confié à l’ADEME la mise en place et la gestion des registres de déclarations annuelles obligatoires des metteurs sur le marché relevant des filières REP suivantes :</p>
+<ul>
+<li>Article de bricolage et de jardinage (ABJ) ;</li>
+<li>Articles de sport et loisirs (ASL) ;</li>
+<li>Bateaux de plaisance ou de sport (BPS) ;</li>
+<li>Dispositifs Médicaux perforants des patients en auto-traitement (DISP-MED) ;</li>
+<li>Eléments d’ameublement (EA) ;</li>
+<li>Equipements électriques et électroniques (EEE) ;</li>
+<li>Emballages ménagers et papiers graphiques (EMPAP) ;</li>
+<li>Emballages professionnels (EPRO) ;</li>
+<li>Huiles lubrifiantes ou industrielles (LUB) ;</li>
+<li>Jouets (JOUET) ;</li>
+<li>Médicaments non utilisés (MNU) ;</li>
+<li>Piles et accumulateurs (PA) ;</li>
+<li>Pneumatiques (PNEU) ;</li>
+<li>Produits chimiques (PCHIM) ;</li>
+<li>Produits ou matériaux de construction du secteur du bâtiment (PMCB) ;</li>
+<li>Produits du tabac (TABAC) ;</li>
+<li>Textiles d’habillement, linge de maison et chaussures (TLC) ;</li>
+<li>Voitures particulières, camionnettes, véhicules à moteurs à 2 ou 3 roues et quadricycles (VEHICULE).</li>
+</ul>
+<p>
+</p>
+
+<p>Cette liste va s’enrichir au fur et à mesure de l’entrée en vigueur de la loi AGEC avec les nouvelles filières à venir.</p>
+<p>
+</p>
+
+<p>Ces registres sont gérés dans l’application <a href="https://syderep.ademe.fr/">SYDEREP</a>, permettant aux éco-organismes ou aux producteurs en système individuel, le renseignement direct de leurs données.</p>
+<p>Ces registres ayant pour objet la mesure de la performance globale au niveau national de chacune des filières REP, l’ADEME établit et publie annuellement un état des lieux des filières et différentes publications avec un certain nombre d’indicateurs agrégés, complétés d'éléments d'analyses qualitatives provenant des acteurs de chaque filière.</p>
+<h3>Jeux de données disponibles sur les filières REP</h3>
+<p>Des données issues de ces registres sont aujourd’hui disponibles sur <a href="https://data.ademe.fr/">https://data.ademe.fr</a> :</p>
+<ul>
+<li>La liste des producteurs enregistrés dans SYDEREP avec leur identifiant unique ;</li>
+<li>La liste des membres adhérents des éco-organismes. La mise à jour de cette liste a lieu une fois par an, en juin de chaque année ;</li>
+<li>Les quantités mises sur le marché pour les filières BPS, DISPMED, EA, EEE, EMBM, LUB, MNU, PA, PAP, PCHIM, PNEU, TABAC et TLC ;</li>
+<li>Les tonnages collectés pour les filières BPS, DISPMED, EA, EEE,MNU, PA, PCHIM, PNEU, TLC et VEHICULE.
+ainsi que certains indicateurs, au fur et à mesure de leur mise à disposition.</li>
+</ul>
+<p>
+</p>
+
+<p><strong>Retrouvez l'ensemble des <a href="https://filieres-rep.ademe.fr/filieres-REP">ressources disponibles des filières REP</a> sur le site dédié <a href="https://filieres-rep.ademe.fr/">filieres-rep.ademe.fr</a></strong></p></div></div> <div class="col-md-4 offset-md-1 col-12"><div class="py-3 v-card v-sheet theme--light elevation-0" style="background-color:#FAFAFA;"><div class="row"><div class="py-0 col-md-12 col-12"><div tabindex="-1" class="v-list-item theme--light" style="min-height:36px;"><div class="v-list-item__content"><div class="v-list-item__title"><div class="v-subheader pa-0 theme--light" style="height:26px;">
+                      Taille :
+                    </div>
+                    267 553 enregistrements
+                    
+                      - 45.7 Mo
+                    </div></div></div></div> <div class="py-0 col-md-12 col-12"><div tabindex="-1" class="v-list-item theme--light"><div class="v-list-item__content"><div class="v-list-item__title"><div class="v-subheader pa-0 theme--light" style="height:26px;">
+                      Données produites par :
+                    </div> <strong>ADEME / Syderep</strong></div></div></div></div> <!----> <div class="py-0 col-md-12 col-12"><div tabindex="-1" class="v-list-item theme--light"><div class="v-list-item__content"><div class="v-list-item__title"><div class="v-subheader pa-0 theme--light" style="height:26px;">
+                      Licence :
+                    </div> <a href="https://www.etalab.gouv.fr/licence-ouverte-open-licence" rel="external" class="underline-link">Licence Ouverte / Open Licence version 2.0</a></div></div></div></div> <div class="py-0 col-md-12 col-12"><div tabindex="-1" class="v-list-item theme--light"><div class="v-list-item__content"><div class="v-list-item__title" style="white-space:normal;"><div class="v-subheader pa-0 theme--light" style="height:26px;">
+                      Mots clés :
+                    </div> <span draggable="false" class="ma-1 v-chip theme--dark v-size--small" style="background-color:#1775c8;border-color:#1775c8;"><span class="v-chip__content">
+                      REP 
+                    </span></span><span draggable="false" class="ma-1 v-chip theme--dark v-size--small" style="background-color:#1775c8;border-color:#1775c8;"><span class="v-chip__content">
+                      Déchets
+                    </span></span></div></div></div></div> <div class="py-0 col-md-12 col-12"><div tabindex="-1" class="v-list-item theme--light"><div class="v-list-item__content"><div class="v-list-item__title" style="white-space:normal;"><div class="v-subheader pa-0 theme--light" style="height:26px;">
+                      Couverture géographique :
+                    </div>
+                    France entière
+                  </div></div></div></div> <!----> <div class="py-0 col-md-12 col-12"><div tabindex="-1" class="v-list-item theme--light"><div class="v-list-item__content"><div class="v-list-item__title" style="white-space:normal;"><div class="v-subheader pa-0 theme--light" style="height:26px;">
+                      Fréquence de mise à jour :
+                    </div>
+                    tous les ans
+                  </div></div></div></div></div> <hr role="separator" aria-orientation="horizontal" class="mt-2 mb-3 v-divider theme--light"> <div class="row ma-0 align-center"><div class="px-5 py-1 col-md-12 col-12"><div class="row"><div class="pa-0 col col-auto"><div class="v-dialog__container"><button type="button" aria-label="Aperçu du tableau" title="Aperçu du tableau" class="action-icon ml-0 v-btn v-btn--fab v-btn--has-bg v-btn--round theme--light elevation-0 v-size--small transparent pa-0" style="width:32px;height:32px;"><span class="v-btn__content"><i aria-hidden="true" class="v-icon notranslate mdi mdi-table-eye theme--light primary--text"></i></span></button><!----></div></div> <div class="pa-0 col col-auto"><a href="/datasets/rep-adherents-eo-fin-annee/full" aria-label="Tableau plein écran" title="Tableau plein écran" class="action-icon ml-0 v-btn v-btn--fab v-btn--has-bg v-btn--round v-btn--router theme--light elevation-0 v-size--small transparent pa-0" style="width:32px;height:32px;"><span class="v-btn__content"><i aria-hidden="true" class="v-icon notranslate mdi mdi-table-large theme--light primary--text"></i></span></a></div> <!----> <div class="pa-0 col col-auto"><a href="/datasets/rep-adherents-eo-fin-annee/api-doc" aria-label="Documentation d'API" title="Documentation d'API" class="action-icon ml-0 v-btn v-btn--fab v-btn--has-bg v-btn--round v-btn--router theme--light elevation-0 v-size--small transparent pa-0" style="width:32px;height:32px;"><span class="v-btn__content"><i aria-hidden="true" class="v-icon notranslate mdi mdi-cog theme--light primary--text"></i></span></a></div> <div class="pa-0 col col-auto"><div class="v-dialog__container"><button type="button" aria-label="Téléchargement des données" title="Téléchargement des données" class="action-icon ml-0 v-btn v-btn--fab v-btn--has-bg v-btn--round theme--light elevation-0 v-size--small transparent pa-0" style="width:32px;height:32px;"><span class="v-btn__content"><i aria-hidden="true" class="v-icon notranslate mdi mdi-download theme--light primary--text"></i></span></button><!----></div></div> <div class="pa-0 col col-auto"><div class="v-dialog__container"><button type="button" aria-label="Description des champs" title="Description des champs" class="action-icon ml-0 v-btn v-btn--fab v-btn--has-bg v-btn--round theme--light elevation-0 v-size--small transparent pa-0" style="width:32px;height:32px;"><span class="v-btn__content"><i aria-hidden="true" class="v-icon notranslate mdi mdi-view-list theme--light primary--text"></i></span></button><!----></div></div> <div class="pa-0 col col-auto"><div class="v-dialog__container"><button type="button" aria-label="Intégrer dans un site" title="Intégrer dans un site" class="action-icon ml-0 v-btn v-btn--fab v-btn--has-bg v-btn--round theme--light elevation-0 v-size--small transparent pa-0" style="width:32px;height:32px;"><span class="v-btn__content"><i aria-hidden="true" class="v-icon notranslate mdi mdi-code-tags theme--light primary--text"></i></span></button><!----></div></div> <div class="pa-0 col col-auto"><div class="v-dialog__container"><button type="button" aria-label="Pièces jointes" title="Pièces jointes" class="action-icon ml-0 v-btn v-btn--fab v-btn--has-bg v-btn--round theme--light elevation-0 v-size--small transparent pa-0" style="width:32px;height:32px;"><span class="v-btn__content"><i aria-hidden="true" class="v-icon notranslate mdi mdi-attachment theme--light primary--text"></i></span></button><!----></div></div> <div class="pa-0 col col-auto"><!----></div></div></div> <div class="py-1 col-md-12 col-12"><div tabindex="-1" class="v-list-item theme--light" style="min-height:36px;"><div class="v-list-item__content py-1"><div class="v-list-item__title" style="white-space:normal;"><div class="v-subheader pa-0 theme--light" style="height:26px;">
+                      Mis à jour le 2 mai 2026
+                    </div></div></div></div></div> <div class="py-1 col-md-12 col-12"><div class="row ma-0 align-center"><div class="v-subheader theme--light" style="height:26px;">
+                  Partager :
+                </div> <div class="share-network"><!----><!----><!----><!----><!----></div></div></div></div></div></div></div>  <!----> <!----> <!----> <div class="row my-4 text-center"><div class="col col-12"><a href="/datasets" class="nuxt-link-active title primary--text"><i aria-hidden="true" class="v-icon notranslate mdi mdi-reply theme--light primary--text"></i>
+   <span class="underline-link">retourner à la liste</span></a></div></div></div></div> <!----></div></main> <button type="button" title="Remonter au début de la page" aria-label="Remonter au début de la page" class="transition-swing v-btn v-btn--bottom v-btn--is-elevated v-btn--fab v-btn--fixed v-btn--has-bg v-btn--right v-btn--round theme--light v-size--large primary" style="display:none;z-index:6;"><span class="v-btn__content"><i aria-hidden="true" class="v-icon notranslate mdi mdi-chevron-up theme--light"></i></span></button> <!----> <footer class="v-footer v-sheet theme--light main-footer pa-0 area--light mt-5"><div class="v-card v-sheet theme--light rounded-0" style="width:100%;background-color:#ffffff;border-color:#ffffff;"><div class="container"><div class="row mx-0 my-2 text-center align-center justify-center"><!----> <!----></div> <!----> <div class="row mx-0 my-2"><div class="pa-0 col-sm-4 offset-sm-2 col-10 offset-2"><a href="https://agirpourlatransition.ademe.fr/conditions-generales-dutilisation">Conditions d'utilisation</a></div><div class="pa-0 col-sm-4 offset-sm-2 col-10 offset-2"><a href="https://www.ademe.fr/">Site institutionnel</a></div><div class="pa-0 col-sm-4 offset-sm-2 col-10 offset-2"><a href="https://www.ademe.fr/content/contacter">Nous contacter</a></div><div class="pa-0 col-sm-4 offset-sm-2 col-10 offset-2"><a href="https://agirpourlatransition.ademe.fr/"> Agir pour la transition écologique</a></div><div class="pa-0 col-sm-4 offset-sm-2 col-10 offset-2"><a href="https://twitter.com/ademe">Twitter</a></div><div class="pa-0 col-sm-4 offset-sm-2 col-10 offset-2"><a href="/privacy-policy">
+        Politique de confidentialité
+      </a></div></div> <!----> <!----></div> <hr role="separator" aria-orientation="horizontal" class="v-divider theme--light"> <div class="container text-center py-1"><span>©2026 — </span><strong><a href="https://koumoul.com">Koumoul</a></strong></div></div></footer></div></div></div></div><script>window.__NUXT__=(function(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,_,$,aa,ab,ac,ad,ae,af,ag,ah,ai,aj,ak,al,am,an,ao,ap,aq,ar,as,at,au,av,aw,ax,ay,az,aA){af.assets={logo:{name:"RF & ADEME.png",hash:"fit-2e58cae358.png"},home:{name:"Open data ADEME 1.png",hash:"fit-c9484ba6c9.png"},favicon:{name:"LogoAdeme2020_FR_RVB.jpg",hash:"fit-d7749fd80a.png"},font2:{name:"Marianne-ExtraBold.woff2",lastModified:"2025-10-13T13:53:30.087Z",size:41988,type:d,hash:"f927ded015"},font1:{name:"Marianne-Regular.woff2",lastModified:"2025-10-13T13:53:19.898Z",size:41328,type:d,hash:"eb551203b0"}};af.title="Portail open data de l'ADEME";af.authentication="optional";af.homeImageAlwaysVisible=c;af.metaDescription="Portail open data de l'ADEME. Accès aux jeux de données et aux visualisations des données de l'ADEME; agence de la transition écologique.";af.themeColor="#0D47A2";af.buttonOptions=["alwaysUnderline","hoverUnderline"];af.infoCardBackgroundColor="lightGrey";af.infoCardOptions=[];af.actionCardBackgroundColor=i;af.actionCardOptions=["hoverElevate",g];af.radius=4;af.elevation=r;af.backgroundColor=i;af.secondaryBackgroundColor="#AAA1A1";af.secondaryColor=ag;af.topicsBackgroundColor="individual";af.actionCardHorizontalOptions=[g,"flat","hoverColorTitle","hoverColorBorder"];af.actionCardHorizontalBackgroundColor=i;af.navLinkMode="link";af.navLinkColor=ah;af.tertiaryColor=ag;af.headingsFont={source:ai,name:"font2",label:"Police 2 (Marianne-Bold.woff2)"};af.bodyFont={source:ai,name:"font1",label:"Police 1 (Marianne-Regular.woff2)"};af.appBarTransparency=b;af.appBarBehavior="stick";af.appBarColor=i;af.appBarActiveOptions=["slider","color"];af.appBarFluid=b;af.appBarFontColorPrimary=c;af.appBarAdditionalLinks=[];af.website=aj;af.titleColor=ak;af.headerColor="page";af.headerNoTitle=c;af.useHtmlTitle=c;af.headerLogo2="https:\u002F\u002Fcellule-strategie-numerique-adem.gitbook.io\u002F~gitbook\u002Fimage?url=https:%2F%2F4251515518-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252F2jK8JaUieA84hk2TJR3v%252Fuploads%252FjiBdH9uzuChCqRrgYFTU%252FLogo%2520Fabrique%2520-%2520small.jpg%3Falt=media%26token=50c7bfac-218c-4947-8dec-13efab2749c3&width=768&dpr=1&quality=100&sign=4aab3d5169efc1409f0e3aa8ad197f26b472b5c5bdf2d4a28515a21abca1a87d";af.headerHide=b;af.footerColor="#FFFFFF";af.footerLinks=[{type:j,href:"https:\u002F\u002Fagirpourlatransition.ademe.fr\u002Fconditions-generales-dutilisation",title:"Conditions d'utilisation"},{type:j,href:aj,title:"Site institutionnel"},{type:j,href:"https:\u002F\u002Fwww.ademe.fr\u002Fcontent\u002Fcontacter",title:"Nous contacter"},{type:j,title:" Agir pour la transition écologique",href:"https:\u002F\u002Fagirpourlatransition.ademe.fr\u002F"},{type:j,title:"Twitter",href:"https:\u002F\u002Ftwitter.com\u002Fademe"}];af.footerImportantLinks=[];af.footerExtraLogos=[];af.footerLinksMode="columns";af.footerCopyrightAsLogo=c;af.footerSocial=b;af.footerBackgroundImage=f;af.footerSitemap=c;af.footerPrivacyPolicy=b;af.homeImageAsBanner=c;af.description="\u003Cp\u003EÉtablissement public à caractère industriel et commercial, placé sous la tutelle conjointe des ministères en charge de la Transition écologique et solidaire et de l’Enseignement supérieur et de la Recherche, l’ADEME participe à la mise en œuvre des politiques publiques dans les domaines de l’environnement, de l’énergie et du développement durable.\u003C\u002Fp\u003E\n\u003Cp\u003EPour répondre aux obligations réglementaires (Loi pour une République numérique) mais également pour accompagner la Transition écologique, l’Agence a décidé de mettre à disposition des entreprises, des collectivités locales, des pouvoirs publics et du grand public, ses données afin de leur permettre de progresser dans leur démarche environnementale et de démultiplier les actions en faveur de la Transition écologique.\u003C\u002Fp\u003E\n\u003Cp\u003ELes données de prospective \"Transition(s) 2050\" sont accessibles sur le portail \u003Ca href=\"https:\u002F\u002Fdata-transitions2050.ademe.fr\"\u003Edata-transitions2050.ademe.fr\u003C\u002Fa\u003E\u003C\u002Fp\u003E\n";af.showKpis=b;af.homeDatasets={type:al,size:r,cardLayout:k};af.homeApplications={type:al,size:r,cardLayout:k};af.showTwitterTimeline=b;af.kpiBackgroundColor=i;af.kpiOptions=[g,"shaped"];af.homeImageHidden=c;af.homeSearchPosition=s;af.homeTopicsPosition=s;af.homeShowSearch=c;af.homeShowTopics=b;af.homeTopicsOptions=[g,am,an];af.homeSearchOptions=[g,am];af.homeLinksOptions=[g,an];af.homeLinks=[];af.homeShowLinks=c;af.showLastNews=c;af.homeLinksPosition=s;af.showEvents=c;af.homeTemplate={type:t};af.datasetThumbnailContain=c;af.datasetsPage={type:ao};af.datasetsDefaultSort=ap;af.datasetsCardLayout=k;af.datasetThumbnailApplication=c;af.datasetMetaLayout="columnsLeftLarger";af.datasetActionsDisplay=aq;af.datasetsOwnerFilter={type:f};af.datasetHideDepartment=b;af.applicationsPage={type:ao};af.applicationsCardLayout=k;af.applicationsDirectNavigation=c;af.applicationActionsDisplay=aq;af.applicationsDefaultSort=ap;af.applicationHideDepartment=b;af.externalReusesPage={type:f};af.usesPage={type:f};af.usesManagement={type:"managers"};af.usesCardLayout=k;af.newsPage={type:f};af.eventsPage={type:f};af.contactEmail="cdo@ademe.fr";af.contactFooterColor=ak;af.networks=["twitter","linkedin","reddit","facebook","whatsapp"];af.personalNavigationColor=ah;af.personalAccountPages=[];af.personnalHidePages=[];af.analytics={type:f};af.updatedAt="2025-10-13T13:57:39.535Z";af.owner={type:u,id:v,name:w};ar._id="efWMeL1ZP";au[0]="organization:mMqHP1AmF";ax[0]={_id:"6a301167ab8168b8b75456b6",updated:{date:"2026-06-24T09:03:32.074Z"},navigation:{type:ay,position:az},template:aA,title:"Accès MCP",id:"acces-mcp"};ax[1]={_id:"6717558f1adfd05460cc16b2",updated:{date:"2024-11-05T14:53:01.669Z"},navigation:{type:ay,position:az},template:aA,title:"FAQ",id:"faq"};return {layout:t,data:[{}],fetch:{"0":{},"1":{isMobileOnly:c,dataset:{owner:{type:u,id:v,name:w,department:"dsrep",departmentName:"DSREP"},updatedAt:"2026-06-30T10:17:00.258Z",createdAt:"2025-05-27T09:48:54.211Z",updatedBy:{id:"apiKey:qehQ6oYerTmgAC2SDwvPh",name:"SYDEREP"},createdBy:{id:x,name:y},schema:[{key:z,"x-originalName":A,type:a,"x-cardinality":20,enum:["EMPAP","EEE","TLC","BAT","PMCB","EA","JOUET","ABJ","ASL","PNEU","PCHIM","EPRO","LUB","MNU","TSUU","BPS","DISP_MED","VEHICULE","TABAC","PAP"],description:d},{key:B,"x-originalName":C,type:a,"x-cardinality":205297,description:d},{key:D,"x-originalName":E,type:a,"x-cardinality":206066,description:d},{key:F,"x-originalName":G,type:a,"x-cardinality":195393,description:d},{key:H,"x-originalName":I,type:a,"x-cardinality":41636,description:d},{key:J,"x-originalName":K,type:a,"x-cardinality":4677,description:d},{key:L,"x-originalName":M,type:a,"x-cardinality":27769,description:d},{key:N,"x-originalName":O,type:a,"x-cardinality":41226,description:d},{key:P,"x-originalName":Q,type:a,"x-cardinality":112,description:d},{key:R,"x-originalName":S,type:l,"x-cardinality":T,enum:[38838007300162,82330882000039,48774196900033,53849587000031,39091301000042,83033936200022,50929280100024,90272217200035,42258207200043,91187025100012,53740637300036,75113994000025,44087413900023,97852364500015,80054749900023,90377711800022,95083360800017,39316301900044,93062626200024,51319280700032,79250555400032,92474564900013,89201535500027,92951020400019,98185638800013,81761178300033],description:d},{key:U,"x-originalName":V,type:a,"x-cardinality":T,enum:["CITEO","LEKO","ECOLOGIC","ECOMAISON","ADELPHE","ecosystem","REFASHION","VALOBAT","BATRIBOX","ECOMINERO","VALDELIA","EcoDDS","ALIAPUR","CITEO PRO","SOREN","CYCLEVIA","France Recyclage Pneumatique (FRP SAS)","CYCLAMED","CITEO Soin & Hygiène","Association pour la Plaisance Eco-Responsable","DASTRI","Recycler Mon Véhicule (RMV)","ALCOME","ECOPAE","TYVAL","PYRéO"],description:d},{key:W,"x-originalName":X,type:a,"x-cardinality":188,description:d},{key:Y,"x-originalName":Z,type:a,format:m,"x-cardinality":1410,description:d},{key:_,"x-originalName":$,type:a,format:m,"x-cardinality":aa,description:d},{"x-calculated":b,key:"_id",type:a,format:"uri-reference",title:"Identifiant",description:"\u003Cp\u003EIdentifiant unique parmi toutes les lignes du jeu de données\u003C\u002Fp\u003E"},{"x-calculated":b,key:"_i",type:l,title:"Numéro de ligne",description:"\u003Cp\u003EIndice de la ligne dans le fichier d'origine\u003C\u002Fp\u003E"},{"x-calculated":b,key:"_rand",type:l,title:"Nombre aléatoire",description:"\u003Cp\u003EUn nombre aléatoire associé à la ligne qui permet d'obtenir un tri aléatoire par exemple\u003C\u002Fp\u003E"}],title:"REP - Liste des membres adhérents des éco-organismes en fin d’année",status:"finalized",id:"7xrfi2s5qbywcv7ac-o6yf8z",slug:"rep-adherents-eo-fin-annee",count:267553,dataUpdatedAt:"2026-05-02T16:57:30.589Z",dataUpdatedBy:{id:x,name:y},description:"\u003Cp\u003ELe jeu de données comprend la mise à jour annuelle de la liste des adhérents des éco-organismes, conformément à l’article L. 541-10-14 du Code de l’environnement. Le jeu de données concerne les filières REP : ABJ, ASL, EEE, BPS, DISP-MED, EA, EMPAP, EPRO, JOUET, LUB, MNU, PA, PCHIM, PMCB, PNEU, TLC, TABAC, TSUU, VEHICULE.\u003C\u002Fp\u003E\n\u003Cp\u003EIl s’agit des adhésions valides au 31 décembre de chaque année. Dans le cas des adhésions qui se sont terminées au 31\u002F12, l’information est précisée dans la colonne sur la date de fin.\u003C\u002Fp\u003E\n\u003Cp\u003EPour utiliser ce jeu de données, téléchargez le \u003Ca href=\"https:\u002F\u002Fdata.ademe.fr\u002Fdata-fair\u002Fapi\u002Fv1\u002Fdatasets\u002F7xrfi2s5qbywcv7ac-o6yf8z\u002Fmetadata-attachments\u002FCodes_libell%C3%A9s_Liste_producteurs_SYDEREP.xlsx\"\u003E\u003Cstrong\u003Eréférentiel\u003C\u002Fstrong\u003E\u003C\u002Fa\u003E utilisé.\u003C\u002Fp\u003E\n\u003Cp\u003EEn complément de cette liste, l’ADEME met à disposition la liste des producteurs des filières à Responsabilité élargie du producteur (REP) enregistrés dans SYDEREP avec leur identifiant unique (IDU) : \u003Ca href=\"https:\u002F\u002Fdata.ademe.fr\u002Fdatasets\u002Frep-producteurs-idu\"\u003Econsulter la liste\u003C\u002Fa\u003E.\u003C\u002Fp\u003E\n\u003Cp\u003EPour le producteur, l’IDU est la preuve qu’il est bien enregistré au registre pour une filière, conformément à l’article L. 541-10-13 du Code de l'environnement. Pour l’ADEME, il sert à faciliter le suivi et le contrôle du respect des obligations de REP qui incombent à ces producteurs, ainsi qu’à identifier les producteurs en système individuel et les producteurs adhérents à un éco-organisme qui sont éligibles à la redevance annuelle. Ainsi, pour les filières en vigueur, le vendeur d'un produit relevant du principe de REP peut communiquer à l'acheteur, à la demande de ce dernier, l'IDU sous lequel est enregistré le producteur qui remplit pour ce produit les obligations de REP (cf. L. 541-10-10 du code de l'environnement).\u003C\u002Fp\u003E\n\u003Cp\u003E\u003Ca href=\"https:\u002F\u002Fresponse.questback.com\u002Fdynamic\u002Fademe\u002Fxmz3vvsmmx\u002Fanswer?sid=mymRJpCTou&amp;Jeu=1\"\u003E\u003Cimg src=\"https:\u002F\u002Fimages.gitbook.com\u002F__img\u002Fdpr=2,width=760,onerror=redirect,format=auto,signature=1475354846\u002Fhttps%3A%2F%2Ffiles.gitbook.com%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252F2jK8JaUieA84hk2TJR3v%252Fuploads%252Ft2DLqA9NGK6aJMaDyKzl%252FBanni%25C3%25A8reOpendataV2.png%3Falt%3Dmedia%26token%3D705526a8-910d-4739-8f7b-9191587d5d68\" alt=\"Donnez votre avis sur ce jeu de données\" \u002F\u003E\u003C\u002Fa\u003E\u003C\u002Fp\u003E\n\u003Ch3\u003E\u003Cstrong\u003ERègles d’actualisation des données\u003C\u002Fstrong\u003E\u003C\u002Fh3\u003E\n\u003Cp\u003ELes données sont actualisées à partir des mises à jour effectuées par les éco-organismes sur SYDEREP qui enregistrent leur liste d’adhérents. Pour les producteurs en système collectif, la suppression de l’IDU se fait à la seule initiative de l’éco-organisme qui a la responsabilité de cette décision. Cette liste ne reflète pas les producteurs qui ont effectué une déclaration de données sur SYDEREP.\u003C\u002Fp\u003E\n\u003Cp\u003EPoint d'attention : l'ouverture du fichier CSV dans Excel peut perturber l'affichage par défaut du SIRET et nécessiter de changer le format d'affichage de la colonne.\u003C\u002Fp\u003E\n\u003Cp\u003EL'ADEME a prévu une mise à jour trimestrielle de ce jeu de données au 31\u002F01, 30\u002F04, 31\u002F07 et 31\u002F10.\nLa date de la mise à jour est précisée sur l'étiquette du jeu de données. \u003C\u002Fp\u003E\n\u003Ch3\u003EGénéralités sur les filières REP\u003C\u002Fh3\u003E\n\u003Cp\u003EL’État a confié à l’ADEME la mise en place et la gestion des registres de déclarations annuelles obligatoires des metteurs sur le marché relevant des filières REP suivantes :\u003C\u002Fp\u003E\n\u003Cul\u003E\n\u003Cli\u003EArticle de bricolage et de jardinage (ABJ) ;\u003C\u002Fli\u003E\n\u003Cli\u003EArticles de sport et loisirs (ASL) ;\u003C\u002Fli\u003E\n\u003Cli\u003EBateaux de plaisance ou de sport (BPS) ;\u003C\u002Fli\u003E\n\u003Cli\u003EDispositifs Médicaux perforants des patients en auto-traitement (DISP-MED) ;\u003C\u002Fli\u003E\n\u003Cli\u003EEléments d’ameublement (EA) ;\u003C\u002Fli\u003E\n\u003Cli\u003EEquipements électriques et électroniques (EEE) ;\u003C\u002Fli\u003E\n\u003Cli\u003EEmballages ménagers et papiers graphiques (EMPAP) ;\u003C\u002Fli\u003E\n\u003Cli\u003EEmballages professionnels (EPRO) ;\u003C\u002Fli\u003E\n\u003Cli\u003EHuiles lubrifiantes ou industrielles (LUB) ;\u003C\u002Fli\u003E\n\u003Cli\u003EJouets (JOUET) ;\u003C\u002Fli\u003E\n\u003Cli\u003EMédicaments non utilisés (MNU) ;\u003C\u002Fli\u003E\n\u003Cli\u003EPiles et accumulateurs (PA) ;\u003C\u002Fli\u003E\n\u003Cli\u003EPneumatiques (PNEU) ;\u003C\u002Fli\u003E\n\u003Cli\u003EProduits chimiques (PCHIM) ;\u003C\u002Fli\u003E\n\u003Cli\u003EProduits ou matériaux de construction du secteur du bâtiment (PMCB) ;\u003C\u002Fli\u003E\n\u003Cli\u003EProduits du tabac (TABAC) ;\u003C\u002Fli\u003E\n\u003Cli\u003ETextiles d’habillement, linge de maison et chaussures (TLC) ;\u003C\u002Fli\u003E\n\u003Cli\u003EVoitures particulières, camionnettes, véhicules à moteurs à 2 ou 3 roues et quadricycles (VEHICULE).\u003C\u002Fli\u003E\n\u003C\u002Ful\u003E\n\u003Cp\u003E\n\u003C\u002Fp\u003E\n\n\u003Cp\u003ECette liste va s’enrichir au fur et à mesure de l’entrée en vigueur de la loi AGEC avec les nouvelles filières à venir.\u003C\u002Fp\u003E\n\u003Cp\u003E\n\u003C\u002Fp\u003E\n\n\u003Cp\u003ECes registres sont gérés dans l’application \u003Ca href=\"https:\u002F\u002Fsyderep.ademe.fr\u002F\"\u003ESYDEREP\u003C\u002Fa\u003E, permettant aux éco-organismes ou aux producteurs en système individuel, le renseignement direct de leurs données.\u003C\u002Fp\u003E\n\u003Cp\u003ECes registres ayant pour objet la mesure de la performance globale au niveau national de chacune des filières REP, l’ADEME établit et publie annuellement un état des lieux des filières et différentes publications avec un certain nombre d’indicateurs agrégés, complétés d'éléments d'analyses qualitatives provenant des acteurs de chaque filière.\u003C\u002Fp\u003E\n\u003Ch3\u003EJeux de données disponibles sur les filières REP\u003C\u002Fh3\u003E\n\u003Cp\u003EDes données issues de ces registres sont aujourd’hui disponibles sur \u003Ca href=\"https:\u002F\u002Fdata.ademe.fr\u002F\"\u003Ehttps:\u002F\u002Fdata.ademe.fr\u003C\u002Fa\u003E :\u003C\u002Fp\u003E\n\u003Cul\u003E\n\u003Cli\u003ELa liste des producteurs enregistrés dans SYDEREP avec leur identifiant unique ;\u003C\u002Fli\u003E\n\u003Cli\u003ELa liste des membres adhérents des éco-organismes. La mise à jour de cette liste a lieu une fois par an, en juin de chaque année ;\u003C\u002Fli\u003E\n\u003Cli\u003ELes quantités mises sur le marché pour les filières BPS, DISPMED, EA, EEE, EMBM, LUB, MNU, PA, PAP, PCHIM, PNEU, TABAC et TLC ;\u003C\u002Fli\u003E\n\u003Cli\u003ELes tonnages collectés pour les filières BPS, DISPMED, EA, EEE,MNU, PA, PCHIM, PNEU, TLC et VEHICULE.\nainsi que certains indicateurs, au fur et à mesure de leur mise à disposition.\u003C\u002Fli\u003E\n\u003C\u002Ful\u003E\n\u003Cp\u003E\n\u003C\u002Fp\u003E\n\n\u003Cp\u003E\u003Cstrong\u003ERetrouvez l'ensemble des \u003Ca href=\"https:\u002F\u002Ffilieres-rep.ademe.fr\u002Ffilieres-REP\"\u003Eressources disponibles des filières REP\u003C\u002Fa\u003E sur le site dédié \u003Ca href=\"https:\u002F\u002Ffilieres-rep.ademe.fr\u002F\"\u003Efilieres-rep.ademe.fr\u003C\u002Fa\u003E\u003C\u002Fstrong\u003E\u003C\u002Fp\u003E",file:{name:p,size:n,mimetype:q,encoding:ab,schema:[{key:z,"x-originalName":A,type:a},{key:B,"x-originalName":C,type:a},{key:D,"x-originalName":E,type:a},{key:F,"x-originalName":G,type:a},{key:H,"x-originalName":I,type:a},{key:J,"x-originalName":K,type:a},{key:L,"x-originalName":M,type:a},{key:N,"x-originalName":O,type:a},{key:P,"x-originalName":Q,type:a},{key:R,"x-originalName":S,type:l},{key:U,"x-originalName":V,type:a},{key:W,"x-originalName":X,type:a},{key:Y,"x-originalName":Z,type:a,format:m},{key:_,"x-originalName":$,type:a,format:m}],props:{linesDelimiter:"\r\n",fieldsDelimiter:";",escapeChar:ac,quote:ac}},finalizedAt:"2026-05-02T17:02:17.049Z",frequency:"annual",license:{href:"https:\u002F\u002Fwww.etalab.gouv.fr\u002Flicence-ouverte-open-licence",title:"Licence Ouverte \u002F Open Licence version 2.0"},origin:"ADEME \u002F Syderep",originalFile:{name:p,size:n,mimetype:q,encoding:ab},topics:[{title:"Economie circulaire et déchets",color:"#0070C0FF",id:"d2-r8c-q5eow8euuircng9bp",icon:{name:"trash-can-outline",svgPath:"M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"}}],storage:{size:45747375,dataFiles:[{name:p,key:"original",title:"Fichier d'origine",mimetype:q,size:n,updatedAt:"2026-05-02T17:02:20.000Z"}],indexed:{size:n,parts:["original-file"]},attachments:{size:h,count:h},metadataAttachments:{size:ad,count:aa},masterData:{size:h,count:h}},attachments:[{type:"file",includeInCatalogPublications:c,description:"\u003Cp\u003ERéférentiel des codes Filières et codes Organisation utilisés dans le jeu de données.\u003C\u002Fp\u003E",title:ae,name:ae,size:ad,mimetype:"application\u002Fvnd.openxmlformats-officedocument.spreadsheetml.sheet",updatedAt:"2025-05-27T10:06:47.124Z",url:"https:\u002F\u002Fdata.ademe.fr\u002Fdata-fair\u002Fapi\u002Fv1\u002Fdatasets\u002F7xrfi2s5qbywcv7ac-o6yf8z\u002Fmetadata-attachments\u002FCodes_libellés_Liste_producteurs_SYDEREP.xlsx"}],requestedPublicationSites:[],spatial:"France entière",publicationSites:["data-fair-portals:efWMeL1ZP","data-fair-portals:d60479cb-366f-4dc4-9f3f-1e9dd1a76c97"],publications:[],keywords:["REP ","Déchets"],userPermissions:["list","readDescription","readSchema","readSafeSchema","readLines","getGeoAgg","getValuesAgg","getValues","getMetricAgg","getSimpleMetricsAgg","getWordsAgg","getMinAgg","getMaxAgg","downloadOriginalData","downloadFullData","readApiDoc","realtime-transactions","readLine","readLineRevisions","readRevisions","bulkSearch","listDataFiles","downloadDataFile","downloadMetadataAttachment","downloadAttachment","getReadApiKey","readCompatODSRecords","readCompatODSExports"],public:b,visibility:"public",previews:[{id:"table",title:"Tableau",href:"https:\u002F\u002Fdata.ademe.fr\u002Fdata-fair\u002Fembed\u002Fdataset\u002Frep-adherents-eo-fin-annee\u002Ftable"}],href:"https:\u002F\u002Fdata.ademe.fr\u002Fdata-fair\u002Fapi\u002Fv1\u002Fdatasets\u002Frep-adherents-eo-fin-annee",page:"https:\u002F\u002Fdata.ademe.fr\u002Fdatasets\u002Frep-adherents-eo-fin-annee"},applications:{count:h,results:[]},uses:[]}},error:e,state:{config:af,portal:ar,draft:c,initialQuery:as,textDark:"#212121",breadcrumbs:e,publicUrl:o,publicBaseUrl:o,mainPublicUrl:at,html:b,inPortal:b,concepts:e,userPartners:e,whiteLabelOwners:au,childBreadcrumbsRouteName:e,childBreadcrumbItems:e,processingsBasePath:av,notifyBasePath:aw,pageImages:{},navigation:{pages:ax,datasetsList:e,applicationsList:e,usesList:e,publicUrl:o,publicBaseUrl:o,mainPublicUrl:at,processingsBasePath:av,notifyBasePath:aw,initialQuery:as,draft:c,portal:ar,html:b,inPortal:b,config:af,whiteLabelOwners:au},style:{},session:{user:e,initialized:b,directoryUrl:"https:\u002F\u002Fdata.ademe.fr\u002Fsimple-directory",logoutRedirectUrl:e,cookieName:"id_token",interval:10000,sameSite:e,activeAccountDetails:e,reloadAfterAccountChange:b},i18n:{routeParams:{}},pages:ax},serverRendered:b,routePath:"\u002Fdatasets\u002Frep-adherents-eo-fin-annee",config:{_app:{basePath:"\u002F",assetsPath:"\u002F_nuxt\u002F",cdnURL:e}}}}("string",true,false,"",null,"none","outlined",0,"white","external","dense","integer","date",45725422,"https:\u002F\u002Fdata.ademe.fr","rep-adherents-eo-fin-annee.csv","text\u002Fcsv",3,"belowKpi","default","organization","g1pKfMqaE","ADEME","_B8a8EarE","Benoit Roux","filiere","Filiere","raison_sociale","Raison_sociale","identifiant_societe","Identifiant_societe","adresse_1","Adresse_1","adresse_2","Adresse_2","adresse_3","Adresse_3","code_postal","Code_postal","ville","Ville","pays","Pays","siret_ecoorganisme","SIRET_eco-organisme",26,"raison_sociale_ecoorganisme","Raison_sociale_eco-organisme","categorie_agrement","Catégorie agrément","date_debutvalidite_inscription","Date_DebutValidite_Inscription","date_finvalidite_inscription","Date_FinValidite_Inscription",1,"UTF-8","\"",21953,"Codes_libellés_Liste_producteurs_SYDEREP.xlsx",{},"#1E88E5","primary","assets","https:\u002F\u002Fwww.ademe.fr\u002F","grey","lasts","rounded","elevate","infiniteScroll","createdAt","icon",{},{},"https:\u002F\u002Fkoumoul.com\u002Fdata-fair-portals",Array(1),"\u002Fprocessings","\u002Fevents",Array(2),"direct",10,"blank"));</script><script src="/_nuxt/c8d685a6-1ca8da7.js" defer></script><script src="/_nuxt/c8d685a6-033b2bd.js" defer></script><script src="/_nuxt/015d8d7.js" defer></script><script src="/_nuxt/8fe7087.js" defer></script><script src="/_nuxt/e15899d.js" defer></script><script src="/_nuxt/86fc9bc.js" defer></script><script src="/_nuxt/c8d685a6-2a2bfb4.js" defer></script><script src="/_nuxt/c9ad72b.js" defer></script><script src="/_nuxt/0515138.js" defer></script><script src="/_nuxt/c8d685a6-8470003.js" defer></script>
+  </body>
+</html>

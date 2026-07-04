@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title></title>
+<script>(function(){try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<style>
+:root{--bg:#f5f6f8;--card:#fff;--txt:#1c2733;--muted:#667;--accent:#0b6e99;--bord:#e2e6ea;
+      --avert-bg:#fff8e1;--avert-bord:#ffe082;--avert-txt:#6d4c00;
+      --geo-bg:#eaf4fb;--geo-hover:#d4ecf7;--stripe:#fafbfc;--row-hover:#eef6fb;
+      --resizer:rgba(11,110,153,.35);--td-bord:#f0f2f4}
+:root[data-theme="dark"]{--bg:#10151b;--card:#1a222b;--txt:#dbe2e8;--muted:#8996a3;--accent:#4fb3da;--bord:#29323c;
+      --avert-bg:#3a2f10;--avert-bord:#6b5418;--avert-txt:#e8c96a;
+      --geo-bg:#16303c;--geo-hover:#1d3f4d;--stripe:#161d24;--row-hover:#17242c;
+      --resizer:rgba(79,179,218,.35);--td-bord:#232c35}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#10151b;--card:#1a222b;--txt:#dbe2e8;--muted:#8996a3;--accent:#4fb3da;--bord:#29323c;
+      --avert-bg:#3a2f10;--avert-bord:#6b5418;--avert-txt:#e8c96a;
+      --geo-bg:#16303c;--geo-hover:#1d3f4d;--stripe:#161d24;--row-hover:#17242c;
+      --resizer:rgba(79,179,218,.35);--td-bord:#232c35}
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+     background:var(--bg);color:var(--txt);display:flex;flex-direction:column;height:100vh}
+header{background:var(--card);border-bottom:1px solid var(--bord);padding:10px 16px;
+       display:flex;flex-wrap:wrap;gap:10px;align-items:center;flex-shrink:0}
+h1{font-size:.9rem;font-weight:600;flex:1;min-width:150px;
+   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#filtre{padding:7px 11px;font-size:.9rem;border:1px solid var(--bord);
+        border-radius:6px;width:220px;background:var(--card);color:var(--txt)}
+#info{color:var(--muted);font-size:.82rem;white-space:nowrap}
+#theme-toggle{background:none;border:1px solid var(--bord);border-radius:6px;padding:5px 10px;
+              cursor:pointer;font-size:.9rem;line-height:1;color:var(--txt);flex-shrink:0}
+#theme-toggle:hover{background:var(--bg)}
+.avert{background:var(--avert-bg);border-bottom:1px solid var(--avert-bord);padding:5px 16px;
+       font-size:.8rem;color:var(--avert-txt);flex-shrink:0}
+.wrap{flex:1;overflow:auto}
+table{border-collapse:collapse;font-size:.82rem;table-layout:fixed}
+thead{position:sticky;top:0;z-index:2;background:var(--card);box-shadow:0 1px 0 var(--bord)}
+th{padding:8px 12px;text-align:left;cursor:pointer;user-select:none;color:var(--muted);font-weight:600;
+   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative}
+th:hover{background:var(--bg);color:var(--txt)}
+th.asc::after{content:" ↑";color:var(--accent)}
+th.desc::after{content:" ↓";color:var(--accent)}
+th.geo{color:var(--accent);background:var(--geo-bg)}
+th.geo:hover{background:var(--geo-hover)}
+th.trad{text-decoration:underline dotted;text-decoration-color:var(--accent);text-underline-offset:3px}
+td{padding:0;border-bottom:1px solid var(--td-bord)}
+td div{padding:5px 12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+td div a{color:var(--accent);text-decoration:none}
+td div a:hover{text-decoration:underline}
+tr:nth-child(even) td{background:var(--stripe)}
+tr:hover td{background:var(--row-hover)}
+.resizer{position:absolute;right:0;top:0;width:5px;height:100%;cursor:col-resize;z-index:1}
+.resizer:hover,.resizer.active{background:var(--resizer)}
+</style>
+</head>
+<body>
+<header>
+  <h1 id="titre"></h1>
+  <input id="filtre" type="search" placeholder="Filtrer toutes les colonnes…">
+  <span id="info"></span>
+  <button id="theme-toggle" title="Basculer thème clair/sombre" aria-label="Basculer thème clair/sombre">🌙</button>
+</header>
+<div id="avert" class="avert" style="display:none"></div>
+<div class="wrap"><table id="t"><colgroup id="cols"></colgroup><thead id="thead"></thead><tbody id="tbody"></tbody></table></div>
+<script id="d" type="application/json">{"nom": "dvf-communes-2017-rennesmetropole.csv", "champs_geo": ["INSEE_COM"], "dictionnaire": {}, "entetes": ["", "INSEE_COM", "Annee", "Nb_mutations", "NbMaisons", "NbApparts", "propmaison", "propappart", "PrixMoyen", "Prixm2Moyen", "SurfaceMoy"], "lignes": [["10321", "35001", "2017", "68", "33", "35", "48.5294117647059", "51.4705882352941", "182567.764705882", "2166.51470588235", "83.5"], ["10340", "35022", "2017", "4", "4", "0", "100", "0", "143450", "1433.25", "101.5"], ["10342", "35024", "2017", "81", "46", "35", "56.7901234567901", "43.2098765432099", "230283.62962963", "2529.60493827161", "92.3086419753086"], ["10350", "35032", "2017", "37", "27", "10", "72.972972972973", "27.027027027027", "191407.027027027", "2194.94594594595", "100.945945945946"], ["10356", "35039", "2017", "14", "12", "2", "85.7142857142857", "14.2857142857143", "218962.357142857", "2206.85714285714", "102.714285714286"], ["10363", "35047", "2017", "129", "61", "68", "47.2868217054264", "52.7131782945737", "196189.968992248", "2366.92248062016", "85.2248062015504"], ["10366", "35051", "2017", "99", "65", "34", "65.6565656565657", "34.3434343434343", "302462.101010101", "3053.69696969697", "102.333333333333"], ["10369", "35055", "2017", "78", "34", "44", "43.5897435897436", "56.4102564102564", "199663.461538462", "2345.02564102564", "85.6666666666667"], ["10372", "35058", "2017", "9", "9", "0", "100", "0", "177460.222222222", "1789.77777777778", "98.5555555555556"], ["10373", "35059", "2017", "32", "23", "9", "71.875", "28.125", "232803.59375", "2252.4375", "104.46875"], ["10379", "35065", "2017", "5", "5", "0", "100", "0", "214030", "2174", "99.6"], ["10380", "35066", "2017", "70", "20", "50", "28.5714285714286", "71.4285714285714", "160587.442857143", "2223.92857142857", "72.3"], ["10388", "35076", "2017", "24", "17", "7", "70.8333333333333", "29.1666666666667", "204674.375", "1934", "106.041666666667"], ["10391", "35079", "2017", "11", "10", "1", "90.9090909090909", "9.09090909090909", "229327.272727273", "2144", "107.818181818182"], ["10392", "35080", "2017", "11", "9", "2", "81.8181818181818", "18.1818181818182", "201247.727272727", "1870.90909090909", "109.090909090909"], ["10393", "35081", "2017", "7", "7", "0", "100", "0", "175185.428571429", "1747.71428571429", "106.857142857143"], ["10398", "35088", "2017", "21", "19", "2", "90.4761904761905", "9.52380952380952", "176082.142857143", "1781.47619047619", "101.952380952381"], ["10428", "35120", "2017", "41", "36", "5", "87.8048780487805", "12.1951219512195", "205967.12195122", "2027.21951219512", "101"], ["10438", "35131", "2017", "25", "19", "6", "76", "24", "198688.4", "2085.24", "94.72"], ["10439", "35132", "2017", "13", "13", "0", "100", "0", "182711", "1672.46153846154", "106.384615384615"], ["10442", "35135", "2017", "13", "12", "1", "92.3076923076923", "7.69230769230769", "152135.384615385", "1795.92307692308", "90.3076923076923"], ["10443", "35136", "2017", "56", "44", "12", "78.5714285714286", "21.4285714285714", "173239.339285714", "1731.30357142857", "103.410714285714"], ["10446", "35139", "2017", "37", "34", "3", "91.8918918918919", "8.10810810810811", "243342", "2088.86486486487", "116.567567567568"], ["10451", "35144", "2017", "6", "6", "0", "100", "0", "182901.666666667", "1921.5", "93.8333333333333"], ["10456", "35150", "2017", "22", "22", "0", "100", "0", "192834.545454545", "1623.86363636364", "121.090909090909"], ["10464", "35160", "2017", "1", "1", "0", "100", "0", "190000", "1258", "151"], ["10474", "35170", "2017", "5", "5", "0", "100", "0", "138260", "1308.2", "106"], ["10484", "35180", "2017", "2", "2", "0", "100", "0", "172250", "1215.5", "135.5"], ["10492", "35189", "2017", "29", "22", "7", "75.8620689655172", "24.1379310344828", "257280.793103448", "2470.1724137931", "106.241379310345"], ["10493", "35190", "2017", "2", "2", "0", "100", "0", "53000", "1542", "34.5"], ["10499", "35196", "2017", "46", "24", "22", "52.1739130434783", "47.8260869565217", "171462.5", "2154.78260869565", "80.9130434782609"], ["10502", "35200", "2017", "3", "3", "0", "100", "0", "145666.666666667", "1155.66666666667", "133"], ["10506", "35204", "2017", "22", "20", "2", "90.9090909090909", "9.09090909090909", "211096.818181818", "1947.81818181818", "111.272727272727"], ["10508", "35206", "2017", "41", "30", "11", "73.1707317073171", "26.8292682926829", "215315.12195122", "2261.70731707317", "97.7073170731707"], ["10510", "35208", "2017", "32", "21", "11", "65.625", "34.375", "183950.40625", "2109.78125", "88.8125"], ["10511", "35210", "2017", "83", "62", "21", "74.6987951807229", "25.3012048192771", "274981.277108434", "2463.01204819277", "114.156626506024"], ["10516", "35216", "2017", "12", "7", "5", "58.3333333333333", "41.6666666666667", "155758.75", "1772.08333333333", "88"], ["10530", "35230", "2017", "1", "1", "0", "100", "0", "56000", "1333", "42"], ["10535", "35235", "2017", "5", "5", "0", "100", "0", "124700", "1064.6", "109.8"], ["10538", "35238", "2017", "2115", "298", "1817", "14.0898345153664", "85.9101654846336", "182355.015130024", "2792.61040189125", "65.4387706855792"], ["10540", "35240", "2017", "81", "46", "35", "56.7901234567901", "43.2098765432099", "204113.580246914", "2394.12345679012", "87.6049382716049"], ["10545", "35245", "2017", "20", "17", "3", "85", "15", "193244.65", "1689.85", "116.85"], ["10550", "35250", "2017", "18", "14", "4", "77.7777777777778", "22.2222222222222", "152982.5", "2117.5", "77.8333333333333"], ["10565", "35266", "2017", "29", "12", "17", "41.3793103448276", "58.6206896551724", "158519.551724138", "2001.89655172414", "80.551724137931"], ["10572", "35275", "2017", "44", "30", "14", "68.1818181818182", "31.8181818181818", "198777.113636364", "2076.59090909091", "96.4090909090909"], ["10575", "35278", "2017", "63", "42", "21", "66.6666666666667", "33.3333333333333", "348679.015873016", "2965.39682539683", "122.698412698413"], ["10578", "35281", "2017", "129", "34", "95", "26.3565891472868", "73.6434108527132", "151364.790697674", "2189.16279069767", "69.9302325581395"], ["10602", "35310", "2017", "4", "4", "0", "100", "0", "120255", "1426.25", "78.25"], ["10606", "35315", "2017", "9", "9", "0", "100", "0", "216062.222222222", "1725.44444444444", "129.222222222222"], ["10623", "35334", "2017", "67", "43", "24", "64.1791044776119", "35.8208955223881", "244994.208955224", "2434.85074626866", "100.477611940299"], ["10634", "35351", "2017", "10", "10", "0", "100", "0", "185116.5", "1863", "105.1"], ["10635", "35352", "2017", "45", "34", "11", "75.5555555555556", "24.4444444444444", "242951.777777778", "2312.53333333333", "104.533333333333"], ["10636", "35353", "2017", "40", "27", "13", "67.5", "32.5", "221379.475", "2551.575", "87.525"], ["10646", "35363", "2017", "36", "16", "20", "44.4444444444444", "55.5555555555556", "173937.416666667", "2075.97222222222", "83.8055555555556"]], "tronque": false, "nb_total": 54}</script>
+<script>
+(function(){
+  const btn = document.getElementById("theme-toggle");
+  function effectif(){
+    return document.documentElement.getAttribute("data-theme") ||
+      (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  }
+  function majIcone(){ btn.textContent = effectif() === "dark" ? "☀️" : "🌙"; }
+  btn.addEventListener("click", () => {
+    const suivant = effectif() === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", suivant);
+    try { localStorage.setItem("theme", suivant); } catch(e) {}
+    majIcone();
+  });
+  majIcone();
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+    if (!document.documentElement.getAttribute("data-theme")) majIcone();
+  });
+})();
+
+const D=JSON.parse(document.getElementById("d").textContent);
+const tbl=document.getElementById("t"),wrap=document.querySelector(".wrap");
+const nCols=D.entetes.length;
+const wrapW=wrap.clientWidth||800;
+const colW=Math.max(80,Math.floor(Math.max(wrapW,nCols*160)/nCols));
+tbl.style.width=Math.max(wrapW,nCols*160)+"px";
+document.getElementById("cols").innerHTML=D.entetes.map(()=>`<col style="width:${colW}px">`).join("");
+document.title=D.nom;document.getElementById("titre").textContent=D.nom;
+if(D.tronque){const a=document.getElementById("avert");a.style.display="";
+  a.textContent=`Prévisualisation : ${D.lignes.length.toLocaleString("fr")} premières lignes sur ${D.nb_total.toLocaleString("fr")} au total.`;}
+const geo=new Set(D.champs_geo||[]);
+const DICO=D.dictionnaire||{};
+let sc=-1,asc=true,q="";
+function esc(s){return String(s??"").replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function cell(v){const s=String(v??"").trim();return /^https?:\/\/\S+$/.test(s)?`<a href="${esc(s)}" target="_blank" rel="noopener">${esc(s)}</a>`:esc(v);}
+function rendu(){
+  let rows=D.lignes;
+  if(q){const f=q.toLowerCase();rows=rows.filter(r=>r.some(v=>String(v??"").toLowerCase().includes(f)));}
+  if(sc>=0){const col=sc,up=asc;rows=[...rows].sort((a,b)=>{
+    const va=a[col]??"",vb=b[col]??"",na=+va,nb=+vb;
+    return(!isNaN(na)&&!isNaN(nb))?(up?na-nb:nb-na):(up?String(va).localeCompare(String(vb),"fr"):String(vb).localeCompare(String(va),"fr"));
+  });}
+  const th=D.entetes.map((h,i)=>{
+    const trad=DICO[h];
+    const cls=[sc===i?(asc?"asc":"desc"):"",geo.has(h)?"geo":"",trad?"trad":""].filter(Boolean).join(" ");
+    const tip=trad?` title="${esc(h)}"`:"";
+    return`<th class="${cls}"${tip}>${esc(trad||h)}<div class="resizer"></div></th>`;
+  }).join("");
+  document.getElementById("thead").innerHTML=`<tr>${th}</tr>`;
+  document.getElementById("tbody").innerHTML=rows.map(r=>`<tr>${r.map(v=>`<td><div title="${esc(v)}">${cell(v)}</div></td>`).join("")}</tr>`).join("");
+  const n=rows.length,tot=D.lignes.length;
+  document.getElementById("info").textContent=n<tot
+    ?`${n.toLocaleString("fr")} / ${tot.toLocaleString("fr")} lignes`
+    :`${n.toLocaleString("fr")} ligne${n>1?"s":""}`;
+}
+// Sort via delegation — ignore clicks that start on the resizer handle
+tbl.addEventListener("click",e=>{
+  if(e.target.closest(".resizer"))return;
+  const th=e.target.closest("th");
+  if(!th)return;
+  const i=th.cellIndex;sc===i?asc=!asc:(sc=i,asc=true);rendu();
+});
+// Column resize
+tbl.addEventListener("mousedown",e=>{
+  const rz=e.target.closest(".resizer");
+  if(!rz)return;
+  e.preventDefault();
+  const th=rz.parentElement,idx=th.cellIndex;
+  const cols=document.querySelectorAll("#cols col");
+  const startX=e.clientX,startW=th.offsetWidth;
+  rz.classList.add("active");
+  document.body.style.cursor="col-resize";
+  function onMove(e){
+    const w=Math.max(40,startW+(e.clientX-startX));
+    cols[idx].style.width=w+"px";
+    tbl.style.width=Array.from(cols).reduce((s,c)=>s+(parseInt(c.style.width)||colW),0)+"px";
+  }
+  function onUp(){
+    rz.classList.remove("active");
+    document.body.style.cursor="";
+    document.removeEventListener("mousemove",onMove);
+    document.removeEventListener("mouseup",onUp);
+  }
+  document.addEventListener("mousemove",onMove);
+  document.addEventListener("mouseup",onUp);
+});
+document.getElementById("filtre").addEventListener("input",e=>{q=e.target.value;rendu();});
+rendu();
+</script>
+</body>
+</html>

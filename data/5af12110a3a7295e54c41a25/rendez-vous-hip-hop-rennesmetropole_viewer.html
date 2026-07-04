@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title></title>
+<script>(function(){try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<style>
+:root{--bg:#f5f6f8;--card:#fff;--txt:#1c2733;--muted:#667;--accent:#0b6e99;--bord:#e2e6ea;
+      --avert-bg:#fff8e1;--avert-bord:#ffe082;--avert-txt:#6d4c00;
+      --geo-bg:#eaf4fb;--geo-hover:#d4ecf7;--stripe:#fafbfc;--row-hover:#eef6fb;
+      --resizer:rgba(11,110,153,.35);--td-bord:#f0f2f4}
+:root[data-theme="dark"]{--bg:#10151b;--card:#1a222b;--txt:#dbe2e8;--muted:#8996a3;--accent:#4fb3da;--bord:#29323c;
+      --avert-bg:#3a2f10;--avert-bord:#6b5418;--avert-txt:#e8c96a;
+      --geo-bg:#16303c;--geo-hover:#1d3f4d;--stripe:#161d24;--row-hover:#17242c;
+      --resizer:rgba(79,179,218,.35);--td-bord:#232c35}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#10151b;--card:#1a222b;--txt:#dbe2e8;--muted:#8996a3;--accent:#4fb3da;--bord:#29323c;
+      --avert-bg:#3a2f10;--avert-bord:#6b5418;--avert-txt:#e8c96a;
+      --geo-bg:#16303c;--geo-hover:#1d3f4d;--stripe:#161d24;--row-hover:#17242c;
+      --resizer:rgba(79,179,218,.35);--td-bord:#232c35}
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+     background:var(--bg);color:var(--txt);display:flex;flex-direction:column;height:100vh}
+header{background:var(--card);border-bottom:1px solid var(--bord);padding:10px 16px;
+       display:flex;flex-wrap:wrap;gap:10px;align-items:center;flex-shrink:0}
+h1{font-size:.9rem;font-weight:600;flex:1;min-width:150px;
+   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#filtre{padding:7px 11px;font-size:.9rem;border:1px solid var(--bord);
+        border-radius:6px;width:220px;background:var(--card);color:var(--txt)}
+#info{color:var(--muted);font-size:.82rem;white-space:nowrap}
+#theme-toggle{background:none;border:1px solid var(--bord);border-radius:6px;padding:5px 10px;
+              cursor:pointer;font-size:.9rem;line-height:1;color:var(--txt);flex-shrink:0}
+#theme-toggle:hover{background:var(--bg)}
+.avert{background:var(--avert-bg);border-bottom:1px solid var(--avert-bord);padding:5px 16px;
+       font-size:.8rem;color:var(--avert-txt);flex-shrink:0}
+.wrap{flex:1;overflow:auto}
+table{border-collapse:collapse;font-size:.82rem;table-layout:fixed}
+thead{position:sticky;top:0;z-index:2;background:var(--card);box-shadow:0 1px 0 var(--bord)}
+th{padding:8px 12px;text-align:left;cursor:pointer;user-select:none;color:var(--muted);font-weight:600;
+   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative}
+th:hover{background:var(--bg);color:var(--txt)}
+th.asc::after{content:" ↑";color:var(--accent)}
+th.desc::after{content:" ↓";color:var(--accent)}
+th.geo{color:var(--accent);background:var(--geo-bg)}
+th.geo:hover{background:var(--geo-hover)}
+th.trad{text-decoration:underline dotted;text-decoration-color:var(--accent);text-underline-offset:3px}
+td{padding:0;border-bottom:1px solid var(--td-bord)}
+td div{padding:5px 12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+td div a{color:var(--accent);text-decoration:none}
+td div a:hover{text-decoration:underline}
+tr:nth-child(even) td{background:var(--stripe)}
+tr:hover td{background:var(--row-hover)}
+.resizer{position:absolute;right:0;top:0;width:5px;height:100%;cursor:col-resize;z-index:1}
+.resizer:hover,.resizer.active{background:var(--resizer)}
+</style>
+</head>
+<body>
+<header>
+  <h1 id="titre"></h1>
+  <input id="filtre" type="search" placeholder="Filtrer toutes les colonnes…">
+  <span id="info"></span>
+  <button id="theme-toggle" title="Basculer thème clair/sombre" aria-label="Basculer thème clair/sombre">🌙</button>
+</header>
+<div id="avert" class="avert" style="display:none"></div>
+<div class="wrap"><table id="t"><colgroup id="cols"></colgroup><thead id="thead"></thead><tbody id="tbody"></tbody></table></div>
+<script id="d" type="application/json">{"nom": "rendez-vous-hip-hop-rennesmetropole.csv", "champs_geo": ["Ville", "Code postal"], "dictionnaire": {}, "entetes": ["Identifiant", "Titre - FR", "Description - FR", "Description longue - FR", "Détail des conditions - FR", "Description longue - HTML - FR", "Mots clés - FR", "Dernière mise à jour", "Résumé horaires - FR", "Résumé horaires - EN", "Horaires détaillés - FR", "Horaires ISO", "Première date", "Première ouverture", "Première fermeture", "Dernière date", "Dernière ouverture", "Dernière fermeture", "Catégorie", "Discipline", "Type d'événement", "Condition de participation", "Public spécifique", "Lien d'inscription", "Age minimum", "Age maximum", "En Une", "Contributeur: organisation", "Lien", "Identifiant du lieu", "Latitude", "Longitude", "Région", "Département", "Nom du lieu", "Adresse", "Ville", "Code postal", "Arrondissement", "Accessibilité - FR", "Pays", "Téléphone du lieu", "Site web du lieu", "Liens du lieu", "Tags du lieu", "Description du lieu - FR", "Accès / Itinéraire - FR", "customValues", "Mots clés", "autre_discipline", "autre_type_evenement", "geolocalisation", "Crédits image", "Agenda d'origine ( titre )", "Agenda d'origine ( uid )"], "lignes": [["81558203", "Sessions Freestyle #2", "Evénement des Rendez-vous Hip-hop 2018", "Retrouvez Demozamau pour les Sessions Freestyle du 2e trimestre 2018 !Venez bénéficier des enseignements de Kevin et Rémi pour vous perfectionner au rap!Écriture de texte, conseils de pose, répétition", "20€ pour le trimestre + coût de l'adhésion (10€)", "<p>Retrouvez Demozamau pour les Sessions Freestyle du 2e trimestre 2018 !<\/p><p>Venez bénéficier des enseignements de Kevin et Rémi pour vous perfectionner au rap!<\/p><p>Écriture de texte, conseils de", "", "2018-04-16T10:52:35+00:00", "28 mai et 1 juin", "28 May and 1 June", "lundi 28 mai - 18h00 à 20h00vendredi 1er juin - 18h00 à 20h00", "2018-05-28T18:00:00+02:00-2018-05-28T20:00:00+02:002018-06-01T18:00:00+02:00-2018-06-01T20:00:00+02:00", "2018-05-28", "0001-01-01T18:00:00+00:00", "0001-01-01T20:00:00+00:00", "2018-06-01", "0001-01-01T18:00:00+00:00", "0001-01-01T20:00:00+00:00", "", "Rap", "Atelier et workshop", "Payant", "", "http://demozamau.com/zoom-sessions-freestyle/", "", "", "", "", "https://openagenda.com/rdvhiphop2018/events/sessions-freestyle-2", "68387621", "48.087758", "-1.661527", "Bretagne", "Ille-et-Vilaine", "Le Block", "4 avenue des Pays-Bas 35200 Rennes", "Rennes", "35200", "", "", "France (Métropole)", "", "", "", "", "", "", "", "", "", "", "48.087758, -1.661527", "Association Démozamau", "Rendez-vous Hip Hop 2018", "7912967"], ["89534700", "\"Friday Break\" avec DJ Yaburtz", "Evénement des Rendez-vous Hip-hop 2018", "Retrouvez chaque vendredi votre rendez-vous incontournable au @ BDS : Soirée \"Friday Break\" avec DJ Yaburtz 19h/0h30 - Tous les Vendredis !!!On s'est dit que ça ferait du bien de retrouver tous les bo", "Entrée libre", "<p>Retrouvez chaque vendredi votre rendez-vous incontournable au @ BDS : Soirée &quot;Friday Break&quot; avec DJ Yaburtz 19h/0h30 - Tous les Vendredis !!!<\/p><p>On s&#39;est dit que ça ferait du bien ", "", "2018-05-25T10:58:16+00:00", "Vendredi 1 juin, 19h00", "Friday 1 June, 19:00", "vendredi 1er juin - 19h00 à 00h00", "2018-06-01T19:00:00+02:00-2018-06-02T00:00:00+02:00", "2018-06-01", "0001-01-01T19:00:00+00:00", "0001-01-01T00:00:00+00:00", "2018-06-01", "0001-01-01T19:00:00+00:00", "0001-01-01T00:00:00+00:00", "", "DJ'ing", "Concert", "Gratuit", "", "", "", "", "", "", "https://openagenda.com/rdvhiphop2018/events/friday-break-avec-dj-yaburtz", "7139317", "48.109738", "-1.6802929999999998", "Bretagne", "Ille-et-Vilaine", "BDS", "1, Quai Lamennais, 35000 Rennes", "Rennes", "35000", "", "", "France (Métropole)", "", "", "", "", "", "", "", "", "", "", "48.109738, -1.6802929999999998", "BDS", "Rendez-vous Hip Hop 2018", "7912967"], ["8387690", "Stage de danse et atelier chorégraphique", "Evénement des Rendez-vous Hip-hop 2018", "L'association Alalaprod et la SOA LE CLECH Cie, organisent le samedi 26 et le dimanche 27 mai 2018 un stage de danse au Triangle à Rennes.Au programme : cours techniques le samedi et ateliers chorégra", "", "<p>L&#39;association Alalaprod et la SOA LE CLECH Cie, organisent le samedi 26 et le dimanche 27 mai 2018 un stage de danse au Triangle à Rennes.<\/p><p>Au programme : cours techniques le samedi et ate", "", "2018-04-16T11:01:36+00:00", "26 et 27 mai", "26 and 27 May", "samedi 26 mai - 13h00 à 17h30dimanche 27 mai - 10h00 à 16h00", "2018-05-26T13:00:00+02:00-2018-05-26T17:30:00+02:002018-05-27T10:00:00+02:00-2018-05-27T16:00:00+02:00", "2018-05-26", "0001-01-01T13:00:00+00:00", "0001-01-01T17:30:00+00:00", "2018-05-27", "0001-01-01T10:00:00+00:00", "0001-01-01T16:00:00+00:00", "", "Danse", "Atelier et workshop", "Payant", "", "soamazone@yahoo.fr, 0626456246", "", "", "", "", "https://openagenda.com/rdvhiphop2018/events/stage-de-danse-et-atelier-choregraphique", "19512467", "48.087688", "-1.655873", "Bretagne", "Ille-et-Vilaine", "Le Triangle", "Boulevard de Yougoslavie 35000 Rennes", "Rennes", "35200", "", "", "France (Métropole)", "", "", "", "", "", "", "", "", "", "", "48.087688, -1.655873", "Soamazone", "Rendez-vous Hip Hop 2018", "7912967"], ["30814055", "Rennes sur Roulettes", "Evénement des Rendez-vous Hip-hop 2018", "36ème édition de Rennes sur Roulettes !Organisé par l'association le Cercle Paul Bert Rennes en collaboration avec Rennes Ville et Métropole, sous l'égide des FF Roller Skateboard - Fédération Françai", "", "<p>36ème édition de Rennes sur Roulettes !<\/p><p>Organisé par l&#39;association le Cercle Paul Bert Rennes en collaboration avec Rennes Ville et Métropole, sous l&#39;égide des FF Roller Skateboard - ", "", "2018-05-25T11:39:24+00:00", "26 et 27 mai", "26 and 27 May", "samedi 26 mai - 15h00 à 23h00dimanche 27 mai - 08h00 à 18h00", "2018-05-26T15:00:00+02:00-2018-05-26T23:00:00+02:002018-05-27T08:00:00+02:00-2018-05-27T18:00:00+02:00", "2018-05-26", "0001-01-01T15:00:00+00:00", "0001-01-01T23:00:00+00:00", "2018-05-27", "0001-01-01T08:00:00+00:00", "0001-01-01T18:00:00+00:00", "", "Sport", "Animation|Battle et rencontre chorégraphique|Performance", "Gratuit", "", "", "", "", "", "", "https://openagenda.com/rdvhiphop2018/events/rennes-sur-roulettes_812", "41713199", "48.105479", "-1.677133", "Bretagne", "Ille-et-Vilaine", "Rennes sur Roulettes", "Esplanade du Général de Gaulle, 35000 Rennes", "Rennes", "35000", "", "", "France (Métropole)", "", "", "", "", "", "", "", "", "", "", "48.105479, -1.677133", "Cercle Paul Bert", "Rendez-vous Hip Hop 2018", "7912967"], ["2065582", "Training Hip-hop Transmission", "Evénement des Rendez-vous Hip-hop 2018", "Vous avez aimé le projet \"Hip-hop transmission\" : 3 jours de stages hip-hop (danses, parkour, djing), qui s'est conclu, notamment, par le battle \"Co(Opéra)ctif\" à l'opéra dans le cadre d'Urbaines ?Hip", "", "<p>Vous avez aimé le projet &quot;Hip-hop transmission&quot; : 3 jours de stages hip-hop (danses, parkour, djing), qui s&#39;est conclu, notamment, par le battle &quot;Co(Opéra)ctif&quot; à l&#39;opér", "", "2018-04-19T11:01:35+00:00", "26 mai et 2 juin", "26 May and 2 June", "samedi 26 mai - 14h00 à 18h00samedi 2 juin - 14h00 à 18h00", "2018-05-26T14:00:00+02:00-2018-05-26T18:00:00+02:002018-06-02T14:00:00+02:00-2018-06-02T18:00:00+02:00", "2018-05-26", "0001-01-01T14:00:00+00:00", "0001-01-01T18:00:00+00:00", "2018-06-02", "0001-01-01T14:00:00+00:00", "0001-01-01T18:00:00+00:00", "", "Breakdance|Danse", "Atelier et workshop", "Payant|Sur inscription", "", "", "", "", "", "", "https://openagenda.com/rdvhiphop2018/events/training-hip-hop-transmission", "8030183", "48.083698", "-1.691733", "Bretagne", "Ille-et-Vilaine", "Mjc Bréquigny", "15 avenue Georges Graff 35200 Rennes", "Rennes", "35200", "", "", "France (Métropole)", "", "", "", "", "", "", "", "", "", "", "48.083698, -1.691733", "Mjc Bréquigny", "Rendez-vous Hip Hop 2018", "7912967"], ["70623776", "OldToTheNew HipHop Party #11 (Retro X + Kleko)", "Evénement des Rendez-vous Hip-hop 2018", "Castmediacompany & 1988 Live Prod présentent :OldToTheNew HipHop Party #11Voyage spatio-temporel de 6h à travers le temps du hip-hop des années 1990 vers le New Sound du futur, mixé par des Djs de hau", "5€ Early Bird / 7€ prévente / 10€ Sur Place", "<p>Castmediacompany &amp; 1988 Live Prod présentent :<\/p><p>OldToTheNew HipHop Party #11<\/p><p>Voyage spatio-temporel de 6h à travers le temps du hip-hop des années 1990 vers le New Sound du futur, mi", "", "2018-05-25T09:05:02+00:00", "Dimanche 27 mai, 00h00", "Sunday 27 May, 00:00", "dimanche 27 mai - 00h00 à 06h00", "2018-05-27T00:00:00+02:00-2018-05-27T06:00:00+02:00", "2018-05-26", "0001-01-01T00:00:00+00:00", "0001-01-01T06:00:00+00:00", "2018-05-26", "0001-01-01T00:00:00+00:00", "0001-01-01T06:00:00+00:00", "", "DJ'ing|Rap", "Concert|Soirée", "Payant", "", "http://bit.ly/2s6RmDR", "18", "99", "", "1988 Live Prod", "https://openagenda.com/rdvhiphop2018/events/oldtothenew-hiphop-party-11-retro-x-kleko", "84069489", "48.104428", "-1.678893", "Bretagne", "Ille-et-Vilaine", "1988 Live Club", "27 place du Colombier, 35000 Rennes", "Rennes", "35000", "", "", "France (Métropole)", "", "", "", "", "", "", "", "", "", "", "48.104428, -1.678893", "Licence libre", "Rendez-vous Hip Hop 2018", "7912967"], ["21526931", "Hip Hop Session Gueda One & Friends", "Evénement des Rendez-vous Hip-hop 2018", "Gueda One revient au Bar Le Chantier pour un mix hip hop / jazz accompagné de guests !", "", "<p>Gueda One revient au Bar Le Chantier pour un mix hip hop / jazz accompagné de guests !<\/p>", "", "2018-05-23T08:48:01+00:00", "Samedi 26 mai, 21h00", "Saturday 26 May, 21:00", "samedi 26 mai - 21h00 à 01h00", "2018-05-26T21:00:00+02:00-2018-05-27T01:00:00+02:00", "2018-05-26", "0001-01-01T21:00:00+00:00", "0001-01-01T01:00:00+00:00", "2018-05-26", "0001-01-01T21:00:00+00:00", "0001-01-01T01:00:00+00:00", "", "DJ'ing", "Concert|Soirée", "Gratuit", "", "", "", "", "", "Bar Le Chantier", "https://openagenda.com/rdvhiphop2018/events/hip-hop-session-gueda-one-friends", "11289465", "48.112428", "-1.6864279999999998", "Bretagne", "Ille-et-Vilaine", "Bar Le Chantier", "18 carrefour Jouaust, 35000 Rennes", "Rennes", "35000", "", "", "France (Métropole)", "", "", "", "", "", "", "", "", "", "", "48.112428, -1.6864279999999998", "Antoine Guedaone", "Rendez-vous Hip Hop 2018", "7912967"]], "tronque": false, "nb_total": 7}</script>
+<script>
+(function(){
+  const btn = document.getElementById("theme-toggle");
+  function effectif(){
+    return document.documentElement.getAttribute("data-theme") ||
+      (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  }
+  function majIcone(){ btn.textContent = effectif() === "dark" ? "☀️" : "🌙"; }
+  btn.addEventListener("click", () => {
+    const suivant = effectif() === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", suivant);
+    try { localStorage.setItem("theme", suivant); } catch(e) {}
+    majIcone();
+  });
+  majIcone();
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+    if (!document.documentElement.getAttribute("data-theme")) majIcone();
+  });
+})();
+
+const D=JSON.parse(document.getElementById("d").textContent);
+const tbl=document.getElementById("t"),wrap=document.querySelector(".wrap");
+const nCols=D.entetes.length;
+const wrapW=wrap.clientWidth||800;
+const colW=Math.max(80,Math.floor(Math.max(wrapW,nCols*160)/nCols));
+tbl.style.width=Math.max(wrapW,nCols*160)+"px";
+document.getElementById("cols").innerHTML=D.entetes.map(()=>`<col style="width:${colW}px">`).join("");
+document.title=D.nom;document.getElementById("titre").textContent=D.nom;
+if(D.tronque){const a=document.getElementById("avert");a.style.display="";
+  a.textContent=`Prévisualisation : ${D.lignes.length.toLocaleString("fr")} premières lignes sur ${D.nb_total.toLocaleString("fr")} au total.`;}
+const geo=new Set(D.champs_geo||[]);
+const DICO=D.dictionnaire||{};
+let sc=-1,asc=true,q="";
+function esc(s){return String(s??"").replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function cell(v){const s=String(v??"").trim();return /^https?:\/\/\S+$/.test(s)?`<a href="${esc(s)}" target="_blank" rel="noopener">${esc(s)}</a>`:esc(v);}
+function rendu(){
+  let rows=D.lignes;
+  if(q){const f=q.toLowerCase();rows=rows.filter(r=>r.some(v=>String(v??"").toLowerCase().includes(f)));}
+  if(sc>=0){const col=sc,up=asc;rows=[...rows].sort((a,b)=>{
+    const va=a[col]??"",vb=b[col]??"",na=+va,nb=+vb;
+    return(!isNaN(na)&&!isNaN(nb))?(up?na-nb:nb-na):(up?String(va).localeCompare(String(vb),"fr"):String(vb).localeCompare(String(va),"fr"));
+  });}
+  const th=D.entetes.map((h,i)=>{
+    const trad=DICO[h];
+    const cls=[sc===i?(asc?"asc":"desc"):"",geo.has(h)?"geo":"",trad?"trad":""].filter(Boolean).join(" ");
+    const tip=trad?` title="${esc(h)}"`:"";
+    return`<th class="${cls}"${tip}>${esc(trad||h)}<div class="resizer"></div></th>`;
+  }).join("");
+  document.getElementById("thead").innerHTML=`<tr>${th}</tr>`;
+  document.getElementById("tbody").innerHTML=rows.map(r=>`<tr>${r.map(v=>`<td><div title="${esc(v)}">${cell(v)}</div></td>`).join("")}</tr>`).join("");
+  const n=rows.length,tot=D.lignes.length;
+  document.getElementById("info").textContent=n<tot
+    ?`${n.toLocaleString("fr")} / ${tot.toLocaleString("fr")} lignes`
+    :`${n.toLocaleString("fr")} ligne${n>1?"s":""}`;
+}
+// Sort via delegation — ignore clicks that start on the resizer handle
+tbl.addEventListener("click",e=>{
+  if(e.target.closest(".resizer"))return;
+  const th=e.target.closest("th");
+  if(!th)return;
+  const i=th.cellIndex;sc===i?asc=!asc:(sc=i,asc=true);rendu();
+});
+// Column resize
+tbl.addEventListener("mousedown",e=>{
+  const rz=e.target.closest(".resizer");
+  if(!rz)return;
+  e.preventDefault();
+  const th=rz.parentElement,idx=th.cellIndex;
+  const cols=document.querySelectorAll("#cols col");
+  const startX=e.clientX,startW=th.offsetWidth;
+  rz.classList.add("active");
+  document.body.style.cursor="col-resize";
+  function onMove(e){
+    const w=Math.max(40,startW+(e.clientX-startX));
+    cols[idx].style.width=w+"px";
+    tbl.style.width=Array.from(cols).reduce((s,c)=>s+(parseInt(c.style.width)||colW),0)+"px";
+  }
+  function onUp(){
+    rz.classList.remove("active");
+    document.body.style.cursor="";
+    document.removeEventListener("mousemove",onMove);
+    document.removeEventListener("mouseup",onUp);
+  }
+  document.addEventListener("mousemove",onMove);
+  document.addEventListener("mouseup",onUp);
+});
+document.getElementById("filtre").addEventListener("input",e=>{q=e.target.value;rendu();});
+rendu();
+</script>
+</body>
+</html>

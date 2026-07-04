@@ -1,0 +1,26 @@
+{
+  "bic-iris": {
+    "url": "https://www.insee.fr/fr/statistiques/fichier/6543200/base-ic-evol-struct-pop-2019_csv.zip",
+    "content_length": null,
+    "last_modified": null,
+    "date_harvest": "2026-06-29",
+    "nb_rm": 172,
+    "dossier": "insee_bic_iris"
+  },
+  "filosofi-commune": {
+    "url": "https://www.insee.fr/fr/statistiques/fichier/6692392/base-cc-filosofi-2020_CSV.zip",
+    "content_length": null,
+    "last_modified": null,
+    "date_harvest": "2026-06-29",
+    "nb_rm": 43,
+    "dossier": "insee_filosofi_commune"
+  },
+  "bpe": {
+    "url": "https://www.insee.fr/fr/statistiques/fichier/8217525/BPE24.zip",
+    "content_length": null,
+    "last_modified": null,
+    "date_harvest": "2026-06-29",
+    "nb_rm": 15916,
+    "dossier": "insee_bpe"
+  }
+}

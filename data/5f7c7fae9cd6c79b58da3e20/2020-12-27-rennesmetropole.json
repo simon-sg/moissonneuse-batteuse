@@ -1,0 +1,30 @@
+[
+  {
+    "date": "2020-12-27",
+    "operateur": "SFR",
+    "op_code": "sfr",
+    "region": "",
+    "departement": "35",
+    "code_postal": "",
+    "code_insee": "35051",
+    "commune": "CESSON SEVIGNE",
+    "lat": "48.103333333333",
+    "long": "-1.6183333333333",
+    "voix2g": "",
+    "voix3g": "",
+    "voix4g": "",
+    "data3g": "",
+    "data4g": "",
+    "data5g": "",
+    "voix": "HS",
+    "data": "HS",
+    "propre": "",
+    "detail": "",
+    "debut_voix": "",
+    "fin_voix": "",
+    "debut_data": "",
+    "fin_data": "",
+    "debut": "",
+    "fin": ""
+  }
+]

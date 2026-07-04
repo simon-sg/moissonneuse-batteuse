@@ -1,0 +1,120 @@
+{
+  "local_id": "28123053-9512-5c88-9ca0-ce815e4ceb01",
+  "resource_title": " \"Carte des loyers\" - Indicateurs de loyers d'annonce par commune en 2022 - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": " \"Carte des loyers\" - Indicateurs de loyers d'annonce par commune en 2022 — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/639c7cf4969f3318338df9a8\n\n**Une version plus récente de ces indicateurs est consultable sur cette page :** **<https://www.data.gouv.fr/fr/datasets/carte-des-loyers-indicateurs-de-loyers-dannonce-par-commune-en-2025/>\nDu fait d'évolutions du maillage communal, les versions successives des indicateurs ne peuvent pas être comparées de manière globale pour fournir des informations sur l'évolution des loyers.**\n\n**Contexte du projet**\n\nLa connaissance du niveau des loyers est importante pour garantir le bon fonctionnement du marché locatif et la conduite des politiques nationales et locales de l’habitat. La Direction Générale de l’Aménagement, du Logement et de la Nature (DGALN) a lancé en 2018 le projet de « carte des loyers » en s’associant d’une part à une équipe de recherche en économie d’Agrosup Dijon et de l’Institut national de la recherche en agronomique (INRAE), et d’autre part à SeLoger et leboncoin. En 2020, le projet a été repris par l’Agence Nationale pour l’Information sur le Logement (ANIL), qui a publié en 2022 une nouvelle version de la carte.\nCe partenariat innovant a permis de reconstituer une base de données avec plus de 7 millions d’annonces locatives. A partir de ces données, l’équipe de recherche et l’ANIL ont développé une méthodologie d’estimation d’indicateurs, à l’échelle communale, du loyer (charges comprises) par m² pour les appartements et maisons.\nCes indicateurs expérimentaux sont mis en ligne afin d’être utilisables par tous : services de l’Etat, collectivités territoriales, professionnels de l’immobiliers, particuliers bailleurs et locataires. A partir de 2022, les cartes sont actualisées et publiées tous les ans par l’ANIL.\nCe projet fournit une information complémentaire à celle offerte par les Observatoires Locaux des Loyers (OLL), déployés depuis 2013 et renforcés depuis 2018 par la loi Elan. Aujourd’hui, ce réseau associatif d’une trentaine d’OLL publie chaque année des informations précises sur les loyers pratiqués dans une cinquantaine d’agglomérations françaises.\n\n**Présentation du jeu de données**\n\nLes données diffusées sont des indicateurs de loyers d’annonces, à l’échelle de la commune. Le champ couvert est la France entière, hors Mayotte. La géographie des communes est celle en vigueur au 1er janvier 2022.\nLes indicateurs de loyers sont calculés grâce à l’utilisation des données d’annonces parues sur les plateformes de leboncoin et du Groupe SeLoger sur la période -2018 - 2022.\nLes indicateurs de loyers sont fournis charges comprises pour des biens types loués vides et mis en location au 3ème trimestre 2022 avec les caractéristiques de référence suivantes :\n\n* Pour un appartement (toutes typologies confondues) : surface de 52 m² et surface moyenne par pièce de 22,2 m²\n\n* Pour appartement type T1-T2 : surface de 37 m² et surface moyenne par pièce de 22,9 m²\n\n* Pour appartement type T3 et plus : surface de 72 m² et surface moyenne par pièce de 21,2 m²\n\n* Pour une maison : surface de 92 m² et surface moyenne par pièce de 22,3 m²\n\n**Conditions d’utilisation des données**\n\nCes indicateurs sont utilisables librement, sous réserve de mentionner la source sous la forme suivante : « Estimations ANIL, à partir des données du Groupe SeLoger et de leboncoin ».\n\n**Précautions d’emploi**\n\nLes indicateurs de loyers sont calculés sur des biens non meublés et charges comprises, sur des données d’annonces.. Les données ont été dédoublonnées mais sans pouvoir s’appuyer sur des photos et des caractéristiques très discriminantes. La méthode de maillage implique, pour les communes n’ayant aucun logement mis en location via une annonce sur au moins un des 2 sites sur la période considérée, quel’indicateur de loyer est celui estimé pour une maille plus grande comprenant des communes voisines présentant des caractéristiques similaires.\n\n**Les utilisateurs sont invités à considérer avec prudence les indicateurs de loyer dans les communes où le coefficient de détermination (R2) est inférieur à 0,5, le nombre d’observations dans la commune est inférieur à 30 ou l’intervalle de prédiction est très large.**\n\\*\\*Par ailleurs, par rapport à la version précédente des indicateurs publiée en 2020, cette nouvelle carte ne permet pas de mesurer des évolutions de loyer, du fait de différences dans le maillage communal et d’évolutions de la méthodologie. \\*\\*\n"
+    }
+  ],
+  "theme": "housing",
+  "keywords": [
+    "immobilier",
+    "logement",
+    "loyer",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Ministère de la Transition écologique"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "90275dee-d60b-5580-85d5-c9839bf82e16",
+      "media_type": "FILE",
+      "media_name": "indicateurs-de-loyer-maison-rennesmetropole.csv",
+      "media_caption": "Indicateurs de loyer maison — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "1315240a-fdbf-55b9-a8af-8519830a5f03",
+      "media_type": "FILE",
+      "media_name": "indicateurs-de-loyer-appartement-de-3-pieces-et-pl-rennesmetropole.csv",
+      "media_caption": "Indicateurs de loyer appartement de 3 pièces et plus — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "0cc82b4c-faa6-5fcd-9578-f01f3200c2ed",
+      "media_type": "FILE",
+      "media_name": "indicateurs-de-loyer-appartement-de-1-ou-2-pieces-rennesmetropole.csv",
+      "media_caption": "Indicateurs de loyer appartement de 1 ou 2 pièces — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "12beacea-5ba6-58a4-8b57-6621ffbafeb4",
+      "media_type": "FILE",
+      "media_name": "indicateurs-de-loyer-appartement-rennesmetropole.csv",
+      "media_caption": "Indicateurs de loyer appartement — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "d2254660-bfee-5679-8ab5-a0c5658863b9",
+      "media_type": "FILE",
+      "media_name": "dict-guide-dutilisation-des-donnees-dictionnaire-des-va.pdf",
+      "media_caption": "Dictionnaire des variables — Guide d'utilisation des données - dictionnaire des variables",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "98156902-e1b7-5acf-a5cd-63c6e1455d98",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://static.data.gouv.fr/resources/carte-des-loyers-indicateurs-de-loyers-dannonce-par-commune-en-2022/20221216-154025/pred-mai-mef-dhup.csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2022-12-16T00:00:00Z",
+    "updated": "2025-12-30T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2022-12-16T00:00:00Z",
+      "updated": "2025-12-30T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/639c7cf4969f3318338df9a8"
+  }
+}

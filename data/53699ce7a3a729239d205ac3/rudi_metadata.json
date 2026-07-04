@@ -1,0 +1,93 @@
+{
+  "local_id": "cd8ab894-ea3b-5b1b-89b1-3ce7699c88ea",
+  "resource_title": "PLF - Jaune - Associations subventionnées - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "PLF - Jaune - Associations subventionnées — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/53699ce7a3a729239d205ac3\n\nListe des associations subventionnées par l'Etat avec le montant des subventions par ministère et programme."
+    }
+  ],
+  "theme": "economy",
+  "keywords": [
+    "annexes-budgetaires",
+    "budget-de-letat",
+    "finances-publiques",
+    "jaune-budgetaire-associations",
+    "loi-de-finances",
+    "plf-2012",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Ministères économiques et financiers"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "a7d75a8b-4d81-5364-8cf0-70eaf1ac7356",
+      "media_type": "FILE",
+      "media_name": "plf-2013-jaune-associations-subventionne-es-en-201-rennesmetropole.csv",
+      "media_caption": "plf-2013-jaune-associations-subventionne-es-en-2011.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "117c360d-abc0-51ab-9d8d-8222ff51bf78",
+      "media_type": "FILE",
+      "media_name": "plf-2013-jaune-associations-subventionne-es-en-201-rennesmetropole.json",
+      "media_caption": "plf-2013-jaune-associations-subventionne-es-en-2011.csv — données filtrées sur Rennes Métropole (JSON)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "f21f5992-0c27-5f73-a727-1acda9f8af43",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://data.economie.gouv.fr/api/v2/catalog/datasets/plf-jaune-associations-subventionnees/attachments/fiche_explicative_plf_2013_jaune_subventions_aux_associations_csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2018-12-13T00:00:00Z",
+    "updated": "2018-12-13T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2018-12-13T00:00:00Z",
+      "updated": "2018-12-13T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/53699ce7a3a729239d205ac3"
+  }
+}

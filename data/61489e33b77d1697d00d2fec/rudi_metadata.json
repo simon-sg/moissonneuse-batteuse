@@ -1,0 +1,169 @@
+{
+  "local_id": "82e7b253-acc0-59d7-b6d2-009e7303ce14",
+  "resource_title": "Iris...GE — Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Iris...GE — données géographiques pour Rennes Métropole (WFS)"
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Service WFS filtré sur Rennes Métropole (43 communes, EPCI 243500139).\n\nSource : https://data.geopf.fr/wfs/ows\n\nJeu de données du thème « environnement », produit par Institut national de l'information géographique et forestière, limité aux communes de Rennes Métropole."
+    }
+  ],
+  "theme": "environment",
+  "keywords": [
+    "rennes métropole",
+    "géographique",
+    "wfs"
+  ],
+  "producer": {
+    "organization_name": "Institut national de l'information géographique et forestière"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "cacbf449-baaf-5dba-a38e-cfe681cc820a",
+      "media_type": "FILE",
+      "media_name": "oscge_gers_32_2016.geojson",
+      "media_caption": "OCS-GERS_BDD_LAMB93_2016:oscge_gers_32_2016 — GeoJSON filtré Rennes Métropole",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "f7cc952c-3043-5322-b5df-8076407322c5",
+      "media_type": "FILE",
+      "media_name": "oscge_gers_32_2019.geojson",
+      "media_caption": "OCS-GERS_BDD_LAMB93_2019:oscge_gers_32_2019 — GeoJSON filtré Rennes Métropole",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "470a6278-3cae-5e7e-aad5-d06adf35d1bf",
+      "media_type": "FILE",
+      "media_name": "site-rbf.geojson",
+      "media_caption": "IGNF_GEODESIE:site-rbf — GeoJSON filtré Rennes Métropole",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "2c080984-f400-5a2a-ba4a-e919d74c9609",
+      "media_type": "FILE",
+      "media_name": "site-rdf.geojson",
+      "media_caption": "IGNF_GEODESIE:site-rdf — GeoJSON filtré Rennes Métropole",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "0c0c6221-1f93-55fe-90b9-1a10370f3d05",
+      "media_type": "FILE",
+      "media_name": "arrondissement.geojson",
+      "media_caption": "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement — GeoJSON filtré Rennes Métropole",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "1cc54020-0061-51e9-92ef-f80eae84b53a",
+      "media_type": "FILE",
+      "media_name": "arrondissement_municipal.geojson",
+      "media_caption": "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:arrondissement_municipal — GeoJSON filtré Rennes Métropole",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "ff4595d7-2e95-52ea-9db8-65aa1a6a34ce",
+      "media_type": "FILE",
+      "media_name": "canton.geojson",
+      "media_caption": "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:canton — GeoJSON filtré Rennes Métropole",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "98b2ae83-3612-599e-ad32-00add631e9b5",
+      "media_type": "FILE",
+      "media_name": "chef_lieu_d_arrondissement.geojson",
+      "media_caption": "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement — GeoJSON filtré Rennes Métropole",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "78fd3558-f3ef-51d4-93c6-4323c6e87f72",
+      "media_type": "FILE",
+      "media_name": "chef_lieu_d_arrondissement_municipal.geojson",
+      "media_caption": "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_arrondissement_municipal — GeoJSON filtré Rennes Métropole",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "e7d04656-34e2-541b-8f10-2ce67d63607e",
+      "media_type": "FILE",
+      "media_name": "chef_lieu_d_epci.geojson",
+      "media_caption": "LIMITES_ADMINISTRATIVES_EXPRESS.LATEST:chef_lieu_d_epci — GeoJSON filtré Rennes Métropole",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "ae984b2a-571e-57c7-af46-326695a1ff8a",
+      "media_type": "SERVICE",
+      "media_name": "service-wfs",
+      "media_caption": "Service WFS source",
+      "connector": {
+        "url": "https://data.geopf.fr/wfs/ows?SERVICE=WFS&REQUEST=GetCapabilities",
+        "interface_contract": "wfs"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2026-07-04T17:54:50Z",
+    "updated": "2026-07-04T17:54:50Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2026-07-04T17:54:50Z",
+      "updated": "2026-07-04T17:54:50Z"
+    },
+    "metadata_source": "https://data.geopf.fr/wfs/ows"
+  }
+}

@@ -154,6 +154,21 @@ def action_enrichir_descriptions():
                enrichir_descriptions.main)
 
 
+def _verifier_backlog_examen():
+    decouverte = discover.charger_decouverte()
+    stats = discover.verifier_ressources_a_examiner(decouverte)
+    if stats["total"] == 0:
+        print("Aucune entrée à vérifier (tout le backlog tabulaire est déjà classé).")
+    else:
+        print(f"{stats['verifies']}/{stats['total']} JDD vérifié(s) — "
+              f"{stats['sans_ressource']} sans ressource exploitable.")
+
+
+def action_verifier_backlog_examen():
+    _executer("Vérification des ressources du backlog « à examiner » (rattrapage, sans téléchargement)",
+               _verifier_backlog_examen)
+
+
 # Étapes déterministes du pipeline complet (sans découverte, jamais interactives) —
 # réutilisées telles quelles par dashboard.py pour le déclenchement web.
 ETAPES_PIPELINE = [
@@ -471,9 +486,10 @@ ACTIONS = [
     ("9", "(Re)générer le catalogue", action_catalogue),
     ("10", "Publier sur le nœud RUDI (rattrapage)", action_publier_rudi),
     ("11", "Enrichir les descriptions vides/quasi vides (rattrapage)", action_enrichir_descriptions),
-    ("12", "Lancer le pipeline complet", action_pipeline_complet),
-    ("13", "Purger des données existantes", menu_purge),
-    ("14", "État du projet", action_etat_projet),
+    ("12", "Vérifier les ressources du backlog « à examiner » (rattrapage)", action_verifier_backlog_examen),
+    ("13", "Lancer le pipeline complet", action_pipeline_complet),
+    ("14", "Purger des données existantes", menu_purge),
+    ("15", "État du projet", action_etat_projet),
 ]
 
 

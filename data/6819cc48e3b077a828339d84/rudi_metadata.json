@@ -1,0 +1,91 @@
+{
+  "local_id": "ea43dcb9-5b76-5a4c-bb68-01026a469b07",
+  "resource_title": "Les travailleurs exposés à la chaleur - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Les travailleurs exposés à la chaleur — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/6819cc48e3b077a828339d84\n\nCe jeu de données rassemble les statistiques sur les travailleurs exposés à la chaleur mobilisées dans le cadre de la *Note d’analyse* n°123 « [Le travail à l’épreuve du changement climatique ](https://www.strategie.gouv.fr/publications/travail-lepreuve-changement-climatique)» publiée par France Stratégie en juin 2023.\n\nCe jeu de données est constitué de cinq fichiers :\n\n1. Il présente les vingt-trois métiers (variable « Libelle\\_metier ») ayant la proportion la plus forte de travailleurs déclarant que leur travail (ou lieu de travail) présente un inconvénient lié à une température élevée (variable « Part\\_inconvenient\\_chaleur ») d’après l’enquête Conditions de travail de 2019.&#x20;\n\n   Pour ces vingt-trois métiers, on renseigne également la part de salariés qui exercent un travail au chaud (plus de 24°C), imposé par le processus de production (variable « Part\\_travail\\_chaud ») et la part de salariés qui exercent leur travail en extérieur (variable « Part\\_travail\\_exterieur ») d’après l’enquête SUMER de 2017, à condition qu’ils figurent dans le palmarès des vingt-trois métiers les plus exposés pour ces deux indicateurs.\n2. Il présente les vingt-trois métiers (variable « Libelle\\_metier ») ayant la proportion la plus faible de travailleurs déclarant que leur travail (ou lieu de travail) présente un inconvénient lié à une température élevée (variable « Part\\_inconvenient\\_chaleur ») d’après l’enquête Conditions de travail de 2019 de la Dares.\n3. Il présente les vingt zones d’emploi (variable « Libelle\\_zone\\_emploi ») ayant le taux attendu le plus élevé de travailleurs déclarant que leur travail (ou lieu de travail) présente un inconvénient lié à une température élevée (variable « taux\\_attendu\\_inconvenient\\_chaleur »). Ce taux attendu est calculé en considérant que les zones d’emploi de France ont le même taux de travailleurs incommodés par la chaleur qu’en moyenne par métier sur l’ensemble du territoire national. Pour ces vingt zones d’emploi, le fichier fournit également l’écart entre ce taux attendu et le taux moyen de travailleurs incommodés par la chaleur en France (variable « Ecart\\_taux\\_inconvenient\\_chaleur »). Afin de comprendre le rôle joué par la sur ou sous-représentation des métiers les plus exposés à la chaleur dans ces zones d’emploi, cet écart est décomposé en cinq grandes catégories de métiers (variables « Agriculture\\_Viticulture », « Batiment », « Industrie\\_de\\_process », « Mettalurgie », « Autres\\_metiers »).\n4. Il indique pour les zones d’emploi de France métropolitaine (variable « Libelle\\_zone\\_emploi ») l’évolution des journées anormalement chaudes lors des mois d’été (juin à août) entre 1976-2005 et 2021-2050 (variable « Evolution\\_journees\\_anormalement\\_chaudes »). En complément, il indique les trente zones d’emploi qui connaîtraient l’évolution la plus forte des journées anormalement chaudes entre 1976-2005 et 2021-2050 (variable « Top30\\_evolution\\_journees\\_anormalement\\_chaudes ») et les cent zones d’emploi qui auraient le nombre le plus élevé de journées anormalement chaudes entre 2021 et 2050 (variable « Top100\\_nombre\\_journees\\_anormalement\\_chaudes »).\n5. Il indique pour les zones d’emploi de France (hors Mayotte) (variable « Libelle\\_zone\\_emploi ») l’écart entre leur taux attendu de travailleurs déclarant que leur travail (ou lieu de travail) présente un inconvénient lié à une température élevée et le taux moyen de travailleurs incommodés par la chaleur en France (variable « Ecart\\_taux\\_inconvenient\\_chaleur »). En complément, il indique les cent zones d’emploi de France métropolitaine qui connaîtraient l’évolution la plus forte des journées anormalement chaudes entre 1976-2005 et 2021-2050 (variable « Top100\\_evolution\\_journees\\_anormalement\\_chaudes ») et les trente zones d’emploi de France (hors Mayotte) ayant le taux attendu le plus élevé de travailleurs déclarant que leur travail (ou lieu de travail) présente un inconvénient lié à une température élevée (variable « Top30\\_taux\\_attendu\\_inconvenient\\_temperature »).\n\nCe jeu de données est issu de l’exploitation de l’enquête Conditions de travail de 2019 (Dares) et du recensement de population de 2019 (Insee). Le recensement de population a été utilisé pour connaître la répartition des métiers par zones d’emploi au lieu de travail (Zones d’emploi 2020). Les métiers sont appréhendés à partir de la nomenclature en 87 Familles professionnelles (Fap 2009) élaborée par la Dares.\n\nCe jeu de données réutilise également des statistiques de l’enquête Surveillance médicale des expositions des salariés aux risques professionnels (SUMER) de 2017 calculées par la Dares. Il réutilise également les statistiques prospectives sur le climat issues du programme Drias 2020 (« Donner accès aux scénarios climatiques régionalisés français pour l’impact et l’adaptation de nos sociétés et environnements ») mises à disposition par Météo-France et ventilées à la maille des zones d’emploi par l’Insee.\n\nAuteur : Jean FLAMAND (France Stratégie)\n"
+    }
+  ],
+  "theme": "economy",
+  "keywords": [
+    "chaleur",
+    "changement-climatique",
+    "metiers",
+    "travail",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Haut-commissariat à la Stratégie et au Plan"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "e7545294-6479-507b-9f14-1a0854e93a98",
+      "media_type": "FILE",
+      "media_name": "data-zones-emploi-3-rennesmetropole.csv",
+      "media_caption": "Data-zones-emploi_3.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "6263442f-4935-5f93-a65d-1da64d8c71c8",
+      "media_type": "FILE",
+      "media_name": "data-zones-emploi-2-rennesmetropole.csv",
+      "media_caption": "Data-zones-emploi_2.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "445a6de3-d4e2-5731-89e7-fe8cc9bf82fd",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://static.data.gouv.fr/resources/les-travailleurs-exposes-a-la-chaleur/20250506-084600/data-zones-emploi-3.csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2025-05-06T00:00:00Z",
+    "updated": "2025-05-06T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2025-05-06T00:00:00Z",
+      "updated": "2025-05-06T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/6819cc48e3b077a828339d84"
+  }
+}

@@ -1,0 +1,110 @@
+{
+  "local_id": "4c76cd82-05af-5024-8681-ad6a69ca85bd",
+  "resource_title": "Bureaux de vote et adresses de leurs électeurs - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Bureaux de vote et adresses de leurs électeurs — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/649998d50f6f27459dc6cf5b\n\n_**Avertissement : Ce jeu de données sera actualisé tous les cinq ans. La numérotation des bureaux de vote relève de la compétence des communes, sans norme de codage stricte. Pour toute question sur les données présentes sur cette page, veuillez utiliser le formulaire de contact suivant : https://www.insee.fr/fr/information/1302169 **_\n\nLes fichiers de correspondance entre les bureaux de vote et les adresses des électeurs qui en dépendent permettent la construction des aires de bureaux de vote. Celles-ci facilitent la comparaison des données électorales avec les caractéristiques socio-démographiques des électeurs rattachés à ces aires. Ces fichiers sont élaborés à partir du Répertoire électoral unique (REU), institué par la loi n°2016-1048 du 1er août 2016 rénovant les modalités d’inscription sur les listes électorales, et qui a été mis en œuvre à partir du 1er janvier 2019.\n\nGéré par l’Insee, le REU a pour finalité la gestion du processus électoral et la fiabilisation des listes électorales. Il permet la mise à jour en continu des listes électorales à l’initiative, soit des communes  (et des consulats) qui procèdent aux inscriptions et radiations des électeurs, soit de l’Insee sur la base des informations transmises par différentes administrations (armées, justice, intérieur) et des données d’état-civil.\n\nLe REU contient, entre autres, l’adresse des électeurs inscrits sur les listes électorales et leur bureau de vote, ce qui permet de les mettre en correspondance. À la suite de l’avis favorable rendu par la Commission d’accès aux documents administratifs sur la publication des adresses, et en concertation avec le ministère de l’Intérieur, l’Insee a développé une méthode permettant de publier cette correspondance adresses-bureaux de vote en données ouvertes (ou open-data), tout en ne divulguant aucune information sur les noms et prénoms des personnes. Le projet a bénéficié de la collaboration de la DINUM (Etalab), l’organisme public qui coordonne la politique d’ouverture et de partage des données publiques.\n\n\n### Fichiers\n\nLes données brutes utilisées par l’Insee correspondent à une extraction des adresses du Répertoire Électoral Unique réalisée en septembre 2022. Le travail effectué sur cette extraction permet la diffusion de 2 fichiers, proposés aux formats csv et parquet :\n\n- La table des adresses normalisées et géolocalisées du REU\n- La table des bureaux de vote du REU\n\nTrois fichiers de documentation sont disponibles en accompagnement des données :\n\n- Le dictionnaire des variables de la table des adresses\n- Le dictionnaire des variables de la table des bureaux de vote\n- Un document méthodologique détaillant le travail effectué sur les données du REU\n\nLe code associé aux traitements effectués est disponible sur [Github](https://github.com/InseeFrLab/traitement-adresses-REU).\n\nLien vers l’article du blog de l’Insee qui présente un exemple de réutilisation de ces données : https://blog.insee.fr/a-vote-a-chaque-bureau-de-vote-ses-electeurs\n"
+    }
+  ],
+  "theme": "environment",
+  "keywords": [
+    "adresses-des-electeurs",
+    "bureaux-de-vote",
+    "reu",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Institut national de la statistique et des études économiques (Insee)"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "dffa1c04-91fd-5562-8fbe-a3c0938f41f3",
+      "media_type": "FILE",
+      "media_name": "table-bv-reuparquet-rennesmetropole.csv",
+      "media_caption": "table-bv-reu.parquet — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "d8d117dc-2ece-5f6d-98bd-5c3f4ad7a298",
+      "media_type": "FILE",
+      "media_name": "table-bv-reu-rennesmetropole.csv",
+      "media_caption": "table-bv-reu.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "ec736f7a-86ed-560b-b0df-76f5cfd222d4",
+      "media_type": "FILE",
+      "media_name": "dict-dictionnaire-donnees-adresses.pdf",
+      "media_caption": "Dictionnaire des variables — dictionnaire-donnees-adresses.pdf",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "8f7eb798-c0b7-5041-bd62-f149ed14634f",
+      "media_type": "FILE",
+      "media_name": "dict-dictionnaire-donnees-bv.pdf",
+      "media_caption": "Dictionnaire des variables — dictionnaire-donnees-bv.pdf",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "877a3dc0-0a19-5cd3-90cb-7be702d15754",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://static.data.gouv.fr/resources/bureaux-de-vote-et-adresses-de-leurs-electeurs/20230626-140445/table-adresses-reu.csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2023-06-26T00:00:00Z",
+    "updated": "2024-04-02T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2023-06-26T00:00:00Z",
+      "updated": "2024-04-02T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/649998d50f6f27459dc6cf5b"
+  }
+}

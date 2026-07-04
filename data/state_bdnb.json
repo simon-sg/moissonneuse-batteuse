@@ -1,0 +1,19 @@
+{
+  "bdnb-dep35-2026-02-a": {
+    "last_modified": "Fri, 22 May 2026 14:26:40 GMT",
+    "content_length": "619682182",
+    "date_harvest": "2026-07-03",
+    "nb_rm": 348313,
+    "tables": [
+      "batiment_groupe-rennesmetropole.csv",
+      "batiment_groupe_dpe_representatif_logement-rennesmetropole.csv",
+      "batiment_groupe_dpe_statistique_logement-rennesmetropole.csv",
+      "batiment_groupe_dpe_tertiaire-rennesmetropole.csv",
+      "batiment_groupe_dle_elec_multimillesime-rennesmetropole.csv",
+      "batiment_groupe_dle_gaz_multimillesime-rennesmetropole.csv",
+      "batiment_groupe_ffo_bat-rennesmetropole.csv"
+    ],
+    "dossier": "bdnb_dep35",
+    "rudi_publie": true
+  }
+}

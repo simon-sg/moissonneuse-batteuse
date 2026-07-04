@@ -1,0 +1,95 @@
+{
+  "local_id": "892bb332-5c59-5927-b170-5de6a47e9d44",
+  "resource_title": "Organismes privés agréés Crédit d'impôt innovation (CII) - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Organismes privés agréés Crédit d'impôt innovation (CII) — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/63aa5fd055fdea38a39dde9b\n\nPour pouvoir déclarer le CII, l'entreprise qui fait appel à un prestataire pour ses opérations de R&D doit vérifier qu'il a un agrément CII. Elle doit également s'assurer de l'éligibilité des dépenses sous-traitées.\n\nCette liste est indicative. N'étant pas opposable à l'administration, cette liste ne peut pas servir de justificatif et se substituer à la décision d'agrément accordée par le MESR.\n\nLe donneur d'ordre doit s'assurer auprès du prestataire que ce dernier possède la décision d'agrément."
+    }
+  ],
+  "theme": "economy",
+  "keywords": [
+    "academie",
+    "academies",
+    "bureau-de-style",
+    "cii",
+    "commune",
+    "commune-rurale",
+    "communes",
+    "communes-rurales",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Ministère de l'Enseignement supérieur, de la Recherche et de l'Espace"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "76ca02ac-3cea-547b-906f-391b20a9a6e3",
+      "media_type": "FILE",
+      "media_name": "organismes-prives-agrees-credit-dimpot-innovation--rennesmetropole.csv",
+      "media_caption": "organismes-prives-agrees-credit-dimpot-innovation-cii.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "83f5e679-9a16-5d91-a19b-f8488a453374",
+      "media_type": "FILE",
+      "media_name": "organismes-prives-agrees-credit-dimpot-innovation--rennesmetropole.json",
+      "media_caption": "organismes-prives-agrees-credit-dimpot-innovation-cii.csv — données filtrées sur Rennes Métropole (JSON)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "0f619c38-4c65-5b78-9238-7af0ab780e67",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://data.enseignementsup-recherche.gouv.fr/api/explore/v2.1/catalog/datasets/organismes-prives-agrees-credit-dimpot-innovation-cii/exports/csv?use_labels=true",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2026-06-18T00:00:00Z",
+    "updated": "2026-06-18T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2026-06-18T00:00:00Z",
+      "updated": "2026-06-18T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/63aa5fd055fdea38a39dde9b"
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "local_id": "bc63f931-f0e3-57f9-9a08-579709635dee",
+  "resource_title": "La commande publique d'oeuvres d'art (1800-1969) : base ARCADE - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "La commande publique d'oeuvres d'art (1800-1969) : base ARCADE — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/693a8ab3b1eb82dec8ffd5d0\n\nLes Archives nationales conservent un vaste ensemble de **dossiers produits par le bureau des travaux d’art, musées et expositions** (consultables principalement dans la **sous-série F/21, sur le site de Pierrefitte-sur-Seine**).\n\nCes documents correspondent aux **dossiers de commande ou d'achat d'œuvres d'art** (peintures, sculptures, objets d'art, estampes…) par l'État, leur distribution dans les musées et dans les édifices publics (mairies, églises etc.), les albums de photographies des œuvres achetées, principalement aux salons de 1864 à 1901, et les **cahiers d'enregistrement** des dépôts de l'État dans les musées.\n\nLe jeu de données mis ici à disposition provient de la **base Arcade**, initiée dès 1973 et plus largement développée dans les années 1990. Cette base a connu de nombreuses évolutions, en termes d’amplitude documentaire et de champs d’analyse. La base compte aujourd’hui **près de 125.000 notices**, que l’on retrouvera ici intégralement, et qui couvrent les dossiers mentionnés ci-dessus sur la **période 1800-1969**.\n\nLe jeu de données est **interrogeable** selon un grand nombre de champs : nom de personne (auteur, artiste copié, exécutant, bénéficiaire, genre) ; titre de l’œuvre ; lieu affectataire ou dépositaire de l’œuvre (avec géolocalisation) ; matériau et technique ; procédure (date, nature, étape) ; cote d’archives du dossier ; etc. Le lien vers les images renvoyait vers la base Archim des Archives nationales. Les données peuvent être interrogées de façon dynamique, via les ressources du site data.gouv.fr, **en cliquant sur \"Explorer les données**\". Il est également possible de télécharger le fichier de données brut.\n"
+    }
+  ],
+  "theme": "culture",
+  "keywords": [
+    "archives",
+    "archives-publiques",
+    "commande-publique",
+    "histoire-de-lart",
+    "oeuvres-dart",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Ministère de la Culture"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "f4f35a70-a7df-5741-b265-87534f65c180",
+      "media_type": "FILE",
+      "media_name": "donnees-arcade-2025-rennesmetropole.csv",
+      "media_caption": "donnees_ARCADE_2025.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "7b2bc76b-37a8-5e80-b1d9-b98a557081e3",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://static.data.gouv.fr/resources/la-commande-publique-doeuvres-dart-1800-1969-base-arcade/20251215-104716/od-arcade-2025-1-.csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2025-12-11T00:00:00Z",
+    "updated": "2025-12-22T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2025-12-11T00:00:00Z",
+      "updated": "2025-12-22T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/693a8ab3b1eb82dec8ffd5d0"
+  }
+}

@@ -1,0 +1,95 @@
+{
+  "local_id": "eee2cfed-ca89-5697-988e-d2b2dc776dc0",
+  "resource_title": "Répertoire national des élus - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Répertoire national des élus — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/5c34c4d1634f4173183a64f1\n\n*Mise à jour du 05/05/2026 avec actualisation des données à la suite du renouvellement général des assemblées municipales, communautaires, d'arrondissements et métropolitaine de Lyon des 15 et 22 mars 2026. Suites aux opérations électorales, certaines mises à jour sont encore en cours. Les dates de l'ensemble des fichiers sont désormais au format ISO 8601 (AAAA-MM-JJ).*\n\nLe **Répertoire National des Élus** (RNE) a pour finalité le suivi des titulaires d’un mandat électoral. Il est renseigné et tenu à jour par les préfectures et hauts commissariats et par les services du ministère de l'intérieur, notamment sur la base des éléments fournis par les élus lors de la phase d’enregistrement des candidatures.\n\nLes données du RNE sont structurées par mandat. Ce jeu de données comprend douze fichiers :\n\n&#x20;1- les conseillers d'arrondissement ;\\\n&#x20;2- les conseillers municipaux ;\\\n&#x20;3- les conseillers communautaires ;\\\n&#x20;4- les conseillers départementaux ;\\\n&#x20;5- les conseillers régionaux ;\\\n&#x20;6- les membres des assemblées des collectivités à statut particulier ;\\\n&#x20;7- les représentants au Parlement européen ;\\\n&#x20;8- les sénateurs ;\\\n&#x20;9- les députés ;\\\n&#x20;10- les maires ;\\\n&#x20;11- les conseillers des Français de l'étranger ;\\\n&#x20;12- les membres de l'Assemblée des Français de l'étranger.\n\nUn élu qui dispose de plusieurs mandats figurera dans plusieurs fichiers. Un élu qui dispose de plusieurs fonctions apparaîtra plusieurs fois au sein du même fichier (exemple : un élu adjoint au maire et maire délégué apparaitra deux fois au sein du fichier des conseillers municipaux).\n\nLes fichiers mis en ligne sont actualisés trimestriellement.\n\nLes données relatives à la profession sont déclaratives. Le référentiel des codes professions correspond au référentiel de l'INSEE (PCS 2003).\n\n&#x20;Les demandes de rectification doivent être adressées directement par courriel à la préfecture territorialement compétente (pref-rne-contact\\@nom[-du-departement.gouv.fr](http://-du-departement.gouv.fr)). Aucune demande de rectification adressée sur la plateforme [www.data.gouv.fr](https://www.data.gouv.fr/) ne sera prise en compte. Les rectifications apportées dans le RNE ne seront pas reportées immédiatement sur la plate-forme [www.data.gouv.fr](https://www.data.gouv.fr/), mais seront prises en compte pour la publication suivante.\n"
+    }
+  ],
+  "theme": "environment",
+  "keywords": [
+    "conseillers-communautaires",
+    "conseillers-departementaux",
+    "conseillers-des-francais-de-letranger",
+    "conseillers-municipaux",
+    "conseillers-regionaux",
+    "deputes",
+    "elections",
+    "elections-cantonales",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Ministère de l'intérieur"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "07073f59-c595-5df4-a74f-1677d627ae90",
+      "media_type": "FILE",
+      "media_name": "elus-conseillers-municipaux-cm-rennesmetropole.csv",
+      "media_caption": "elus-conseillers-municipaux-cm.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "687dd296-d300-5ffd-ac7c-fad4b0c165d4",
+      "media_type": "FILE",
+      "media_name": "elus-maires-mai-rennesmetropole.csv",
+      "media_caption": "elus-maires-mai.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "5baa4b5e-f62b-51b5-a1c2-3e73824e7627",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://static.data.gouv.fr/resources/repertoire-national-des-elus-1/20260505-151717/elus-conseillers-arrondissements-ca.csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2019-01-08T00:00:00Z",
+    "updated": "2026-06-09T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2019-01-08T00:00:00Z",
+      "updated": "2026-06-09T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/5c34c4d1634f4173183a64f1"
+  }
+}

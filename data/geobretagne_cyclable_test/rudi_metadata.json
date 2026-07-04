@@ -1,0 +1,79 @@
+{
+  "local_id": "8828a2ad-7866-5034-9cbe-ea05229c785e",
+  "resource_title": "Aménagements cyclables (OSM via Géobretagne) — Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Aménagements cyclables (OSM via Géobretagne) — données géographiques pour Rennes Métropole (WFS)"
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Service WFS filtré sur Rennes Métropole (43 communes, EPCI 243500139).\n\nSource : https://geobretagne.fr/geoserver/osm/wfs\n\nJeu de données du thème « mobilité, transport », produit par OpenStreetMap / Géobretagne, limité aux communes de Rennes Métropole. Les enregistrements comportent les champs suivants : id_local, reseau_loc, nom_loc, id_osm, num_iti, code_com_d, ame_d, regime_d (+12 autres champs)."
+    }
+  ],
+  "theme": "transportation",
+  "keywords": [
+    "rennes métropole",
+    "géographique",
+    "wfs"
+  ],
+  "producer": {
+    "organization_name": "OpenStreetMap / Géobretagne"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "f8c91ab6-2b5b-5776-826c-46baa6aaa56a",
+      "media_type": "FILE",
+      "media_name": "amenagement_cyclable.geojson",
+      "media_caption": "osm:amenagement_cyclable — GeoJSON filtré Rennes Métropole",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "ca2a0fad-5f7c-5e10-b3d7-4befdbee8cf5",
+      "media_type": "SERVICE",
+      "media_name": "service-wfs",
+      "media_caption": "Service WFS source",
+      "connector": {
+        "url": "https://geobretagne.fr/geoserver/osm/wfs?SERVICE=WFS&REQUEST=GetCapabilities",
+        "interface_contract": "wfs"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2026-07-02T13:17:20Z",
+    "updated": "2026-07-02T13:17:20Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2026-07-02T13:17:20Z",
+      "updated": "2026-07-02T13:17:20Z"
+    },
+    "metadata_source": "https://geobretagne.fr/geoserver/osm/wfs"
+  }
+}

@@ -1,0 +1,1140 @@
+annee,coderegion,region,codedepartement,departement,codeepci,epci,codeinseecommune,codepostalcommune,commune,code_groupe,groupe_production,sous_groupe_production,production,nb_exp,tetesab,tetesconversionsimult,tetesconversionnonsimult,tetesbio
+2008,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35170,35450,MECÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,40,0,0,40
+2008,53,Bretagne,35,Ille-et-Vilaine,200043990,Communauté de communes Vallons de Haute-Bretagne Communauté,35160,35330,LOUTEHEL,API,Apiculture,NA,Ruches,1,8,0,0,8
+2008,53,Bretagne,35,Ille-et-Vilaine,200072452,Communauté d'agglomération Fougères Agglomération,35310,35133,SAINT-SAUVEUR-DES-LANDES,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,4,0,0,4
+2008,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35001,35690,ACIGNÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,113,0,0,113
+2008,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,47,0,0,47
+2008,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35032,35230,BOURGBARRÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,54,0,0,54
+2008,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35039,35530,BRÉCÉ,BL,Brebis laitières,NA,Brebis laitières,1,385,0,0,385
+2008,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35051,35510,CESSON-SÉVIGNÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,62,0,0,62
+2008,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35055,35135,CHANTEPIE,VA,Vaches allaitantes,NA,Vaches allaitantes,1,35,0,0,35
+2008,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35055,35135,CHANTEPIE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,37,0,0,37
+2008,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35076,35310,CHAVAGNE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,74,0,0,74
+2008,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35081,35590,CLAYES,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,62,0,0,62
+2008,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35088,35150,CORPS-NUDS,CH,Chèvres,NA,Chèvres,1,65,0,0,65
+2008,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35088,35150,CORPS-NUDS,VA,Vaches allaitantes,NA,Vaches allaitantes,1,25,0,0,25
+2008,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35088,35150,CORPS-NUDS,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,8,0,0,8
+2008,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,LA,Lapins,NA,Lapins,1,503,0,0,503
+2008,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,LAR,Lapines reproductrices,NA,Lapines reproductrices,1,26,0,0,26
+2008,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,PC,Poulets de chair,NA,"Poulets, vivants",1,80,0,0,80
+2008,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,PO,Poules pondeuses,NA,Poules pondeuses,1,60,0,0,60
+2008,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,1,12,0,0,12
+2008,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,40,0,0,40
+2008,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35196,35310,MORDELLES,VA,Vaches allaitantes,NA,Vaches allaitantes,1,15,0,0,15
+2008,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35204,35410,NOUVOITOU,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,1,0,0,1
+2008,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35206,35230,NOYAL-CHÂTILLON-SUR-SEICHE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,132,0,0,132
+2008,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35208,35230,ORGÈRES,VA,Vaches allaitantes,NA,Vaches allaitantes,2,70,0,0,70
+2008,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35210,35740,PACÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,67,0,0,67
+2008,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,BV,Brebis viande,NA,Brebis viande,1,38,0,0,38
+2008,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,TR,Truies,NA,Truies,1,55,0,0,55
+2008,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35250,35230,SAINT-ARMEL,PO,Poules pondeuses,NA,Poules pondeuses,1,230,0,0,230
+2008,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35250,35230,SAINT-ARMEL,VA,Vaches allaitantes,NA,Vaches allaitantes,1,14,0,0,14
+2008,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35353,35132,VEZIN-LE-COQUET,PO,Poules pondeuses,NA,Poules pondeuses,1,1230,0,0,1230
+2009,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35170,35450,MECÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,40,0,0,40
+2009,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35235,35130,RANNÉE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,118,0,0,118
+2009,53,Bretagne,35,Ille-et-Vilaine,200043990,Communauté de communes Vallons de Haute-Bretagne Communauté,35160,35330,LOUTEHEL,API,Apiculture,NA,Ruches,1,8,0,0,8
+2009,53,Bretagne,35,Ille-et-Vilaine,200072452,Communauté d'agglomération Fougères Agglomération,35310,35133,SAINT-SAUVEUR-DES-LANDES,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,18,0,0,18
+2009,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35001,35690,ACIGNÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,123,0,0,123
+2009,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,43,0,0,43
+2009,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35032,35230,BOURGBARRÉ,TR,Truies,NA,Truies,1,1,0,0,1
+2009,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35032,35230,BOURGBARRÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,56,0,0,56
+2009,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35039,35530,BRÉCÉ,BL,Brebis laitières,NA,Brebis laitières,1,400,0,0,400
+2009,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35051,35510,CESSON-SÉVIGNÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,65,0,0,65
+2009,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35055,35135,CHANTEPIE,VA,Vaches allaitantes,NA,Vaches allaitantes,1,33,0,0,33
+2009,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35055,35135,CHANTEPIE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,39,0,0,39
+2009,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35076,35310,CHAVAGNE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,77,0,0,77
+2009,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35081,35590,CLAYES,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,62,0,0,62
+2009,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35088,35150,CORPS-NUDS,CH,Chèvres,NA,Chèvres,1,61,0,0,61
+2009,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35088,35150,CORPS-NUDS,VA,Vaches allaitantes,NA,Vaches allaitantes,1,27,0,0,27
+2009,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35088,35150,CORPS-NUDS,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,5,0,0,5
+2009,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,LA,Lapins,NA,Lapins,1,629,0,0,629
+2009,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,LAR,Lapines reproductrices,NA,Lapines reproductrices,1,25,0,0,25
+2009,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,PC,Poulets de chair,NA,"Poulets, vivants",1,1200,0,0,1200
+2009,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,PO,Poules pondeuses,NA,Poules pondeuses,1,150,0,0,150
+2009,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,1,11,0,0,11
+2009,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,40,0,0,40
+2009,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35196,35310,MORDELLES,VA,Vaches allaitantes,NA,Vaches allaitantes,1,15,0,0,15
+2009,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35206,35230,NOYAL-CHÂTILLON-SUR-SEICHE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,131,0,0,131
+2009,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35208,35230,ORGÈRES,VA,Vaches allaitantes,NA,Vaches allaitantes,2,70,0,0,70
+2009,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35210,35740,PACÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,71,0,0,71
+2009,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,BV,Brebis viande,NA,Brebis viande,1,38,0,0,38
+2009,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,TR,Truies,NA,Truies,1,56,0,0,56
+2009,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35250,35230,SAINT-ARMEL,BV,Brebis viande,NA,Brebis viande,1,150,0,0,150
+2009,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35250,35230,SAINT-ARMEL,PC,Poulets de chair,NA,"Poulets, vivants",1,70,0,0,70
+2009,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35250,35230,SAINT-ARMEL,PO,Poules pondeuses,NA,Poules pondeuses,1,330,0,0,330
+2009,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35250,35230,SAINT-ARMEL,VA,Vaches allaitantes,NA,Vaches allaitantes,1,8,0,0,8
+2009,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35353,35132,VEZIN-LE-COQUET,PO,Poules pondeuses,NA,Poules pondeuses,1,1000,0,0,1000
+2010,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35170,35450,MECÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,40,0,0,40
+2010,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35235,35130,RANNÉE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,122,0,0,122
+2010,53,Bretagne,35,Ille-et-Vilaine,200043990,Communauté de communes Vallons de Haute-Bretagne Communauté,35160,35330,LOUTEHEL,API,Apiculture,NA,Ruches,1,8,0,0,8
+2010,53,Bretagne,35,Ille-et-Vilaine,200072452,Communauté d'agglomération Fougères Agglomération,35310,35133,SAINT-SAUVEUR-DES-LANDES,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,20,0,11,31
+2010,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35001,35690,ACIGNÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,122,0,0,122
+2010,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,43,0,0,43
+2010,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35032,35230,BOURGBARRÉ,TR,Truies,NA,Truies,1,1,0,0,1
+2010,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35032,35230,BOURGBARRÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,1,0,0,17,17
+2010,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35032,35230,BOURGBARRÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,57,0,0,57
+2010,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35039,35530,BRÉCÉ,BL,Brebis laitières,NA,Brebis laitières,1,400,0,0,400
+2010,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35051,35510,CESSON-SÉVIGNÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",3,105,0,0,105
+2010,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35055,35135,CHANTEPIE,VA,Vaches allaitantes,NA,Vaches allaitantes,1,24,0,0,24
+2010,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35055,35135,CHANTEPIE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,38,0,0,38
+2010,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35076,35310,CHAVAGNE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,68,0,0,68
+2010,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35081,35590,CLAYES,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,55,0,0,55
+2010,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35088,35150,CORPS-NUDS,CH,Chèvres,NA,Chèvres,1,70,0,0,70
+2010,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35088,35150,CORPS-NUDS,TR,Truies,NA,Truies,1,1,0,0,1
+2010,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35088,35150,CORPS-NUDS,VA,Vaches allaitantes,NA,Vaches allaitantes,1,25,0,0,25
+2010,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35088,35150,CORPS-NUDS,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,6,0,0,6
+2010,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,Canards,1,480,0,0,480
+2010,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,"Dindes, vivantes",1,185,0,0,185
+2010,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,Pintades,1,1550,0,0,1550
+2010,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,LA,Lapins,NA,Lapins,1,304,0,0,304
+2010,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,LAR,Lapines reproductrices,NA,Lapines reproductrices,1,10,0,0,10
+2010,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,PC,Poulets de chair,NA,"Poulets, vivants",2,3801,0,0,3801
+2010,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,PO,Poules pondeuses,NA,Poules pondeuses,2,470,0,0,470
+2010,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,1,8,0,0,8
+2010,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,43,0,0,43
+2010,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35196,35310,MORDELLES,VA,Vaches allaitantes,NA,Vaches allaitantes,1,15,0,0,15
+2010,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35206,35230,NOYAL-CHÂTILLON-SUR-SEICHE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,130,0,0,130
+2010,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35208,35230,ORGÈRES,VA,Vaches allaitantes,NA,Vaches allaitantes,2,72,0,0,72
+2010,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35210,35740,PACÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,75,0,0,75
+2010,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35216,35850,PARTHENAY-DE-BRETAGNE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,44,4,0,48
+2010,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,TR,Truies,NA,Truies,1,65,0,0,65
+2010,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35250,35230,SAINT-ARMEL,BV,Brebis viande,NA,Brebis viande,1,228,0,0,228
+2010,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35250,35230,SAINT-ARMEL,PC,Poulets de chair,NA,"Poulets, vivants",1,42,0,0,42
+2010,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35250,35230,SAINT-ARMEL,PO,Poules pondeuses,NA,Poules pondeuses,1,230,0,0,230
+2010,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35250,35230,SAINT-ARMEL,VA,Vaches allaitantes,NA,Vaches allaitantes,1,15,0,0,15
+2010,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35353,35132,VEZIN-LE-COQUET,PO,Poules pondeuses,NA,Poules pondeuses,1,1250,0,0,1250
+2010,53,Bretagne,35,Ille-et-Vilaine,243500634,Communauté de communes Roche aux Fées Communauté,35136,35150,JANZÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,0,0,86,86
+2011,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35170,35450,MECÉ,AUPA,Autres élevages,NA,"Chevaux, vivants",1,0,4,0,4
+2011,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35170,35450,MECÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,1,46,0,0,46
+2011,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35170,35450,MECÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,40,49,0,89
+2011,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35235,35130,RANNÉE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,111,0,10,121
+2011,53,Bretagne,35,Ille-et-Vilaine,200072452,Communauté d'agglomération Fougères Agglomération,35150,35133,LÉCOUSSE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,53,0,0,53
+2011,53,Bretagne,35,Ille-et-Vilaine,200072452,Communauté d'agglomération Fougères Agglomération,35310,35133,SAINT-SAUVEUR-DES-LANDES,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,35,0,12,47
+2011,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35001,35690,ACIGNÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,105,0,0,105
+2011,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,AUVOL,Autres volailles de chair,NA,Pintades,1,20,0,0,20
+2011,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,PC,Poulets de chair,NA,"Poulets, vivants",1,250,0,0,250
+2011,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,PO,Poules pondeuses,NA,Poules pondeuses,1,60,0,0,60
+2011,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,TR,Truies,NA,Truies,1,9,0,0,9
+2011,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,VA,Vaches allaitantes,NA,Vaches allaitantes,1,3,0,0,3
+2011,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,123,0,3,126
+2011,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35032,35230,BOURGBARRÉ,TR,Truies,NA,Truies,1,2,0,0,2
+2011,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35032,35230,BOURGBARRÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,1,0,20,0,20
+2011,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35032,35230,BOURGBARRÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,53,0,0,53
+2011,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35039,35530,BRÉCÉ,BL,Brebis laitières,NA,Brebis laitières,1,430,0,0,430
+2011,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35051,35510,CESSON-SÉVIGNÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,1,2,0,0,2
+2011,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35051,35510,CESSON-SÉVIGNÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",3,105,0,0,105
+2011,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35055,35135,CHANTEPIE,VA,Vaches allaitantes,NA,Vaches allaitantes,1,37,0,0,37
+2011,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35055,35135,CHANTEPIE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,35,0,0,35
+2011,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35066,35131,CHARTRES-DE-BRETAGNE,VA,Vaches allaitantes,NA,Vaches allaitantes,1,0,58,0,58
+2011,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35076,35310,CHAVAGNE,PO,Poules pondeuses,NA,Poules pondeuses,1,20,0,0,20
+2011,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35076,35310,CHAVAGNE,VA,Vaches allaitantes,NA,Vaches allaitantes,1,0,0,1,1
+2011,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35076,35310,CHAVAGNE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,78,0,0,78
+2011,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35081,35590,CLAYES,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,60,0,0,60
+2011,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35088,35150,CORPS-NUDS,CH,Chèvres,NA,Chèvres,1,65,0,0,65
+2011,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35088,35150,CORPS-NUDS,TR,Truies,NA,Truies,1,1,0,0,1
+2011,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35088,35150,CORPS-NUDS,VA,Vaches allaitantes,NA,Vaches allaitantes,1,21,0,0,21
+2011,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35088,35150,CORPS-NUDS,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,6,39,0,45
+2011,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,Autres volailles,1,300,0,0,300
+2011,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,Canards,1,630,0,0,630
+2011,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,"Dindes, vivantes",1,335,0,0,335
+2011,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,Pintades,1,2200,0,0,2200
+2011,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,LA,Lapins,NA,Lapins,1,253,0,0,253
+2011,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,LAR,Lapines reproductrices,NA,Lapines reproductrices,1,13,0,0,13
+2011,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,PC,Poulets de chair,NA,"Poulets, vivants",2,6900,0,0,6900
+2011,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,PO,Poules pondeuses,NA,Poules pondeuses,2,430,0,0,430
+2011,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,1,8,0,0,8
+2011,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,45,0,0,45
+2011,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35196,35310,MORDELLES,VA,Vaches allaitantes,NA,Vaches allaitantes,1,15,0,0,15
+2011,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35204,35410,NOUVOITOU,CH,Chèvres,NA,Chèvres,1,0,0,280,280
+2011,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35204,35410,NOUVOITOU,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,0,0,72,72
+2011,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35206,35230,NOYAL-CHÂTILLON-SUR-SEICHE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,127,0,0,127
+2011,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35208,35230,ORGÈRES,VA,Vaches allaitantes,NA,Vaches allaitantes,2,77,0,0,77
+2011,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35210,35740,PACÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,75,0,0,75
+2011,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35216,35850,PARTHENAY-DE-BRETAGNE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,55,0,5,60
+2011,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,BV,Brebis viande,NA,Brebis viande,1,46,0,0,46
+2011,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,TR,Truies,NA,Truies,1,62,0,0,62
+2011,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,54,0,0,54
+2011,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35250,35230,SAINT-ARMEL,AUVOL,Autres volailles de chair,NA,Autres volailles,1,7,0,0,7
+2011,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35250,35230,SAINT-ARMEL,BV,Brebis viande,NA,Brebis viande,1,257,0,0,257
+2011,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35250,35230,SAINT-ARMEL,PO,Poules pondeuses,NA,Poules pondeuses,1,230,0,0,230
+2011,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35250,35230,SAINT-ARMEL,VA,Vaches allaitantes,NA,Vaches allaitantes,1,13,0,0,13
+2011,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35353,35132,VEZIN-LE-COQUET,PO,Poules pondeuses,NA,Poules pondeuses,1,1275,0,0,1275
+2011,53,Bretagne,35,Ille-et-Vilaine,243500634,Communauté de communes Roche aux Fées Communauté,35136,35150,JANZÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,0,86,0,86
+2012,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35170,35450,MECÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,1,38,0,0,38
+2012,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35170,35450,MECÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,40,0,0,40
+2012,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35200,35130,MOUTIERS,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,70,0,0,70
+2012,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35235,35130,RANNÉE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,120,0,10,130
+2012,53,Bretagne,35,Ille-et-Vilaine,200072452,Communauté d'agglomération Fougères Agglomération,35150,35133,LÉCOUSSE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,53,0,0,53
+2012,53,Bretagne,35,Ille-et-Vilaine,200072452,Communauté d'agglomération Fougères Agglomération,35310,35133,SAINT-SAUVEUR-DES-LANDES,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,31,0,5,36
+2012,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35001,35690,ACIGNÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,110,0,0,110
+2012,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,AUVOL,Autres volailles de chair,NA,Canards,1,20,0,0,20
+2012,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,AUVOL,Autres volailles de chair,NA,"Dindes, vivantes",1,30,0,0,30
+2012,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,AUVOL,Autres volailles de chair,NA,Pintades,1,50,0,0,50
+2012,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,PC,Poulets de chair,NA,"Poulets, vivants",1,900,0,0,900
+2012,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,PO,Poules pondeuses,NA,Poules pondeuses,1,60,0,0,60
+2012,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,TR,Truies,NA,Truies,1,7,0,0,7
+2012,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,VA,Vaches allaitantes,NA,Vaches allaitantes,1,5,0,0,5
+2012,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,134,0,1,135
+2012,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35032,35230,BOURGBARRÉ,TR,Truies,NA,Truies,2,3,0,0,3
+2012,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35032,35230,BOURGBARRÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,2,20,0,5,25
+2012,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35032,35230,BOURGBARRÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,53,0,0,53
+2012,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35039,35530,BRÉCÉ,BL,Brebis laitières,NA,Brebis laitières,1,405,0,0,405
+2012,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35039,35530,BRÉCÉ,BV,Brebis viande,NA,Brebis viande,1,54,0,0,54
+2012,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35051,35510,CESSON-SÉVIGNÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,1,2,0,0,2
+2012,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35051,35510,CESSON-SÉVIGNÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",3,106,0,0,106
+2012,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35055,35135,CHANTEPIE,VA,Vaches allaitantes,NA,Vaches allaitantes,1,36,0,0,36
+2012,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35055,35135,CHANTEPIE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,35,0,0,35
+2012,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35066,35131,CHARTRES-DE-BRETAGNE,VA,Vaches allaitantes,NA,Vaches allaitantes,1,53,0,0,53
+2012,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35076,35310,CHAVAGNE,PO,Poules pondeuses,NA,Poules pondeuses,1,70,0,0,70
+2012,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35076,35310,CHAVAGNE,VA,Vaches allaitantes,NA,Vaches allaitantes,1,0,0,1,1
+2012,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35076,35310,CHAVAGNE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,75,0,0,75
+2012,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35081,35590,CLAYES,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,98,0,0,98
+2012,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35088,35150,CORPS-NUDS,CH,Chèvres,NA,Chèvres,1,66,0,0,66
+2012,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35088,35150,CORPS-NUDS,TR,Truies,NA,Truies,1,1,0,0,1
+2012,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35088,35150,CORPS-NUDS,VA,Vaches allaitantes,NA,Vaches allaitantes,1,20,0,0,20
+2012,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35088,35150,CORPS-NUDS,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,5,40,0,45
+2012,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,Autres volailles,1,40,0,0,40
+2012,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,Canards,1,180,0,0,180
+2012,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,"Dindes, vivantes",2,154,0,0,154
+2012,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,Pintades,2,1500,0,0,1500
+2012,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,LA,Lapins,NA,Lapins,1,101,0,0,101
+2012,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,LAR,Lapines reproductrices,NA,Lapines reproductrices,1,8,0,0,8
+2012,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,PC,Poulets de chair,NA,"Poulets, vivants",2,10700,0,0,10700
+2012,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,PO,Poules pondeuses,NA,Poules pondeuses,2,550,0,0,550
+2012,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,1,7,0,0,7
+2012,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,50,0,0,50
+2012,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35196,35310,MORDELLES,VA,Vaches allaitantes,NA,Vaches allaitantes,1,20,0,0,20
+2012,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35204,35410,NOUVOITOU,CH,Chèvres,NA,Chèvres,1,280,0,0,280
+2012,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35204,35410,NOUVOITOU,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,72,0,0,72
+2012,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35206,35230,NOYAL-CHÂTILLON-SUR-SEICHE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,125,0,0,125
+2012,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35208,35230,ORGÈRES,VA,Vaches allaitantes,NA,Vaches allaitantes,2,77,0,0,77
+2012,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35210,35740,PACÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,75,0,0,75
+2012,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35216,35850,PARTHENAY-DE-BRETAGNE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,70,0,4,74
+2012,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35240,35650,LE RHEU,BV,Brebis viande,NA,Brebis viande,1,0,0,17,17
+2012,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35240,35650,LE RHEU,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,0,0,53,53
+2012,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,BV,Brebis viande,NA,Brebis viande,1,46,0,0,46
+2012,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,TR,Truies,NA,Truies,1,60,0,0,60
+2012,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,65,0,0,65
+2012,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35250,35230,SAINT-ARMEL,AUVOL,Autres volailles de chair,NA,Autres volailles,1,20,0,0,20
+2012,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35250,35230,SAINT-ARMEL,BV,Brebis viande,NA,Brebis viande,1,253,0,0,253
+2012,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35250,35230,SAINT-ARMEL,PO,Poules pondeuses,NA,Poules pondeuses,1,230,0,0,230
+2012,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35353,35132,VEZIN-LE-COQUET,PO,Poules pondeuses,NA,Poules pondeuses,1,1350,0,0,1350
+2012,53,Bretagne,35,Ille-et-Vilaine,243500634,Communauté de communes Roche aux Fées Communauté,35136,35150,JANZÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,93,0,0,93
+2013,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35170,35450,MECÉ,AUPA,Autres élevages,NA,"Chevaux, vivants",1,0,0,20,20
+2013,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35170,35450,MECÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,1,0,31,7,38
+2013,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35170,35450,MECÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,35,0,73,108
+2013,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35200,35130,MOUTIERS,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,70,0,0,70
+2013,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35235,35130,RANNÉE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,118,0,9,127
+2013,53,Bretagne,35,Ille-et-Vilaine,200072452,Communauté d'agglomération Fougères Agglomération,35150,35133,LÉCOUSSE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,56,0,0,56
+2013,53,Bretagne,35,Ille-et-Vilaine,200072452,Communauté d'agglomération Fougères Agglomération,35310,35133,SAINT-SAUVEUR-DES-LANDES,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,32,0,1,33
+2013,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35001,35690,ACIGNÉ,PO,Poules pondeuses,NA,Poules pondeuses,1,10,0,0,10
+2013,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35001,35690,ACIGNÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,101,0,0,101
+2013,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,AUVOL,Autres volailles de chair,NA,Canards,1,50,0,0,50
+2013,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,AUVOL,Autres volailles de chair,NA,"Dindes, vivantes",1,20,0,0,20
+2013,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,AUVOL,Autres volailles de chair,NA,Pintades,1,40,0,0,40
+2013,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,PC,Poulets de chair,NA,"Poulets, vivants",1,900,0,0,900
+2013,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,PO,Poules pondeuses,NA,Poules pondeuses,1,60,0,0,60
+2013,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,TR,Truies,NA,Truies,1,3,0,0,3
+2013,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,VA,Vaches allaitantes,NA,Vaches allaitantes,1,12,6,0,18
+2013,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,123,0,0,123
+2013,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35032,35230,BOURGBARRÉ,TR,Truies,NA,Truies,1,2,0,0,2
+2013,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35032,35230,BOURGBARRÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,2,20,0,5,25
+2013,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35032,35230,BOURGBARRÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,55,0,0,55
+2013,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35039,35530,BRÉCÉ,BL,Brebis laitières,NA,Brebis laitières,1,402,0,0,402
+2013,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35039,35530,BRÉCÉ,BV,Brebis viande,NA,Brebis viande,1,110,0,0,110
+2013,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35051,35510,CESSON-SÉVIGNÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,1,2,0,0,2
+2013,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35051,35510,CESSON-SÉVIGNÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",3,106,0,0,106
+2013,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35055,35135,CHANTEPIE,VA,Vaches allaitantes,NA,Vaches allaitantes,1,35,0,0,35
+2013,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35055,35135,CHANTEPIE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,35,0,0,35
+2013,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35076,35310,CHAVAGNE,PO,Poules pondeuses,NA,Poules pondeuses,1,70,0,0,70
+2013,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35076,35310,CHAVAGNE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,80,0,0,80
+2013,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35081,35590,CLAYES,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,104,0,0,104
+2013,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35088,35150,CORPS-NUDS,CH,Chèvres,NA,Chèvres,1,58,0,0,58
+2013,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35088,35150,CORPS-NUDS,TR,Truies,NA,Truies,1,1,0,0,1
+2013,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35088,35150,CORPS-NUDS,VA,Vaches allaitantes,NA,Vaches allaitantes,1,23,0,0,23
+2013,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35088,35150,CORPS-NUDS,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,42,0,0,42
+2013,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,Autres volailles,1,7,0,0,7
+2013,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,Canards,1,280,0,0,280
+2013,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,"Dindes, vivantes",2,153,0,0,153
+2013,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,Pintades,2,1500,0,0,1500
+2013,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,LA,Lapins,NA,Lapins,1,101,0,0,101
+2013,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,LAR,Lapines reproductrices,NA,Lapines reproductrices,1,8,0,0,8
+2013,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,PC,Poulets de chair,NA,"Poulets, vivants",2,11500,0,0,11500
+2013,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,PO,Poules pondeuses,NA,Poules pondeuses,2,650,0,0,650
+2013,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,1,4,0,2,6
+2013,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,48,0,0,48
+2013,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35204,35410,NOUVOITOU,CH,Chèvres,NA,Chèvres,1,275,0,0,275
+2013,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35204,35410,NOUVOITOU,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,76,0,0,76
+2013,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35206,35230,NOYAL-CHÂTILLON-SUR-SEICHE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,117,0,0,117
+2013,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35208,35230,ORGÈRES,VA,Vaches allaitantes,NA,Vaches allaitantes,2,75,0,0,75
+2013,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35210,35740,PACÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,75,0,0,75
+2013,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35216,35850,PARTHENAY-DE-BRETAGNE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,70,0,1,71
+2013,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35240,35650,LE RHEU,BV,Brebis viande,NA,Brebis viande,1,17,0,0,17
+2013,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35240,35650,LE RHEU,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,0,0,55,55
+2013,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,BV,Brebis viande,NA,Brebis viande,1,46,0,0,46
+2013,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,TR,Truies,NA,Truies,1,60,0,0,60
+2013,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,65,0,0,65
+2013,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35353,35132,VEZIN-LE-COQUET,PO,Poules pondeuses,NA,Poules pondeuses,1,1100,0,0,1100
+2013,53,Bretagne,35,Ille-et-Vilaine,243500634,Communauté de communes Roche aux Fées Communauté,35136,35150,JANZÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,96,0,0,96
+2014,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35170,35450,MECÉ,AUPA,Autres élevages,NA,"Chevaux, vivants",1,0,0,14,14
+2014,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35170,35450,MECÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,1,23,0,14,37
+2014,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35170,35450,MECÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,35,0,33,68
+2014,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35200,35130,MOUTIERS,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,70,0,0,70
+2014,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35235,35130,RANNÉE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,113,0,6,119
+2014,53,Bretagne,35,Ille-et-Vilaine,200072452,Communauté d'agglomération Fougères Agglomération,35150,35133,LÉCOUSSE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,60,0,0,60
+2014,53,Bretagne,35,Ille-et-Vilaine,200072452,Communauté d'agglomération Fougères Agglomération,35310,35133,SAINT-SAUVEUR-DES-LANDES,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,37,0,0,37
+2014,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35001,35690,ACIGNÉ,PO,Poules pondeuses,NA,Poules pondeuses,1,9,0,0,9
+2014,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35001,35690,ACIGNÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,157,0,0,157
+2014,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,AUVOL,Autres volailles de chair,NA,Autres volailles,1,20,0,0,20
+2014,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,AUVOL,Autres volailles de chair,NA,Canards,1,50,0,0,50
+2014,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,AUVOL,Autres volailles de chair,NA,"Dindes, vivantes",1,20,0,0,20
+2014,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,AUVOL,Autres volailles de chair,NA,Pintades,1,40,0,0,40
+2014,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,PC,Poulets de chair,NA,"Poulets, vivants",1,1100,0,0,1100
+2014,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,PO,Poules pondeuses,NA,Poules pondeuses,1,60,0,0,60
+2014,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,TR,Truies,NA,Truies,1,2,0,0,2
+2014,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,VA,Vaches allaitantes,NA,Vaches allaitantes,1,12,0,6,18
+2014,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,129,0,0,129
+2014,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35032,35230,BOURGBARRÉ,TR,Truies,NA,Truies,1,4,0,0,4
+2014,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35032,35230,BOURGBARRÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,2,21,0,3,24
+2014,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35032,35230,BOURGBARRÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,50,0,0,50
+2014,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35039,35530,BRÉCÉ,BL,Brebis laitières,NA,Brebis laitières,1,405,0,0,405
+2014,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35039,35530,BRÉCÉ,BV,Brebis viande,NA,Brebis viande,1,105,0,0,105
+2014,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35051,35510,CESSON-SÉVIGNÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,1,2,0,0,2
+2014,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35051,35510,CESSON-SÉVIGNÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",3,109,0,0,109
+2014,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35055,35135,CHANTEPIE,VA,Vaches allaitantes,NA,Vaches allaitantes,1,40,0,0,40
+2014,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35055,35135,CHANTEPIE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,35,0,0,35
+2014,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35066,35131,CHARTRES-DE-BRETAGNE,VA,Vaches allaitantes,NA,Vaches allaitantes,1,53,0,0,53
+2014,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35076,35310,CHAVAGNE,PO,Poules pondeuses,NA,Poules pondeuses,1,70,0,0,70
+2014,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35076,35310,CHAVAGNE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,80,0,0,80
+2014,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35081,35590,CLAYES,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,107,0,0,107
+2014,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35088,35150,CORPS-NUDS,CH,Chèvres,NA,Chèvres,1,54,0,0,54
+2014,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35088,35150,CORPS-NUDS,TR,Truies,NA,Truies,1,1,0,0,1
+2014,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35088,35150,CORPS-NUDS,VA,Vaches allaitantes,NA,Vaches allaitantes,1,5,0,0,5
+2014,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35088,35150,CORPS-NUDS,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,44,0,0,44
+2014,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,Autres volailles,1,30,0,0,30
+2014,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,Canards,2,330,0,0,330
+2014,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,"Dindes, vivantes",1,150,0,0,150
+2014,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,Pintades,2,1500,0,0,1500
+2014,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,LA,Lapins,NA,Lapins,1,101,0,0,101
+2014,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,LAR,Lapines reproductrices,NA,Lapines reproductrices,1,8,0,0,8
+2014,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,PC,Poulets de chair,NA,"Poulets, vivants",2,11000,0,0,11000
+2014,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,PO,Poules pondeuses,NA,Poules pondeuses,2,1300,0,0,1300
+2014,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,1,5,0,2,7
+2014,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,48,0,0,48
+2014,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35204,35410,NOUVOITOU,CH,Chèvres,NA,Chèvres,1,258,0,0,258
+2014,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35204,35410,NOUVOITOU,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,78,0,0,78
+2014,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35206,35230,NOYAL-CHÂTILLON-SUR-SEICHE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",3,119,46,0,165
+2014,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35208,35230,ORGÈRES,VA,Vaches allaitantes,NA,Vaches allaitantes,2,85,0,0,85
+2014,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35210,35740,PACÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,77,0,0,77
+2014,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35216,35850,PARTHENAY-DE-BRETAGNE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,75,0,0,75
+2014,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35240,35650,LE RHEU,BV,Brebis viande,NA,Brebis viande,1,17,0,0,17
+2014,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35240,35650,LE RHEU,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,7,0,56,63
+2014,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,BV,Brebis viande,NA,Brebis viande,1,40,0,0,40
+2014,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,TR,Truies,NA,Truies,1,60,0,0,60
+2014,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,60,0,0,60
+2014,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35353,35132,VEZIN-LE-COQUET,PO,Poules pondeuses,NA,Poules pondeuses,1,600,0,0,600
+2014,53,Bretagne,35,Ille-et-Vilaine,243500634,Communauté de communes Roche aux Fées Communauté,35136,35150,JANZÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,90,0,0,90
+2015,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35170,35450,MECÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,2,40,0,18,58
+2015,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35170,35450,MECÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,127,0,31,158
+2015,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35200,35130,MOUTIERS,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,79,0,0,79
+2015,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35235,35130,RANNÉE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,48,0,0,48
+2015,53,Bretagne,35,Ille-et-Vilaine,200072452,Communauté d'agglomération Fougères Agglomération,35150,35133,LÉCOUSSE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,60,0,0,60
+2015,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35001,35690,ACIGNÉ,PO,Poules pondeuses,NA,Poules pondeuses,1,9,0,0,9
+2015,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35001,35690,ACIGNÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,149,0,0,149
+2015,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,AUVOL,Autres volailles de chair,NA,Autres volailles,1,20,0,0,20
+2015,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,AUVOL,Autres volailles de chair,NA,Canards,1,50,0,0,50
+2015,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,AUVOL,Autres volailles de chair,NA,"Dindes, vivantes",1,20,0,0,20
+2015,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,AUVOL,Autres volailles de chair,NA,Pintades,1,40,0,0,40
+2015,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,PC,Poulets de chair,NA,"Poulets, vivants",1,1100,0,0,1100
+2015,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,PO,Poules pondeuses,NA,Poules pondeuses,1,60,0,0,60
+2015,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,TR,Truies,NA,Truies,1,2,0,0,2
+2015,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,VA,Vaches allaitantes,NA,Vaches allaitantes,1,31,0,6,37
+2015,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,VL,Vaches laitières,NA,"Vaches laitières, vivantes",3,234,0,45,279
+2015,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35032,35230,BOURGBARRÉ,TR,Truies,NA,Truies,1,3,0,0,3
+2015,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35032,35230,BOURGBARRÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,2,30,0,0,30
+2015,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35032,35230,BOURGBARRÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,55,0,0,55
+2015,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35039,35530,BRÉCÉ,BL,Brebis laitières,NA,Brebis laitières,1,322,0,0,322
+2015,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35039,35530,BRÉCÉ,BV,Brebis viande,NA,Brebis viande,1,105,0,0,105
+2015,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35051,35510,CESSON-SÉVIGNÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,1,8,0,0,8
+2015,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35051,35510,CESSON-SÉVIGNÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",3,106,0,0,106
+2015,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35055,35135,CHANTEPIE,VA,Vaches allaitantes,NA,Vaches allaitantes,1,38,0,0,38
+2015,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35055,35135,CHANTEPIE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,40,0,0,40
+2015,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35066,35131,CHARTRES-DE-BRETAGNE,VA,Vaches allaitantes,NA,Vaches allaitantes,1,54,0,0,54
+2015,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35076,35310,CHAVAGNE,PO,Poules pondeuses,NA,Poules pondeuses,1,70,0,0,70
+2015,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35076,35310,CHAVAGNE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,85,0,3,88
+2015,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35081,35590,CLAYES,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,108,0,0,108
+2015,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35088,35150,CORPS-NUDS,CH,Chèvres,NA,Chèvres,1,41,0,0,41
+2015,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35088,35150,CORPS-NUDS,TR,Truies,NA,Truies,1,1,0,0,1
+2015,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35088,35150,CORPS-NUDS,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,45,0,0,45
+2015,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,Autres volailles,1,30,0,0,30
+2015,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,Canards,2,332,0,0,332
+2015,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,"Dindes, vivantes",1,150,0,0,150
+2015,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,Pintades,2,1700,0,0,1700
+2015,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,LA,Lapins,NA,Lapins,1,101,0,0,101
+2015,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,LAR,Lapines reproductrices,NA,Lapines reproductrices,1,8,0,0,8
+2015,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,PC,Poulets de chair,NA,"Poulets, vivants",2,11800,0,0,11800
+2015,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,PO,Poules pondeuses,NA,Poules pondeuses,2,880,0,0,880
+2015,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,1,7,0,2,9
+2015,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,54,0,0,54
+2015,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35204,35410,NOUVOITOU,CH,Chèvres,NA,Chèvres,1,290,0,0,290
+2015,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35204,35410,NOUVOITOU,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,75,0,0,75
+2015,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35206,35230,NOYAL-CHÂTILLON-SUR-SEICHE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,122,0,0,122
+2015,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35208,35230,ORGÈRES,VA,Vaches allaitantes,NA,Vaches allaitantes,2,97,0,1,98
+2015,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35210,35740,PACÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,80,0,0,80
+2015,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35216,35850,PARTHENAY-DE-BRETAGNE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,73,0,0,73
+2015,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35240,35650,LE RHEU,BV,Brebis viande,NA,Brebis viande,1,20,0,0,20
+2015,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35240,35650,LE RHEU,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,43,0,21,64
+2015,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,BV,Brebis viande,NA,Brebis viande,1,43,0,0,43
+2015,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,TR,Truies,NA,Truies,2,109,0,0,109
+2015,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,65,0,0,65
+2015,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35353,35132,VEZIN-LE-COQUET,PO,Poules pondeuses,NA,Poules pondeuses,1,600,0,0,600
+2015,53,Bretagne,35,Ille-et-Vilaine,243500634,Communauté de communes Roche aux Fées Communauté,35136,35150,JANZÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,90,0,0,90
+2016,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35170,35450,MECÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,2,50,0,13,63
+2016,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35170,35450,MECÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",3,237,0,8,245
+2016,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35200,35130,MOUTIERS,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,75,0,0,75
+2016,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35235,35130,RANNÉE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,46,0,0,46
+2016,53,Bretagne,35,Ille-et-Vilaine,200072452,Communauté d'agglomération Fougères Agglomération,35150,35133,LÉCOUSSE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,60,0,0,60
+2016,53,Bretagne,35,Ille-et-Vilaine,200072452,Communauté d'agglomération Fougères Agglomération,35310,35133,SAINT-SAUVEUR-DES-LANDES,PO,Poules pondeuses,NA,Poules pondeuses,1,8000,0,0,8000
+2016,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35001,35690,ACIGNÉ,PO,Poules pondeuses,NA,Poules pondeuses,1,9,0,0,9
+2016,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35001,35690,ACIGNÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",3,131,61,0,192
+2016,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,AUVOL,Autres volailles de chair,NA,Canards,1,50,0,0,50
+2016,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,AUVOL,Autres volailles de chair,NA,Pintades,1,100,0,0,100
+2016,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,PC,Poulets de chair,NA,"Poulets, vivants",1,1100,0,0,1100
+2016,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,PO,Poules pondeuses,NA,Poules pondeuses,1,60,0,0,60
+2016,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,VA,Vaches allaitantes,NA,Vaches allaitantes,1,3,0,0,3
+2016,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,VL,Vaches laitières,NA,"Vaches laitières, vivantes",3,190,55,0,245
+2016,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35032,35230,BOURGBARRÉ,TR,Truies,NA,Truies,1,3,0,0,3
+2016,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35032,35230,BOURGBARRÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,2,30,0,0,30
+2016,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35032,35230,BOURGBARRÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,48,0,0,48
+2016,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35039,35530,BRÉCÉ,BL,Brebis laitières,NA,Brebis laitières,1,348,0,0,348
+2016,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35039,35530,BRÉCÉ,BV,Brebis viande,NA,Brebis viande,1,115,0,0,115
+2016,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35051,35510,CESSON-SÉVIGNÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,1,13,0,0,13
+2016,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35051,35510,CESSON-SÉVIGNÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,74,0,0,74
+2016,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35055,35135,CHANTEPIE,VA,Vaches allaitantes,NA,Vaches allaitantes,1,39,0,0,39
+2016,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35055,35135,CHANTEPIE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,38,0,0,38
+2016,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35066,35131,CHARTRES-DE-BRETAGNE,VA,Vaches allaitantes,NA,Vaches allaitantes,1,57,0,0,57
+2016,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35076,35310,CHAVAGNE,PO,Poules pondeuses,NA,Poules pondeuses,1,70,0,0,70
+2016,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35076,35310,CHAVAGNE,VA,Vaches allaitantes,NA,Vaches allaitantes,1,2,0,0,2
+2016,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35076,35310,CHAVAGNE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,88,0,0,88
+2016,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35081,35590,CLAYES,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,110,0,0,110
+2016,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35088,35150,CORPS-NUDS,CH,Chèvres,NA,Chèvres,1,57,0,0,57
+2016,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35088,35150,CORPS-NUDS,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,47,0,0,47
+2016,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,Autres volailles,1,34,0,0,34
+2016,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,Canards,2,354,0,0,354
+2016,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,"Dindes, vivantes",1,80,0,0,80
+2016,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,Pintades,2,1200,0,0,1200
+2016,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,LA,Lapins,NA,Lapins,1,51,0,0,51
+2016,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,LAR,Lapines reproductrices,NA,Lapines reproductrices,1,10,0,0,10
+2016,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,PC,Poulets de chair,NA,"Poulets, vivants",2,7500,0,0,7500
+2016,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,PO,Poules pondeuses,NA,Poules pondeuses,2,880,0,0,880
+2016,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,1,11,0,3,14
+2016,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,52,0,0,52
+2016,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35204,35410,NOUVOITOU,CH,Chèvres,NA,Chèvres,1,240,0,0,240
+2016,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35204,35410,NOUVOITOU,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,76,0,0,76
+2016,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35206,35230,NOYAL-CHÂTILLON-SUR-SEICHE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,153,0,0,153
+2016,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35208,35230,ORGÈRES,VA,Vaches allaitantes,NA,Vaches allaitantes,2,76,0,0,76
+2016,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35210,35740,PACÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,75,0,0,75
+2016,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35216,35850,PARTHENAY-DE-BRETAGNE,BV,Brebis viande,NA,Brebis viande,1,4,0,0,4
+2016,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35216,35850,PARTHENAY-DE-BRETAGNE,CH,Chèvres,NA,Chèvres,1,125,0,0,125
+2016,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35216,35850,PARTHENAY-DE-BRETAGNE,VA,Vaches allaitantes,NA,Vaches allaitantes,1,0,0,5,5
+2016,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35216,35850,PARTHENAY-DE-BRETAGNE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,74,0,0,74
+2016,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35238,35000,RENNES,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,92,0,0,92
+2016,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35240,35650,LE RHEU,BV,Brebis viande,NA,Brebis viande,1,20,0,0,20
+2016,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35240,35650,LE RHEU,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,36,0,29,65
+2016,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,BV,Brebis viande,NA,Brebis viande,1,43,0,0,43
+2016,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,TR,Truies,NA,Truies,2,94,0,0,94
+2016,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,1,1,0,0,1
+2016,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,155,0,0,155
+2016,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35353,35132,VEZIN-LE-COQUET,PO,Poules pondeuses,NA,Poules pondeuses,1,700,0,0,700
+2016,53,Bretagne,35,Ille-et-Vilaine,243500634,Communauté de communes Roche aux Fées Communauté,35136,35150,JANZÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,93,0,0,93
+2017,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35170,35450,MECÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,2,51,0,0,51
+2017,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35170,35450,MECÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",3,264,0,4,268
+2017,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35200,35130,MOUTIERS,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,89,0,0,89
+2017,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35235,35130,RANNÉE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,62,0,0,62
+2017,53,Bretagne,35,Ille-et-Vilaine,200072452,Communauté d'agglomération Fougères Agglomération,35150,35133,LÉCOUSSE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,104,0,0,104
+2017,53,Bretagne,35,Ille-et-Vilaine,200072452,Communauté d'agglomération Fougères Agglomération,35190,35420,MONTHAULT,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,0,59,0,59
+2017,53,Bretagne,35,Ille-et-Vilaine,200072452,Communauté d'agglomération Fougères Agglomération,35310,35133,SAINT-SAUVEUR-DES-LANDES,PO,Poules pondeuses,NA,Poules pondeuses,1,8000,0,0,8000
+2017,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35001,35690,ACIGNÉ,PO,Poules pondeuses,NA,Poules pondeuses,1,14,0,0,14
+2017,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35001,35690,ACIGNÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",5,153,56,121,330
+2017,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,AUVOL,Autres volailles de chair,NA,Canards,1,50,0,0,50
+2017,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,AUVOL,Autres volailles de chair,NA,Pintades,1,100,0,0,100
+2017,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,PC,Poulets de chair,NA,"Poulets, vivants",1,1100,0,0,1100
+2017,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,PO,Poules pondeuses,NA,Poules pondeuses,1,60,0,0,60
+2017,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,VL,Vaches laitières,NA,"Vaches laitières, vivantes",3,206,59,0,265
+2017,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35032,35230,BOURGBARRÉ,TR,Truies,NA,Truies,1,2,0,0,2
+2017,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35032,35230,BOURGBARRÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,2,58,0,0,58
+2017,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35039,35530,BRÉCÉ,BL,Brebis laitières,NA,Brebis laitières,1,341,0,0,341
+2017,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35039,35530,BRÉCÉ,BV,Brebis viande,NA,Brebis viande,1,135,0,0,135
+2017,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35051,35510,CESSON-SÉVIGNÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,1,15,0,0,15
+2017,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35051,35510,CESSON-SÉVIGNÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,71,0,0,71
+2017,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35055,35135,CHANTEPIE,VA,Vaches allaitantes,NA,Vaches allaitantes,1,29,0,0,29
+2017,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35055,35135,CHANTEPIE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,38,0,0,38
+2017,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35065,35590,LA CHAPELLE-THOUARAULT,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,0,0,49,49
+2017,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35066,35131,CHARTRES-DE-BRETAGNE,VA,Vaches allaitantes,NA,Vaches allaitantes,1,57,0,0,57
+2017,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35076,35310,CHAVAGNE,PO,Poules pondeuses,NA,Poules pondeuses,1,80,0,0,80
+2017,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35076,35310,CHAVAGNE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,93,0,2,95
+2017,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35081,35590,CLAYES,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,111,0,0,111
+2017,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35088,35150,CORPS-NUDS,BV,Brebis viande,NA,Brebis viande,1,5,0,0,5
+2017,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35088,35150,CORPS-NUDS,CH,Chèvres,NA,Chèvres,1,70,0,0,70
+2017,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35088,35150,CORPS-NUDS,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,50,0,0,50
+2017,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,Autres volailles,1,6,0,0,6
+2017,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,Canards,1,300,0,0,300
+2017,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,"Dindes, vivantes",1,100,0,0,100
+2017,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,Pintades,2,1300,0,0,1300
+2017,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,LA,Lapins,NA,Lapins,1,404,0,0,404
+2017,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,LAR,Lapines reproductrices,NA,Lapines reproductrices,1,20,0,0,20
+2017,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,PC,Poulets de chair,NA,"Poulets, vivants",2,8000,0,0,8000
+2017,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,PO,Poules pondeuses,NA,Poules pondeuses,2,910,0,0,910
+2017,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,1,8,0,2,10
+2017,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,26,0,0,26
+2017,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35196,35310,MORDELLES,VA,Vaches allaitantes,NA,Vaches allaitantes,1,4,0,6,10
+2017,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35196,35310,MORDELLES,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,28,0,7,35
+2017,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35204,35410,NOUVOITOU,CH,Chèvres,NA,Chèvres,1,245,0,11,256
+2017,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35204,35410,NOUVOITOU,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,91,0,0,91
+2017,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35206,35230,NOYAL-CHÂTILLON-SUR-SEICHE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,150,0,0,150
+2017,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35208,35230,ORGÈRES,VA,Vaches allaitantes,NA,Vaches allaitantes,1,38,0,0,38
+2017,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35210,35740,PACÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,74,0,0,74
+2017,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35216,35850,PARTHENAY-DE-BRETAGNE,CH,Chèvres,NA,Chèvres,1,195,0,0,195
+2017,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35216,35850,PARTHENAY-DE-BRETAGNE,VA,Vaches allaitantes,NA,Vaches allaitantes,1,7,0,0,7
+2017,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35216,35850,PARTHENAY-DE-BRETAGNE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,76,0,0,76
+2017,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35238,35000,RENNES,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,92,0,0,92
+2017,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35240,35650,LE RHEU,BV,Brebis viande,NA,Brebis viande,1,20,0,0,20
+2017,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35240,35650,LE RHEU,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,60,0,5,65
+2017,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,BV,Brebis viande,NA,Brebis viande,1,43,0,0,43
+2017,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,TR,Truies,NA,Truies,2,94,0,0,94
+2017,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,1,1,0,0,1
+2017,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,144,0,0,144
+2017,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35353,35132,VEZIN-LE-COQUET,PO,Poules pondeuses,NA,Poules pondeuses,1,1500,0,0,1500
+2017,53,Bretagne,35,Ille-et-Vilaine,243500634,Communauté de communes Roche aux Fées Communauté,35136,35150,JANZÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,99,0,0,99
+2018,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35170,35450,MECÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,2,51,0,0,51
+2018,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35170,35450,MECÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",3,245,0,0,245
+2018,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35200,35130,MOUTIERS,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,84,0,0,84
+2018,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35235,35130,RANNÉE,PC,Poulets de chair,NA,"Poulets, vivants",1,24000,0,0,24000
+2018,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35235,35130,RANNÉE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,64,0,0,64
+2018,53,Bretagne,35,Ille-et-Vilaine,200072452,Communauté d'agglomération Fougères Agglomération,35150,35133,LÉCOUSSE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,104,0,0,104
+2018,53,Bretagne,35,Ille-et-Vilaine,200072452,Communauté d'agglomération Fougères Agglomération,35190,35420,MONTHAULT,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,0,54,0,54
+2018,53,Bretagne,35,Ille-et-Vilaine,200072452,Communauté d'agglomération Fougères Agglomération,35230,35420,POILLEY,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,0,0,107,107
+2018,53,Bretagne,35,Ille-et-Vilaine,200072452,Communauté d'agglomération Fougères Agglomération,35310,35133,SAINT-SAUVEUR-DES-LANDES,PO,Poules pondeuses,NA,Poules pondeuses,1,8000,0,0,8000
+2018,53,Bretagne,35,Ille-et-Vilaine,200072452,Communauté d'agglomération Fougères Agglomération,35310,35133,SAINT-SAUVEUR-DES-LANDES,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,35,0,0,35
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35001,35690,ACIGNÉ,PO,Poules pondeuses,NA,Poules pondeuses,1,8,0,0,8
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35001,35690,ACIGNÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",5,211,0,116,327
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,AUVOL,Autres volailles de chair,NA,Canards,1,50,0,0,50
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,AUVOL,Autres volailles de chair,NA,Pintades,1,100,0,0,100
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,PC,Poulets de chair,NA,"Poulets, vivants",1,800,0,0,800
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,PO,Poules pondeuses,NA,Poules pondeuses,1,80,0,0,80
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,VL,Vaches laitières,NA,"Vaches laitières, vivantes",3,278,0,0,278
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35032,35230,BOURGBARRÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,2,21,0,0,21
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35039,35530,BRÉCÉ,BL,Brebis laitières,NA,Brebis laitières,1,357,0,0,357
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35039,35530,BRÉCÉ,BV,Brebis viande,NA,Brebis viande,1,130,0,0,130
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35051,35510,CESSON-SÉVIGNÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,1,19,0,0,19
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35051,35510,CESSON-SÉVIGNÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,78,0,0,78
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35055,35135,CHANTEPIE,VA,Vaches allaitantes,NA,Vaches allaitantes,1,25,0,0,25
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35055,35135,CHANTEPIE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,41,0,0,41
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35058,35630,LA CHAPELLE-CHAUSSÉE,AUVOL,Autres volailles de chair,NA,Pintades,1,840,0,0,840
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35058,35630,LA CHAPELLE-CHAUSSÉE,PC,Poulets de chair,NA,"Poulets, vivants",1,4800,0,0,4800
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35058,35630,LA CHAPELLE-CHAUSSÉE,PO,Poules pondeuses,NA,Poules pondeuses,1,150,0,0,150
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35065,35590,LA CHAPELLE-THOUARAULT,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,0,0,48,48
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35066,35131,CHARTRES-DE-BRETAGNE,VA,Vaches allaitantes,NA,Vaches allaitantes,1,57,0,0,57
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35076,35310,CHAVAGNE,PO,Poules pondeuses,NA,Poules pondeuses,1,100,0,0,100
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35076,35310,CHAVAGNE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,105,0,0,105
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35081,35590,CLAYES,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,95,0,0,95
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35088,35150,CORPS-NUDS,BL,Brebis laitières,NA,Brebis laitières,1,9,0,0,9
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35088,35150,CORPS-NUDS,BV,Brebis viande,NA,Brebis viande,1,3,0,0,3
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35088,35150,CORPS-NUDS,CH,Chèvres,NA,Chèvres,1,62,0,0,62
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35088,35150,CORPS-NUDS,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,50,0,0,50
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,Autres volailles,2,43,0,0,43
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,Canards,1,400,0,0,400
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,"Dindes, vivantes",1,80,0,0,80
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,Pintades,2,1300,0,0,1300
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,LA,Lapins,NA,Lapins,1,403,0,0,403
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,LAR,Lapines reproductrices,NA,Lapines reproductrices,1,25,0,0,25
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,PC,Poulets de chair,NA,"Poulets, vivants",2,9000,0,0,9000
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,PO,Poules pondeuses,NA,Poules pondeuses,2,870,0,0,870
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,1,6,0,2,8
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,26,0,0,26
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35196,35310,MORDELLES,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,47,0,18,65
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35204,35410,NOUVOITOU,CH,Chèvres,NA,Chèvres,1,270,0,0,270
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35204,35410,NOUVOITOU,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,92,0,0,92
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35206,35230,NOYAL-CHÂTILLON-SUR-SEICHE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",3,195,0,0,195
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35208,35230,ORGÈRES,VA,Vaches allaitantes,NA,Vaches allaitantes,1,31,0,0,31
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35210,35740,PACÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,75,0,58,133
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35216,35850,PARTHENAY-DE-BRETAGNE,CH,Chèvres,NA,Chèvres,1,240,0,0,240
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35216,35850,PARTHENAY-DE-BRETAGNE,VA,Vaches allaitantes,NA,Vaches allaitantes,1,0,0,4,4
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35216,35850,PARTHENAY-DE-BRETAGNE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,83,0,0,83
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35238,35000,RENNES,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,92,0,0,92
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35240,35650,LE RHEU,BV,Brebis viande,NA,Brebis viande,1,20,0,0,20
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35240,35650,LE RHEU,TR,Truies,NA,Truies,1,60,0,0,60
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35240,35650,LE RHEU,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,63,0,0,63
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,BV,Brebis viande,NA,Brebis viande,1,46,0,0,46
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,TR,Truies,NA,Truies,2,99,0,0,99
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,1,1,0,0,1
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,148,0,0,148
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35353,35132,VEZIN-LE-COQUET,PO,Poules pondeuses,NA,Poules pondeuses,1,1700,0,0,1700
+2018,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35353,35132,VEZIN-LE-COQUET,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,0,0,36,36
+2018,53,Bretagne,35,Ille-et-Vilaine,243500634,Communauté de communes Roche aux Fées Communauté,35136,35150,JANZÉ,PC,Poulets de chair,NA,"Poulets, vivants",1,16000,0,0,16000
+2018,53,Bretagne,35,Ille-et-Vilaine,243500634,Communauté de communes Roche aux Fées Communauté,35136,35150,JANZÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,99,0,0,99
+2019,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35170,35450,MECÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,1,51,0,0,51
+2019,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35170,35450,MECÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",3,279,0,3,282
+2019,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35200,35130,MOUTIERS,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,93,0,0,93
+2019,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35235,35130,RANNÉE,CH,Chèvres,NA,Chèvres,1,210,0,0,210
+2019,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35235,35130,RANNÉE,PC,Poulets de chair,NA,"Poulets, vivants",1,28000,0,0,28000
+2019,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35235,35130,RANNÉE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,59,0,0,59
+2019,53,Bretagne,35,Ille-et-Vilaine,200072452,Communauté d'agglomération Fougères Agglomération,35150,35133,LÉCOUSSE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,104,0,0,104
+2019,53,Bretagne,35,Ille-et-Vilaine,200072452,Communauté d'agglomération Fougères Agglomération,35190,35420,MONTHAULT,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,55,0,0,55
+2019,53,Bretagne,35,Ille-et-Vilaine,200072452,Communauté d'agglomération Fougères Agglomération,35230,35420,POILLEY,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,0,0,107,107
+2019,53,Bretagne,35,Ille-et-Vilaine,200072452,Communauté d'agglomération Fougères Agglomération,35310,35133,SAINT-SAUVEUR-DES-LANDES,PO,Poules pondeuses,NA,Poules pondeuses,1,8000,0,0,8000
+2019,53,Bretagne,35,Ille-et-Vilaine,200072452,Communauté d'agglomération Fougères Agglomération,35310,35133,SAINT-SAUVEUR-DES-LANDES,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,34,0,0,34
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35001,35690,ACIGNÉ,PO,Poules pondeuses,NA,Poules pondeuses,1,12,0,0,12
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35001,35690,ACIGNÉ,TR,Truies,NA,Truies,1,70,0,0,70
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35001,35690,ACIGNÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",6,206,0,178,384
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,AUVOL,Autres volailles de chair,NA,Autres volailles,1,50,0,0,50
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,AUVOL,Autres volailles de chair,NA,Pintades,1,200,0,0,200
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,PC,Poulets de chair,NA,"Poulets, vivants",1,800,0,0,800
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,PO,Poules pondeuses,NA,Poules pondeuses,1,30,0,0,30
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,VL,Vaches laitières,NA,"Vaches laitières, vivantes",3,257,0,0,257
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35032,35230,BOURGBARRÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,2,13,0,0,13
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35039,35530,BRÉCÉ,BL,Brebis laitières,NA,Brebis laitières,1,314,0,0,314
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35039,35530,BRÉCÉ,BV,Brebis viande,NA,Brebis viande,1,138,0,0,138
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35051,35510,CESSON-SÉVIGNÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,1,12,0,0,12
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35051,35510,CESSON-SÉVIGNÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,74,0,0,74
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35055,35135,CHANTEPIE,VA,Vaches allaitantes,NA,Vaches allaitantes,1,28,0,0,28
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35055,35135,CHANTEPIE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,38,0,0,38
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35058,35630,LA CHAPELLE-CHAUSSÉE,AUVOL,Autres volailles de chair,NA,Autres volailles,1,415,0,0,415
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35058,35630,LA CHAPELLE-CHAUSSÉE,AUVOL,Autres volailles de chair,NA,Pintades,1,1670,0,0,1670
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35058,35630,LA CHAPELLE-CHAUSSÉE,PC,Poulets de chair,NA,"Poulets, vivants",1,17000,0,0,17000
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35058,35630,LA CHAPELLE-CHAUSSÉE,PO,Poules pondeuses,NA,Poules pondeuses,1,150,0,0,150
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35065,35590,LA CHAPELLE-THOUARAULT,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,48,0,0,48
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35066,35131,CHARTRES-DE-BRETAGNE,VA,Vaches allaitantes,NA,Vaches allaitantes,1,47,0,0,47
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35076,35310,CHAVAGNE,PO,Poules pondeuses,NA,Poules pondeuses,1,100,0,0,100
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35076,35310,CHAVAGNE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,102,0,0,102
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35080,35310,CINTRÉ,TR,Truies,NA,Truies,1,3,0,0,3
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35081,35590,CLAYES,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,110,0,0,110
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35088,35150,CORPS-NUDS,BL,Brebis laitières,NA,Brebis laitières,1,8,0,0,8
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35088,35150,CORPS-NUDS,BV,Brebis viande,NA,Brebis viande,1,9,0,0,9
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35088,35150,CORPS-NUDS,CH,Chèvres,NA,Chèvres,1,60,0,0,60
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35088,35150,CORPS-NUDS,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,51,0,0,51
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,Autres volailles,2,160,0,0,160
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,Canards,1,350,0,0,350
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,"Dindes, vivantes",1,80,0,0,80
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,Pintades,2,1200,0,0,1200
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,LA,Lapins,NA,Lapins,1,402,0,0,402
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,LAR,Lapines reproductrices,NA,Lapines reproductrices,1,27,0,0,27
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,PC,Poulets de chair,NA,"Poulets, vivants",2,8500,0,0,8500
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,PO,Poules pondeuses,NA,Poules pondeuses,2,1040,0,0,1040
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,1,11,0,2,13
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,24,0,0,24
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35144,35850,LANGAN,VA,Vaches allaitantes,NA,Vaches allaitantes,1,0,0,15,15
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35144,35850,LANGAN,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,0,0,29,29
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35196,35310,MORDELLES,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,50,0,8,58
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35204,35410,NOUVOITOU,CH,Chèvres,NA,Chèvres,1,263,0,90,353
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35204,35410,NOUVOITOU,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,96,0,0,96
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35206,35230,NOYAL-CHÂTILLON-SUR-SEICHE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",3,224,0,0,224
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35208,35230,ORGÈRES,VA,Vaches allaitantes,NA,Vaches allaitantes,1,32,0,0,32
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35210,35740,PACÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",3,84,1,65,150
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35216,35850,PARTHENAY-DE-BRETAGNE,CH,Chèvres,NA,Chèvres,1,203,0,0,203
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35216,35850,PARTHENAY-DE-BRETAGNE,VA,Vaches allaitantes,NA,Vaches allaitantes,1,3,0,4,7
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35216,35850,PARTHENAY-DE-BRETAGNE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,79,0,0,79
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35238,35000,RENNES,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,92,0,0,92
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35240,35650,LE RHEU,BV,Brebis viande,NA,Brebis viande,1,20,0,0,20
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35240,35650,LE RHEU,TR,Truies,NA,Truies,1,60,0,0,60
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35240,35650,LE RHEU,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,74,0,0,74
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,AUPA,Autres élevages,NA,"Chevaux, vivants",1,0,0,3,3
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,BV,Brebis viande,NA,Brebis viande,1,35,0,0,35
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,TR,Truies,NA,Truies,2,99,0,0,99
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,2,1,0,20,21
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,158,0,0,158
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35281,35136,SAINT-JACQUES-DE-LA-LANDE,BV,Brebis viande,NA,Brebis viande,1,0,10,0,10
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35281,35136,SAINT-JACQUES-DE-LA-LANDE,VA,Vaches allaitantes,NA,Vaches allaitantes,1,0,50,0,50
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35353,35132,VEZIN-LE-COQUET,PO,Poules pondeuses,NA,Poules pondeuses,1,1800,0,0,1800
+2019,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35353,35132,VEZIN-LE-COQUET,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,0,0,36,36
+2019,53,Bretagne,35,Ille-et-Vilaine,243500634,Communauté de communes Roche aux Fées Communauté,35136,35150,JANZÉ,PC,Poulets de chair,NA,"Poulets, vivants",1,24000,0,0,24000
+2019,53,Bretagne,35,Ille-et-Vilaine,243500634,Communauté de communes Roche aux Fées Communauté,35136,35150,JANZÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,92,0,0,92
+2020,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35170,35450,MECÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,2,4,30,0,34
+2020,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35170,35450,MECÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",3,326,0,8,334
+2020,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35200,35130,MOUTIERS,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,90,31,0,121
+2020,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35235,35130,RANNÉE,CH,Chèvres,NA,Chèvres,2,210,0,40,250
+2020,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35235,35130,RANNÉE,PC,Poulets de chair,NA,"Poulets, vivants",1,28000,0,0,28000
+2020,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35235,35130,RANNÉE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,46,0,0,46
+2020,53,Bretagne,35,Ille-et-Vilaine,200072452,Communauté d'agglomération Fougères Agglomération,35150,35133,LÉCOUSSE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,104,0,0,104
+2020,53,Bretagne,35,Ille-et-Vilaine,200072452,Communauté d'agglomération Fougères Agglomération,35190,35420,MONTHAULT,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,0,54,0,54
+2020,53,Bretagne,35,Ille-et-Vilaine,200072452,Communauté d'agglomération Fougères Agglomération,35230,35420,POILLEY,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,0,0,107,107
+2020,53,Bretagne,35,Ille-et-Vilaine,200072452,Communauté d'agglomération Fougères Agglomération,35310,35133,SAINT-SAUVEUR-DES-LANDES,PO,Poules pondeuses,NA,Poules pondeuses,1,8000,0,0,8000
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35001,35690,ACIGNÉ,PO,Poules pondeuses,NA,Poules pondeuses,1,10,0,0,10
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35001,35690,ACIGNÉ,TR,Truies,NA,Truies,1,70,0,0,70
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35001,35690,ACIGNÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,1,0,0,1,1
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35001,35690,ACIGNÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",6,201,0,198,399
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,AUVOL,Autres volailles de chair,NA,Autres volailles,1,50,0,0,50
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,AUVOL,Autres volailles de chair,NA,Pintades,1,200,0,0,200
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,PC,Poulets de chair,NA,"Poulets, vivants",1,800,0,0,800
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,PO,Poules pondeuses,NA,Poules pondeuses,1,30,0,0,30
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,VL,Vaches laitières,NA,"Vaches laitières, vivantes",3,266,0,0,266
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35032,35230,BOURGBARRÉ,CH,Chèvres,NA,Chèvres,1,0,0,1,1
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35032,35230,BOURGBARRÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,1,5,0,0,5
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35032,35230,BOURGBARRÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,0,0,140,140
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35039,35530,BRÉCÉ,BL,Brebis laitières,NA,Brebis laitières,1,299,0,0,299
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35039,35530,BRÉCÉ,BV,Brebis viande,NA,Brebis viande,1,144,0,0,144
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35039,35530,BRÉCÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,1,0,0,1
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35051,35510,CESSON-SÉVIGNÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,71,0,0,71
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35055,35135,CHANTEPIE,VA,Vaches allaitantes,NA,Vaches allaitantes,1,25,0,0,25
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35055,35135,CHANTEPIE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,41,0,0,41
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35058,35630,LA CHAPELLE-CHAUSSÉE,AUVOL,Autres volailles de chair,NA,Autres volailles,1,450,0,0,450
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35058,35630,LA CHAPELLE-CHAUSSÉE,AUVOL,Autres volailles de chair,NA,"Oies, vivantes",1,15,0,0,15
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35058,35630,LA CHAPELLE-CHAUSSÉE,AUVOL,Autres volailles de chair,NA,Pintades,1,2640,0,0,2640
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35058,35630,LA CHAPELLE-CHAUSSÉE,PC,Poulets de chair,NA,"Poulets, vivants",1,20000,0,0,20000
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35058,35630,LA CHAPELLE-CHAUSSÉE,PO,Poules pondeuses,NA,Poules pondeuses,1,100,0,0,100
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35065,35590,LA CHAPELLE-THOUARAULT,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,49,0,0,49
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35076,35310,CHAVAGNE,PO,Poules pondeuses,NA,Poules pondeuses,1,100,0,0,100
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35076,35310,CHAVAGNE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,92,0,0,92
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35080,35310,CINTRÉ,TR,Truies,NA,Truies,1,3,0,0,3
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35081,35590,CLAYES,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,58,58,0,116
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35088,35150,CORPS-NUDS,BV,Brebis viande,NA,Brebis viande,1,7,0,0,7
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35088,35150,CORPS-NUDS,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,41,0,0,41
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,Autres volailles,1,100,0,0,100
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,Canards,1,350,0,0,350
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,"Dindes, vivantes",1,80,0,0,80
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,"Oies, vivantes",1,13,0,0,13
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,Pintades,2,1200,0,0,1200
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,LA,Lapins,NA,Lapins,1,51,0,0,51
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,LAR,Lapines reproductrices,NA,Lapines reproductrices,1,9,0,0,9
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,PC,Poulets de chair,NA,"Poulets, vivants",2,8500,0,0,8500
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,PO,Poules pondeuses,NA,Poules pondeuses,2,1040,0,0,1040
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,1,11,0,2,13
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,23,0,0,23
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35144,35850,LANGAN,VA,Vaches allaitantes,NA,Vaches allaitantes,1,0,0,15,15
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35144,35850,LANGAN,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,0,0,29,29
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35196,35310,MORDELLES,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,53,158,7,218
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35204,35410,NOUVOITOU,CH,Chèvres,NA,Chèvres,1,310,0,0,310
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35204,35410,NOUVOITOU,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,95,0,0,95
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35206,35230,NOYAL-CHÂTILLON-SUR-SEICHE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",3,189,0,0,189
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35208,35230,ORGÈRES,VA,Vaches allaitantes,NA,Vaches allaitantes,1,31,0,0,31
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35210,35740,PACÉ,CH,Chèvres,NA,Chèvres,1,0,0,315,315
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35210,35740,PACÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,75,1,0,76
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35216,35850,PARTHENAY-DE-BRETAGNE,CH,Chèvres,NA,Chèvres,1,218,0,0,218
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35216,35850,PARTHENAY-DE-BRETAGNE,VA,Vaches allaitantes,NA,Vaches allaitantes,1,3,0,4,7
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35216,35850,PARTHENAY-DE-BRETAGNE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,80,0,0,80
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35238,35000,RENNES,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,92,0,0,92
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35240,35650,LE RHEU,BV,Brebis viande,NA,Brebis viande,1,21,0,0,21
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35240,35650,LE RHEU,TR,Truies,NA,Truies,1,60,0,0,60
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35240,35650,LE RHEU,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,71,0,0,71
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,AUPA,Autres élevages,NA,"Chevaux, vivants",1,0,0,2,2
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,BV,Brebis viande,NA,Brebis viande,1,20,0,0,20
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,TR,Truies,NA,Truies,2,99,0,0,99
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,2,1,0,19,20
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,152,0,0,152
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35275,35590,SAINT-GILLES,VA,Vaches allaitantes,NA,Vaches allaitantes,1,0,23,0,23
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35281,35136,SAINT-JACQUES-DE-LA-LANDE,BV,Brebis viande,NA,Brebis viande,1,0,10,0,10
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35281,35136,SAINT-JACQUES-DE-LA-LANDE,VA,Vaches allaitantes,NA,Vaches allaitantes,1,0,47,0,47
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35352,35770,VERN-SUR-SEICHE,AUPA,Autres élevages,NA,"Chevaux, vivants",1,0,0,2,2
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35353,35132,VEZIN-LE-COQUET,PO,Poules pondeuses,NA,Poules pondeuses,1,1800,0,0,1800
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35353,35132,VEZIN-LE-COQUET,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,0,0,36,36
+2020,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35363,35131,PONT-PÉAN,API,Apiculture,NA,Ruches,1,0,52,0,52
+2020,53,Bretagne,35,Ille-et-Vilaine,243500634,Communauté de communes Roche aux Fées Communauté,35136,35150,JANZÉ,PC,Poulets de chair,NA,"Poulets, vivants",1,32000,0,0,32000
+2020,53,Bretagne,35,Ille-et-Vilaine,243500634,Communauté de communes Roche aux Fées Communauté,35136,35150,JANZÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,96,0,0,96
+2021,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35170,35450,MECÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,2,32,0,0,32
+2021,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35170,35450,MECÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",3,322,0,7,329
+2021,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35200,35130,MOUTIERS,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,138,0,0,138
+2021,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35235,35130,RANNÉE,CH,Chèvres,NA,Chèvres,1,75,0,0,75
+2021,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35235,35130,RANNÉE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,43,0,0,43
+2021,53,Bretagne,35,Ille-et-Vilaine,200072452,Communauté d'agglomération Fougères Agglomération,35150,35133,LÉCOUSSE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,104,0,0,104
+2021,53,Bretagne,35,Ille-et-Vilaine,200072452,Communauté d'agglomération Fougères Agglomération,35190,35420,MONTHAULT,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,54,0,0,54
+2021,53,Bretagne,35,Ille-et-Vilaine,200072452,Communauté d'agglomération Fougères Agglomération,35230,35420,POILLEY,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,0,0,107,107
+2021,53,Bretagne,35,Ille-et-Vilaine,200072452,Communauté d'agglomération Fougères Agglomération,35310,35133,SAINT-SAUVEUR-DES-LANDES,PO,Poules pondeuses,NA,Poules pondeuses,1,8000,0,0,8000
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35001,35690,ACIGNÉ,PO,Poules pondeuses,NA,Poules pondeuses,1,7,0,0,7
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35001,35690,ACIGNÉ,TR,Truies,NA,Truies,1,51,0,0,51
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35001,35690,ACIGNÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,3,0,2,2,4
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35001,35690,ACIGNÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",8,252,71,252,575
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,AUVOL,Autres volailles de chair,NA,Autres volailles,1,30,0,0,30
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,AUVOL,Autres volailles de chair,NA,Pintades,1,200,0,0,200
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,PC,Poulets de chair,NA,"Poulets, vivants",1,1200,0,0,1200
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,PO,Poules pondeuses,NA,Poules pondeuses,1,50,0,0,50
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,VL,Vaches laitières,NA,"Vaches laitières, vivantes",3,242,0,0,242
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35032,35230,BOURGBARRÉ,CH,Chèvres,NA,Chèvres,1,26,0,0,26
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35032,35230,BOURGBARRÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,2,7,0,0,7
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35032,35230,BOURGBARRÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,0,0,130,130
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35039,35530,BRÉCÉ,BL,Brebis laitières,NA,Brebis laitières,1,0,0,310,310
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35039,35530,BRÉCÉ,BV,Brebis viande,NA,Brebis viande,1,73,0,0,73
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35039,35530,BRÉCÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,41,0,8,49
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35051,35510,CESSON-SÉVIGNÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,68,0,0,68
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35055,35135,CHANTEPIE,VA,Vaches allaitantes,NA,Vaches allaitantes,1,32,0,0,32
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35055,35135,CHANTEPIE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,41,0,0,41
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35058,35630,LA CHAPELLE-CHAUSSÉE,AUVOL,Autres volailles de chair,NA,Autres volailles,1,450,0,0,450
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35058,35630,LA CHAPELLE-CHAUSSÉE,AUVOL,Autres volailles de chair,NA,"Oies, vivantes",1,50,0,0,50
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35058,35630,LA CHAPELLE-CHAUSSÉE,AUVOL,Autres volailles de chair,NA,Pintades,1,2650,0,0,2650
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35058,35630,LA CHAPELLE-CHAUSSÉE,PC,Poulets de chair,NA,"Poulets, vivants",1,20000,0,0,20000
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35058,35630,LA CHAPELLE-CHAUSSÉE,PO,Poules pondeuses,NA,Poules pondeuses,1,150,0,0,150
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35065,35590,LA CHAPELLE-THOUARAULT,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,57,0,0,57
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35076,35310,CHAVAGNE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,107,0,0,107
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35080,35310,CINTRÉ,BV,Brebis viande,NA,Brebis viande,1,0,0,8,8
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35080,35310,CINTRÉ,TR,Truies,NA,Truies,1,4,0,0,4
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35081,35590,CLAYES,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,109,0,0,109
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35088,35150,CORPS-NUDS,BV,Brebis viande,NA,Brebis viande,1,11,0,0,11
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35088,35150,CORPS-NUDS,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,44,0,0,44
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35131,35590,L'HERMITAGE,AUPA,Autres élevages,NA,"Chevaux, vivants",1,0,0,4,4
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35131,35590,L'HERMITAGE,CH,Chèvres,NA,Chèvres,1,0,0,216,216
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,Autres volailles,1,100,0,0,100
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,Canards,1,350,0,0,350
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,"Dindes, vivantes",1,80,0,0,80
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,"Oies, vivantes",1,2,0,0,2
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,Pintades,2,1350,0,0,1350
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,LA,Lapins,NA,Lapins,1,51,0,0,51
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,LAR,Lapines reproductrices,NA,Lapines reproductrices,1,9,0,0,9
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,PC,Poulets de chair,NA,"Poulets, vivants",2,8500,0,0,8500
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,PO,Poules pondeuses,NA,Poules pondeuses,2,1040,0,0,1040
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,1,10,0,2,12
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,23,0,0,23
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35144,35850,LANGAN,VA,Vaches allaitantes,NA,Vaches allaitantes,1,0,0,15,15
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35144,35850,LANGAN,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,0,0,29,29
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35196,35310,MORDELLES,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,55,198,6,259
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35204,35410,NOUVOITOU,CH,Chèvres,NA,Chèvres,1,292,0,0,292
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35204,35410,NOUVOITOU,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,102,0,0,102
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35206,35230,NOYAL-CHÂTILLON-SUR-SEICHE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",3,184,0,0,184
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35208,35230,ORGÈRES,VA,Vaches allaitantes,NA,Vaches allaitantes,1,35,0,0,35
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35210,35740,PACÉ,CH,Chèvres,NA,Chèvres,1,235,0,71,306
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35210,35740,PACÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",3,75,1,90,166
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35216,35850,PARTHENAY-DE-BRETAGNE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,84,0,0,84
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35238,35000,RENNES,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,92,0,0,92
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35240,35650,LE RHEU,BV,Brebis viande,NA,Brebis viande,1,20,0,0,20
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35240,35650,LE RHEU,TR,Truies,NA,Truies,1,64,0,0,64
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35240,35650,LE RHEU,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,68,0,0,68
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,TR,Truies,NA,Truies,2,99,0,0,99
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,2,22,0,0,22
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,152,0,0,152
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35275,35590,SAINT-GILLES,VA,Vaches allaitantes,NA,Vaches allaitantes,1,0,21,0,21
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35281,35136,SAINT-JACQUES-DE-LA-LANDE,BV,Brebis viande,NA,Brebis viande,1,10,0,0,10
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35281,35136,SAINT-JACQUES-DE-LA-LANDE,VA,Vaches allaitantes,NA,Vaches allaitantes,1,56,0,0,56
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35352,35770,VERN-SUR-SEICHE,AUPA,Autres élevages,NA,"Chevaux, vivants",1,0,0,3,3
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35353,35132,VEZIN-LE-COQUET,PO,Poules pondeuses,NA,Poules pondeuses,1,1800,0,0,1800
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35353,35132,VEZIN-LE-COQUET,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,0,0,36,36
+2021,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35363,35131,PONT-PÉAN,API,Apiculture,NA,Ruches,1,35,0,0,35
+2021,53,Bretagne,35,Ille-et-Vilaine,243500634,Communauté de communes Roche aux Fées Communauté,35136,35150,JANZÉ,PC,Poulets de chair,NA,"Poulets, vivants",1,16000,0,0,16000
+2021,53,Bretagne,35,Ille-et-Vilaine,243500634,Communauté de communes Roche aux Fées Communauté,35136,35150,JANZÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,91,0,0,91
+2022,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35170,35450,MECÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,2,32,0,0,32
+2022,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35170,35450,MECÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",3,329,0,0,329
+2022,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35200,35130,MOUTIERS,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,129,0,0,129
+2022,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35235,35130,RANNÉE,CH,Chèvres,NA,Chèvres,2,240,0,0,240
+2022,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35235,35130,RANNÉE,PC,Poulets de chair,NA,"Poulets, vivants",1,28000,0,0,28000
+2022,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35235,35130,RANNÉE,VA,Vaches allaitantes,NA,Vaches allaitantes,1,7,0,0,7
+2022,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35235,35130,RANNÉE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,117,0,0,117
+2022,53,Bretagne,35,Ille-et-Vilaine,200072452,Communauté d'agglomération Fougères Agglomération,35190,35420,MONTHAULT,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,50,0,0,50
+2022,53,Bretagne,35,Ille-et-Vilaine,200072452,Communauté d'agglomération Fougères Agglomération,35230,35420,POILLEY,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,0,0,95,95
+2022,53,Bretagne,35,Ille-et-Vilaine,200072452,Communauté d'agglomération Fougères Agglomération,35310,35133,SAINT-SAUVEUR-DES-LANDES,PC,Poulets de chair,NA,"Poulets, vivants",1,8000,0,0,8000
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35001,35690,ACIGNÉ,TR,Truies,NA,Truies,1,55,0,0,55
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35001,35690,ACIGNÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,3,0,0,8,8
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35001,35690,ACIGNÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",7,159,0,332,491
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,AUVOL,Autres volailles de chair,NA,Autres volailles,1,15,0,0,15
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,AUVOL,Autres volailles de chair,NA,Pintades,1,140,0,0,140
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,PC,Poulets de chair,NA,"Poulets, vivants",1,900,0,0,900
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,PO,Poules pondeuses,NA,Poules pondeuses,1,50,0,0,50
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,VL,Vaches laitières,NA,"Vaches laitières, vivantes",3,147,0,0,147
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35032,35230,BOURGBARRÉ,CH,Chèvres,NA,Chèvres,1,37,0,0,37
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35032,35230,BOURGBARRÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,2,7,0,0,7
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35032,35230,BOURGBARRÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,0,0,139,139
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35039,35530,BRÉCÉ,BL,Brebis laitières,NA,Brebis laitières,1,0,0,303,303
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35039,35530,BRÉCÉ,BV,Brebis viande,NA,Brebis viande,1,25,0,0,25
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35039,35530,BRÉCÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,36,0,0,36
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35051,35510,CESSON-SÉVIGNÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,75,0,0,75
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35055,35135,CHANTEPIE,VA,Vaches allaitantes,NA,Vaches allaitantes,1,26,0,0,26
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35055,35135,CHANTEPIE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,40,0,0,40
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35058,35630,LA CHAPELLE-CHAUSSÉE,AUVOL,Autres volailles de chair,NA,Autres volailles,1,450,0,0,450
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35058,35630,LA CHAPELLE-CHAUSSÉE,AUVOL,Autres volailles de chair,NA,"Dindes, vivantes",1,30,0,0,30
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35058,35630,LA CHAPELLE-CHAUSSÉE,AUVOL,Autres volailles de chair,NA,Pintades,1,2500,0,0,2500
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35058,35630,LA CHAPELLE-CHAUSSÉE,PC,Poulets de chair,NA,"Poulets, vivants",1,20000,0,0,20000
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35058,35630,LA CHAPELLE-CHAUSSÉE,PO,Poules pondeuses,NA,Poules pondeuses,1,200,0,0,200
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35058,35630,LA CHAPELLE-CHAUSSÉE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,0,0,108,108
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35065,35590,LA CHAPELLE-THOUARAULT,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,57,0,0,57
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35076,35310,CHAVAGNE,AUVOL,Autres volailles de chair,NA,Pintades,1,280,0,0,280
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35076,35310,CHAVAGNE,PC,Poulets de chair,NA,"Poulets, vivants",1,5200,0,0,5200
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35076,35310,CHAVAGNE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,107,0,0,107
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35080,35310,CINTRÉ,BV,Brebis viande,NA,Brebis viande,1,4,0,0,4
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35080,35310,CINTRÉ,TR,Truies,NA,Truies,1,7,0,0,7
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35081,35590,CLAYES,VL,Vaches laitières,NA,"Vaches laitières, vivantes",3,161,0,0,161
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35088,35150,CORPS-NUDS,BV,Brebis viande,NA,Brebis viande,1,14,0,0,14
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35088,35150,CORPS-NUDS,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,39,0,0,39
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35131,35590,L'HERMITAGE,AUPA,Autres élevages,NA,"Chevaux, vivants",1,0,0,4,4
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35131,35590,L'HERMITAGE,CH,Chèvres,NA,Chèvres,1,200,0,60,260
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,Autres volailles,1,100,0,0,100
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,Canards,1,350,0,0,350
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,"Dindes, vivantes",1,80,0,0,80
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,"Oies, vivantes",1,3,0,0,3
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,Pintades,2,1100,0,0,1100
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,LA,Lapins,NA,Lapins,1,51,0,0,51
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,LAR,Lapines reproductrices,NA,Lapines reproductrices,1,8,0,0,8
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,PC,Poulets de chair,NA,"Poulets, vivants",2,8000,0,0,8000
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,PO,Poules pondeuses,NA,Poules pondeuses,2,1040,0,0,1040
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,1,11,0,0,11
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,15,0,0,15
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35144,35850,LANGAN,VA,Vaches allaitantes,NA,Vaches allaitantes,1,0,0,15,15
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35144,35850,LANGAN,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,0,0,33,33
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35196,35310,MORDELLES,BV,Brebis viande,NA,Brebis viande,1,0,0,6,6
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35196,35310,MORDELLES,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,263,0,1,264
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35204,35410,NOUVOITOU,CH,Chèvres,NA,Chèvres,1,230,0,86,316
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35204,35410,NOUVOITOU,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,93,0,0,93
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35206,35230,NOYAL-CHÂTILLON-SUR-SEICHE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",3,185,0,0,185
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35208,35230,ORGÈRES,VA,Vaches allaitantes,NA,Vaches allaitantes,1,35,0,0,35
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35210,35740,PACÉ,CH,Chèvres,NA,Chèvres,1,205,0,61,266
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35210,35740,PACÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",3,159,2,0,161
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35216,35850,PARTHENAY-DE-BRETAGNE,VA,Vaches allaitantes,NA,Vaches allaitantes,1,3,0,3,6
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35216,35850,PARTHENAY-DE-BRETAGNE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,84,0,0,84
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35240,35650,LE RHEU,BV,Brebis viande,NA,Brebis viande,1,20,0,0,20
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35240,35650,LE RHEU,TR,Truies,NA,Truies,1,62,0,0,62
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35240,35650,LE RHEU,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,68,0,0,68
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,TR,Truies,NA,Truies,2,85,0,0,85
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,1,20,0,0,20
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,89,0,0,89
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35266,35230,SAINT-ERBLON,VA,Vaches allaitantes,NA,Vaches allaitantes,1,8,0,0,8
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35266,35230,SAINT-ERBLON,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,50,0,0,50
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35275,35590,SAINT-GILLES,VA,Vaches allaitantes,NA,Vaches allaitantes,1,19,0,0,19
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35281,35136,SAINT-JACQUES-DE-LA-LANDE,BV,Brebis viande,NA,Brebis viande,1,10,0,0,10
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35281,35136,SAINT-JACQUES-DE-LA-LANDE,VA,Vaches allaitantes,NA,Vaches allaitantes,1,53,0,0,53
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35334,35235,THORIGNÉ-FOUILLARD,VA,Vaches allaitantes,NA,Vaches allaitantes,1,3,0,0,3
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35334,35235,THORIGNÉ-FOUILLARD,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,142,0,0,142
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35352,35770,VERN-SUR-SEICHE,AUPA,Autres élevages,NA,"Chevaux, vivants",1,0,0,3,3
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35353,35132,VEZIN-LE-COQUET,PO,Poules pondeuses,NA,Poules pondeuses,1,700,0,0,700
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35353,35132,VEZIN-LE-COQUET,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,0,0,39,39
+2022,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35363,35131,PONT-PÉAN,API,Apiculture,NA,Ruches,1,12,0,0,12
+2022,53,Bretagne,35,Ille-et-Vilaine,243500634,Communauté de communes Roche aux Fées Communauté,35136,35150,JANZÉ,PC,Poulets de chair,NA,"Poulets, vivants",1,32000,0,0,32000
+2022,53,Bretagne,35,Ille-et-Vilaine,243500634,Communauté de communes Roche aux Fées Communauté,35136,35150,JANZÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,84,0,0,84
+2023,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35170,35450,MECÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,2,54,0,0,54
+2023,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35170,35450,MECÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",3,354,0,0,354
+2023,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35200,35130,MOUTIERS,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,31,0,89,120
+2023,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35235,35130,RANNÉE,CH,Chèvres,NA,Chèvres,2,213,0,0,213
+2023,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35235,35130,RANNÉE,VA,Vaches allaitantes,NA,Vaches allaitantes,1,26,0,0,26
+2023,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35235,35130,RANNÉE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,92,0,0,92
+2023,53,Bretagne,35,Ille-et-Vilaine,200072452,Communauté d'agglomération Fougères Agglomération,35190,35420,MONTHAULT,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,51,0,0,51
+2023,53,Bretagne,35,Ille-et-Vilaine,200072452,Communauté d'agglomération Fougères Agglomération,35230,35420,POILLEY,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,95,0,0,95
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35001,35690,ACIGNÉ,TR,Truies,NA,Truies,1,45,0,0,45
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35001,35690,ACIGNÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,2,12,0,0,12
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35001,35690,ACIGNÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",8,396,0,171,567
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,AUVOL,Autres volailles de chair,NA,Autres volailles,1,15,0,0,15
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,AUVOL,Autres volailles de chair,NA,Pintades,1,100,0,0,100
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,PC,Poulets de chair,NA,"Poulets, vivants",1,900,0,0,900
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,PO,Poules pondeuses,NA,Poules pondeuses,1,100,0,0,100
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,VL,Vaches laitières,NA,"Vaches laitières, vivantes",3,151,0,0,151
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35032,35230,BOURGBARRÉ,CH,Chèvres,NA,Chèvres,1,38,0,0,38
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35032,35230,BOURGBARRÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,2,7,0,0,7
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35032,35230,BOURGBARRÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,0,0,145,145
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35039,35530,BRÉCÉ,BL,Brebis laitières,NA,Brebis laitières,1,297,0,0,297
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35039,35530,BRÉCÉ,BV,Brebis viande,NA,Brebis viande,1,90,0,0,90
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35039,35530,BRÉCÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,74,0,0,74
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35047,35170,BRUZ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,146,0,0,146
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35051,35510,CESSON-SÉVIGNÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,1,3,0,0,3
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35051,35510,CESSON-SÉVIGNÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,77,0,0,77
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35055,35135,CHANTEPIE,VA,Vaches allaitantes,NA,Vaches allaitantes,1,10,0,0,10
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35055,35135,CHANTEPIE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,40,0,0,40
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35058,35630,LA CHAPELLE-CHAUSSÉE,AUVOL,Autres volailles de chair,NA,Autres volailles,1,450,0,0,450
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35058,35630,LA CHAPELLE-CHAUSSÉE,AUVOL,Autres volailles de chair,NA,"Dindes, vivantes",1,70,0,0,70
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35058,35630,LA CHAPELLE-CHAUSSÉE,AUVOL,Autres volailles de chair,NA,Pintades,1,800,0,0,800
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35058,35630,LA CHAPELLE-CHAUSSÉE,PC,Poulets de chair,NA,"Poulets, vivants",1,20000,0,0,20000
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35058,35630,LA CHAPELLE-CHAUSSÉE,PO,Poules pondeuses,NA,Poules pondeuses,1,270,0,0,270
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35058,35630,LA CHAPELLE-CHAUSSÉE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,41,0,90,131
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35065,35590,LA CHAPELLE-THOUARAULT,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,45,0,0,45
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35076,35310,CHAVAGNE,AUVOL,Autres volailles de chair,NA,Pintades,1,280,0,0,280
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35076,35310,CHAVAGNE,PC,Poulets de chair,NA,"Poulets, vivants",1,5200,0,0,5200
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35076,35310,CHAVAGNE,PO,Poules pondeuses,NA,Poules pondeuses,1,2600,0,0,2600
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35076,35310,CHAVAGNE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,96,0,0,96
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35080,35310,CINTRÉ,BV,Brebis viande,NA,Brebis viande,1,11,0,0,11
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35080,35310,CINTRÉ,TR,Truies,NA,Truies,1,8,0,0,8
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35081,35590,CLAYES,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,107,0,0,107
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35088,35150,CORPS-NUDS,BV,Brebis viande,NA,Brebis viande,1,13,0,0,13
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35088,35150,CORPS-NUDS,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,41,0,0,41
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35131,35590,L'HERMITAGE,AUPA,Autres élevages,NA,"Chevaux, vivants",1,4,0,0,4
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35131,35590,L'HERMITAGE,CH,Chèvres,NA,Chèvres,1,283,0,0,283
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,API,Apiculture,NA,Ruches,1,0,17,0,17
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,Autres volailles,1,100,0,0,100
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,"Oies, vivantes",1,3,0,0,3
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,Pintades,1,100,0,0,100
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,LA,Lapins,NA,Lapins,1,17,0,0,17
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,LAR,Lapines reproductrices,NA,Lapines reproductrices,1,4,0,0,4
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,PC,Poulets de chair,NA,"Poulets, vivants",2,5420,0,0,5420
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,PO,Poules pondeuses,NA,Poules pondeuses,2,1040,0,0,1040
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,1,4,0,0,4
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,9,0,0,9
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35144,35850,LANGAN,VA,Vaches allaitantes,NA,Vaches allaitantes,1,15,0,0,15
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35144,35850,LANGAN,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,33,0,0,33
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35196,35310,MORDELLES,BV,Brebis viande,NA,Brebis viande,1,0,0,6,6
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35196,35310,MORDELLES,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,265,0,1,266
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35204,35410,NOUVOITOU,CH,Chèvres,NA,Chèvres,1,237,0,0,237
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35204,35410,NOUVOITOU,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,89,0,0,89
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35206,35230,NOYAL-CHÂTILLON-SUR-SEICHE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",3,167,0,0,167
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35208,35230,ORGÈRES,VA,Vaches allaitantes,NA,Vaches allaitantes,1,33,0,0,33
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35210,35740,PACÉ,CH,Chèvres,NA,Chèvres,1,255,0,0,255
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35210,35740,PACÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,1,4,0,0,4
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35210,35740,PACÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,170,0,0,170
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35216,35850,PARTHENAY-DE-BRETAGNE,VA,Vaches allaitantes,NA,Vaches allaitantes,1,7,0,0,7
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35216,35850,PARTHENAY-DE-BRETAGNE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,80,0,0,80
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35240,35650,LE RHEU,BV,Brebis viande,NA,Brebis viande,1,15,0,0,15
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35240,35650,LE RHEU,TR,Truies,NA,Truies,1,62,0,0,62
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35240,35650,LE RHEU,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,50,0,0,50
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,TR,Truies,NA,Truies,2,70,0,0,70
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,1,20,0,0,20
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,95,0,0,95
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35266,35230,SAINT-ERBLON,VA,Vaches allaitantes,NA,Vaches allaitantes,1,4,0,0,4
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35266,35230,SAINT-ERBLON,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,55,0,0,55
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35275,35590,SAINT-GILLES,VA,Vaches allaitantes,NA,Vaches allaitantes,1,18,0,0,18
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35281,35136,SAINT-JACQUES-DE-LA-LANDE,BV,Brebis viande,NA,Brebis viande,1,10,0,0,10
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35281,35136,SAINT-JACQUES-DE-LA-LANDE,VA,Vaches allaitantes,NA,Vaches allaitantes,1,53,0,0,53
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35352,35770,VERN-SUR-SEICHE,AUPA,Autres élevages,NA,"Chevaux, vivants",1,0,0,3,3
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35353,35132,VEZIN-LE-COQUET,PO,Poules pondeuses,NA,Poules pondeuses,1,650,0,0,650
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35353,35132,VEZIN-LE-COQUET,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,45,0,0,45
+2023,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35363,35131,PONT-PÉAN,API,Apiculture,NA,Ruches,1,21,0,0,21
+2023,53,Bretagne,35,Ille-et-Vilaine,243500634,Communauté de communes Roche aux Fées Communauté,35136,35150,JANZÉ,PC,Poulets de chair,NA,"Poulets, vivants",1,16000,0,0,16000
+2023,53,Bretagne,35,Ille-et-Vilaine,243500634,Communauté de communes Roche aux Fées Communauté,35136,35150,JANZÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,85,0,0,85
+2024,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35170,35450,MECÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,3,67,0,0,67
+2024,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35170,35450,MECÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",3,361,0,0,361
+2024,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35200,35130,MOUTIERS,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,137,0,0,137
+2024,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35235,35130,RANNÉE,CH,Chèvres,NA,Chèvres,2,310,0,0,310
+2024,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35235,35130,RANNÉE,VA,Vaches allaitantes,NA,Vaches allaitantes,1,21,0,0,21
+2024,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35235,35130,RANNÉE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,87,0,0,87
+2024,53,Bretagne,35,Ille-et-Vilaine,200072452,Communauté d'agglomération Fougères Agglomération,35190,35420,MONTHAULT,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,51,0,0,51
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35001,35690,ACIGNÉ,TR,Truies,NA,Truies,1,50,0,0,50
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35001,35690,ACIGNÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,2,6,0,9,15
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35001,35690,ACIGNÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",8,448,0,131,579
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,AUVOL,Autres volailles de chair,NA,Autres volailles,1,15,0,0,15
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,AUVOL,Autres volailles de chair,NA,Pintades,1,100,0,0,100
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,PC,Poulets de chair,NA,"Poulets, vivants",1,900,0,0,900
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,PO,Poules pondeuses,NA,Poules pondeuses,1,100,0,0,100
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,VA,Vaches allaitantes,NA,Vaches allaitantes,1,1,0,0,1
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,VL,Vaches laitières,NA,"Vaches laitières, vivantes",3,136,0,0,136
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35032,35230,BOURGBARRÉ,CH,Chèvres,NA,Chèvres,1,34,0,0,34
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35032,35230,BOURGBARRÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,1,6,0,0,6
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35032,35230,BOURGBARRÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,145,0,0,145
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35039,35530,BRÉCÉ,BL,Brebis laitières,NA,Brebis laitières,1,300,0,0,300
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35039,35530,BRÉCÉ,BV,Brebis viande,NA,Brebis viande,1,10,0,0,10
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35039,35530,BRÉCÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,75,0,0,75
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35047,35170,BRUZ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,89,0,0,89
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35051,35510,CESSON-SÉVIGNÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,78,0,0,78
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35055,35135,CHANTEPIE,VA,Vaches allaitantes,NA,Vaches allaitantes,1,9,0,0,9
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35055,35135,CHANTEPIE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,44,0,0,44
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35058,35630,LA CHAPELLE-CHAUSSÉE,AUVOL,Autres volailles de chair,NA,Autres volailles,1,450,0,0,450
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35058,35630,LA CHAPELLE-CHAUSSÉE,AUVOL,Autres volailles de chair,NA,"Dindes, vivantes",1,70,0,0,70
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35058,35630,LA CHAPELLE-CHAUSSÉE,AUVOL,Autres volailles de chair,NA,Pintades,1,800,0,0,800
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35058,35630,LA CHAPELLE-CHAUSSÉE,PC,Poulets de chair,NA,"Poulets, vivants",1,20000,0,0,20000
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35058,35630,LA CHAPELLE-CHAUSSÉE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,83,0,0,83
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35065,35590,LA CHAPELLE-THOUARAULT,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,45,0,0,45
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35076,35310,CHAVAGNE,AUVOL,Autres volailles de chair,NA,Pintades,1,140,0,0,140
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35076,35310,CHAVAGNE,PC,Poulets de chair,NA,"Poulets, vivants",1,4000,0,0,4000
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35076,35310,CHAVAGNE,PO,Poules pondeuses,NA,Poules pondeuses,1,1300,0,0,1300
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35076,35310,CHAVAGNE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,96,0,0,96
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35080,35310,CINTRÉ,BV,Brebis viande,NA,Brebis viande,1,12,0,0,12
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35080,35310,CINTRÉ,TR,Truies,NA,Truies,1,10,0,0,10
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35081,35590,CLAYES,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,98,0,0,98
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35088,35150,CORPS-NUDS,BV,Brebis viande,NA,Brebis viande,1,13,0,0,13
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35088,35150,CORPS-NUDS,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,37,0,0,37
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35131,35590,L'HERMITAGE,AUPA,Autres élevages,NA,"Ânes, mulets et bardots, vivants",1,4,0,0,4
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35131,35590,L'HERMITAGE,CH,Chèvres,NA,Chèvres,1,272,0,0,272
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,API,Apiculture,NA,Ruches,1,17,0,0,17
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,Autres volailles,1,100,0,0,100
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,"Oies, vivantes",1,3,0,0,3
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,Pintades,2,300,0,0,300
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,LA,Lapins,NA,Lapins,1,10,0,0,10
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,LAR,Lapines reproductrices,NA,Lapines reproductrices,1,4,0,0,4
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,PC,Poulets de chair,NA,"Poulets, vivants",1,2500,0,0,2500
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,PO,Poules pondeuses,NA,Poules pondeuses,2,1750,0,0,1750
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,1,3,0,0,3
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,11,0,0,11
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35180,35190,MINIAC-SOUS-BÉCHEREL,BL,Brebis laitières,NA,Brebis laitières,1,0,0,22,22
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35180,35190,MINIAC-SOUS-BÉCHEREL,CH,Chèvres,NA,Chèvres,1,0,0,1,1
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35180,35190,MINIAC-SOUS-BÉCHEREL,VA,Vaches allaitantes,NA,Vaches allaitantes,1,0,0,10,10
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35196,35310,MORDELLES,BV,Brebis viande,NA,Brebis viande,1,14,0,0,14
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35196,35310,MORDELLES,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,284,0,0,284
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35204,35410,NOUVOITOU,CH,Chèvres,NA,Chèvres,1,250,0,86,336
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35204,35410,NOUVOITOU,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,98,0,0,98
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35206,35230,NOYAL-CHÂTILLON-SUR-SEICHE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",3,168,0,0,168
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35208,35230,ORGÈRES,VA,Vaches allaitantes,NA,Vaches allaitantes,1,32,0,0,32
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35210,35740,PACÉ,CH,Chèvres,NA,Chèvres,1,145,0,0,145
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35210,35740,PACÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,1,6,0,0,6
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35210,35740,PACÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,80,0,83,163
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35216,35850,PARTHENAY-DE-BRETAGNE,VA,Vaches allaitantes,NA,Vaches allaitantes,1,7,0,0,7
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35216,35850,PARTHENAY-DE-BRETAGNE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,76,0,0,76
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35240,35650,LE RHEU,BV,Brebis viande,NA,Brebis viande,1,15,0,0,15
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35240,35650,LE RHEU,TR,Truies,NA,Truies,1,56,0,0,56
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35240,35650,LE RHEU,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,62,0,0,62
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,TR,Truies,NA,Truies,2,70,0,0,70
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,1,20,0,0,20
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,95,0,0,95
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35266,35230,SAINT-ERBLON,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,64,0,0,64
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35275,35590,SAINT-GILLES,VA,Vaches allaitantes,NA,Vaches allaitantes,1,16,0,0,16
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35281,35136,SAINT-JACQUES-DE-LA-LANDE,BV,Brebis viande,NA,Brebis viande,1,10,0,0,10
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35281,35136,SAINT-JACQUES-DE-LA-LANDE,VA,Vaches allaitantes,NA,Vaches allaitantes,1,51,0,0,51
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35352,35770,VERN-SUR-SEICHE,AUPA,Autres élevages,NA,"Chevaux, vivants",1,0,0,3,3
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35353,35132,VEZIN-LE-COQUET,PO,Poules pondeuses,NA,Poules pondeuses,1,650,0,0,650
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35353,35132,VEZIN-LE-COQUET,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,34,0,0,34
+2024,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35363,35131,PONT-PÉAN,API,Apiculture,NA,Ruches,1,41,0,0,41
+2024,53,Bretagne,35,Ille-et-Vilaine,243500634,Communauté de communes Roche aux Fées Communauté,35136,35150,JANZÉ,PC,Poulets de chair,NA,"Poulets, vivants",1,16000,0,0,16000
+2024,53,Bretagne,35,Ille-et-Vilaine,243500634,Communauté de communes Roche aux Fées Communauté,35136,35150,JANZÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,87,0,0,87
+2025,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35170,35450,MECÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,2,67,0,0,67
+2025,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35170,35450,MECÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",3,344,0,1,345
+2025,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35200,35130,MOUTIERS,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,147,0,3,150
+2025,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35235,35130,RANNÉE,CH,Chèvres,NA,Chèvres,2,265,0,0,265
+2025,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35235,35130,RANNÉE,VA,Vaches allaitantes,NA,Vaches allaitantes,1,18,0,0,18
+2025,53,Bretagne,35,Ille-et-Vilaine,200039022,Communauté d'agglomération Vitré Communauté,35235,35130,RANNÉE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,87,0,0,87
+2025,53,Bretagne,35,Ille-et-Vilaine,200072452,Communauté d'agglomération Fougères Agglomération,35190,35420,MONTHAULT,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,42,0,0,42
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35001,35690,ACIGNÉ,TR,Truies,NA,Truies,1,50,0,0,50
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35001,35690,ACIGNÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,3,17,0,8,25
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35001,35690,ACIGNÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",7,475,0,47,522
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,AUVOL,Autres volailles de chair,NA,Autres volailles,1,30,0,0,30
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,AUVOL,Autres volailles de chair,NA,Pintades,1,100,0,0,100
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,PC,Poulets de chair,NA,"Poulets, vivants",1,700,0,0,700
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,PO,Poules pondeuses,NA,Poules pondeuses,1,100,0,0,100
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,VA,Vaches allaitantes,NA,Vaches allaitantes,1,1,0,0,1
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35024,35830,BETTON,VL,Vaches laitières,NA,"Vaches laitières, vivantes",3,121,0,0,121
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35032,35230,BOURGBARRÉ,CH,Chèvres,NA,Chèvres,1,29,0,0,29
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35032,35230,BOURGBARRÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,2,153,0,0,153
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35032,35230,BOURGBARRÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,147,0,0,147
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35039,35530,BRÉCÉ,BL,Brebis laitières,NA,Brebis laitières,1,252,0,0,252
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35039,35530,BRÉCÉ,BV,Brebis viande,NA,Brebis viande,1,3,0,0,3
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35039,35530,BRÉCÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,39,0,1,40
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35047,35170,BRUZ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,89,0,0,89
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35051,35510,CESSON-SÉVIGNÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,83,0,0,83
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35055,35135,CHANTEPIE,VA,Vaches allaitantes,NA,Vaches allaitantes,1,18,0,0,18
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35055,35135,CHANTEPIE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,44,0,0,44
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35058,35630,LA CHAPELLE-CHAUSSÉE,AUVOL,Autres volailles de chair,NA,Autres volailles,1,550,0,0,550
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35058,35630,LA CHAPELLE-CHAUSSÉE,AUVOL,Autres volailles de chair,NA,"Dindes, vivantes",1,140,0,0,140
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35058,35630,LA CHAPELLE-CHAUSSÉE,AUVOL,Autres volailles de chair,NA,"Oies, vivantes",1,40,0,0,40
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35058,35630,LA CHAPELLE-CHAUSSÉE,AUVOL,Autres volailles de chair,NA,Pintades,1,600,0,0,600
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35058,35630,LA CHAPELLE-CHAUSSÉE,PC,Poulets de chair,NA,"Poulets, vivants",1,20000,0,0,20000
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35058,35630,LA CHAPELLE-CHAUSSÉE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,83,0,0,83
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35065,35590,LA CHAPELLE-THOUARAULT,VA,Vaches allaitantes,NA,Vaches allaitantes,1,1,0,0,1
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35076,35310,CHAVAGNE,AUVOL,Autres volailles de chair,NA,Autres volailles,1,4000,0,0,4000
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35076,35310,CHAVAGNE,AUVOL,Autres volailles de chair,NA,Pintades,1,140,0,0,140
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35076,35310,CHAVAGNE,PC,Poulets de chair,NA,"Poulets, vivants",1,4000,0,0,4000
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35076,35310,CHAVAGNE,PO,Poules pondeuses,NA,Poules pondeuses,1,1300,0,0,1300
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35076,35310,CHAVAGNE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,110,0,0,110
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35080,35310,CINTRÉ,BV,Brebis viande,NA,Brebis viande,1,23,0,0,23
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35080,35310,CINTRÉ,TR,Truies,NA,Truies,1,8,0,0,8
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35081,35590,CLAYES,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,94,0,0,94
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35088,35150,CORPS-NUDS,BV,Brebis viande,NA,Brebis viande,1,10,0,0,10
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35088,35150,CORPS-NUDS,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,34,0,0,34
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,API,Apiculture,NA,Ruches,1,16,0,0,16
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,Autres volailles,1,100,0,0,100
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,"Oies, vivantes",1,3,0,0,3
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,AUVOL,Autres volailles de chair,NA,Pintades,1,100,0,0,100
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,PC,Poulets de chair,NA,"Poulets, vivants",1,2500,0,0,2500
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,PO,Poules pondeuses,NA,Poules pondeuses,2,1750,0,0,1750
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,1,7,0,0,7
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35139,35890,LAILLÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,10,0,0,10
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35196,35310,MORDELLES,BV,Brebis viande,NA,Brebis viande,1,20,0,0,20
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35196,35310,MORDELLES,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,303,0,0,303
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35204,35410,NOUVOITOU,CH,Chèvres,NA,Chèvres,1,172,0,0,172
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35204,35410,NOUVOITOU,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,88,0,0,88
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35206,35230,NOYAL-CHÂTILLON-SUR-SEICHE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",3,157,0,0,157
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35208,35230,ORGÈRES,VA,Vaches allaitantes,NA,Vaches allaitantes,1,32,0,0,32
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35210,35740,PACÉ,CH,Chèvres,NA,Chèvres,1,145,0,0,145
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35210,35740,PACÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,1,6,0,0,6
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35210,35740,PACÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",2,153,0,1,154
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35216,35850,PARTHENAY-DE-BRETAGNE,VA,Vaches allaitantes,NA,Vaches allaitantes,1,7,0,0,7
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35216,35850,PARTHENAY-DE-BRETAGNE,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,81,0,0,81
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35238,35000,RENNES,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,90,0,0,90
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35240,35650,LE RHEU,BV,Brebis viande,NA,Brebis viande,1,17,0,0,17
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35240,35650,LE RHEU,TR,Truies,NA,Truies,1,51,0,0,51
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35240,35650,LE RHEU,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,62,0,0,62
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,TR,Truies,NA,Truies,2,76,0,0,76
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,VA,Vaches allaitantes,NA,Vaches allaitantes,1,20,0,0,20
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35245,35850,ROMILLÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,96,0,0,96
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35266,35230,SAINT-ERBLON,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,60,0,0,60
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35281,35136,SAINT-JACQUES-DE-LA-LANDE,BV,Brebis viande,NA,Brebis viande,1,11,0,0,11
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35281,35136,SAINT-JACQUES-DE-LA-LANDE,VA,Vaches allaitantes,NA,Vaches allaitantes,1,45,0,0,45
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35352,35770,VERN-SUR-SEICHE,AUPA,Autres élevages,NA,"Chevaux, vivants",1,0,0,3,3
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35353,35132,VEZIN-LE-COQUET,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,34,0,0,34
+2025,53,Bretagne,35,Ille-et-Vilaine,243500139,Rennes Métropole,35363,35131,PONT-PÉAN,API,Apiculture,NA,Ruches,1,28,0,0,28
+2025,53,Bretagne,35,Ille-et-Vilaine,243500634,Communauté de communes Roche aux Fées Communauté,35136,35150,JANZÉ,VL,Vaches laitières,NA,"Vaches laitières, vivantes",1,85,0,0,85

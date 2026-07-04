@@ -1,0 +1,95 @@
+{
+  "local_id": "88348420-eae2-58f4-b6a2-821bcdafccd4",
+  "resource_title": "Indicateurs de valeur ajoutée des lycées d'enseignement général et technologique (ancienne version) - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Indicateurs de valeur ajoutée des lycées d'enseignement général et technologique (ancienne version) — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/5889d042a3a72974c1f0d607\n\n**Ce jeu de données a été remplacé par une nouvelle version et ne sera plus actualisé.**  \n[Nouvelle version des indicateurs de valeur ajoutée en lycée d’enseignement général et technologique](https://data.education.gouv.fr/explore/dataset/fr-en-indicateurs-de-resultat-des-lycees-gt_v2/information)\n\nLes indicateurs de valeur ajoutée des lycées sont une batterie d’indicateurs qui visent à évaluer l'action propre de chaque lycée pour faire réussir les élèves qu’il accueille, en terme de réussite au baccalauréat et d’accompagnement tout au long de sa scolarité au lycée. \n\nLes IVAL permettent un diagnostic qui va au-delà de celui qui peut être fait à partir des seuls taux de réussite « bruts » à l’examen. Pour donner une image de l’apport de chaque lycée, le calcul statistique s'efforce d'éliminer l'incidence des facteurs de réussite scolaire extérieurs au lycée, pour essayer de conserver ce qui est dû à son action propre. Pour juger de l’efficacité d’un lycée, la réussite de chacun de ses élèves doit ainsi être comparée à celle des élèves comparables scolarisés dans des lycées comparables. Des indicateurs en « valeur ajoutée » accompagnent ainsi les indicateurs « bruts ». Pour chaque lycée, la valeur ajoutée correspond à la différence entre les résultats obtenus et les résultats qui étaient attendus, compte tenu des caractéristiques scolaires et sociodémographiques des élèves accueillis. L’analyse combine des facteurs individuels des élèves (âge et sexe, niveau scolaire à l’entrée au lycée, profil social) et des facteurs liés à la structure de l’établissement (pourcentage de filles, part d'élèves en retard scolaire, profil social des élèves et note moyenne obtenue au diplôme national du brevet). \n\nLa valeur ajoutée est une approche relative et non pas absolue. Si la valeur ajoutée est positive, on a tout lieu de penser que l’établissement a plus fait réussir ses élèves que ce qui était prévu vu le profil des élèves qu’il accueillait. Si elle est négative, cela signifie que les résultats de l’établissement sont inférieurs à la moyenne des résultats des établissements qui lui ressemblent.\n\nLes IVAL sont diffusés uniquement pour les lycées publics et privés sous contrat. \n\nLes taux d’accès et leur valeur ajoutée sont calculés uniquement pour les lycées qui offrent un cycle complet, c’est-à-dire qui accueillent des élèves de 2nde, 1ère et Tale. Enfin, les résultats en valeur ajoutée et les effectifs de lauréats par mention ne sont pas diffusés lorsqu’il y a moins de 20 candidats en série GT ou moins de 10 candidats en série PRO.\n\nLes fiches de résultats des lycées sont consultables à partir de la page de diffusion des IVAL sur le site du ministère : [https://www.education.gouv.fr/les-indicateurs-de-resultats-des-colleges-et-des-lycees-377729](https://www.education.gouv.fr/les-indicateurs-de-resultats-des-colleges-et-des-lycees-377729)\n\n[  \n](https://www.education.gouv.fr/les-indicateurs-de-resultats-des-lycees-1118) [](https://www.education.gouv.fr/les-indicateurs-de-resultats-des-lycees-1118)Bibliographie : Evain F., 2020, Indicateurs de valeur ajoutée des lycées Du pilotage interne à la diffusion grand public. Insee, Courrier des statistiques n°5."
+    }
+  ],
+  "theme": "education",
+  "keywords": [
+    "acquis",
+    "eleves",
+    "enseignement-general",
+    "enseignement-technologique",
+    "etablissements-dont-ips",
+    "evaluation",
+    "indicateur-de-valeur-ajoutee",
+    "ival",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Ministères de l'Éducation nationale"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "110f5a8b-2a10-592d-8d94-e95ce6ad102d",
+      "media_type": "FILE",
+      "media_name": "fr-en-indicateurs-de-resultat-des-lycees-denseigne-rennesmetropole.csv",
+      "media_caption": "fr-en-indicateurs-de-resultat-des-lycees-denseignement-general-et-technologique.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "f2f251e0-b23b-54b2-940d-ade746c26060",
+      "media_type": "FILE",
+      "media_name": "fr-en-indicateurs-de-resultat-des-lycees-denseigne-rennesmetropole.json",
+      "media_caption": "fr-en-indicateurs-de-resultat-des-lycees-denseignement-general-et-technologique.csv — données filtrées sur Rennes Métropole (JSON)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "9853eaf0-9ea9-57f6-9630-284bb6d80c9b",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://data.education.gouv.fr/api/explore/v2.1/catalog/datasets/fr-en-indicateurs-de-resultat-des-lycees-denseignement-general-et-technologique/exports/csv?use_labels=true",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2016-11-13T00:00:00Z",
+    "updated": "2026-07-01T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2016-11-13T00:00:00Z",
+      "updated": "2026-07-01T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/5889d042a3a72974c1f0d607"
+  }
+}

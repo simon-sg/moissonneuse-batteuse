@@ -1,0 +1,11 @@
+Colonne,Description
+date_mesure,Dimension temporelle de la mesure. La date fait référence  à une période écoulée et non un instant précis.
+geocode_commune,Code officiel géographique communal selon les données de l'INSEE du 1er janvier de l'année en cours. https://www.insee.fr/fr/information/7671844
+libelle_commune,Libellé de la commune selon la nomenclature de l'INSEE. https://www.insee.fr/fr/information/7671844
+geocode_epci,Code officiel géographique à l'échelle de l'EPCI selon les données de l'INSEE du 1er janvier de l'année en cours. https://www.insee.fr/fr/information/2510634
+libelle_epci,Libellé de l'EPCI selon la nomenclature de l'INSEE. https://www.insee.fr/fr/information/2510634
+geocode_departement,Code officiel géographique départemental selon les données de l'INSEE du 1er janvier de l'année en cours. https://www.insee.fr/fr/information/2560452
+libelle_departement,Libellé du département selon la nomenclature de l'INSEE. https://www.insee.fr/fr/information/2560452
+geocode_region,Code officiel géographique régional selon les données de l'INSEE du 1er janvier de l'année en cours. https://www.insee.fr/fr/information/2560452
+libelle_region,Libellé de la région selon la nomenclature de l'INSEE. https://www.insee.fr/fr/information/2560452
+valeur,Valeur de l'indicateur en nb : Nombre de communes couvertes par un PDM ou un PDMS

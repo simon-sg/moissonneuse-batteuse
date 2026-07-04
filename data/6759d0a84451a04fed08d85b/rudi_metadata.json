@@ -1,0 +1,119 @@
+{
+  "local_id": "e72a01e0-7c1f-5012-a2c0-6b6f72014bfb",
+  "resource_title": "Plafonds de loyer du dispositif Loc’Avantages - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Plafonds de loyer du dispositif Loc’Avantages — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/6759d0a84451a04fed08d85b\n\nLe dispositif Loc’Avantages, créé en 2022, est une réduction d’impôt bénéficiant aux bailleurs privés qui s’engagent à travers une convention passée avec l’Anah à louer leur logement sous des plafonds de loyer à des locataires dont les revenus ne dépassent pas des plafonds de ressources.\nLe décret n° 2022-465 du 31 mars 2022 codifié à l’article 2 terdecies H de l’annexe III au Code général des impôts définit la méthode de fixation des plafonds de loyer et leur modalité de révision.\n\n\n**Présentation des données**\n\nLes plafonds de loyer hors charges par mètre carré sont définis annuellement au 1er janvier de chaque année. Ils sont fixés à l’échelle de la commune ou de l’arrondissement pour chaque commune de France métropolitaine et des départements et régions d’outre-mer à l’exception de Mayotte où ils sont fixés au niveau du département. A Paris, Lyon et Marseille, ils sont fixés à l’échelle de l’arrondissement.\n\nPour 2022 et les années paires ultérieures, les plafonds de loyer sont calculés à partir d’une estimation du loyer de marché dans le parc locatif privé de la commune ou l’arrondissement, à laquelle est appliquée un taux de décote (-15%, -30%, -45%) selon le segment considéré (Loc1, Loc2, Loc3). \nDans les communes couvertes par un Observatoire Local des Loyers (OLL), les estimations du loyer de marché sont calculées à partir des données publiées par ce réseau. Pour les communes non couvertes, les estimations sont réalisées à partir de la carte des loyers des appartements publiée sur le site du ministère de la transition écologique et de la cohésion des territoires et réalisée par l’Agence Nationale pour l’Information sur le Logement (Anil), à laquelle est retranché un forfait de charges de 1,3 €/m2.\nA Mayotte, en l’absence de données d’observation sur les loyers, le plafond de loyer de la location intermédiaire (Loc1) est celui du Pinel dans les DROM ; ce plafond s’applique dans toutes les communes du département. Les plafonds de loyer sociaux et très sociaux (Loc2 et Loc3) sont calculés à partir d’une décote du plafond de loyer Loc1.\n\nPour 2023 et les années impaires ultérieures, les plafonds de loyer sont définis en révisant les plafonds des loyers en vigueur l’année précédente par la variation de l’Indice de Référence des Loyers (IRL) publié par l’Insee du deuxième trimestre de l’année précédente.\n\n\n**Calcul du plafond de loyer en euros mensuels**\n\nLe plafond de loyer en euros mensuels que le bailleur se doit de respecter à la location du logement est égal au produit du plafond de loyer en euros par m², du coefficient de structure et de la surface fiscale du logement :\n-Le coefficient de structure est appliqué au plafond de loyer pour prendre en compte le fait que les loyers par mètre carré sont significativement plus élevés pour les petits logements que pour les grands. Ainsi, les valeurs de référence par commune sont multipliées par ce coefficient égal à 0,7+ 19/S, où S est la surface fiscale du logement. Ce coefficient est plafonné à 1,2 et est arrondi à la deuxième décimale.\n-La surface fiscale est égale à la surface habitable augmentée de la moitié de la surface des annexes. La majoration ne peut excéder 8 m².\n\nLes plafonds de ressources sont publiés annuellement au bulletin officiel des finances publiques (BOFiP).\n\nUn simulateur est disponible au lien suivant : [lien](https://www.service-public.fr/particuliers/vosdroits/R61610)  \nPour plus d’informations sur le dispositif Loc’Avantages : [lien ](https://www.economie.gouv.fr/particuliers/locavantages-reduction-impot-location)\n"
+    }
+  ],
+  "theme": "housing",
+  "keywords": [
+    "locavantages",
+    "plafond-de-loyer",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Ministère de la Transition écologique"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "1df2e060-97e5-5b34-85e4-0c80b428fa9d",
+      "media_type": "FILE",
+      "media_name": "plafonds-de-loyer-2026-rennesmetropole.csv",
+      "media_caption": "Plafonds de loyer 2026 — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "71986df0-a5b7-5618-bf4e-5485a0520e9a",
+      "media_type": "FILE",
+      "media_name": "plafonds-de-loyer-2025-rennesmetropole.csv",
+      "media_caption": "Plafonds de loyer 2025 — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "3d918c4f-0ee3-59c3-bfca-4d65a46b488e",
+      "media_type": "FILE",
+      "media_name": "plafonds-de-loyer-2024-rennesmetropole.csv",
+      "media_caption": "Plafonds de loyer 2024 — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "b93e4ee2-9bbb-55e3-aba4-17b738f275e4",
+      "media_type": "FILE",
+      "media_name": "plafonds-de-loyer-2023-rennesmetropole.csv",
+      "media_caption": "Plafonds de loyer 2023 — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "8eb0c421-8698-5f0a-8f7f-a8137f576527",
+      "media_type": "FILE",
+      "media_name": "plafonds-de-loyer-2022-rennesmetropole.csv",
+      "media_caption": "Plafonds de loyer 2022 — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "ea014031-cac4-580a-8af9-de645e14f9df",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://static.data.gouv.fr/resources/plafonds-de-loyer-du-dispositif-locavantages/20260203-133129/plafonds-2026-final.csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2024-12-11T00:00:00Z",
+    "updated": "2026-02-03T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2024-12-11T00:00:00Z",
+      "updated": "2026-02-03T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/6759d0a84451a04fed08d85b"
+  }
+}

@@ -1,0 +1,18 @@
+id_centre,date_debut_semaine,code_region,nom_region,code_departement,nom_departement,commune_insee,nom_centre,nombre_ucd,doses_allouees,rdv_pris
+1968,2021-08-16,53,BRE,35,Ille-et-Vilaine,35047,BRUZ - Parc Expo Rennes Aéroport,459,2754,2192
+1968,2021-08-23,53,BRE,35,Ille-et-Vilaine,35047,BRUZ - Parc Expo Rennes Aéroport,550,3300,2746
+2217,2021-08-16,53,BRE,35,Ille-et-Vilaine,35238,RENNES - Grand centre stade Robert Poirier,3733,22398,18060
+2217,2021-08-23,53,BRE,35,Ille-et-Vilaine,35238,RENNES - Grand centre stade Robert Poirier,3733,22398,10756
+2217,2021-08-30,53,BRE,35,Ille-et-Vilaine,35238,RENNES - Grand centre stade Robert Poirier,3733,22398,11194
+2397,2021-08-16,53,BRE,35,Ille-et-Vilaine,35055,CHANTEPIE - EDEFS,201,1206,1189
+2397,2021-08-23,53,BRE,35,Ille-et-Vilaine,35055,CHANTEPIE - EDEFS,201,1206,1274
+2397,2021-08-30,53,BRE,35,Ille-et-Vilaine,35055,CHANTEPIE - EDEFS,312,1872,1382
+2397,2021-09-06,53,BRE,35,Ille-et-Vilaine,35055,CHANTEPIE - EDEFS,375,2250,1283
+892,2021-08-16,53,BRE,35,Ille-et-Vilaine,35238,RENNES Le Liberté,867,5202,4377
+892,2021-08-23,53,BRE,35,Ille-et-Vilaine,35238,RENNES Le Liberté,867,5202,4454
+892,2021-08-30,53,BRE,35,Ille-et-Vilaine,35238,RENNES Le Liberté,167,1002,726
+892,2021-09-06,53,BRE,35,Ille-et-Vilaine,35238,RENNES Le Liberté,417,2502,1687
+896,2021-08-16,53,BRE,35,Ille-et-Vilaine,35278,ST-GREGOIRE - Brocéliande (nouvelle adresse 20/07/2021),215,1290,1265
+896,2021-08-23,53,BRE,35,Ille-et-Vilaine,35278,ST-GREGOIRE - Brocéliande (nouvelle adresse 20/07/2021),215,1290,1257
+896,2021-08-30,53,BRE,35,Ille-et-Vilaine,35278,ST-GREGOIRE - Brocéliande (nouvelle adresse 20/07/2021),215,1290,1176
+896,2021-09-06,53,BRE,35,Ille-et-Vilaine,35278,ST-GREGOIRE - Brocéliande (nouvelle adresse 20/07/2021),215,1290,943

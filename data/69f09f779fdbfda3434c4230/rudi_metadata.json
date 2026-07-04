@@ -1,0 +1,79 @@
+{
+  "local_id": "839799a9-c3ae-59a7-89ea-0260e5644ce7",
+  "resource_title": "Nombre de signalements adresse par commune - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Nombre de signalements adresse par commune — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/69f09f779fdbfda3434c4230\n\nCe jeu de données propose un **décompte du nombre de signalements par commune** sur les adresses présentent dans la **Base Adresse Nationale.**\n\nLes champs disponibles sont :\n\n* *code\\_insee* : Code INSEE de la commune\n\n* *nom\\_commune* : Nom de la commune\n\n* *nb\\_signalements\\_en\\_attente* : Nombre de signalements en attente de traitement\n\n* *nb\\_signalements\\_traites* : Nombre de signalements acceptés par la commune\n\n* *nb\\_signalements\\_ignores* : Nombre de signalements refusés par la commune\n\n* *nb\\_signalements\\_expires* : Nombre de signalements expirés, il s'agit du cas où un rapprochement n'a pas pu être fait entre un toponyme sur lequel porte le signalement et un toponyme dans la BAN (l'adresse sur laquelle porte le signalement a été modifiée par exemple)\n\n* *nb\\_signalements\\_total* : Total des 4 colonnes précédentes\n\n<br />\n\nLes lignes du CSV sont triées par nombre de signalement reçus décroissant.\n\nLes données sont disponibles au format CSV, le fichier sera mis à jour chaque semaine.\n"
+    }
+  ],
+  "theme": "society",
+  "keywords": [
+    "adressage",
+    "communes",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "adresse.data.gouv.fr"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "eae5bbae-960a-54cd-956e-192605fd1d06",
+      "media_type": "FILE",
+      "media_name": "signalements-par-commune-rennesmetropole.csv",
+      "media_caption": "signalements-par-commune.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "ef8612c4-d70b-5abf-b5d7-1fc3ff492ed1",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://static.data.gouv.fr/resources/nombre-de-signalements-adresse-par-commune/20260630-170000/signalements-par-commune.csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2026-04-28T00:00:00Z",
+    "updated": "2026-06-30T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2026-04-28T00:00:00Z",
+      "updated": "2026-06-30T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/69f09f779fdbfda3434c4230"
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "local_id": "93cecf3a-3c7f-5d82-9f24-523c637f2599",
+  "resource_title": "Infrastructures de recharge pour véhicules électriques - Données ouvertes - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Infrastructures de recharge pour véhicules électriques - Données ouvertes — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/6818bce2d9af175f6e01a1b2\n\nCe jeu de données rassemble les données relatives aux points de recharge pour véhicules électriques des aménageurs connectés à l'API Qualicharge mise en place par la Direction générale de l'énergie et du climat. La mise en place de la connexion à cette API est obligatoire pour les aménageurs d'infrastructures de recharge en courant continu souhaitant toucher des certificats de fourniture d'électricité renouvelable dans le cadre du mécanisme incitatif pour l'utilisation d'énergie renouvelable dans les transports depuis le 1er avril 2025.\n\nCe jeu de données ouvertes reprend le schéma porté par *transport.data.gouv*. Il couvre principalement l'infrastructure de recharge en courant continu, qui est utilisée pour les grands déplacements nécessitant une recharge rapide. Notre objectif est de fournir le jeu de données le plus exhaustif sur ce segment.\n"
+    }
+  ],
+  "theme": "energyNetworks",
+  "keywords": [
+    "borne-de-recharge",
+    "borne-de-recharge-electrique",
+    "bornes-de-recharge",
+    "bornes-de-recharge-electrique",
+    "irve",
+    "irve-stations-de-recharge",
+    "recharge",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "QualiCharge"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "40a2d31c-6e68-543d-9b73-f8f78bc48ad6",
+      "media_type": "FILE",
+      "media_name": "qualicharge-irve-statique-rennesmetropole.csv",
+      "media_caption": "qualicharge-irve-statique — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "fdb81c41-6b4f-58fc-b90d-b5715d1ccbb1",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://proxy.transport.data.gouv.fr/resource/qualicharge-irve-dynamique",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2025-05-05T00:00:00Z",
+    "updated": "2025-07-04T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2025-05-05T00:00:00Z",
+      "updated": "2025-07-04T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/6818bce2d9af175f6e01a1b2"
+  }
+}

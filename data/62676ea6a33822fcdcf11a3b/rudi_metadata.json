@@ -1,0 +1,149 @@
+{
+  "local_id": "452f9e3f-0b23-5b44-bed4-f54a8dfd88dd",
+  "resource_title": "Nuit européenne des musées 2022 - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "Nuit européenne des musées 2022 — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/62676ea6a33822fcdcf11a3b\n\nLa 18e Nuit européenne des musées se tient cette année, le samedi 14 mai 2022 dans toute l'Europe.\n\n[Pour plus d'informations](https://nuitdesmusees.culture.gouv.fr/) sur cette manifestation."
+    }
+  ],
+  "theme": "culture",
+  "keywords": [
+    "culture",
+    "ministeredelaculture",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Ministère de la Culture"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "8a18f0ed-2c9b-51f4-9c02-f27a3352df3a",
+      "media_type": "FILE",
+      "media_name": "nuit-des-musees-2022-rennesmetropole.csv",
+      "media_caption": "nuit-des-musees-2022.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "cbd35e9e-ed6e-5548-b217-1fcccf391ee3",
+      "media_type": "FILE",
+      "media_name": "nuit-des-musees-2022-rennesmetropole.json",
+      "media_caption": "nuit-des-musees-2022.csv — données filtrées sur Rennes Métropole (JSON)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "a830740b-d3ba-5c90-baa5-697c49009408",
+      "media_type": "FILE",
+      "media_name": "ndm-20180519-rennesmetropole.csv",
+      "media_caption": "ndm-2018.0519.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "449c88e4-23c2-5f20-ac17-53b28a05e27b",
+      "media_type": "FILE",
+      "media_name": "ndm-20180519-rennesmetropole.json",
+      "media_caption": "ndm-2018.0519.csv — données filtrées sur Rennes Métropole (JSON)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "5baac7ee-2aa3-53e7-9949-b883c91bccb3",
+      "media_type": "FILE",
+      "media_name": "nuits-des-musees2017-rennesmetropole.csv",
+      "media_caption": "nuits-des-musees2017.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "b8a58205-c31e-5288-a712-a755bf49b554",
+      "media_type": "FILE",
+      "media_name": "nuits-des-musees2017-rennesmetropole.json",
+      "media_caption": "nuits-des-musees2017.csv — données filtrées sur Rennes Métropole (JSON)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "c2ddbb1a-5f77-5eab-9ec6-8d4626dcf65e",
+      "media_type": "FILE",
+      "media_name": "nuit-des-musees-2019-def-rennesmetropole.csv",
+      "media_caption": "nuit-des-musees-2019_def.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "1ef91973-67a3-5fe4-8ff6-eb5ad4d015f4",
+      "media_type": "FILE",
+      "media_name": "nuit-des-musees-2019-def-rennesmetropole.json",
+      "media_caption": "nuit-des-musees-2019_def.csv — données filtrées sur Rennes Métropole (JSON)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "8cda0186-ea88-52ba-a2d9-48c7b8237f23",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://static.data.gouv.fr/resources/nuit-europeenne-des-musees-2022/20250827-132747/nuit-des-musees-2022.csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2022-04-26T00:00:00Z",
+    "updated": "2025-10-23T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2022-04-26T00:00:00Z",
+      "updated": "2025-10-23T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/62676ea6a33822fcdcf11a3b"
+  }
+}

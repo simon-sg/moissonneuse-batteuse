@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title></title>
+<script>(function(){try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<style>
+:root{--bg:#f5f6f8;--card:#fff;--txt:#1c2733;--muted:#667;--accent:#0b6e99;--bord:#e2e6ea;
+      --avert-bg:#fff8e1;--avert-bord:#ffe082;--avert-txt:#6d4c00;
+      --geo-bg:#eaf4fb;--geo-hover:#d4ecf7;--stripe:#fafbfc;--row-hover:#eef6fb;
+      --resizer:rgba(11,110,153,.35);--td-bord:#f0f2f4}
+:root[data-theme="dark"]{--bg:#10151b;--card:#1a222b;--txt:#dbe2e8;--muted:#8996a3;--accent:#4fb3da;--bord:#29323c;
+      --avert-bg:#3a2f10;--avert-bord:#6b5418;--avert-txt:#e8c96a;
+      --geo-bg:#16303c;--geo-hover:#1d3f4d;--stripe:#161d24;--row-hover:#17242c;
+      --resizer:rgba(79,179,218,.35);--td-bord:#232c35}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#10151b;--card:#1a222b;--txt:#dbe2e8;--muted:#8996a3;--accent:#4fb3da;--bord:#29323c;
+      --avert-bg:#3a2f10;--avert-bord:#6b5418;--avert-txt:#e8c96a;
+      --geo-bg:#16303c;--geo-hover:#1d3f4d;--stripe:#161d24;--row-hover:#17242c;
+      --resizer:rgba(79,179,218,.35);--td-bord:#232c35}
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+     background:var(--bg);color:var(--txt);display:flex;flex-direction:column;height:100vh}
+header{background:var(--card);border-bottom:1px solid var(--bord);padding:10px 16px;
+       display:flex;flex-wrap:wrap;gap:10px;align-items:center;flex-shrink:0}
+h1{font-size:.9rem;font-weight:600;flex:1;min-width:150px;
+   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#filtre{padding:7px 11px;font-size:.9rem;border:1px solid var(--bord);
+        border-radius:6px;width:220px;background:var(--card);color:var(--txt)}
+#info{color:var(--muted);font-size:.82rem;white-space:nowrap}
+#theme-toggle{background:none;border:1px solid var(--bord);border-radius:6px;padding:5px 10px;
+              cursor:pointer;font-size:.9rem;line-height:1;color:var(--txt);flex-shrink:0}
+#theme-toggle:hover{background:var(--bg)}
+.avert{background:var(--avert-bg);border-bottom:1px solid var(--avert-bord);padding:5px 16px;
+       font-size:.8rem;color:var(--avert-txt);flex-shrink:0}
+.wrap{flex:1;overflow:auto}
+table{border-collapse:collapse;font-size:.82rem;table-layout:fixed}
+thead{position:sticky;top:0;z-index:2;background:var(--card);box-shadow:0 1px 0 var(--bord)}
+th{padding:8px 12px;text-align:left;cursor:pointer;user-select:none;color:var(--muted);font-weight:600;
+   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative}
+th:hover{background:var(--bg);color:var(--txt)}
+th.asc::after{content:" ↑";color:var(--accent)}
+th.desc::after{content:" ↓";color:var(--accent)}
+th.geo{color:var(--accent);background:var(--geo-bg)}
+th.geo:hover{background:var(--geo-hover)}
+th.trad{text-decoration:underline dotted;text-decoration-color:var(--accent);text-underline-offset:3px}
+td{padding:0;border-bottom:1px solid var(--td-bord)}
+td div{padding:5px 12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+td div a{color:var(--accent);text-decoration:none}
+td div a:hover{text-decoration:underline}
+tr:nth-child(even) td{background:var(--stripe)}
+tr:hover td{background:var(--row-hover)}
+.resizer{position:absolute;right:0;top:0;width:5px;height:100%;cursor:col-resize;z-index:1}
+.resizer:hover,.resizer.active{background:var(--resizer)}
+</style>
+</head>
+<body>
+<header>
+  <h1 id="titre"></h1>
+  <input id="filtre" type="search" placeholder="Filtrer toutes les colonnes…">
+  <span id="info"></span>
+  <button id="theme-toggle" title="Basculer thème clair/sombre" aria-label="Basculer thème clair/sombre">🌙</button>
+</header>
+<div id="avert" class="avert" style="display:none"></div>
+<div class="wrap"><table id="t"><colgroup id="cols"></colgroup><thead id="thead"></thead><tbody id="tbody"></tbody></table></div>
+<script id="d" type="application/json">{"nom": "nombre-de-menage-possedant-au-moins-une-voiture-co-rennesmetropole.csv", "champs_geo": ["libelle_commune", "geocode_commune"], "dictionnaire": {"date_mesure": "Dimension temporelle de la mesure. La date fait référence  à une période écoulée et non un instant précis.", "geocode_commune": "Code officiel géographique communal selon les données de l'INSEE du 1er janvier de l'année en cours. https://www.insee.fr/fr/information/7671844", "libelle_commune": "Libellé de la commune selon la nomenclature de l'INSEE. https://www.insee.fr/fr/information/7671844", "geocode_epci": "Code officiel géographique à l'échelle de l'EPCI selon les données de l'INSEE du 1er janvier de l'année en cours. https://www.insee.fr/fr/information/2510634", "libelle_epci": "Libellé de l'EPCI selon la nomenclature de l'INSEE. https://www.insee.fr/fr/information/2510634", "geocode_departement": "Code officiel géographique départemental selon les données de l'INSEE du 1er janvier de l'année en cours. https://www.insee.fr/fr/information/2560452", "libelle_departement": "Libellé du département selon la nomenclature de l'INSEE. https://www.insee.fr/fr/information/2560452", "geocode_region": "Code officiel géographique régional selon les données de l'INSEE du 1er janvier de l'année en cours. https://www.insee.fr/fr/information/2560452", "libelle_region": "Libellé de la région selon la nomenclature de l'INSEE. https://www.insee.fr/fr/information/2560452", "valeur": "Valeur de l'indicateur en nb : Nombre de ménage possédant au moins une voiture"}, "entetes": ["date_mesure", "geocode_commune", "libelle_commune", "valeur"], "lignes": [["2022-01-01T00:00:00.000", "35275", "Saint-Gilles", "2179.19048888662"], ["2022-01-01T00:00:00.000", "35196", "Mordelles", "3326.0"], ["2011-01-01T00:00:00.000", "35266", "Saint-Erblon", "935.372395039932"], ["2011-01-01T00:00:00.000", "35120", "Gévezé", "1551.0602888026378"], ["2022-01-01T00:00:00.000", "35204", "Nouvoitou", "1405.8526853535568"], ["2016-01-01T00:00:00.000", "35001", "Acigné", "2527.0"], ["2011-01-01T00:00:00.000", "35088", "Corps-Nuds", "1067.845064908159"], ["2011-01-01T00:00:00.000", "35058", "La Chapelle-Chaussée", "388.991432736663"], ["2016-01-01T00:00:00.000", "35245", "Romillé", "1400.640107341487"], ["2016-01-01T00:00:00.000", "35363", "Pont-Péan", "1567.911860280475"], ["2016-01-01T00:00:00.000", "35135", "Irodouër", "774.1078465580349"], ["2011-01-01T00:00:00.000", "35189", "Montgermont", "1298.340079675241"], ["2022-01-01T00:00:00.000", "35206", "Noyal-Châtillon-sur-Seiche", "3359.5895026173903"], ["2016-01-01T00:00:00.000", "35170", "Mecé", "224.9935332367055"], ["2022-01-01T00:00:00.000", "35131", "L'Hermitage", "1889.799393956299"], ["2011-01-01T00:00:00.000", "35353", "Vezin-le-Coquet", "1511.0"], ["2022-01-01T00:00:00.000", "35047", "Bruz", "7979.344404833911"], ["2011-01-01T00:00:00.000", "35245", "Romillé", "1304.1152992677971"], ["2016-01-01T00:00:00.000", "35190", "Monthault", "106.78228782287849"], ["2011-01-01T00:00:00.000", "35022", "Bécherel", "260.32164392186564"], ["2016-01-01T00:00:00.000", "35144", "Langan", "353.857425742575"], ["2011-01-01T00:00:00.000", "35180", "Miniac-sous-Bécherel", "256.095430107527"], ["2016-01-01T00:00:00.000", "35022", "Bécherel", "260.5167068585147"], ["2022-01-01T00:00:00.000", "35136", "Janzé", "3412.0"], ["2016-01-01T00:00:00.000", "35353", "Vezin-le-Coquet", "1878.0"], ["2022-01-01T00:00:00.000", "35160", "Loutehel", "101.39731330520729"], ["2016-01-01T00:00:00.000", "35189", "Montgermont", "1324.823772031409"], ["2022-01-01T00:00:00.000", "35189", "Montgermont", "1576.793335722402"], ["2011-01-01T00:00:00.000", "35055", "Chantepie", "4037.1511606804197"], ["2016-01-01T00:00:00.000", "35032", "Bourgbarré", "1431.49310264204"], ["2011-01-01T00:00:00.000", "35275", "Saint-Gilles", "1479.5273947341839"], ["2022-01-01T00:00:00.000", "35230", "Poilley", "167.6316312264995"], ["2011-01-01T00:00:00.000", "35081", "Clayes", "227.9646017699111"], ["2016-01-01T00:00:00.000", "35081", "Clayes", "296.85271514344413"], ["2011-01-01T00:00:00.000", "35160", "Loutehel", "95.4232558139533"], ["2011-01-01T00:00:00.000", "35059", "La Chapelle-des-Fougeretz", "1514.967395758762"], ["2016-01-01T00:00:00.000", "35080", "Cintré", "789.39571388215"], ["2016-01-01T00:00:00.000", "35088", "Corps-Nuds", "1182.8494756323262"], ["2022-01-01T00:00:00.000", "35144", "Langan", "409.8953968288"], ["2011-01-01T00:00:00.000", "35208", "Orgères", "1448.64572425829"], ["2016-01-01T00:00:00.000", "35139", "Laillé", "1837.614864993791"], ["2022-01-01T00:00:00.000", "35352", "Vern-sur-Seiche", "3363.99340535207"], ["2016-01-01T00:00:00.000", "35216", "Parthenay-de-Bretagne", "570.667089266656"], ["2016-01-01T00:00:00.000", "35204", "Nouvoitou", "1116.8525492339909"], ["2016-01-01T00:00:00.000", "35079", "Chevaigné", "816.5516281589239"], ["2011-01-01T00:00:00.000", "35136", "Janzé", "2914.0"], ["2011-01-01T00:00:00.000", "35351", "Le Verger", "500.40290639438604"], ["2011-01-01T00:00:00.000", "35066", "Chartres-de-Bretagne", "3015.53395249015"], ["2016-01-01T00:00:00.000", "35066", "Chartres-de-Bretagne", "3257.61133649197"], ["2011-01-01T00:00:00.000", "35039", "Brécé", "656.451482974999"], ["2016-01-01T00:00:00.000", "35238", "Rennes", "78614.5743007246"], ["2016-01-01T00:00:00.000", "35059", "La Chapelle-des-Fougeretz", "1786.759490892802"], ["2016-01-01T00:00:00.000", "35150", "Lécousse", "1264.273203302356"], ["2011-01-01T00:00:00.000", "35210", "Pacé", "3884.44881021157"], ["2011-01-01T00:00:00.000", "35235", "Rannée", "432.699375557537"], ["2022-01-01T00:00:00.000", "35353", "Vezin-le-Coquet", "2262.0"], ["2011-01-01T00:00:00.000", "35131", "L'Hermitage", "1459.708335659599"], ["2022-01-01T00:00:00.000", "35315", "Saint-Sulpice-la-Forêt", "580.0"], ["2022-01-01T00:00:00.000", "35190", "Monthault", "109.311862333995"], ["2022-01-01T00:00:00.000", "35240", "Le Rheu", "3895.0"], ["2011-01-01T00:00:00.000", "35170", "Mecé", "213.8596491228063"], ["2016-01-01T00:00:00.000", "35266", "Saint-Erblon", "1135.0194798635812"], ["2011-01-01T00:00:00.000", "35240", "Le Rheu", "2892.0"], ["2016-01-01T00:00:00.000", "35076", "Chavagne", "1510.6745792300221"], ["2022-01-01T00:00:00.000", "35039", "Brécé", "799.913135427614"], ["2011-01-01T00:00:00.000", "35200", "Moutiers", "310.0"], ["2016-01-01T00:00:00.000", "35206", "Noyal-Châtillon-sur-Seiche", "2807.02933333387"], ["2016-01-01T00:00:00.000", "35196", "Mordelles", "2940.0"], ["2011-01-01T00:00:00.000", "35032", "Bourgbarré", "1216.291142627776"], ["2022-01-01T00:00:00.000", "35278", "Saint-Grégoire", "4039.90139760083"], ["2022-01-01T00:00:00.000", "35200", "Moutiers", "337.0"], ["2022-01-01T00:00:00.000", "35351", "Le Verger", "516.087545324022"], ["2011-01-01T00:00:00.000", "35001", "Acigné", "2262.0"], ["2016-01-01T00:00:00.000", "35200", "Moutiers", "317.0"], ["2011-01-01T00:00:00.000", "35315", "Saint-Sulpice-la-Forêt", "490.0"], ["2022-01-01T00:00:00.000", "35208", "Orgères", "2125.6229832580398"], ["2011-01-01T00:00:00.000", "35238", "Rennes", "76912.9426699582"], ["2016-01-01T00:00:00.000", "35235", "Rannée", "442.423572744016"], ["2016-01-01T00:00:00.000", "35051", "Cesson-Sévigné", "7002.6160771469495"], ["2011-01-01T00:00:00.000", "35206", "Noyal-Châtillon-sur-Seiche", "2486.897408373"], ["2011-01-01T00:00:00.000", "35190", "Monthault", "98.8142292490119"], ["2016-01-01T00:00:00.000", "35131", "L'Hermitage", "1635.960620167485"], ["2022-01-01T00:00:00.000", "35245", "Romillé", "1568.294270247423"], ["2022-01-01T00:00:00.000", "35235", "Rannée", "453.495166439865"], ["2022-01-01T00:00:00.000", "35079", "Chevaigné", "911.7847171223559"], ["2016-01-01T00:00:00.000", "35065", "La Chapelle-Thouarault", "810.3065996340999"], ["2016-01-01T00:00:00.000", "35047", "Bruz", "6991.37733700465"], ["2011-01-01T00:00:00.000", "35076", "Chavagne", "1397.692027115772"], ["2022-01-01T00:00:00.000", "35055", "Chantepie", "4363.81924937081"], ["2011-01-01T00:00:00.000", "35065", "La Chapelle-Thouarault", "691.2772585669791"], ["2011-01-01T00:00:00.000", "35216", "Parthenay-de-Bretagne", "473.094339622641"], ["2011-01-01T00:00:00.000", "35135", "Irodouër", "706.767245657569"], ["2016-01-01T00:00:00.000", "35210", "Pacé", "4469.751517165299"], ["2011-01-01T00:00:00.000", "35281", "Saint-Jacques-de-la-Lande", "4247.0"], ["2022-01-01T00:00:00.000", "35022", "Bécherel", "275.514223030518"], ["2016-01-01T00:00:00.000", "35334", "Thorigné-Fouillard", "3117.9474808569303"], ["2011-01-01T00:00:00.000", "35230", "Poilley", "151.0753246753246"], ["2022-01-01T00:00:00.000", "35076", "Chavagne", "1812.841954042176"], ["2016-01-01T00:00:00.000", "35180", "Miniac-sous-Bécherel", "274.190051020408"], ["2011-01-01T00:00:00.000", "35080", "Cintré", "702.6192794547251"], ["2011-01-01T00:00:00.000", "35196", "Mordelles", "2827.0"], ["2016-01-01T00:00:00.000", "35039", "Brécé", "735.768210753796"], ["2022-01-01T00:00:00.000", "35088", "Corps-Nuds", "1341.580812638943"], ["2011-01-01T00:00:00.000", "35051", "Cesson-Sévigné", "6206.73963586263"], ["2016-01-01T00:00:00.000", "35250", "Saint-Armel", "766.348057424233"], ["2011-01-01T00:00:00.000", "35079", "Chevaigné", "651.708378672471"], ["2011-01-01T00:00:00.000", "35310", "Saint-Sauveur-des-Landes", "458.185125192712"], ["2022-01-01T00:00:00.000", "35135", "Irodouër", "849.707215009919"], ["2022-01-01T00:00:00.000", "35120", "Gévezé", "2258.477140284886"], ["2022-01-01T00:00:00.000", "35216", "Parthenay-de-Bretagne", "643.883891821439"], ["2022-01-01T00:00:00.000", "35001", "Acigné", "2787.0"], ["2011-01-01T00:00:00.000", "35150", "Lécousse", "1173.1552473018169"], ["2016-01-01T00:00:00.000", "35024", "Betton", "4339.09003176589"], ["2022-01-01T00:00:00.000", "35059", "La Chapelle-des-Fougeretz", "1790.8681122712119"], ["2011-01-01T00:00:00.000", "35250", "Saint-Armel", "686.3507972665129"], ["2022-01-01T00:00:00.000", "35081", "Clayes", "337.121506900308"], ["2022-01-01T00:00:00.000", "35363", "Pont-Péan", "1727.356724373244"], ["2016-01-01T00:00:00.000", "35208", "Orgères", "1672.803676051802"], ["2022-01-01T00:00:00.000", "35132", "Hirel", "597.798272751256"], ["2016-01-01T00:00:00.000", "35240", "Le Rheu", "3304.0"], ["2011-01-01T00:00:00.000", "35334", "Thorigné-Fouillard", "2625.9287999217604"], ["2016-01-01T00:00:00.000", "35352", "Vern-sur-Seiche", "2992.49304002695"], ["2022-01-01T00:00:00.000", "35139", "Laillé", "1936.689829189147"], ["2022-01-01T00:00:00.000", "35150", "Lécousse", "1424.3520300801028"], ["2022-01-01T00:00:00.000", "35266", "Saint-Erblon", "1441.570249994923"], ["2022-01-01T00:00:00.000", "35180", "Miniac-sous-Bécherel", "291.689764841574"], ["2011-01-01T00:00:00.000", "35352", "Vern-sur-Seiche", "2896.08779741729"], ["2016-01-01T00:00:00.000", "35230", "Poilley", "159.75401069518642"], ["2016-01-01T00:00:00.000", "35315", "Saint-Sulpice-la-Forêt", "486.0"], ["2016-01-01T00:00:00.000", "35055", "Chantepie", "4323.35604497896"], ["2016-01-01T00:00:00.000", "35120", "Gévezé", "1912.990025778431"], ["2022-01-01T00:00:00.000", "35066", "Chartres-de-Bretagne", "3776.57242580391"], ["2022-01-01T00:00:00.000", "35170", "Mecé", "233.38790631534567"], ["2022-01-01T00:00:00.000", "35065", "La Chapelle-Thouarault", "877.700767743308"], ["2022-01-01T00:00:00.000", "35024", "Betton", "5098.77666192779"], ["2016-01-01T00:00:00.000", "35310", "Saint-Sauveur-des-Landes", "477.76607503560297"], ["2011-01-01T00:00:00.000", "35024", "Betton", "3864.0"], ["2011-01-01T00:00:00.000", "35204", "Nouvoitou", "1001.317699579178"], ["2016-01-01T00:00:00.000", "35132", "Hirel", "551.1760760440679"], ["2016-01-01T00:00:00.000", "35058", "La Chapelle-Chaussée", "429.93391030684495"], ["2022-01-01T00:00:00.000", "35032", "Bourgbarré", "1750.870757269875"], ["2016-01-01T00:00:00.000", "35136", "Janzé", "3073.0"], ["2016-01-01T00:00:00.000", "35278", "Saint-Grégoire", "3738.51723540909"], ["2016-01-01T00:00:00.000", "35160", "Loutehel", "100.03156644052561"], ["2016-01-01T00:00:00.000", "35281", "Saint-Jacques-de-la-Lande", "5194.9897737721"], ["2022-01-01T00:00:00.000", "35281", "Saint-Jacques-de-la-Lande", "5677.15276353749"], ["2011-01-01T00:00:00.000", "35132", "Hirel", "525.94375892891"], ["2022-01-01T00:00:00.000", "35058", "La Chapelle-Chaussée", "464.52478398282096"], ["2022-01-01T00:00:00.000", "35310", "Saint-Sauveur-des-Landes", "512.519165939985"], ["2022-01-01T00:00:00.000", "35051", "Cesson-Sévigné", "7965.43422734217"], ["2011-01-01T00:00:00.000", "35278", "Saint-Grégoire", "3390.66453893266"], ["2016-01-01T00:00:00.000", "35351", "Le Verger", "497.000156935976"], ["2022-01-01T00:00:00.000", "35080", "Cintré", "897.596810999052"], ["2011-01-01T00:00:00.000", "35139", "Laillé", "1517.469505194491"], ["2022-01-01T00:00:00.000", "35210", "Pacé", "4674.76813200027"], ["2011-01-01T00:00:00.000", "35047", "Bruz", "6116.07446061012"], ["2022-01-01T00:00:00.000", "35238", "Rennes", "82493.3948997269"], ["2016-01-01T00:00:00.000", "35275", "Saint-Gilles", "1826.9809250427938"], ["2011-01-01T00:00:00.000", "35363", "Pont-Péan", "1296.8939765873051"], ["2022-01-01T00:00:00.000", "35334", "Thorigné-Fouillard", "3401.61941215159"], ["2022-01-01T00:00:00.000", "35250", "Saint-Armel", "960.233991257362"], ["2011-01-01T00:00:00.000", "35144", "Langan", "329.440347071584"]], "tronque": false, "nb_total": 162}</script>
+<script>
+(function(){
+  const btn = document.getElementById("theme-toggle");
+  function effectif(){
+    return document.documentElement.getAttribute("data-theme") ||
+      (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  }
+  function majIcone(){ btn.textContent = effectif() === "dark" ? "☀️" : "🌙"; }
+  btn.addEventListener("click", () => {
+    const suivant = effectif() === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", suivant);
+    try { localStorage.setItem("theme", suivant); } catch(e) {}
+    majIcone();
+  });
+  majIcone();
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+    if (!document.documentElement.getAttribute("data-theme")) majIcone();
+  });
+})();
+
+const D=JSON.parse(document.getElementById("d").textContent);
+const tbl=document.getElementById("t"),wrap=document.querySelector(".wrap");
+const nCols=D.entetes.length;
+const wrapW=wrap.clientWidth||800;
+const colW=Math.max(80,Math.floor(Math.max(wrapW,nCols*160)/nCols));
+tbl.style.width=Math.max(wrapW,nCols*160)+"px";
+document.getElementById("cols").innerHTML=D.entetes.map(()=>`<col style="width:${colW}px">`).join("");
+document.title=D.nom;document.getElementById("titre").textContent=D.nom;
+if(D.tronque){const a=document.getElementById("avert");a.style.display="";
+  a.textContent=`Prévisualisation : ${D.lignes.length.toLocaleString("fr")} premières lignes sur ${D.nb_total.toLocaleString("fr")} au total.`;}
+const geo=new Set(D.champs_geo||[]);
+const DICO=D.dictionnaire||{};
+let sc=-1,asc=true,q="";
+function esc(s){return String(s??"").replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function cell(v){const s=String(v??"").trim();return /^https?:\/\/\S+$/.test(s)?`<a href="${esc(s)}" target="_blank" rel="noopener">${esc(s)}</a>`:esc(v);}
+function rendu(){
+  let rows=D.lignes;
+  if(q){const f=q.toLowerCase();rows=rows.filter(r=>r.some(v=>String(v??"").toLowerCase().includes(f)));}
+  if(sc>=0){const col=sc,up=asc;rows=[...rows].sort((a,b)=>{
+    const va=a[col]??"",vb=b[col]??"",na=+va,nb=+vb;
+    return(!isNaN(na)&&!isNaN(nb))?(up?na-nb:nb-na):(up?String(va).localeCompare(String(vb),"fr"):String(vb).localeCompare(String(va),"fr"));
+  });}
+  const th=D.entetes.map((h,i)=>{
+    const trad=DICO[h];
+    const cls=[sc===i?(asc?"asc":"desc"):"",geo.has(h)?"geo":"",trad?"trad":""].filter(Boolean).join(" ");
+    const tip=trad?` title="${esc(h)}"`:"";
+    return`<th class="${cls}"${tip}>${esc(trad||h)}<div class="resizer"></div></th>`;
+  }).join("");
+  document.getElementById("thead").innerHTML=`<tr>${th}</tr>`;
+  document.getElementById("tbody").innerHTML=rows.map(r=>`<tr>${r.map(v=>`<td><div title="${esc(v)}">${cell(v)}</div></td>`).join("")}</tr>`).join("");
+  const n=rows.length,tot=D.lignes.length;
+  document.getElementById("info").textContent=n<tot
+    ?`${n.toLocaleString("fr")} / ${tot.toLocaleString("fr")} lignes`
+    :`${n.toLocaleString("fr")} ligne${n>1?"s":""}`;
+}
+// Sort via delegation — ignore clicks that start on the resizer handle
+tbl.addEventListener("click",e=>{
+  if(e.target.closest(".resizer"))return;
+  const th=e.target.closest("th");
+  if(!th)return;
+  const i=th.cellIndex;sc===i?asc=!asc:(sc=i,asc=true);rendu();
+});
+// Column resize
+tbl.addEventListener("mousedown",e=>{
+  const rz=e.target.closest(".resizer");
+  if(!rz)return;
+  e.preventDefault();
+  const th=rz.parentElement,idx=th.cellIndex;
+  const cols=document.querySelectorAll("#cols col");
+  const startX=e.clientX,startW=th.offsetWidth;
+  rz.classList.add("active");
+  document.body.style.cursor="col-resize";
+  function onMove(e){
+    const w=Math.max(40,startW+(e.clientX-startX));
+    cols[idx].style.width=w+"px";
+    tbl.style.width=Array.from(cols).reduce((s,c)=>s+(parseInt(c.style.width)||colW),0)+"px";
+  }
+  function onUp(){
+    rz.classList.remove("active");
+    document.body.style.cursor="";
+    document.removeEventListener("mousemove",onMove);
+    document.removeEventListener("mouseup",onUp);
+  }
+  document.addEventListener("mousemove",onMove);
+  document.addEventListener("mouseup",onUp);
+});
+document.getElementById("filtre").addEventListener("input",e=>{q=e.target.value;rendu();});
+rendu();
+</script>
+</body>
+</html>

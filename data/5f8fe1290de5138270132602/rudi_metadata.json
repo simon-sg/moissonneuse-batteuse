@@ -1,0 +1,523 @@
+{
+  "local_id": "818b4cee-314e-54cd-80a0-5424f80b1ba0",
+  "resource_title": "OLD Données de laboratoires infra-départementales durant l'épidémie COVID-19 - Rennes Métropole",
+  "synopsis": [
+    {
+      "lang": "fr",
+      "text": "OLD Données de laboratoires infra-départementales durant l'épidémie COVID-19 — données filtrées sur Rennes Métropole."
+    }
+  ],
+  "summary": [
+    {
+      "lang": "fr",
+      "text": "Version localisée sur Rennes Métropole. Données filtrées pour ne conserver que les enregistrements des communes de Rennes Métropole.\n\nJeu de données source (France entière) : https://www.data.gouv.fr/datasets/5f8fe1290de5138270132602\n\n********************************************\n### ⚠️ Cette ressource n'est plus actualisée depuis le 18 mai 2022.\n\nLe format des ressources issues des données de laboratoires pour le dépistage (SI-DEP) évolue.\nL'ensemble des ressources au nouveau format sont centralisées dans le nouveau jeu de données dédié :\n➡️ https://www.data.gouv.fr/fr/datasets/donnees-de-laboratoires-pour-le-depistage-a-compter-du-18-05-2022-si-dep/\nMerci à nos utilisateurs pour leur compréhension\n********************************************\n\n\n\n**Information du 7 juin 2021**\n\nsg_epci_opendata.csv : Le nom de la colonne EPCI2020 laisse penser à tord que le millésime utilisé est 2020. Pour éviter la confusion la colonne est renommée EPCI2019.\n\n**Information du 20 mai 2021**\n\nA compter de ce jour, les indicateurs seront corrigés afin de supprimer l’effet doublon, lors de la réalisation de plusieurs tests de dépistage par une même personne. \n\nDepuis le début de la pandémie, la plateforme sécurisée Si-DEP enregistre tous les résultats des tests de dépistage. Afin de garantir la protection des données personnelles des personnes testées, chaque résultat était lié à l’émission d’un pseudo anonymisé. Cependant, avec l’apparition des variants sur le territoire, certaines personnes sont amenées à réaliser deux tests, jusqu’à présent comptabilisés deux fois. \n\nL'algorithme  utilisé a donc récemment été mis à jour afin qu’il ne décompte qu’un seul patient lorsque celui-ci se fait tester plusieurs fois dans un intervalle de temps court, toujours en respectant l'anonymat. Grâce à cette nouvelle pseudonymisation, Santé publique France est capable de renforcer son efficacité et de produire des données encore plus précises, consultables chaque semaine dans son point épidémiologique.\n\n### Les actions de Santé publique France\n\nSanté publique France a pour mission d'améliorer et de protéger la santé des populations. Durant la crise sanitaire liée à l'épidémie du COVID-19, Santé publique France se charge de surveiller et comprendre la dynamique de l'épidémie, d'anticiper les différents scénarii et de mettre en place des actions pour prévenir et limiter la transmission de ce virus sur le territoire national.\n\n### Le Système d’Informations de DEPistage (SI-DEP)\n\nLes indicateurs de surveillance virologique sont issus du système d’information de dépistage (SI-DEP), dont l’objectif est de remonter les données de tests (RT-PCR) réalisés par l’ensemble des laboratoires de ville et établissements hospitaliers concernant le SARS-COV2.\n\nLe taux d'incidence sur 7 jours glissants correspond, au jour J, au nombre total de personnes testées positives dans l'intervalle de temps [J-9; J-3], divisé par le nombre d'habitants.\n\n### Description des données \n\nLe présent jeu de données renseigne :\n- la classe du taux d'incidence tous âges sur 7 jours glissants ;\n- la classe du taux d'incidence pour les personnes âgées de plus de 65 ans sur 7 jours glissants ;\n- la classe du taux de dépistage tous âges sur 7 jours glissants ;\n- la classe du taux de dépistage pour les personnes âgées de plus de 65 ans sur 7 jours glissants ;\n- la classe du taux de positivité tous âges sur 7 jours glissants ;\n- la classe du taux de positivité pour les personnes âgées de plus de 65 ans sur 7 jours glissants.\n\nLes taux exacts ne sont pas affichés afin d’éviter l’identification des personnes testées, notamment celles qui présentent un test positif.\n\nLes données sont fournies à l'échelle :\n- EPCI ;\n- Commune ;\n- IRIS.\n\nLe taux d'incidence correspond au nombre de tests positifs pour 100.000 habitants. Il est calculé de la manière suivante : \n(100000 * nombre de cas positif) / Population.\n\nLe taux de dépistage, aussi appelé capacité analytique, correspond au nombre de tests réalisés, qu'il soient positifs ou négatifs, pour 100.000 habitants. Il est calculé de la manière suivante :\n(100000 * nombre de test réalisés) / Population.\n\nLe taux de positivité correspond au nombre de tests positifs rapportés au nombre de tests réalisés. Il est calculé de la manière suivante : (100 * nombre de test positifs) / nombre de tests réalisés.\n\n\n**Précision** : \n- Le taux d'incidence est calculé un jour J à partir des tests réalisés entre 3 et 9 jours précédemment. Pour les jours plus récents (J, J-1, J-2), un grand nombre de tests n'est pas encore rapporté (délai de collecte et de centralisation) ; \n- Si un patient a réalisé plusieurs tests positifs, la date de son premier test PCR est sélectionnée ; \n- À compter du 29/08, les indicateurs issus des données de laboratoires (SI-DEP) présentent des taux d’incidence, de positivité et de dépistage corrigés en fonction des dépistages réalisés dans les aéroports à l’arrivée des vols internationaux ;\n- Pour en savoir plus consultez la note méthodologique disponible dans les ressources.\n\n**Limites** : \n- Seuls les tests biologiques des personnes pour lesquelles le département de résidence a pu être localisé sont identifiés. Les personnes dont le département n’a pas pu être remonté dans les données SIDEP ne sont comptabilisées qu'au niveau France entière. De ce fait la somme des tests indiqués dans les départements ou régions est inférieure au nombre de tests indiqué en France.\n- Le délai de remontée des tests peut excéder 9 jours dans certains cas. Les indicateurs sont ajustés quotidiennement selon la réception des résultats."
+    }
+  ],
+  "theme": "townPlanning",
+  "keywords": [
+    "coronavirus",
+    "covid-19",
+    "covid19",
+    "depistage",
+    "epci",
+    "iris",
+    "rennes métropole"
+  ],
+  "producer": {
+    "organization_name": "Santé publique France"
+  },
+  "contacts": [],
+  "available_formats": [
+    {
+      "media_id": "8afb0e01-695e-5307-9849-0f770c077b3f",
+      "media_type": "FILE",
+      "media_name": "sg-iris-opendata-2022-01-04-18h00-rennesmetropole.csv",
+      "media_caption": "sg-iris-opendata-2022-01-04-18h00.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "72db1b08-32d6-5228-af82-cab6b96378e6",
+      "media_type": "FILE",
+      "media_name": "sg-iris-opendata-2020-12-22-19h25-rennesmetropole.csv",
+      "media_caption": "sg-iris-opendata-2020-12-22-19h25.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "7f2ae23e-c354-5bac-b6a6-0df68592beb9",
+      "media_type": "FILE",
+      "media_name": "sg-iris-opendata-2020-12-21-19h25-rennesmetropole.csv",
+      "media_caption": "sg-iris-opendata-2020-12-21-19h25.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "5a6b8621-c06e-5e63-8ff4-5fd08db1ddcd",
+      "media_type": "FILE",
+      "media_name": "sg-iris-opendata-2020-12-20-19h25-rennesmetropole.csv",
+      "media_caption": "sg-iris-opendata-2020-12-20-19h25.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "4d029799-98ab-508c-be74-02e6cf34bdf9",
+      "media_type": "FILE",
+      "media_name": "sg-iris-opendata-2020-12-19-19h25-rennesmetropole.csv",
+      "media_caption": "sg-iris-opendata-2020-12-19-19h25.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "18d12c9b-e706-5a3c-a3ca-fc51029b6886",
+      "media_type": "FILE",
+      "media_name": "sg-iris-opendata-2020-12-18-19h25-rennesmetropole.csv",
+      "media_caption": "sg-iris-opendata-2020-12-18-19h25.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "8197d016-5897-5cf7-913a-6ec52f2fc9b2",
+      "media_type": "FILE",
+      "media_name": "sg-iris-opendata-2020-12-17-19h25-rennesmetropole.csv",
+      "media_caption": "sg-iris-opendata-2020-12-17-19h25.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "584b629f-d33e-5766-920d-38660d66ef08",
+      "media_type": "FILE",
+      "media_name": "sg-iris-opendata-2020-12-16-19h25-rennesmetropole.csv",
+      "media_caption": "sg-iris-opendata-2020-12-16-19h25.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "5148515f-104a-594c-adba-c54d8bdf7b89",
+      "media_type": "FILE",
+      "media_name": "sg-iris-opendata-2020-12-15-19h25-rennesmetropole.csv",
+      "media_caption": "sg-iris-opendata-2020-12-15-19h25.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "693b1f4b-104b-50bc-8236-e9193728e4ce",
+      "media_type": "FILE",
+      "media_name": "sg-iris-opendata-2020-12-14-19h25-rennesmetropole.csv",
+      "media_caption": "sg-iris-opendata-2020-12-14-19h25.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "d4d34c2a-f471-5918-ba98-8a636553f6bf",
+      "media_type": "FILE",
+      "media_name": "sg-iris-opendata-2020-12-13-19h25-rennesmetropole.csv",
+      "media_caption": "sg-iris-opendata-2020-12-13-19h25.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "fd855750-279b-50ab-8f17-7d59ae5e46b4",
+      "media_type": "FILE",
+      "media_name": "sg-iris-opendata-2020-12-12-19h25-rennesmetropole.csv",
+      "media_caption": "sg-iris-opendata-2020-12-12-19h25.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "5b0526ef-37f2-5aa9-a545-46d9b1005d68",
+      "media_type": "FILE",
+      "media_name": "sg-iris-opendata-2020-12-11-19h25-rennesmetropole.csv",
+      "media_caption": "sg-iris-opendata-2020-12-11-19h25.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "59024d35-2378-598c-8893-7e869c9cbabd",
+      "media_type": "FILE",
+      "media_name": "sg-iris-opendata-2020-12-10-19h25-rennesmetropole.csv",
+      "media_caption": "sg-iris-opendata-2020-12-10-19h25.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "4b2c5a05-3db9-55af-8a6d-a73ba1ce0dbf",
+      "media_type": "FILE",
+      "media_name": "sg-iris-opendata-2020-12-09-19h25-rennesmetropole.csv",
+      "media_caption": "sg-iris-opendata-2020-12-09-19h25.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "20557263-4b21-5a4c-b761-786eded7115d",
+      "media_type": "FILE",
+      "media_name": "sg-iris-opendata-2020-12-07-19h20-rennesmetropole.csv",
+      "media_caption": "sg-iris-opendata-2020-12-07-19h20.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "98043791-f954-523c-9bdf-90fae27818a8",
+      "media_type": "FILE",
+      "media_name": "sg-iris-opendata-2020-12-06-19h20-rennesmetropole.csv",
+      "media_caption": "sg-iris-opendata-2020-12-06-19h20.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "51d667cf-96cc-5775-a4ef-e0d0034028e9",
+      "media_type": "FILE",
+      "media_name": "sg-iris-opendata-2020-12-05-19h20-rennesmetropole.csv",
+      "media_caption": "sg-iris-opendata-2020-12-05-19h20.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "5edc4e82-7693-5add-9c66-7ea92bd27129",
+      "media_type": "FILE",
+      "media_name": "sg-iris-opendata-2020-12-04-19h20-rennesmetropole.csv",
+      "media_caption": "sg-iris-opendata-2020-12-04-19h20.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "496adb66-5bd8-573b-882d-955cdeb25456",
+      "media_type": "FILE",
+      "media_name": "sg-iris-opendata-2020-12-03-19h20-rennesmetropole.csv",
+      "media_caption": "sg-iris-opendata-2020-12-03-19h20.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "57abc76b-9a60-5c7d-98a5-16cbbf3daf0d",
+      "media_type": "FILE",
+      "media_name": "sg-iris-opendata-2020-12-02-19h20-rennesmetropole.csv",
+      "media_caption": "sg-iris-opendata-2020-12-02-19h20.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "58115578-78f3-5664-9347-39e442e42fcf",
+      "media_type": "FILE",
+      "media_name": "sg-iris-opendata-2020-12-01-19h20-rennesmetropole.csv",
+      "media_caption": "sg-iris-opendata-2020-12-01-19h20.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "5ed316f5-bceb-5702-a22b-6567afa7e15e",
+      "media_type": "FILE",
+      "media_name": "sg-iris-opendata-2020-11-30-19h20-rennesmetropole.csv",
+      "media_caption": "sg-iris-opendata-2020-11-30-19h20.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "b8781055-ce8c-5a11-93b6-d133128880a2",
+      "media_type": "FILE",
+      "media_name": "sg-iris-opendata-2020-11-29-19h20-rennesmetropole.csv",
+      "media_caption": "sg-iris-opendata-2020-11-29-19h20.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "cb80c94a-cb61-588b-b38f-c99837ba2c09",
+      "media_type": "FILE",
+      "media_name": "sg-iris-opendata-2020-11-28-19h20-rennesmetropole.csv",
+      "media_caption": "sg-iris-opendata-2020-11-28-19h20.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "a9d65981-406d-5714-bd7a-eafdf4a839f6",
+      "media_type": "FILE",
+      "media_name": "sg-iris-opendata-2020-11-27-19h20-rennesmetropole.csv",
+      "media_caption": "sg-iris-opendata-2020-11-27-19h20.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "0711c9eb-d3d6-52c2-8a7c-231bf45c7cd3",
+      "media_type": "FILE",
+      "media_name": "sg-iris-opendata-2020-11-26-19h20-rennesmetropole.csv",
+      "media_caption": "sg-iris-opendata-2020-11-26-19h20.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "6a1d79f7-7c4d-5c11-9097-521fc1a791c9",
+      "media_type": "FILE",
+      "media_name": "sg-iris-opendata-2020-11-25-19h39-rennesmetropole.csv",
+      "media_caption": "sg-iris-opendata-2020-11-25-19h39.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "4671689c-7c16-5ab8-bb99-d6bef890d720",
+      "media_type": "FILE",
+      "media_name": "sg-iris-opendata-2020-11-24-19h20-rennesmetropole.csv",
+      "media_caption": "sg-iris-opendata-2020-11-24-19h20.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "e0a06113-5735-55fc-8961-92df645d009e",
+      "media_type": "FILE",
+      "media_name": "sg-iris-opendata-2020-11-23-19h20-rennesmetropole.csv",
+      "media_caption": "sg-iris-opendata-2020-11-23-19h20.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "93f9a278-b2cf-5bcc-8ada-75c1d1fd2ce5",
+      "media_type": "FILE",
+      "media_name": "sg-iris-opendata-2020-11-22-19h20-rennesmetropole.csv",
+      "media_caption": "sg-iris-opendata-2020-11-22-19h20.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "3b0348ad-7639-5ae0-a2c7-9d615e20827a",
+      "media_type": "FILE",
+      "media_name": "sg-iris-opendata-2020-11-21-19h20-rennesmetropole.csv",
+      "media_caption": "sg-iris-opendata-2020-11-21-19h20.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "28b00834-4312-5257-8d41-30a16214ef93",
+      "media_type": "FILE",
+      "media_name": "sg-iris-opendata-2020-11-20-19h51-rennesmetropole.csv",
+      "media_caption": "sg-iris-opendata-2020-11-20-19h51.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "2a9cc8c1-962e-578a-b6a6-03e9a928d6ff",
+      "media_type": "FILE",
+      "media_name": "sg-iris-opendata-2020-11-19-19h20-rennesmetropole.csv",
+      "media_caption": "sg-iris-opendata-2020-11-19-19h20.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "b47d1b00-8ffd-523a-ae55-3c9c096ea849",
+      "media_type": "FILE",
+      "media_name": "sg-iris-opendata-2020-11-18-19h20-rennesmetropole.csv",
+      "media_caption": "sg-iris-opendata-2020-11-18-19h20.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "644bb84f-f52b-54fc-bef3-39512acfe0dd",
+      "media_type": "FILE",
+      "media_name": "sg-iris-opendata-2020-11-17-19h20-rennesmetropole.csv",
+      "media_caption": "sg-iris-opendata-2020-11-17-19h20.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "2d15df8f-5211-55b6-b071-b8100481c62d",
+      "media_type": "FILE",
+      "media_name": "sg-iris-opendata-2020-11-16-19h36-rennesmetropole.csv",
+      "media_caption": "sg-iris-opendata-2020-11-16-19h36.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "a944688c-8ad0-556b-89b9-29c3095f61c4",
+      "media_type": "FILE",
+      "media_name": "sg-iris-opendata-2020-11-15-19h59-rennesmetropole.csv",
+      "media_caption": "sg-iris-opendata-2020-11-15-19h59.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "5c22b76a-41a9-52ae-a642-d4fb338e1862",
+      "media_type": "FILE",
+      "media_name": "sg-iris-opendata-2020-11-14-19h20-rennesmetropole.csv",
+      "media_caption": "sg-iris-opendata-2020-11-14-19h20.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "07573844-7c95-5dde-8069-3c52bcb874d3",
+      "media_type": "FILE",
+      "media_name": "sg-iris-opendata-2020-11-13-19h20-rennesmetropole.csv",
+      "media_caption": "sg-iris-opendata-2020-11-13-19h20.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "65055f6e-118c-5313-aff2-e640c16e05a1",
+      "media_type": "FILE",
+      "media_name": "sg-iris-opendata-2020-11-12-19h20-rennesmetropole.csv",
+      "media_caption": "sg-iris-opendata-2020-11-12-19h20.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "07d3f961-fbae-5fc4-b778-72d4ce67847c",
+      "media_type": "FILE",
+      "media_name": "sg-iris-opendata-2020-11-11-19h20-rennesmetropole.csv",
+      "media_caption": "sg-iris-opendata-2020-11-11-19h20.csv — données filtrées sur Rennes Métropole (CSV)",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "4f588b5c-82ac-522b-b6c9-e810776f7f29",
+      "media_type": "FILE",
+      "media_name": "dict-metadonnees-sg-com-opendata.csv",
+      "media_caption": "Dictionnaire des variables — metadonnees-sg-com-opendata.csv",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "824009ad-aba9-550a-af84-35a40e48f7c4",
+      "media_type": "FILE",
+      "media_name": "dict-metadonnees-sg-iris-opendata.csv",
+      "media_caption": "Dictionnaire des variables — metadonnees-sg-iris-opendata.csv",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "eccb6462-7dac-52e9-8f88-10585939de03",
+      "media_type": "FILE",
+      "media_name": "dict-metadonnees-sg-epci-opendata.csv",
+      "media_caption": "Dictionnaire des variables — metadonnees-sg-epci-opendata.csv",
+      "connector": {
+        "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+        "interface_contract": "dwnl"
+      }
+    },
+    {
+      "media_id": "490fd905-43a1-552c-a800-75206a0650cd",
+      "media_type": "SERVICE",
+      "media_name": "source-data-gouv",
+      "media_caption": "Jeu de données complet (France entière) sur data.gouv.fr",
+      "connector": {
+        "url": "https://static.data.gouv.fr/resources/donnees-de-laboratoires-infra-departementales-durant-lepidemie-covid-19/20220307-190937/sg-com-opendata-2022-03-07-19h09.csv",
+        "interface_contract": "dwnl"
+      }
+    }
+  ],
+  "dataset_dates": {
+    "created": "2020-10-21T00:00:00Z",
+    "updated": "2022-11-15T00:00:00Z"
+  },
+  "storage_status": "online",
+  "access_condition": {
+    "licence": {
+      "licence_type": "STANDARD",
+      "licence_label": "etalab-2.0",
+      "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence"
+    },
+    "confidentiality": {
+      "restricted_access": false,
+      "gdpr_sensitive": false
+    }
+  },
+  "geography": {
+    "bounding_box": {
+      "west_longitude": -2.08,
+      "east_longitude": -1.37,
+      "south_latitude": 47.89,
+      "north_latitude": 48.27
+    }
+  },
+  "metadata_info": {
+    "metadata_dates": {
+      "created": "2020-10-21T00:00:00Z",
+      "updated": "2022-11-15T00:00:00Z"
+    },
+    "metadata_source": "https://www.data.gouv.fr/datasets/5f8fe1290de5138270132602"
+  }
+}

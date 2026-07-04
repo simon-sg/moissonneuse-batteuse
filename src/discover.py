@@ -294,6 +294,27 @@ def _telecharger_entetes(url: str) -> list[str] | None:
         return None
 
 
+def _detecter_delimiteur(sample: str) -> str:
+    """Détecte le délimiteur CSV en comptant les occurrences dans la 1ère ligne.
+
+    csv.Sniffer() se trompe dès que des virgules apparaissent dans du texte libre
+    d'en-tête (ex. "Productions audiovisuelles (film, DVD), internet, ..." dans les
+    fichiers CNCCFP séparés par ";") : il peut échouer (ValueError) ou renvoyer la
+    virgule alors qu'elle n'est qu'un signe de ponctuation dans un intitulé de
+    colonne. Compter les occurrences par ligne est plus robuste sur ce genre de cas.
+    """
+    premiere_ligne = sample.split("\n")[0]
+    candidats = {d: premiere_ligne.count(d) for d in (";", "\t", "|", ",")}
+    meilleur = max(candidats, key=candidats.get)
+    if candidats[meilleur] >= 1:
+        return meilleur
+    try:
+        dialect = csv.Sniffer().sniff(sample, delimiters=";,\t|")
+        return dialect.delimiter
+    except csv.Error:
+        return ","
+
+
 def _telecharger_schema_parquet(url: str) -> list[str] | None:
     """Lit uniquement le footer Parquet (~140 Ko) et retourne les noms de colonnes."""
     try:
@@ -1234,23 +1255,13 @@ def _analyser_csv_depuis_stream(preambule: bytes, fp_bin,
     encoding = "latin-1" if sample_str.count("�") > 10 else "utf-8-sig"
     sample_str = preambule.decode(encoding, errors="replace")
 
-    try:
-        dialect = csv.Sniffer().sniff(sample_str[:4096], delimiters=";,\t|")
-        delimiteur = dialect.delimiter
-    except csv.Error:
-        delimiteur = ","
+    delimiteur = _detecter_delimiteur(sample_str[:4096])
 
     premiere_ligne = sample_str.split("\n")[0]
     premiere_norm = normaliser(premiere_ligne.split(",")[0].split(";")[0])
     if premiere_norm in ("colonne", "column", "champ", "field", "variable"):
         return None
 
-    nb_cols = len(premiere_ligne.split(delimiteur))
-    if nb_cols <= 2:
-        for sep in (";", "\t", "|", ","):
-            n = len(premiere_ligne.split(sep))
-            if n > nb_cols:
-                nb_cols, delimiteur = n, sep
     log["delimiteur"] = delimiteur
 
     tf = io.TextIOWrapper(fp_bin, encoding=encoding, errors="replace", newline="")
@@ -1327,23 +1338,13 @@ def _analyser_contenu_csv(contenu: bytes, verbose: bool, dataset_id: str, titre:
     if texte.count("�") > 10:
         texte = contenu.decode("latin-1")
     sample = texte[:4096]
-    try:
-        dialect = csv.Sniffer().sniff(sample, delimiters=";,\t|")
-        delimiteur = dialect.delimiter
-    except csv.Error:
-        delimiteur = ","
+    delimiteur = _detecter_delimiteur(sample)
 
     premiere_ligne = texte.split("\n")[0]
     premiere_norm = normaliser(premiere_ligne.split(",")[0].split(";")[0])
     if premiere_norm in ("colonne", "column", "champ", "field", "variable"):
         return None
 
-    nb_cols = len(premiere_ligne.split(delimiteur))
-    if nb_cols <= 2:
-        for sep in (";", "\t", "|", ","):
-            n = len(premiere_ligne.split(sep))
-            if n > nb_cols:
-                nb_cols, delimiteur = n, sep
     log["delimiteur"] = delimiteur
 
     # newline='' : évite que la traduction universal-newlines de StringIO ne casse
@@ -2699,23 +2700,12 @@ def _decoder_apercu_csv(contenu: bytes):
     if texte.count("�") > 10:
         texte = contenu.decode("latin-1")
     sample = texte[:4096]
-    try:
-        dialect = csv.Sniffer().sniff(sample, delimiters=";,\t|")
-        delimiteur = dialect.delimiter
-    except csv.Error:
-        delimiteur = ","
+    delimiteur = _detecter_delimiteur(sample)
 
     premiere_ligne = texte.split("\n")[0]
     premiere_norm = normaliser(premiere_ligne.split(",")[0].split(";")[0])
     if premiere_norm in ("colonne", "column", "champ", "field", "variable"):
         return "__DICTIONNAIRE__"
-
-    nb_cols = len(premiere_ligne.split(delimiteur))
-    if nb_cols <= 2:
-        for sep in (";", "\t", "|", ","):
-            n = len(premiere_ligne.split(sep))
-            if n > nb_cols:
-                nb_cols, delimiteur = n, sep
 
     reader = csv.DictReader(io.StringIO(texte, newline=""), delimiter=delimiteur)
     entetes = list(reader.fieldnames or [])

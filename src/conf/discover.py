@@ -206,7 +206,7 @@ MARQUEURS_ENTETES = set(
 
 
 # Chemins de données
-_DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
+_DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "data")
 
 DECOUVERTE_FILE    = os.path.join(_DATA_DIR, "decouverte.json")
 LOG_FILE           = os.path.join(_DATA_DIR, "discover.log")

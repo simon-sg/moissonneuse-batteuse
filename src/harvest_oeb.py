@@ -12,9 +12,7 @@ Résultats :
   data/<dossier>/rudi_metadata.json           — métadonnées RUDI
   data/state_oeb.json                         — cache (évite re-téléchargements)
 """
-import csv
 import datetime
-import io
 import json
 import os
 import sys
@@ -30,44 +28,19 @@ from connectors.oeb import (
 )
 from connectors.rudi_node import publier_dataset, charger_conf_rudi
 from translation.description_secours import generer_complement
+from state import charger_etat, sauvegarder_etat
+from conf.communes_rm import BBOX_RM_RUDI as _BBOX_RM
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
 STATE_FILE = os.path.join(DATA_DIR, "state_oeb.json")
 
 _PRODUCTEUR = "Observatoire de l'Environnement en Bretagne (OEB)"
 _ZONE = "Rennes Métropole"
-_BBOX_RM = {
-    "bounding_box": {
-        "west_longitude": -2.08, "east_longitude": -1.37,
-        "south_latitude": 47.89, "north_latitude": 48.27,
-    }
-}
 _LICENCE_ETALAB = {
     "licence_type": "STANDARD",
     "licence_label": "etalab-2.0",
     "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
 }
-
-
-# ---------------------------------------------------------------------------
-# État / cache
-# ---------------------------------------------------------------------------
-
-def _charger_state() -> dict:
-    if os.path.exists(STATE_FILE):
-        try:
-            with open(STATE_FILE, encoding="utf-8") as f:
-                return json.load(f)
-        except (json.JSONDecodeError, OSError) as e:
-            print(f"[state_oeb] {STATE_FILE} illisible ({e}), repart d'un état vide.")
-            return {}
-    return {}
-
-
-def _sauvegarder_state(state: dict) -> None:
-    os.makedirs(os.path.dirname(STATE_FILE), exist_ok=True)
-    with open(STATE_FILE, "w", encoding="utf-8") as f:
-        json.dump(state, f, ensure_ascii=False, indent=2)
 
 
 def _inchange(dataset_id: str, updated_at: str | None, state: dict) -> bool:
@@ -300,12 +273,12 @@ def main() -> None:
         return
 
     print(f"=== Harvest OEB — {len(datasets)} JDD configuré(s) ===\n")
-    state = _charger_state()
+    state = charger_etat(STATE_FILE)
 
     ok, cache, echecs, vides = [], [], [], []
     for config in datasets:
         res = traiter_dataset(config, state)
-        _sauvegarder_state(state)
+        sauvegarder_etat(STATE_FILE, state)
 
         statut = res["statut"]
         if statut == "ok":

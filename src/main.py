@@ -1,7 +1,7 @@
 import sys
 import os
 import json
-import datetime
+from datetime import datetime, timezone
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -95,7 +95,7 @@ def traiter_dataset(config: dict, state: dict) -> dict:
     # republiera depuis les fichiers déjà sur disque, sans tout re-télécharger.
     state[dataset_id] = {
         "last_modified": last_modified,
-        "last_harvested": datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "last_harvested": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "nb_enregistrements_rm": len(filtered),
         "dossier": config["dossier"],
         "rudi_publie": rudi_publie,

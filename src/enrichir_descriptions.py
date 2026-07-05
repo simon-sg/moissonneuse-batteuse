@@ -31,12 +31,13 @@ from translation.description_secours import (
     MARQUEUR, description_quasi_vide, entetes_depuis_csv, entetes_depuis_geojson,
     generer_complement, partie_descriptive,
 )
-from state import charger_state, sauvegarder_state
-from harvest_insee import _charger_state as charger_state_insee, _sauvegarder_state as sauvegarder_state_insee
-from harvest_oeb import _charger_state as charger_state_oeb, _sauvegarder_state as sauvegarder_state_oeb
-from harvest_bdnb import _charger_state as charger_state_bdnb, _sauvegarder_state as sauvegarder_state_bdnb
+from state import charger_etat, sauvegarder_etat
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
+STATE_TAB_FILE = os.path.join(DATA_DIR, "state.json")
+STATE_INSEE_FILE = os.path.join(DATA_DIR, "state_insee.json")
+STATE_OEB_FILE = os.path.join(DATA_DIR, "state_oeb.json")
+STATE_BDNB_FILE = os.path.join(DATA_DIR, "state_bdnb.json")
 
 
 def _colonnes_disponibles(dossier: str, rudi_metadata: dict) -> list[str]:
@@ -96,10 +97,10 @@ def enrichir_un(dossier_nom: str) -> str | None:
 
 def main() -> None:
     etats = {
-        "tabulaire": charger_state(),
-        "insee": charger_state_insee(),
-        "oeb": charger_state_oeb(),
-        "bdnb": charger_state_bdnb(),
+        "tabulaire": charger_etat(STATE_TAB_FILE),
+        "insee": charger_etat(STATE_INSEE_FILE),
+        "oeb": charger_etat(STATE_OEB_FILE),
+        "bdnb": charger_etat(STATE_BDNB_FILE),
     }
     index = {}  # dossier -> (source, clé dans etats[source])
     for source, etat in etats.items():
@@ -128,10 +129,10 @@ def main() -> None:
                     etats[source][cle]["rudi_publie"] = False
                     n_republier += 1
 
-    sauvegarder_state(etats["tabulaire"])
-    sauvegarder_state_insee(etats["insee"])
-    sauvegarder_state_oeb(etats["oeb"])
-    sauvegarder_state_bdnb(etats["bdnb"])
+    sauvegarder_etat(STATE_TAB_FILE, etats["tabulaire"])
+    sauvegarder_etat(STATE_INSEE_FILE, etats["insee"])
+    sauvegarder_etat(STATE_OEB_FILE, etats["oeb"])
+    sauvegarder_etat(STATE_BDNB_FILE, etats["bdnb"])
 
     print(f"\n=== Terminé : {n_traites} description(s) complétée(s) sur {len(dossiers)} dossier(s) ===")
     if n_republier:

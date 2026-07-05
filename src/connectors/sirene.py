@@ -10,6 +10,8 @@ Avantage sur la recherche-entreprises.api.gouv.fr : couvre TOUS les établisseme
 actifs sur le territoire (pas seulement les sièges), sans limite de pagination.
 """
 
+import csv
+import io
 import os
 import json
 import datetime
@@ -104,8 +106,10 @@ def _telecharger() -> set[str]:
 
     texte = b"".join(morceaux).decode("utf-8-sig", errors="replace")
     sirens: set[str] = set()
-    for ligne in texte.splitlines()[1:]:  # ignore la ligne d'en-tête
-        s = ligne.strip().strip('"').split(";")[0]
+    reader = csv.reader(io.StringIO(texte), delimiter=";")
+    next(reader, None)  # ignore la ligne d'en-tête
+    for row in reader:
+        s = (row[0] if row else "").strip()
         if s and len(s) == 9 and s.isdigit():
             sirens.add(s)
 

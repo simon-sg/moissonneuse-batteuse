@@ -36,44 +36,19 @@ from connectors.bdnb import (
 )
 from connectors.rudi_node import publier_dataset, charger_conf_rudi
 from translation.description_secours import generer_complement
+from state import charger_etat, sauvegarder_etat
+from conf.communes_rm import BBOX_RM_RUDI as _BBOX_RM
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
 STATE_FILE = os.path.join(DATA_DIR, "state_bdnb.json")
 
 _PRODUCTEUR = "Centre Scientifique et Technique du Bâtiment (CSTB)"
 _ZONE = "Rennes Métropole"
-_BBOX_RM = {
-    "bounding_box": {
-        "west_longitude": -2.08, "east_longitude": -1.37,
-        "south_latitude": 47.89, "north_latitude": 48.27,
-    }
-}
 _LICENCE_ETALAB = {
     "licence_type": "STANDARD",
     "licence_label": "etalab-2.0",
     "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
 }
-
-
-# ---------------------------------------------------------------------------
-# État / cache
-# ---------------------------------------------------------------------------
-
-def _charger_state() -> dict:
-    if os.path.exists(STATE_FILE):
-        try:
-            with open(STATE_FILE, encoding="utf-8") as f:
-                return json.load(f)
-        except (json.JSONDecodeError, OSError) as e:
-            print(f"[state_bdnb] {STATE_FILE} illisible ({e}), repart d'un état vide.")
-            return {}
-    return {}
-
-
-def _sauvegarder_state(state: dict) -> None:
-    os.makedirs(os.path.dirname(STATE_FILE), exist_ok=True)
-    with open(STATE_FILE, "w", encoding="utf-8") as f:
-        json.dump(state, f, ensure_ascii=False, indent=2)
 
 
 def _inchange(config_id: str, last_modified: str | None, content_length: str | None,
@@ -292,12 +267,12 @@ def main() -> None:
         return
 
     print(f"=== Harvest BDNB — {len(DATASETS_BDNB)} configuration(s) ===\n")
-    state = _charger_state()
+    state = charger_etat(STATE_FILE)
 
     ok, cache, echecs = [], [], []
     for config in DATASETS_BDNB:
         res = traiter_config(config, state)
-        _sauvegarder_state(state)
+        sauvegarder_etat(STATE_FILE, state)
 
         statut = res["statut"]
         if statut == "ok":

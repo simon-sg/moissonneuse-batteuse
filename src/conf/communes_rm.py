@@ -159,3 +159,18 @@ CIRCONSCRIPTIONS_PAR_COMMUNE = {
 # Ensemble plat des circonscriptions dont le territoire recoupe RM (7 sur les 8 que
 # compte le département 35 — la 035-07 ne touche aucune commune RM)
 CIRCONSCRIPTIONS_RM = {c for circos in CIRCONSCRIPTIONS_PAR_COMMUNE.values() for c in circos}
+
+# ---------------------------------------------------------------------------
+# Constantes de bounding box — Rennes Métropole (WGS84)
+# Source unique pour tous les harvesters et connecteurs.
+# ---------------------------------------------------------------------------
+
+BBOX_RM = (-2.00, 47.80, -1.30, 48.35)           # (lon_min, lat_min, lon_max, lat_max)
+BBOX_RM_STR = "-2.00,47.80,-1.30,48.35"           # chaîne pour requêtes OGC (minLon,minLat,maxLon,maxLat)
+
+BBOX_RM_RUDI = {                                   # format structuré pour métadonnées RUDI
+    "bounding_box": {
+        "west_longitude": -2.08, "east_longitude": -1.37,
+        "south_latitude": 47.89, "north_latitude": 48.27,
+    }
+}

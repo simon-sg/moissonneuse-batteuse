@@ -18,7 +18,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from conf.communes_rm import CODES_INSEE_RM
+from conf.communes_rm import CODES_INSEE_RM, BBOX_RM
 from conf.datasets import DATASETS_GEO
 from connectors.geo_services import (
     nettoyer_url_ogc,
@@ -28,26 +28,10 @@ from connectors.geo_services import (
 )
 from translation.datagouv_to_rudi import traduire_metadonnees_service
 from connectors.rudi_node import publier_dataset, charger_conf_rudi
+from state import charger_etat, sauvegarder_etat
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
 STATE_FILE = os.path.join(DATA_DIR, "state_geo.json")
-
-
-def _charger_state() -> dict:
-    if os.path.exists(STATE_FILE):
-        try:
-            with open(STATE_FILE, encoding="utf-8") as f:
-                return json.load(f)
-        except (json.JSONDecodeError, OSError) as e:
-            print(f"[state_geo] {STATE_FILE} illisible ({e}), repart d'un état vide.")
-            return {}
-    return {}
-
-
-def _sauvegarder_state(state: dict) -> None:
-    os.makedirs(os.path.dirname(STATE_FILE), exist_ok=True)
-    with open(STATE_FILE, "w", encoding="utf-8") as f:
-        json.dump(state, f, ensure_ascii=False, indent=2)
 
 
 def _slug_typename(typename: str) -> str:
@@ -137,7 +121,7 @@ def traiter_geojson(config: dict, dossier: str, state: dict) -> list[tuple[str, 
     """Télécharge un fichier GeoJSON statique et filtre les features RM.
 
     Filtrage par propriété si `champ_iris` est défini dans la config (valeur = code INSEE
-    commune sur 5 chiffres) ; sinon filtrage par bbox RM (lon 1.4–1.9, lat 47.9–48.3).
+    commune sur 5 chiffres) ; sinon filtrage par bbox RM (lon -2.00–-1.30, lat 47.80–48.35).
     Utilise l'ETag/Last-Modified pour sauter le téléchargement si le fichier n'a pas changé.
 
     Exemple de config dans DATASETS_GEO :
@@ -153,9 +137,6 @@ def traiter_geojson(config: dict, dossier: str, state: dict) -> list[tuple[str, 
         }
     """
     from connectors.http import session
-
-    # Bbox approchée de Rennes Métropole (43 communes)
-    BBOX_RM = (1.40, 47.90, 1.90, 48.30)
 
     url = config["url"]
     champ_commune = config.get("champ_iris")  # clé de propriété = code INSEE commune
@@ -294,14 +275,14 @@ def traiter_geo_dataset(config: dict, state: dict) -> None:
 def main():
     print("=== Moisson services géographiques ===")
     print(f"{len(DATASETS_GEO)} service(s) configuré(s)\n")
-    state = _charger_state()
+    state = charger_etat(STATE_FILE)
     for config in DATASETS_GEO:
         print(f"--- {config['id']} ---")
         try:
             traiter_geo_dataset(config, state)
         except Exception as e:
             print(f"  ERREUR : {e}")
-        _sauvegarder_state(state)  # incrémental : un service planté ne perd pas les précédents
+        sauvegarder_etat(STATE_FILE, state)  # incrémental : un service planté ne perd pas les précédents
         print()
     print("=== Fin ===")
 

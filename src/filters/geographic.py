@@ -1,19 +1,24 @@
+"""
+Utilitaires de filtrage géographique pour Rennes Métropole.
+
+Contient les fonctions de détection RM partagées entre discover.py (découverte),
+harvest_batch.py (moisson batch) et tout autre module qui en a besoin.
+"""
+
 import json
+import re
 import sys
 import os
-import re
 import unicodedata
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from conf.communes_rm import COMMUNES_RM, CODES_POSTAUX_RENNES, CIRCONSCRIPTIONS_RM
+from conf.communes_rm import (
+    COMMUNES_RM, CODES_POSTAUX_RENNES, CIRCONSCRIPTIONS_RM,
+    CODES_POSTAUX_RM, CODES_INSEE_RM, BBOX_RM,
+)
 
 
 def normaliser(texte: str) -> str:
-    """
-    Normalise un nom de commune pour la comparaison :
-    minuscules, underscores/tirets → espaces, suppression des accents.
-    Gère les formats LIBGEO style (SAINT_GILLES, CESSON_SEVIGNE…).
-    """
     texte = texte.lower().strip()
     texte = texte.replace("_", " ").replace("-", " ")
     texte = unicodedata.normalize("NFD", texte)
@@ -23,31 +28,17 @@ def normaliser(texte: str) -> str:
 
 # Table de correspondance normalisée : nom normalisé -> code postal
 _COMMUNES_NORMALISEES = {normaliser(nom): cp for nom, cp in COMMUNES_RM.items()}
-# Rennes avec ses 3 codes postaux
 _CODES_RENNES = set(CODES_POSTAUX_RENNES + ["35000"])
 
 
 def est_commune_rm(ville: str) -> bool:
-    """
-    Vérifie si une commune appartient à Rennes Métropole par le nom seul,
-    sans code postal. Utilisé quand le dataset n'a pas de champ CP.
-    """
     return normaliser(ville) in _COMMUNES_NORMALISEES
 
 
 def est_dans_rm(ville: str, cp: str) -> bool:
-    """
-    Vérifie si une commune appartient à Rennes Métropole
-    en croisant le nom de la ville et son code postal.
-    """
     ville_norm = normaliser(ville)
-
-    # Cas Rennes : plusieurs codes postaux
     if ville_norm == "rennes":
         return cp in _CODES_RENNES
-
-    # Cas général : le nom normalisé doit être dans les communes RM
-    # ET le code postal doit correspondre
     cp_attendu = _COMMUNES_NORMALISEES.get(ville_norm)
     return cp_attendu is not None and cp_attendu == cp
 
@@ -56,15 +47,6 @@ _RE_NON_DIGIT = re.compile(r"\D+")
 
 
 def normaliser_circonscription(valeur) -> str | None:
-    """
-    Normalise un code de circonscription législative vers la forme canonique "DDD-NN"
-    (département sur 3 chiffres, numéro de circonscription sur 2 chiffres), quel que
-    soit le format rencontré dans un JDD réel : "035-01", "35-01", "3501", "35_01"...
-    On ne garde que les chiffres ; les 2 derniers forment le numéro de circonscription,
-    tout ce qui précède est le département (zéros de tête retirés puis remis à 3
-    chiffres, pour matcher le format de CIRCONSCRIPTIONS_RM). Retourne None si moins de
-    3 chiffres exploitables.
-    """
     chiffres = _RE_NON_DIGIT.sub("", str(valeur or ""))
     if len(chiffres) < 3:
         return None
@@ -74,33 +56,122 @@ def normaliser_circonscription(valeur) -> str | None:
 
 
 def est_circonscription_rm(valeur: str) -> bool:
-    """
-    Teste si un code de circonscription législative recoupe Rennes Métropole.
-    ATTENTION (voir CLAUDE.md "Known limitations") : une circonscription couvre un
-    territoire plus large que RM — ce test confirme seulement que la ligne est
-    *quelque part* dans une circonscription qui recoupe RM, pas qu'elle est dans une
-    des 43 communes. C'est pourquoi ce champ est toujours essayé en dernier recours.
-    """
     code = normaliser_circonscription(valeur)
     return code is not None and code in CIRCONSCRIPTIONS_RM
 
 
+# ---------------------------------------------------------------------------
+# Constantes de détection géographique — partagées entre discover.py et
+# harvest_batch.py (et tout autre module qui en a besoin).
+# ---------------------------------------------------------------------------
+
+EPCI_SIREN_RM = "243500139"
+_COMMUNES_NORM_RM = {normaliser(c) for c in COMMUNES_RM}
+_RE_CP_35 = re.compile(r"\b(35\d{3})\b")
+_RE_WKT_POINT = re.compile(
+    r"^POINT\s*\(\s*(-?\d+\.?\d*)\s+(-?\d+\.?\d*)\s*\)$", re.IGNORECASE
+)
+_RE_WKT_PAIRE = re.compile(r"(-?\d+\.\d+)\s+(-?\d+\.\d+)")
+
+# BBOX unpacking (lon, lat) — ordre cohérent avec BBOX_RM
+_RM_LON_MIN, _RM_LAT_MIN, _RM_LON_MAX, _RM_LAT_MAX = BBOX_RM
+
+
+def _points_depuis_geojson(texte: str) -> list:
+    try:
+        obj = json.loads(texte)
+    except (ValueError, TypeError):
+        return []
+    if isinstance(obj, dict) and isinstance(obj.get("geometry"), dict):
+        obj = obj["geometry"]
+    coords = obj.get("coordinates") if isinstance(obj, dict) else None
+    if coords is None:
+        return []
+    points = []
+
+    def _parcourir(node):
+        if (isinstance(node, list) and len(node) >= 2
+                and all(isinstance(x, (int, float)) for x in node[:2])):
+            points.append((node[1], node[0]))
+        elif isinstance(node, list):
+            for enfant in node:
+                _parcourir(enfant)
+
+    _parcourir(coords)
+    return points
+
+
+def est_iris_rm(code: str) -> bool:
+    code = str(code).strip()
+    if code == EPCI_SIREN_RM:
+        return True
+    return len(code) >= 5 and code[:5] in CODES_INSEE_RM
+
+
+def est_valeur_commune_rm(valeur: str) -> bool:
+    v = str(valeur).strip()
+    if not v:
+        return False
+    if v in CODES_POSTAUX_RM:
+        return True
+    if est_iris_rm(v):
+        return True
+    return est_commune_rm(v)
+
+
+def est_epci_rm(code: str) -> bool:
+    return str(code).strip() == EPCI_SIREN_RM
+
+
+def est_point_rm(lat_val: str, lon_val: str | None) -> bool:
+    if lon_val is None:
+        texte = str(lat_val).strip()
+        if not texte:
+            return False
+        if texte[0] in "{[":
+            points = _points_depuis_geojson(texte)
+            return any(_RM_LAT_MIN <= la <= _RM_LAT_MAX and _RM_LON_MIN <= lo <= _RM_LON_MAX
+                       for la, lo in points)
+        m = _RE_WKT_POINT.match(texte)
+        if m:
+            lon, lat = float(m.group(1)), float(m.group(2))
+        elif texte[:3].upper() in ("POL", "MUL", "LIN", "GEO"):
+            paires = _RE_WKT_PAIRE.findall(texte)
+            return any(_RM_LAT_MIN <= float(la) <= _RM_LAT_MAX and _RM_LON_MIN <= float(lo) <= _RM_LON_MAX
+                       for lo, la in paires)
+        else:
+            parties = texte.replace(";", ",").split(",")
+            if len(parties) < 2:
+                return False
+            lat, lon = float(parties[0]), float(parties[1])
+    else:
+        try:
+            lat, lon = float(lat_val), float(lon_val)
+        except (ValueError, TypeError):
+            return False
+    return _RM_LAT_MIN <= lat <= _RM_LAT_MAX and _RM_LON_MIN <= lon <= _RM_LON_MAX
+
+
+def est_adresse_rm(texte: str) -> bool:
+    if not texte:
+        return False
+    for cp in _RE_CP_35.findall(texte):
+        if cp in CODES_POSTAUX_RM:
+            return True
+    texte_norm = normaliser(texte)
+    return any(commune in texte_norm for commune in _COMMUNES_NORM_RM)
+
+
 def filter_json_by_postal_codes(data: list, ville_field: str = "ville", postal_code_field: str = "cp") -> list:
-    """
-    Filtre une liste d'enregistrements pour ne garder que ceux
-    appartenant à Rennes Métropole (vérifie nom de commune ET code postal).
-    """
     return [row for row in data if est_dans_rm(str(row.get(ville_field, "")), str(row.get(postal_code_field, "")))]
 
 
 def load_json(path: str) -> list:
-    """Charge un fichier JSON et retourne son contenu."""
     with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
 
 
 def save_json(data: list, path: str) -> None:
-    """Sauvegarde une liste de données en JSON."""
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)

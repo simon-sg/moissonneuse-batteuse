@@ -1,5 +1,4 @@
 import os
-import json
 
 from connectors.http import session
 

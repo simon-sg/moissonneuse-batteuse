@@ -6,10 +6,10 @@ import xml.etree.ElementTree as ET
 from urllib.parse import urlencode, urlparse, urlunparse, parse_qs
 
 from connectors.http import session
+from conf.communes_rm import BBOX_RM_STR, BBOX_RM as _BBOX_RM_TUPLE
 
-_RM_BBOX = "-2.00,47.80,-1.30,48.35"   # minLon,minLat,maxLon,maxLat (WGS84)
-_RM_LON_MIN, _RM_LAT_MIN = -2.00, 47.80
-_RM_LON_MAX, _RM_LAT_MAX = -1.30, 48.35
+_RM_BBOX = BBOX_RM_STR
+_RM_LON_MIN, _RM_LAT_MIN, _RM_LON_MAX, _RM_LAT_MAX = _BBOX_RM_TUPLE
 
 _OGC_KEYS = {
     "service", "request", "version", "typename", "typenames",

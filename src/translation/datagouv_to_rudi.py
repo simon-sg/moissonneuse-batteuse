@@ -117,6 +117,7 @@ def traduire_metadonnees(metadata_source: dict, zone: str = "Rennes Métropole",
                           dossier_nom: str = "",
                           fichiers_filtres: list | None = None,
                           fichiers_dicts: list | None = None,
+                          fichiers_pdfs: list | None = None,
                           theme: str | None = None,
                           entetes_colonnes: list[str] | None = None) -> dict:
     """
@@ -124,6 +125,7 @@ def traduire_metadonnees(metadata_source: dict, zone: str = "Rennes Métropole",
 
     fichiers_filtres : [(nom_fichier, nb_rm, ressource_originale), ...] ou None
     fichiers_dicts   : [(nom_fichier, ressource_originale), ...] ou None
+    fichiers_pdfs    : [(nom_fichier, ressource_originale), ...] ou None
     dossier_nom      : slug pour nommer le fichier filtré par défaut (ex: "prix-carburants")
     theme            : thème RUDI (voir THEMES_RUDI) ; auto-détecté si absent
     entetes_colonnes : colonnes du fichier filtré (si connues) — utilisées pour compléter
@@ -205,7 +207,22 @@ def traduire_metadonnees(metadata_source: dict, zone: str = "Rennes Métropole",
             },
         })
 
-    available_formats = medias_filtres + medias_dicts + [
+    medias_pdfs = []
+    for nom_fichier, ressource_orig in (fichiers_pdfs or []):
+        media_id = str(uuid.uuid5(uuid.NAMESPACE_URL, f"{url_source}/doc/{nom_fichier}"))
+        caption = ressource_orig.get("title", nom_fichier) if ressource_orig else nom_fichier
+        medias_pdfs.append({
+            "media_id": media_id,
+            "media_type": "FILE",
+            "media_name": nom_fichier,
+            "media_caption": f"Documentation — {caption}",
+            "connector": {
+                "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
+                "interface_contract": "dwnl",
+            },
+        })
+
+    available_formats = medias_filtres + medias_dicts + medias_pdfs + [
         {
             "media_id": media_id_source,
             "media_type": "SERVICE",

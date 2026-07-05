@@ -11,6 +11,7 @@ import gzip
 import io
 import json
 import os
+import re
 import shutil
 import sys
 import time
@@ -326,6 +327,21 @@ def filtrer_xlsx(chemin: str, champ_cp, champ_ville, champ_iris, champ_adresse,
             if _ligne_est_rm(r, cp, vil, iris, adr, sir, sirens_rm, epci, lat, lon, circo)]
 
 
+_RE_PLAGE_DEPT = re.compile(
+    r'(?:dept|dpts)\s+(\d{2,3})\s*[–\-à]\s*(\d{2,3})',
+    re.IGNORECASE
+)
+
+
+def _hors_plage_35(titre: str) -> bool:
+    """Vrai si le titre contient une plage de départements qui exclut le 35."""
+    m = _RE_PLAGE_DEPT.search(titre)
+    if m:
+        debut, fin = int(m.group(1)), int(m.group(2))
+        return debut > 35 or fin < 35
+    return False
+
+
 _MOTS_DICT = {
     "dictionnaire", "dict", "codebook", "code book",
     "description des colonnes", "description des champs",
@@ -354,11 +370,13 @@ def _est_dictionnaire_contenu(chemin: str) -> bool:
 
 
 def analyser_ressources(metadata: dict) -> dict:
-    """Classe les ressources par rôle : données (csv/zip/gz/xlsx/json) et dictionnaires.
-    Retourne csvs comme liste de (ressource, format) pour supporter tous les types."""
+    """Classe les ressources par rôle : données (csv/zip/gz/xlsx/json), dictionnaires et PDF.
+    Les ressources dont le titre contient une plage de départements excluant le 35
+    (ex: 'dpts 57 à 976') sont ignorées — trop lourdes pour zéro lignes RM."""
     resources = metadata.get("resources", [])
     csvs_fmt: list[tuple[dict, str]] = []  # (ressource, format)
     dicts = []
+    pdfs = []
     has_json = False
 
     for r in resources:
@@ -370,6 +388,13 @@ def analyser_ressources(metadata: dict) -> dict:
 
         if _est_dictionnaire_titre(r):
             dicts.append(r)
+            continue
+
+        if fmt_r == "pdf":
+            pdfs.append(r)
+            continue
+
+        if _hors_plage_35(titre_lower):
             continue
 
         if ".zip" in titre_lower or fmt_r == "zip":
@@ -389,7 +414,7 @@ def analyser_ressources(metadata: dict) -> dict:
 
     if csvs_fmt:
         fmt_principal = csvs_fmt[0][1]
-        return {"csvs": csvs_fmt, "dicts": dicts, "has_json": has_json, "fmt": fmt_principal}
+        return {"csvs": csvs_fmt, "dicts": dicts, "pdfs": pdfs, "has_json": has_json, "fmt": fmt_principal}
 
     # Pas de ressource tabulaire : essayer JSON directement
     jsons = [r for r in resources if r is not None
@@ -397,8 +422,8 @@ def analyser_ressources(metadata: dict) -> dict:
              and "geo" not in (r.get("title") or "").lower()
              and not _est_dictionnaire_titre(r)]
     if jsons:
-        return {"csvs": [(jsons[0], "json")], "dicts": dicts, "has_json": False, "fmt": "json"}
-    return {"csvs": [], "dicts": dicts, "has_json": False, "fmt": ""}
+        return {"csvs": [(jsons[0], "json")], "dicts": dicts, "pdfs": pdfs, "has_json": False, "fmt": "json"}
+    return {"csvs": [], "dicts": dicts, "pdfs": pdfs, "has_json": False, "fmt": ""}
 
 
 _slugifier = slugifier  # alias pour compatibilité ascendante (importé par harvest_insee)
@@ -622,6 +647,25 @@ def traiter_candidat(candidat: dict, state: dict) -> dict:
             if chemin_cache and os.path.exists(chemin_cache):
                 os.remove(chemin_cache)
 
+    # Télécharger les PDFs de documentation si des données ont été extraites
+    fichiers_pdfs = []
+    for r in analyse.get("pdfs", []):
+        if r is None:
+            continue
+        titre_r = r.get("title") or "documentation"
+        nom = f"doc-{_slugifier(titre_r)}.pdf"
+        print(f"  PDF : {titre_r[:55]}")
+        chemin_cache = None
+        try:
+            chemin_cache = telecharger(r["url"])
+            shutil.copy2(chemin_cache, os.path.join(dossier, nom))
+            fichiers_pdfs.append((nom, r))
+        except Exception as e:
+            print(f"    → ERREUR : {e}")
+        finally:
+            if chemin_cache and os.path.exists(chemin_cache):
+                os.remove(chemin_cache)
+
     # Sommer les CSV uniquement (les JSON régénérés ont le même nb_rm, on évite le double-compte)
     nb_rm_total = sum(nb for nom, nb, _ in fichiers_data if nom.endswith(".csv")) \
                or sum(nb for nom, nb, _ in fichiers_data if nom.endswith(".json"))
@@ -629,6 +673,7 @@ def traiter_candidat(candidat: dict, state: dict) -> dict:
     rudi_metadata = traduire_metadonnees(
         metadata, dossier_nom=dossier_nom,
         fichiers_filtres=fichiers_data, fichiers_dicts=fichiers_dicts,
+        fichiers_pdfs=fichiers_pdfs,
         entetes_colonnes=dernieres_entetes,
     )
     rudi_file = os.path.join(dossier, "rudi_metadata.json")

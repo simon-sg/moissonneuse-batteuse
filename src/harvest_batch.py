@@ -8,99 +8,38 @@ import bz2
 import csv
 import glob
 import gzip
-import hashlib
 import io
 import json
 import os
-import re
 import shutil
 import sys
-import unicodedata
+import time
 import zipfile
 import requests
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from connectors.datagouv import get_dataset_metadata
+from connectors.download import _chemin_cache
 from connectors.sirene import obtenir_sirens_rm
-from filters.geographic import est_dans_rm, est_commune_rm, normaliser, est_circonscription_rm
-from conf.communes_rm import CODES_POSTAUX_RM, CODES_INSEE_RM, COMMUNES_RM
+from filters.csv import slugifier, sauvegarder_csv
+from filters.geographic import (
+    est_dans_rm, est_commune_rm, normaliser, est_circonscription_rm,
+    est_iris_rm, est_valeur_commune_rm, est_epci_rm, est_point_rm, est_adresse_rm,
+    EPCI_SIREN_RM,
+)
+from filters.harvest import (
+    _detecter_delimiteur, _detecter_encodage_bytes, _detecter_encodage,
+    _ligne_est_rm, _extraire_csvs_zip,
+)
+from conf.communes_rm import CODES_POSTAUX_RM, CODES_INSEE_RM
 from translation.datagouv_to_rudi import traduire_metadonnees
 from state import charger_state, sauvegarder_state, dataset_a_change
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
 DECOUVERTE_FILE = os.path.join(DATA_DIR, "decouverte.json")
 CACHE_DIR = os.path.join(DATA_DIR, "cache")  # cache partagé avec discover.py
-
-
-def _chemin_cache(url: str) -> str:
-    return os.path.join(CACHE_DIR, hashlib.md5(url.encode()).hexdigest())
-
-EPCI_SIREN_RM = "243500139"
-_RE_CP_35 = re.compile(r"\b(35\d{3})\b")
-# Regex pour un WKT "POINT(lon lat)" (colonne centroïde) — groupes en ordre X Y
-_RE_WKT_POINT = re.compile(r"^POINT\s*\(\s*(-?\d+\.?\d*)\s+(-?\d+\.?\d*)\s*\)$", re.IGNORECASE)
-_COMMUNES_NORM_RM = {normaliser(c) for c in COMMUNES_RM}
-_RM_LAT_MIN, _RM_LAT_MAX = 47.80, 48.35
-_RM_LON_MIN, _RM_LON_MAX = -2.00, -1.30  # aligné sur discover.py (dérive -2.15 corrigée)
-
-
-def est_iris_rm(code: str) -> bool:
-    code = str(code).strip()
-    if code == EPCI_SIREN_RM:
-        return True
-    return len(code) >= 5 and code[:5] in CODES_INSEE_RM
-
-
-def est_valeur_commune_rm(valeur: str) -> bool:
-    """Teste une colonne 'commune' taguée manuellement en revue (discover.py::
-    revue_manuelle_a_examiner()), dont la représentation (code INSEE, IRIS, code postal, ou
-    nom en texte) n'est pas connue à l'avance — mirroir de discover.py::est_valeur_commune_rm."""
-    v = str(valeur).strip()
-    if not v:
-        return False
-    if v in CODES_POSTAUX_RM:
-        return True
-    if est_iris_rm(v):
-        return True
-    return est_commune_rm(v)
-
-
-def est_epci_rm(code: str) -> bool:
-    """Égalité stricte avec le SIREN de l'EPCI RM — mirroir de discover.py::est_epci_rm."""
-    return str(code).strip() == EPCI_SIREN_RM
-
-
-def est_point_rm(lat_val: str, lon_val: str | None) -> bool:
-    """Mirroir de discover.py::est_point_rm. Si lon_val is None, lat_val est au format
-    combiné "lat,lon" ou un WKT "POINT(lon lat)" (colonne centroïde)."""
-    try:
-        if lon_val is None:
-            texte = str(lat_val).strip()
-            m = _RE_WKT_POINT.match(texte)
-            if m:
-                lon, lat = float(m.group(1)), float(m.group(2))
-            else:
-                parties = texte.replace(";", ",").split(",")
-                if len(parties) < 2:
-                    return False
-                lat, lon = float(parties[0]), float(parties[1])
-        else:
-            lat, lon = float(lat_val), float(lon_val)
-    except (ValueError, TypeError):
-        return False
-    return _RM_LAT_MIN <= lat <= _RM_LAT_MAX and _RM_LON_MIN <= lon <= _RM_LON_MAX
-
-
-def est_adresse_rm(texte: str) -> bool:
-    if not texte:
-        return False
-    for cp in _RE_CP_35.findall(texte):
-        if cp in CODES_POSTAUX_RM:
-            return True
-    texte_norm = normaliser(texte)
-    return any(commune in texte_norm for commune in _COMMUNES_NORM_RM)
-
+_CACHE_TTL_SECS = 7 * 24 * 3600  # 7 jours — les fichiers plus vieux sont re-téléchargés
 
 def _resoudre_champ(champ: str | None, colonnes_norm: dict) -> str | None:
     """Résout un nom de champ stocké (snake_case ou exact) vers le nom réel dans le CSV.
@@ -116,35 +55,6 @@ def _resoudre_champ(champ: str | None, colonnes_norm: dict) -> str | None:
         return champ  # correspondance exacte
     champ_norm = normaliser(champ)
     return colonnes_norm.get(champ_norm, champ)  # fallback : retourne champ tel quel
-
-
-def _ligne_est_rm(row: dict, champ_cp, champ_ville, champ_iris, champ_adresse,
-                   champ_siren=None, sirens_rm=None,
-                   champ_epci=None, champ_lat=None, champ_lon=None,
-                   champ_circonscription=None) -> bool:
-    if champ_iris:
-        return est_valeur_commune_rm(str(row.get(champ_iris, "")))
-    if champ_adresse:
-        return est_adresse_rm(str(row.get(champ_adresse, "")))
-    if champ_siren:
-        val = str(row.get(champ_siren, "")).strip().replace(" ", "")
-        return val.isdigit() and len(val) in (9, 14) and val[:9] in sirens_rm
-    if champ_epci:
-        return est_epci_rm(str(row.get(champ_epci, "")))
-    if champ_lat:
-        lon_val = str(row.get(champ_lon, "")).strip() if champ_lon else None
-        return est_point_rm(str(row.get(champ_lat, "")).strip(), lon_val)
-    if champ_circonscription:
-        return est_circonscription_rm(str(row.get(champ_circonscription, "")))
-    cp = str(row.get(champ_cp, "")).strip() if champ_cp else ""
-    ville = str(row.get(champ_ville, "")).strip() if champ_ville else ""
-    if champ_cp and champ_ville:
-        return est_dans_rm(ville, cp)
-    if champ_ville:
-        return est_commune_rm(ville)
-    if champ_cp:
-        return cp in CODES_POSTAUX_RM
-    return False
 
 
 def _resoudre_champs(fieldnames: list[str], champ_cp, champ_ville, champ_iris,
@@ -170,15 +80,17 @@ def _resoudre_champs(fieldnames: list[str], champ_cp, champ_ville, champ_iris,
     )
 
 
-class _Passer(Exception):
-    """Levée quand l'utilisateur choisit de passer un dataset pendant le téléchargement."""
-
-
 def telecharger(url: str) -> str:
-    """Télécharge en streaming vers le cache disque. Retourne le chemin du fichier cache."""
+    """Télécharge en streaming vers le cache disque. Retourne le chemin du fichier cache.
+    Les fichiers de cache de plus de _CACHE_TTL_SECS sont re-téléchargés."""
     chemin = _chemin_cache(url)
     if os.path.exists(chemin):
-        return chemin
+        age = time.time() - os.path.getmtime(chemin)
+        if age > _CACHE_TTL_SECS:
+            print(f"    → cache expiré ({age/3600:.0f}h), re-téléchargement")
+            os.remove(chemin)
+        else:
+            return chemin
     os.makedirs(CACHE_DIR, exist_ok=True)
     r = requests.get(url, timeout=120, stream=True)
     r.raise_for_status()
@@ -190,34 +102,6 @@ def telecharger(url: str) -> str:
             total += len(chunk)
     os.rename(chemin_tmp, chemin)
     return chemin
-
-
-def _detecter_delimiteur(sample: str) -> str:
-    """Détecte le délimiteur CSV en comptant les occurrences dans la première ligne."""
-    premiere_ligne = sample.split("\n")[0]
-    candidats = {d: premiere_ligne.count(d) for d in (";", "\t", "|", ",")}
-    # Priorité au délimiteur le plus fréquent (min 2 occurrences = au moins 3 colonnes)
-    meilleur = max(candidats, key=candidats.get)
-    if candidats[meilleur] >= 2:
-        return meilleur
-    try:
-        dialect = csv.Sniffer().sniff(sample, delimiters=";,\t|")
-        return dialect.delimiter
-    except csv.Error:
-        return ","
-
-
-def _detecter_encodage_bytes(sample: bytes) -> str:
-    """Détecte l'encodage d'un échantillon de bytes (utf-8-sig ou latin-1)."""
-    decoded = sample.decode("utf-8-sig", errors="replace")
-    return "utf-8-sig" if decoded.count("�") <= 10 else "latin-1"
-
-
-def _detecter_encodage(chemin: str) -> str:
-    """Détecte l'encodage d'un fichier texte (utf-8-sig ou latin-1)."""
-    with open(chemin, "rb") as f:
-        sample = f.read(8192)
-    return _detecter_encodage_bytes(sample)
 
 
 def filtrer_csv(chemin: str, champ_cp, champ_ville, champ_iris, champ_adresse,
@@ -279,16 +163,6 @@ def filtrer_json(chemin: str, champ_cp, champ_ville, champ_iris, champ_adresse,
     return [row for row in rows
             if _ligne_est_rm(row, champ_cp, champ_ville, champ_iris, champ_adresse, champ_siren,
                              sirens_rm, champ_epci, champ_lat, champ_lon, champ_circonscription)]
-
-
-def _extraire_csvs_zip(chemin: str) -> list[tuple[str, bytes]]:
-    """Extrait les fichiers CSV d'une archive ZIP. Retourne [(nom_membre, contenu_csv), ...]."""
-    with zipfile.ZipFile(chemin) as zf:
-        return [
-            (nom, zf.read(nom))
-            for nom in zf.namelist()
-            if nom.lower().endswith(".csv") and not nom.startswith("__MACOSX")
-        ]
 
 
 def filtrer_parquet(url: str, champ_cp, champ_ville, champ_iris, champ_adresse,
@@ -452,14 +326,6 @@ def filtrer_xlsx(chemin: str, champ_cp, champ_ville, champ_iris, champ_adresse,
             if _ligne_est_rm(r, cp, vil, iris, adr, sir, sirens_rm, epci, lat, lon, circo)]
 
 
-def sauvegarder_csv(lignes: list[dict], chemin: str) -> None:
-    os.makedirs(os.path.dirname(chemin), exist_ok=True)
-    with open(chemin, "w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=lignes[0].keys())
-        writer.writeheader()
-        writer.writerows(lignes)
-
-
 _MOTS_DICT = {
     "dictionnaire", "dict", "codebook", "code book",
     "description des colonnes", "description des champs",
@@ -535,13 +401,7 @@ def analyser_ressources(metadata: dict) -> dict:
     return {"csvs": [], "dicts": dicts, "has_json": False, "fmt": ""}
 
 
-def _slugifier(titre: str) -> str:
-    """Convertit un titre de ressource en slug de fichier (max 50 chars)."""
-    titre = re.sub(r"\.[a-zA-Z0-9]{2,5}$", "", titre.strip())
-    s = normaliser(titre)
-    s = re.sub(r"[^a-z0-9\s-]", "", s)
-    s = re.sub(r"\s+", "-", s.strip())
-    return s[:50] or "fichier"
+_slugifier = slugifier  # alias pour compatibilité ascendante (importé par harvest_insee)
 
 
 def filtrer_toutes_ressources(

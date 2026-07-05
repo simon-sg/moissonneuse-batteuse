@@ -18,12 +18,13 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from connectors.rudi_node import publier_dataset, charger_conf_rudi
 from conf.datasets import DATASETS_GEO
-from state import charger_state, sauvegarder_state
-from harvest_insee import _charger_state as charger_state_insee, _sauvegarder_state as sauvegarder_state_insee
-from harvest_oeb import _charger_state as charger_state_oeb, _sauvegarder_state as sauvegarder_state_oeb
-from harvest_bdnb import _charger_state as charger_state_bdnb, _sauvegarder_state as sauvegarder_state_bdnb
+from state import charger_etat, sauvegarder_etat
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
+STATE_TAB_FILE = os.path.join(DATA_DIR, "state.json")
+STATE_INSEE_FILE = os.path.join(DATA_DIR, "state_insee.json")
+STATE_OEB_FILE = os.path.join(DATA_DIR, "state_oeb.json")
+STATE_BDNB_FILE = os.path.join(DATA_DIR, "state_bdnb.json")
 
 
 def _fichiers_a_uploader(dossier_path: str, rudi_metadata: dict) -> list[str]:
@@ -43,10 +44,10 @@ def main() -> None:
         print("src/conf/rudi_node.json absent — impossible de publier.")
         return
 
-    state_tab = charger_state()
-    state_insee = charger_state_insee()
-    state_oeb = charger_state_oeb()
-    state_bdnb = charger_state_bdnb()
+    state_tab = charger_etat(STATE_TAB_FILE)
+    state_insee = charger_etat(STATE_INSEE_FILE)
+    state_oeb = charger_etat(STATE_OEB_FILE)
+    state_bdnb = charger_etat(STATE_BDNB_FILE)
     dossiers_geo = {c["dossier"] for c in DATASETS_GEO}
 
     # dossier -> ("tabulaire"|"insee"|"oeb", clé dans l'état correspondant)
@@ -118,10 +119,10 @@ def main() -> None:
             echecs += 1
         print()
 
-    sauvegarder_state(state_tab)
-    sauvegarder_state_insee(state_insee)
-    sauvegarder_state_oeb(state_oeb)
-    sauvegarder_state_bdnb(state_bdnb)
+    sauvegarder_etat(STATE_TAB_FILE, state_tab)
+    sauvegarder_etat(STATE_INSEE_FILE, state_insee)
+    sauvegarder_etat(STATE_OEB_FILE, state_oeb)
+    sauvegarder_etat(STATE_BDNB_FILE, state_bdnb)
     print(f"=== Terminé : {ok} publié(s), {echecs} échec(s) sur {len(a_publier)} ===")
 
 

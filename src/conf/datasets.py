@@ -30,10 +30,22 @@ DATASETS = [
 
 import json as _json
 import os as _os
-_GEO_FILE = _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__)))), "data", "geo_services.json")
-_geo_json = _json.load(open(_GEO_FILE, encoding="utf-8")) if _os.path.exists(_GEO_FILE) else []
 
-DATASETS_GEO = _geo_json + [
+def _charger_geo_services() -> list[dict]:
+    chemin = _os.path.join(
+        _os.path.dirname(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__)))),
+        "data", "geo_services.json",
+    )
+    if not _os.path.exists(chemin):
+        return []
+    try:
+        with open(chemin, encoding="utf-8") as f:
+            return _json.load(f)
+    except (_json.JSONDecodeError, OSError) as e:
+        print(f"[datasets] geo_services.json illisible ({e}), ignoré.")
+        return []
+
+DATASETS_GEO = _charger_geo_services() + [
     # Entrées manuelles (optionnel — la plupart viennent de data/geo_services.json via discover.py)
     #
     # type: "geojson" — fichier GeoJSON statique (téléchargé une fois, features filtrées par RM)

@@ -17,7 +17,6 @@ Filtrage géographique via qs (Elasticsearch) :
     - code_territoire    : code INSEE (entier, communes) ou code EPCI (entier)
 """
 import csv
-import io
 import urllib.parse
 
 from connectors.http import session

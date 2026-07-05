@@ -26,34 +26,16 @@ from conf.datasets import DATASETS_INSEE
 from connectors.insee import resoudre_url, extraire_membres, extraire_dictionnaire
 from translation.description_secours import generer_complement
 from connectors.rudi_node import publier_dataset, charger_conf_rudi
-from harvest_batch import filtrer_csv_bytes, sauvegarder_csv, _slugifier
-from discover import _detecter_champs
+from harvest_batch import filtrer_csv_bytes
+from filters.csv import slugifier, sauvegarder_csv
+from connectors.analyseurs import _detecter_champs
+from state import charger_etat, sauvegarder_etat
+from conf.communes_rm import BBOX_RM_RUDI as _BBOX_RM
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
 STATE_FILE = os.path.join(DATA_DIR, "state_insee.json")
 
 _HEADERS = {"User-Agent": "moissonneuse-batteuse/1.0 (projet open-data Rennes Métropole)"}
-
-
-# ---------------------------------------------------------------------------
-# State / cache
-# ---------------------------------------------------------------------------
-
-def _charger_state() -> dict:
-    if os.path.exists(STATE_FILE):
-        try:
-            with open(STATE_FILE, encoding="utf-8") as f:
-                return json.load(f)
-        except (json.JSONDecodeError, OSError) as e:
-            print(f"[state] {STATE_FILE} illisible ou corrompu ({e}), repart d'un état vide.")
-            return {}
-    return {}
-
-
-def _sauvegarder_state(state: dict) -> None:
-    os.makedirs(os.path.dirname(STATE_FILE), exist_ok=True)
-    with open(STATE_FILE, "w", encoding="utf-8") as f:
-        json.dump(state, f, ensure_ascii=False, indent=2)
 
 
 def _inchange(pub_id: str, url: str, state: dict, dossier: str) -> bool:
@@ -87,12 +69,6 @@ def _inchange(pub_id: str, url: str, state: dict, dossier: str) -> bool:
 # Métadonnées RUDI
 # ---------------------------------------------------------------------------
 
-_BBOX_RM = {
-    "bounding_box": {
-        "west_longitude": -2.08, "east_longitude": -1.37,
-        "south_latitude": 47.89, "north_latitude": 48.27,
-    }
-}
 _LICENCE_ETALAB = {
     "licence_type": "STANDARD",
     "licence_label": "etalab-2.0",
@@ -365,7 +341,7 @@ def traiter_publication(pub: dict, state: dict) -> dict:
         print(f"    → {len(lignes)} lignes RM")
         if entetes:
             dernieres_entetes = entetes
-        slug = _slugifier(os.path.splitext(os.path.basename(nom_membre))[0])
+        slug = slugifier(os.path.splitext(os.path.basename(nom_membre))[0])
         nom_csv = f"{slug}-rennesmetropole.csv"
         chemin_csv = os.path.join(dossier, nom_csv)
         sauvegarder_csv(lignes, chemin_csv)
@@ -451,13 +427,13 @@ def main() -> None:
         sys.exit(1)
 
     print(f"=== Harvest INSEE direct — {len(publications)} publication(s) ===\n")
-    state = _charger_state()
+    state = charger_etat(STATE_FILE)
 
     ok, cache, echecs, vides = [], [], [], []
 
     for pub in publications:
         res = traiter_publication(pub, state)
-        _sauvegarder_state(state)  # sauvegarde immédiate après chaque publication
+        sauvegarder_etat(STATE_FILE, state)  # sauvegarde immédiate après chaque publication
 
         statut = res["statut"]
         if statut == "ok":

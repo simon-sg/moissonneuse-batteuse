@@ -11,6 +11,7 @@ import json
 import os
 import shutil
 import sys
+import time
 import traceback
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -302,11 +303,28 @@ def action_etat_projet():
 # Purge
 # ---------------------------------------------------------------------------
 
+_CACHE_TTL_SECS = 7 * 24 * 3600  # 7 jours
+
+
 def _purger_cache() -> str:
     chemin = os.path.join(DATA_DIR, "cache")
     if os.path.isdir(chemin):
         shutil.rmtree(chemin)
     return "Cache vidé."
+
+
+def _purger_cache_ancien() -> str:
+    chemin = os.path.join(DATA_DIR, "cache")
+    if not os.path.isdir(chemin):
+        return "Aucun cache à nettoyer."
+    maintenant = time.time()
+    supprimes = 0
+    for f in os.listdir(chemin):
+        p = os.path.join(chemin, f)
+        if os.path.isfile(p) and maintenant - os.path.getmtime(p) > _CACHE_TTL_SECS:
+            os.remove(p)
+            supprimes += 1
+    return f"{supprimes} fichier(s) de cache antérieur(s) à 7 jours supprimé(s)."
 
 
 def _purger_etat() -> str:
@@ -393,10 +411,15 @@ def _purger_donnees_moissonnees() -> str:
 
 
 PURGE_ITEMS = [
-    {"label": "Cache de téléchargement",
+    {"label": "Cache de téléchargement (intégral)",
      "taille": lambda: _taille_chemin(os.path.join(DATA_DIR, "cache")),
      "purger": _purger_cache,
      "impact": "Re-téléchargé automatiquement au prochain run. Aucune perte de données.",
+     "destructeur": False},
+    {"label": "Cache de téléchargement (fichiers > 7 jours)",
+     "taille": lambda: _taille_chemin(os.path.join(DATA_DIR, "cache")),
+     "purger": _purger_cache_ancien,
+     "impact": "Supprime les fichiers du cache HTTP non accédés depuis 7 jours. Les fichiers encore utilisés seront re-téléchargés au prochain run.",
      "destructeur": False},
     {"label": "État de moisson (state.json, state_insee.json, state_oeb.json, state_bdnb.json, state_geo.json)",
      "taille": lambda: sum(_taille_chemin(os.path.join(DATA_DIR, n)) for n in

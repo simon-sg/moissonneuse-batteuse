@@ -11,21 +11,37 @@ Stratégie failsafe :
 
 La configuration des publications est dans conf/datasets.py (DATASETS_INSEE).
 """
+import html.parser
 import re
 import zipfile
 
 from connectors.http import session
-from conf.datasets import DATASETS_INSEE
 
 BASE_INSEE = "https://www.insee.fr"
 _HEADERS = {"User-Agent": "moissonneuse-batteuse/1.0 (projet open-data Rennes Métropole)"}
 _TIMEOUT_HEAD = 15
 _TIMEOUT_GET  = 20
+_RE_ZIP = re.compile(r'/fr/statistiques/fichier/\d+/[^"\'<>\s]+\.zip', re.IGNORECASE)
+
+
+class _ExtractZipLinks(html.parser.HTMLParser):
+    """Parse les balises <a href="..."> d'une page INSEE pour trouver les liens ZIP."""
+    def __init__(self):
+        super().__init__()
+        self.liens: list[str] = []
+
+    def handle_starttag(self, tag, attrs):
+        if tag != "a":
+            return
+        for name, value in attrs:
+            if name == "href" and _RE_ZIP.match(value):
+                self.liens.append(value)
 
 
 # ---------------------------------------------------------------------------
 # Résolution d'URL (avec fallback scraping)
 # ---------------------------------------------------------------------------
+
 
 def _scraper_url_zip(url_page: str) -> str | None:
     """Scrape la page INSEE et retourne l'URL du ZIP CSV le plus approprié.
@@ -37,14 +53,14 @@ def _scraper_url_zip(url_page: str) -> str | None:
         print(f"  [insee] Scraping de {url_page} impossible : {e}")
         return None
 
-    # Chercher tous les chemins /fr/statistiques/fichier/<id>/<fichier>.zip
-    liens = re.findall(r'/fr/statistiques/fichier/\d+/[^"\'<>\s]+\.zip', r.text, re.IGNORECASE)
+    finder = _ExtractZipLinks()
+    finder.feed(r.text)
+    liens = finder.liens
     if not liens:
         return None
 
     # Supprimer les doublons en gardant l'ordre
     liens = list(dict.fromkeys(liens))
-
     def _priorite(lien: str) -> int:
         l = lien.lower()
         if "_histo" in l or "histo." in l:

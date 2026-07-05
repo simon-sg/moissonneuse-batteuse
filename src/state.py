@@ -1,26 +1,37 @@
 import json
 import os
 
-STATE_FILE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data", "state.json")
+DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
+STATE_FILE = os.path.join(DATA_DIR, "state.json")
+
+
+def charger_etat(chemin: str) -> dict:
+    """Charge un état depuis un fichier JSON. Retourne {} si le fichier n'existe pas ou est corrompu."""
+    if not os.path.exists(chemin):
+        return {}
+    try:
+        with open(chemin, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except (json.JSONDecodeError, OSError) as e:
+        print(f"[state] {chemin} illisible ou corrompu ({e}), repart d'un état vide.")
+        return {}
+
+
+def sauvegarder_etat(chemin: str, etat: dict) -> None:
+    """Sauvegarde un état dans un fichier JSON."""
+    os.makedirs(os.path.dirname(chemin), exist_ok=True)
+    with open(chemin, "w", encoding="utf-8") as f:
+        json.dump(etat, f, ensure_ascii=False, indent=2)
 
 
 def charger_state() -> dict:
-    """Charge l'état sauvegardé des runs précédents."""
-    if os.path.exists(STATE_FILE):
-        try:
-            with open(STATE_FILE, "r", encoding="utf-8") as f:
-                return json.load(f)
-        except (json.JSONDecodeError, OSError) as e:
-            print(f"[state] {STATE_FILE} illisible ou corrompu ({e}), repart d'un état vide.")
-            return {}
-    return {}
+    """Charge l'état depuis data/state.json."""
+    return charger_etat(STATE_FILE)
 
 
 def sauvegarder_state(state: dict) -> None:
-    """Sauvegarde l'état après un run."""
-    os.makedirs(os.path.dirname(STATE_FILE), exist_ok=True)
-    with open(STATE_FILE, "w", encoding="utf-8") as f:
-        json.dump(state, f, ensure_ascii=False, indent=2)
+    """Sauvegarde l'état dans data/state.json."""
+    sauvegarder_etat(STATE_FILE, state)
 
 
 def dataset_a_change(state: dict, dataset_id: str, last_modified: str) -> bool:

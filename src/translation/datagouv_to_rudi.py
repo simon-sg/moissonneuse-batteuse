@@ -89,15 +89,7 @@ LICENCES = {
     },
 }
 
-# Emprise géographique de Rennes Métropole (bounding box WGS84)
-BBOX_RENNES_METROPOLE = {
-    "bounding_box": {
-        "west_longitude": -2.08,
-        "east_longitude": -1.37,
-        "south_latitude": 47.89,
-        "north_latitude": 48.27,
-    }
-}
+from conf.communes_rm import BBOX_RM_RUDI as BBOX_RENNES_METROPOLE
 
 
 def _local_id_depuis_dataset_id(dataset_id: str) -> str:
@@ -360,7 +352,7 @@ def traduire_metadonnees_service(config: dict,
     if couches_rm:
         keywords += couches_rm[:5]
 
-    now = datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+    now = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
     return {
         "local_id": local_id,

@@ -149,7 +149,10 @@ def analyser_dossier(dossier: str, config: dict) -> dict | None:
     if not fichiers:
         return None
     retirees = avant_total - apres_total
-    if "cp" in natures:
+    if "cp" in natures and "insee" not in natures:
+        # Colonne de nature CP dans tout le dossier : tag champ_iris erroné.
+        # Un dossier MIXTE (des fichiers INSEE et un fichier CP, cas RNIC) n'est
+        # PAS re-typé : la pré-passe nature par fichier le filtre correctement.
         action = "retypage"
     elif retirees == 0:
         action = "inchange"

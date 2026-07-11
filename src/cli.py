@@ -27,6 +27,7 @@ import catalogue
 import publish_rudi
 import enrichir_descriptions
 from conf.datasets import DATASETS, DATASETS_GEO, DATASETS_INSEE, DATASETS_OEB, DATASETS_BDNB
+from connectors.rudi_node import charger_conf_rudi
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
 CONF_RUDI_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "conf", "rudi_node.json")
@@ -155,19 +156,76 @@ def action_enrichir_descriptions():
                enrichir_descriptions.main)
 
 
-def _verifier_backlog_examen():
-    decouverte = discover.charger_decouverte()
-    stats = discover.verifier_ressources_a_examiner(decouverte)
-    if stats["total"] == 0:
-        print("Aucune entrée à vérifier (tout le backlog tabulaire est déjà classé).")
-    else:
-        print(f"{stats['verifies']}/{stats['total']} JDD vérifié(s) — "
-              f"{stats['sans_ressource']} sans ressource exploitable.")
-
-
 def action_verifier_backlog_examen():
-    _executer("Vérification des ressources du backlog « à examiner » (rattrapage, sans téléchargement)",
-               _verifier_backlog_examen)
+    def _verifier():
+        decouverte = discover.charger_decouverte()
+        stats = discover.verifier_ressources_a_examiner(decouverte)
+        if stats["total"] == 0:
+            print("Aucune entrée à vérifier (tout le backlog tabulaire est déjà classé).")
+        else:
+            print(f"{stats['verifies']}/{stats['total']} JDD vérifié(s) — "
+                  f"{stats['sans_ressource']} sans ressource exploitable.")
+    _executer("Vérification des ressources du backlog « à examiner »", _verifier)
+
+
+def action_menage_rudi():
+    def _detecter_et_proposer():
+        orphelins = publish_rudi.menage_rudi_one_shot()
+        conf = charger_conf_rudi()
+        if not conf:
+            if orphelins:
+                print("src/conf/rudi_node.json absent — suppression des orphelins impossible.")
+            return
+        if orphelins:
+            print(f"\n{len(orphelins)} orphelin(s) détecté(s) — vous pouvez les supprimer du nœud RUDI.")
+            if _confirmer("Supprimer ces datasets orphelins du nœud RUDI ?", mot_cle="SUPPRIMER"):
+                ok, echecs = publish_rudi.supprimer_datasets(conf, orphelins)
+                print(f"\nSupprimé(s) : {ok}, échec(s) : {echecs}")
+
+        inutilisees = publish_rudi.menage_organisations()
+        if inutilisees:
+            print(f"\n{len(inutilisees)} organisation(s) non utilisée(s) — vous pouvez les supprimer du nœud RUDI.")
+            if _confirmer("Supprimer ces organisations non utilisées du nœud RUDI ?", mot_cle="SUPPRIMER"):
+                ok, echecs = publish_rudi.supprimer_organisations(conf, inutilisees)
+                print(f"\nOrganisations supprimées : {ok}, échec(s) : {echecs}")
+
+    _executer("Ménage RUDI (orphelins + organisations inutilisées)", _detecter_et_proposer)
+
+
+def action_reanalyser_wms():
+    """Re-analyse les WMS du backlog a_examiner : ajoute ceux avec couches RM, exclut les autres."""
+    decouverte = discover.charger_decouverte()
+    stats = discover.reanalyser_wms_a_examiner(decouverte)
+    if stats["ajoutes"] or stats["exclus"]:
+        print(f"\nRelancez : python3 src/harvest_geo.py")
+
+
+def action_nettoyer_wms_geo():
+    """Re-vérifie les couches WMS de geo_services.json avec un probe GetMap au centre de RM."""
+    stats = discover.nettoyer_wms_geo_services()
+    if stats["couches_supprimees"]:
+        print(f"\nRelancez : python3 src/harvest_geo.py")
+
+
+def action_demarrer_superset():
+    """Démarre le conteneur Docker Superset (mb-superset) via docker compose."""
+    from connectors.superset import statut_conteneur, demarrer_conteneur, superset_pret, URL_SUPERSET
+    etat = statut_conteneur()
+    if not etat.get("docker_installe"):
+        print("Docker n'est pas installé.")
+        return
+    if etat.get("existe") and etat["etat"] == "running":
+        pret = superset_pret()
+        if pret:
+            print(f"✓ Superset est déjà en cours d'exécution — ouvrir {URL_SUPERSET}")
+            return
+        print("Superset est en cours de démarrage (conteneur lancé, application pas encore prête)…")
+        return
+    print("Démarrage de Superset…")
+    ok, msg = demarrer_conteneur()
+    print(msg)
+    if ok:
+        print(f"  Ouvrir {URL_SUPERSET}")
 
 
 # Étapes déterministes du pipeline complet (sans découverte, jamais interactives) —
@@ -184,14 +242,75 @@ ETAPES_PIPELINE = [
 ]
 
 
+def _log_pipeline_etape(etape: str, duree: float, succes: bool) -> None:
+    """Optionnel : log l'étape dans la base monitor si monitor_db.json existe."""
+    try:
+        from monitor import _charger_conf_db, _connecter, _log_pipeline
+        conf = _charger_conf_db()
+        conn = _connecter(conf)
+        try:
+            cur = conn.cursor()
+            _log_pipeline(conf, cur, duree, succes, etape)
+            conn.commit()
+        finally:
+            conn.close()
+    except Exception:
+        pass  # monitor non configuré, silencieux
+
+
 def executer_pipeline_complet(etapes_supplementaires: list | None = None) -> list[tuple[str, bool]]:
     """Exécute ETAPES_PIPELINE (+ étapes optionnelles en tête, ex: découverte) et
-    retourne [(label, ok), ...]. Pas d'input() ici — utilisable depuis le web."""
+    retourne [(label, ok), ...]. Pas d'input() ici — utilisable depuis le web.
+
+    Les 4 étapes de moisson indépendantes (INSEE, OEB, BDNB, géo) sont exécutées
+    en parallèle pour réduire la durée totale du pipeline."""
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+
     etapes = (etapes_supplementaires or []) + ETAPES_PIPELINE
     resultats = []
-    for label, fn, args, kwargs in etapes:
+
+    # Identifier les étapes parallèles (INSEE, OEB, BDNB, géo)
+    labels_parallèles = {
+        "Moisson INSEE (toutes les publications)",
+        "Moisson OEB (toutes les publications)",
+        "Moisson BDNB (bâtiments)",
+        "Moisson géo (WFS/WMS/OGC API)",
+    }
+
+    # Séparer : séquentiel (avant) → parallèle → séquentiel (après)
+    idx_debut_par = next(
+        (i for i, (l, *_) in enumerate(etapes) if l in labels_parallèles), len(etapes)
+    )
+    idx_fin_par = next(
+        (i for i, (l, *_) in enumerate(etapes) if i > idx_debut_par and l not in labels_parallèles), len(etapes)
+    )
+
+    def _exec_etape(label, fn, args, kwargs):
+        t0 = time.time()
         ok = _executer(label, fn, *args, **kwargs)
-        resultats.append((label, ok))
+        duree = time.time() - t0
+        _log_pipeline_etape(label, duree, ok)
+        return label, ok
+
+    # 1. Étapes séquentielles avant le parallèle (tabulaire, batch)
+    for label, fn, args, kwargs in etapes[:idx_debut_par]:
+        resultats.append(_exec_etape(label, fn, args, kwargs))
+
+    # 2. Étapes parallèles (INSEE || OEB || BDNB || géo)
+    if idx_debut_par < idx_fin_par:
+        print(f"\n--- Lancement de {idx_fin_par - idx_debut_par} moissons en parallèle ---")
+        with ThreadPoolExecutor(max_workers=4) as executor:
+            futures = {
+                executor.submit(_exec_etape, label, fn, args, kwargs): label
+                for label, fn, args, kwargs in etapes[idx_debut_par:idx_fin_par]
+            }
+            for future in as_completed(futures):
+                resultats.append(future.result())
+
+    # 3. Étapes séquentielles après le parallèle (catalogue, publication RUDI)
+    for label, fn, args, kwargs in etapes[idx_fin_par:]:
+        resultats.append(_exec_etape(label, fn, args, kwargs))
+
     print(f"\n{'=' * 60}\nRésumé du pipeline complet\n{'=' * 60}")
     for label, ok in resultats:
         print(f"  {'✓' if ok else '✗'} {label}")
@@ -200,7 +319,7 @@ def executer_pipeline_complet(etapes_supplementaires: list | None = None) -> lis
 
 def action_pipeline_complet():
     print("\n=== Pipeline complet ===")
-    print("Enchaîne automatiquement : moisson tabulaire → batch → INSEE → géo → catalogue → publication RUDI.")
+    print("Enchaîne : tabulaire → batch → INSEE → OEB → BDNB → géo → catalogue → RUDI.")
     print("La découverte n'est pas incluse par défaut (revue manuelle nécessaire).\n")
 
     etapes_supp = []
@@ -232,11 +351,18 @@ def etat_projet() -> dict:
     if os.path.isfile(chemin_decouverte):
         with open(chemin_decouverte, encoding="utf-8") as f:
             d = json.load(f)
+        a_examiner = d.get("a_examiner", [])
+        sr = [e for e in a_examiner if e.get("sans_ressource")]
+        echec = [e for e in a_examiner if "analyse échouée" in e.get("raison", "")]
         donnees["decouverte"] = {
             "candidats": len(d.get("candidats", [])),
             "vus": len(d.get("vus", [])),
             "exclus": len(d.get("exclus", [])),
             "echecs": len(d.get("echecs", [])),
+            "a_examiner": len(a_examiner),
+            "a_examiner_sans_ressource": len(sr),
+            "a_examiner_analyse_echouee": len(echec),
+            "historique": len(d.get("historique", [])),
         }
 
     for nom_fichier, cle in (("state.json", "tabulaire_batch"), ("state_insee.json", "insee"),
@@ -251,6 +377,19 @@ def etat_projet() -> dict:
             }
         else:
             donnees["etat_moisson"][cle] = None
+
+    chemin_state_geo = os.path.join(DATA_DIR, "state_geo.json")
+    if os.path.isfile(chemin_state_geo):
+        with open(chemin_state_geo, encoding="utf-8") as f:
+            sg = json.load(f)
+        couches = {k: v for k, v in sg.items() if not k.startswith("_")}
+        donnees["etat_moisson"]["geo"] = {
+            "total": len(couches),
+            "rudi_publie": sum(1 for v in sg.values()
+                               if isinstance(v, dict) and v.get("rudi_publie")),
+        }
+    else:
+        donnees["etat_moisson"]["geo"] = None
 
     n_dossiers = sum(
         1 for n in os.listdir(DATA_DIR)
@@ -274,13 +413,17 @@ def action_etat_projet():
 
     if d["decouverte"]:
         dd = d["decouverte"]
-        print(f"  Découverte : {dd['candidats']} candidat(s) en attente de moisson, "
+        print(f"  Découverte : {dd['candidats']} candidat(s), "
               f"{dd['vus']} JDD vus, {dd['exclus']} exclu(s), {dd['echecs']} échec(s)")
+        print(f"  Backlog « à examiner » : {dd['a_examiner']} entrée(s) "
+              f"({dd['a_examiner_sans_ressource']} sans ressource, "
+              f"{dd['a_examiner_analyse_echouee']} analyse échouée)")
+        print(f"  Historique décisions : {dd['historique']}")
     else:
         print("  Découverte : aucun historique (data/decouverte.json absent)")
 
     for cle, label in (("tabulaire_batch", "tabulaire/batch"), ("insee", "INSEE"),
-                        ("oeb", "OEB"), ("bdnb", "BDNB")):
+                        ("oeb", "OEB"), ("bdnb", "BDNB"), ("geo", "géo")):
         em = d["etat_moisson"].get(cle)
         if em:
             print(f"  État moisson {label} : {em['total']} JDD suivi(s), {em['rudi_publie']} publié(s) sur RUDI")
@@ -295,8 +438,6 @@ def action_etat_projet():
     dn = d["donnees"]
     print(f"  Données moissonnées : {dn['n_dossiers']} dossier(s), {_formater_taille(dn['taille_data_octets'])}")
     print(f"  Cache de téléchargement : {_formater_taille(dn['taille_cache_octets'])}")
-
-    input("\n(Entrée pour revenir au menu)")
 
 
 # ---------------------------------------------------------------------------
@@ -498,21 +639,35 @@ def menu_purge():
 # ---------------------------------------------------------------------------
 
 ACTIONS = [
+    # --- Moisson ---
     ("1", "Découverte interactive (data.gouv.fr + WFS/WMS)", action_decouverte),
-    ("2", "Revue manuelle du backlog (a_examiner) — tagging manuel des colonnes", action_revue_manuelle),
-    ("3", "Moisson tabulaire — data.gouv.fr configuré", action_moisson_tabulaire),
-    ("4", "Moisson batch — candidats découverts", action_moisson_batch),
-    ("5", "Moisson INSEE — publications directes", action_moisson_insee),
-    ("6", "Moisson OEB — portail environnement Bretagne", action_moisson_oeb),
-    ("7", "Moisson BDNB — bâtiments (DPE, énergie)", action_moisson_bdnb),
-    ("8", "Moisson géo — WFS/WMS/OGC API", action_moisson_geo),
+    ("2", "Revue manuelle du backlog (a_examiner)", action_revue_manuelle),
+    ("3", "Moisson batch — candidats découverts", action_moisson_batch),
+    ("4", "Moisson INSEE — publications directes", action_moisson_insee),
+    ("5", "Moisson OEB — Observatoire env. Bretagne", action_moisson_oeb),
+    ("6", "Moisson BDNB — bâtiments (DPE, énergie)", action_moisson_bdnb),
+    ("7", "Moisson géo — WFS/WMS/OGC API", action_moisson_geo),
+    # --- Pipeline & publication ---
+    ("8", "Pipeline complet (tabulaire → batch → INSEE → OEB → BDNB → géo → catalogue → RUDI)", action_pipeline_complet),
     ("9", "(Re)générer le catalogue", action_catalogue),
     ("10", "Publier sur le nœud RUDI (rattrapage)", action_publier_rudi),
-    ("11", "Enrichir les descriptions vides/quasi vides (rattrapage)", action_enrichir_descriptions),
-    ("12", "Vérifier les ressources du backlog « à examiner » (rattrapage)", action_verifier_backlog_examen),
-    ("13", "Lancer le pipeline complet", action_pipeline_complet),
-    ("14", "Purger des données existantes", menu_purge),
-    ("15", "État du projet", action_etat_projet),
+    ("11", "Enrichir les descriptions vides/quasi vides", action_enrichir_descriptions),
+    # --- Maintenance ---
+    ("12", "Vérifier le backlog « à examiner »", action_verifier_backlog_examen),
+    ("13", "Re-analyser les WMS du backlog", action_reanalyser_wms),
+    ("14", "Nettoyer les WMS de geo_services.json", action_nettoyer_wms_geo),
+    ("15", "Ménage RUDI (orphelins + organisations inutilisées)", action_menage_rudi),
+    # --- Données & infos ---
+    ("16", "Purger des données existantes", menu_purge),
+    ("17", "État du projet", action_etat_projet),
+    ("18", "Démarrer Superset (conteneur Docker)", action_demarrer_superset),
+]
+
+SECTIONS = [
+    (0, "Moisson"),
+    (7, "Pipeline & publication"),
+    (11, "Maintenance"),
+    (15, "Données & infos"),
 ]
 
 
@@ -521,9 +676,13 @@ def menu_principal():
         print(f"\n{'=' * 60}")
         print("  Moissonneuse-batteuse — Rennes Métropole")
         print(f"{'=' * 60}")
-        for cle, label, _fn in ACTIONS:
+        idx_section = 0
+        for i, (cle, label, _fn) in enumerate(ACTIONS):
+            if idx_section < len(SECTIONS) and i == SECTIONS[idx_section][0]:
+                print(f"\n  --- {SECTIONS[idx_section][1]} ---")
+                idx_section += 1
             print(f"  {cle}. {label}")
-        print("  0. Quitter")
+        print("\n  0. Quitter")
 
         choix = input("\nChoix : ").strip()
         if choix == "0":

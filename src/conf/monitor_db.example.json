@@ -1,0 +1,11 @@
+{
+    "host": "127.0.0.1",
+    "port": 5433,
+    "db": "moissonneuse",
+    "user": "monitor",
+    "password": "CHANGE_ME",
+    "schema_monitor": "monitor",
+    "schema_ref": "ref",
+    "schema_decouverte": "decouverte",
+    "schema_filtered": "filtered"
+}

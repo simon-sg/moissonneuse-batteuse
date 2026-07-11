@@ -14,7 +14,7 @@ import unicodedata
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from conf.communes_rm import (
     COMMUNES_RM, CODES_POSTAUX_RENNES, CIRCONSCRIPTIONS_RM,
-    CODES_POSTAUX_RM, CODES_INSEE_RM, BBOX_RM,
+    CODES_POSTAUX_RM, CODES_INSEE_RM, BBOX_RM, DEPARTEMENTS_RM,
 )
 
 
@@ -58,6 +58,11 @@ def normaliser_circonscription(valeur) -> str | None:
 def est_circonscription_rm(valeur: str) -> bool:
     code = normaliser_circonscription(valeur)
     return code is not None and code in CIRCONSCRIPTIONS_RM
+
+
+def est_departement_rm(valeur: str) -> bool:
+    code = str(valeur).strip().lstrip("0") or "0"
+    return code.zfill(3) in DEPARTEMENTS_RM
 
 
 # ---------------------------------------------------------------------------

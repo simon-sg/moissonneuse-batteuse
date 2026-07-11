@@ -9,6 +9,38 @@
 #   housing | society
 
 DATASETS = [
+    # ------------------------------------------------------------------
+    # MyDataBall — Compilation INSEE par commune (3963 variables, 35397 communes)
+    # Filtre : Code postal ∈ CODES_POSTAUX_RM
+    # ------------------------------------------------------------------
+    {
+        "dataset_id": "60f54b6c7da17f8ddd594a69",
+        "dossier": "mydataball_communes",
+        "champ_cp": "Code postal",
+        "champ_ville": None,
+        "champ_iris": None,
+        "champ_adresse": None,
+        "theme": "society",
+    },
+    # ------------------------------------------------------------------
+    # MyDataBall — IRIS ancien (1526 variables, 49461 IRIS) — EXCLU
+    # Les colonnes CODE_IRIS et Agence_postale contiennent des valeurs
+    # numériques (coordonnées) au lieu de codes géographiques exploitables.
+    # ------------------------------------------------------------------
+
+    # ------------------------------------------------------------------
+    # MyDataBall — IRIS 2022 (1964 variables, 48950 IRIS)
+    # Filtre : CODE_IRIS (code commune 5c) + CODE_POSTAL
+    # ------------------------------------------------------------------
+    {
+        "dataset_id": "6a0db7a7fa455e938f5024dc",
+        "dossier": "mydataball_iris_2022",
+        "champ_cp": "CODE_POSTAL",
+        "champ_ville": "Libelle_commune",
+        "champ_iris": "CODE_IRIS",
+        "champ_adresse": None,
+        "theme": "society",
+    },
 ]
 
 # ---------------------------------------------------------------------------

@@ -19,6 +19,7 @@ from connectors.sirene import obtenir_sirens_rm
 from filters.geographic import (
     est_dans_rm, est_commune_rm, normaliser, est_circonscription_rm,
     est_iris_rm, est_valeur_commune_rm, est_epci_rm, est_point_rm, est_adresse_rm,
+    est_departement_rm,
     EPCI_SIREN_RM,
 )
 from conf.communes_rm import CODES_POSTAUX_RM, CODES_INSEE_RM
@@ -54,7 +55,7 @@ def _detecter_encodage(chemin: str) -> str:
 def _ligne_est_rm(row: dict, champ_cp, champ_ville, champ_iris, champ_adresse,
                    champ_siren=None, sirens_rm=None,
                    champ_epci=None, champ_lat=None, champ_lon=None,
-                   champ_circonscription=None) -> bool:
+                   champ_circonscription=None, champ_dep=None) -> bool:
     if champ_iris:
         return est_valeur_commune_rm(str(row.get(champ_iris, "")))
     if champ_adresse:
@@ -69,6 +70,8 @@ def _ligne_est_rm(row: dict, champ_cp, champ_ville, champ_iris, champ_adresse,
         return est_point_rm(str(row.get(champ_lat, "")).strip(), lon_val)
     if champ_circonscription:
         return est_circonscription_rm(str(row.get(champ_circonscription, "")))
+    if champ_dep:
+        return est_departement_rm(str(row.get(champ_dep, "")))
     cp = str(row.get(champ_cp, "")).strip() if champ_cp else ""
     ville = str(row.get(champ_ville, "")).strip() if champ_ville else ""
     if champ_cp and champ_ville:

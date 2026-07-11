@@ -120,6 +120,12 @@ def _media_id_v4(existant: dict | None, nom_fichier: str) -> str:
     return str(uuid.uuid4())
 
 
+def toutes_metadonnees_rudi(conf: dict) -> list[dict]:
+    """Retourne la liste de tous les datasets enregistrés sur le nœud RUDI."""
+    writer = _creer_writer(conf)
+    return writer.filter_metadata_list({})
+
+
 def publier_dataset(
     conf: dict,
     rudi_metadata: dict,
@@ -162,13 +168,25 @@ def publier_dataset(
               f"Thèmes valides : {themes_valides}. Précisez 'theme' dans datasets.py.")
         raise ValueError(f"Thème RUDI invalide pour ce nœud : {rudi_metadata.get('theme')!r}")
 
-    # contacts : le nœud exige au moins un contact
-    # Crée ou réutilise un contact générique au nom de l'organisation productrice
-    contact = writer.connector.get_or_create_contact_with_info(
-        contact_name=org_name or "Contact",
-        contact_email=conf.get("contact_email", "contact@example.org"),
-    )
-    rudi_metadata["contacts"] = [contact.to_json()]
+    # contacts : le nœud exige au moins un contact avec email valide
+    contacts_source = rudi_metadata.get("contacts", [])
+    if contacts_source:
+        # Contacts extraits de la source (data.gouv.fr, WFS/WMS) — on les "booste" contre le nœud
+        rudi_contacts = []
+        for c in contacts_source:
+            contact = writer.connector.get_or_create_contact_with_info(
+                contact_name=c.get("contact_name", org_name or "Contact"),
+                contact_email=c.get("email", conf.get("contact_email", "contact@example.org")),
+            )
+            rudi_contacts.append(contact.to_json())
+        rudi_metadata["contacts"] = rudi_contacts
+    else:
+        # Fallback : contact générique au nom de l'organisation productrice
+        contact = writer.connector.get_or_create_contact_with_info(
+            contact_name=org_name or "Contact",
+            contact_email=conf.get("contact_email", "contact@example.org"),
+        )
+        rudi_metadata["contacts"] = [contact.to_json()]
 
     medias = rudi_metadata["available_formats"]
 
@@ -191,12 +209,46 @@ def publier_dataset(
             medias[i]["media_caption"] = caption
         print(f"  [RUDI] URL storage : {medias[i]['connector']['url']}")
 
+    # Nettoyage Local→Rudi : retirer les médias FILE dont le fichier local a disparu
+    noms_locaux = {os.path.basename(p) for p in fichiers_filtres if os.path.isfile(p)}
+    medias[:] = [m for m in medias if m.get("media_type") != "FILE" or m.get("media_name") in noms_locaux]
+
     # Corrige les media_ids restants (non uploadés, ex: SERVICE vers data.gouv.fr)
     # La lib RUDI valide que tous les media_id sont des UUID v4
-    for j in range(len(fichiers_filtres), len(medias)):
+    for j in range(len(noms_locaux), len(medias)):
         nom_media = medias[j].get("media_name", "")
         medias[j]["media_id"] = _media_id_v4(existant, nom_media)
 
     print(f"  [RUDI] push métadonnées (local_id={local_id[:8]}…)")
     writer.put_metadata(rudi_metadata)
     print(f"  [RUDI] publié.")
+
+
+def supprimer_organisation(conf: dict, org_id: str) -> bool:
+    """
+    Supprime une organisation du nœud RUDI par son organization_id.
+    Retourne True si la suppression a réussi.
+    """
+    writer = _creer_writer(conf)
+    try:
+        writer.connector.delete_org_with_id(org_id)
+        print(f"  [RUDI] organisation {org_id[:12]}… supprimée du nœud.")
+        return True
+    except Exception as e:
+        print(f"  [RUDI] Erreur suppression organisation {org_id[:12]}… : {e}")
+        return False
+
+
+def supprimer_dataset(conf: dict, global_id: str) -> bool:
+    """
+    Supprime un dataset du nœud RUDI par son global_id.
+    Retourne True si la suppression a réussi.
+    """
+    writer = _creer_writer(conf)
+    try:
+        writer.connector.del_catalog(f"resources/{global_id}")
+        print(f"  [RUDI] dataset {global_id[:12]}… supprimé du nœud.")
+        return True
+    except Exception as e:
+        print(f"  [RUDI] Erreur suppression {global_id[:12]}… : {e}")
+        return False

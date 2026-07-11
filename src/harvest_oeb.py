@@ -26,21 +26,19 @@ from connectors.oeb import (
     telecharger_lignes_rm, lignes_vers_csv,
     BASE_URL,
 )
-from connectors.rudi_node import publier_dataset, charger_conf_rudi
+from connectors.rudi_publish import publier_si_configue
 from translation.description_secours import generer_complement
 from state import charger_etat, sauvegarder_etat
-from conf.communes_rm import BBOX_RM_RUDI as _BBOX_RM
+from translation.rudi_builder import (
+    LICENCE_ETALAB, construire_rudi_metadata,
+    media_filtre, media_source as _media_source_entry,
+)
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
 STATE_FILE = os.path.join(DATA_DIR, "state_oeb.json")
 
 _PRODUCTEUR = "Observatoire de l'Environnement en Bretagne (OEB)"
 _ZONE = "Rennes Métropole"
-_LICENCE_ETALAB = {
-    "licence_type": "STANDARD",
-    "licence_label": "etalab-2.0",
-    "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
-}
 
 
 def _inchange(dataset_id: str, updated_at: str | None, state: dict) -> bool:
@@ -64,77 +62,36 @@ def _generer_rudi_metadata(
     slug = config["id"]
     theme = config.get("theme", "environment")
     titre_source = info.get("title") or config.get("titre") or slug
-    titre = f"{titre_source} — {_ZONE}"
-    synopsis = f"{titre_source[:100]} — données filtrées sur {_ZONE}."[:150]
     url_source = f"{BASE_URL}/data-fair/dataset/{slug}"
 
     description_source = info.get("description") or ""
     if len(description_source.strip()) < 40:
         complement = generer_complement(
-            theme=theme,
-            producteur=_PRODUCTEUR,
-            zone=_ZONE,
-            colonnes=colonnes,
+            theme=theme, producteur=_PRODUCTEUR, zone=_ZONE, colonnes=colonnes,
         )
         description = f"Données OEB filtrées sur {_ZONE}.\n\nSource : {url_source}\n\n{complement}"
     else:
         description = f"{description_source}\n\nDonnées filtrées sur {_ZONE}.\n\nSource : {url_source}"
-
-    local_id = str(uuid.uuid5(uuid.NAMESPACE_URL, url_source))
-
-    media_filtre = {
-        "media_id": str(uuid.uuid5(uuid.NAMESPACE_URL, f"{url_source}/filtered")),
-        "media_type": "FILE",
-        "media_name": nom_csv,
-        "media_caption": f"{nom_csv} — données filtrées sur {_ZONE} (CSV)",
-        "connector": {
-            "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
-            "interface_contract": "dwnl",
-        },
-    }
-    media_source = {
-        "media_id": str(uuid.uuid5(uuid.NAMESPACE_URL, f"{url_source}/source")),
-        "media_type": "SERVICE",
-        "media_name": "source-oeb",
-        "media_caption": f"Jeu de données complet sur le portail OEB (Bretagne entière)",
-        "connector": {
-            "url": url_source,
-            "interface_contract": "dwnl",
-        },
-    }
-
-    dates = {}
-    updated_at = info.get("updatedAt")
-    if updated_at:
-        try:
-            dates["updated"] = updated_at[:10] + "T00:00:00Z"
-        except Exception:
-            dates["updated"] = datetime.date.today().isoformat() + "T00:00:00Z"
 
     mots_cles = ["oeb", "bretagne", _ZONE.lower(), theme]
     for tag in (info.get("keywords") or []):
         if isinstance(tag, str):
             mots_cles.append(tag)
 
-    return {
-        "local_id": local_id,
-        "resource_title": titre,
-        "synopsis": [{"lang": "fr", "text": synopsis}],
-        "summary": [{"lang": "fr", "text": description}],
-        "theme": theme,
-        "keywords": list(dict.fromkeys(mots_cles)),
-        "producer": {"organization_name": _PRODUCTEUR},
-        "contacts": [],
-        "available_formats": [media_filtre, media_source],
-        "dataset_dates": dates,
-        "storage_status": "online",
-        "access_condition": {
-            "licence": _LICENCE_ETALAB,
-            "confidentiality": {"restricted_access": False, "gdpr_sensitive": False},
-        },
-        "geography": _BBOX_RM,
-        "metadata_info": {"metadata_source": url_source},
-    }
+    return construire_rudi_metadata(
+        local_id=str(uuid.uuid5(uuid.NAMESPACE_URL, url_source)),
+        titre=f"{titre_source} — {_ZONE}",
+        synopsis=f"{titre_source[:100]} — données filtrées sur {_ZONE}."[:150],
+        description=description,
+        theme=theme,
+        keywords=mots_cles,
+        producteur_nom=_PRODUCTEUR,
+        url_source=url_source,
+        url_fiche=url_source,
+        medias=[media_filtre(slug, nom_csv, _ZONE)],
+        date_source=info.get("updatedAt"),
+        metadata_source_label="portail OEB",
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -190,18 +147,7 @@ def traiter_dataset(config: dict, state: dict) -> dict:
     print(f"  → rudi_metadata.json généré")
 
     # 6. Publication RUDI
-    rudi_publie = False
-    conf_rudi = charger_conf_rudi()
-    if conf_rudi:
-        try:
-            publier_dataset(conf=conf_rudi, rudi_metadata=rudi_meta,
-                            fichiers_filtres=[chemin_csv])
-            print(f"  [RUDI] Publié.")
-            rudi_publie = True
-        except Exception as e:
-            print(f"  [RUDI] Erreur publication : {e}")
-    else:
-        print(f"  [RUDI] rudi_node.json absent — publication ignorée.")
+    rudi_publie = publier_si_configue(rudi_meta, [chemin_csv])
 
     # 7. État
     state[slug] = {

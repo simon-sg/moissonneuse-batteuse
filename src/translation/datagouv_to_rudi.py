@@ -3,6 +3,7 @@ import os
 import re
 import uuid
 
+from connectors.contacts import extraire_contacts_datagouv, resoudre_contacts
 from translation.description_secours import description_quasi_vide, entetes_depuis_geojson, generer_complement
 
 # Thèmes acceptés par le nœud RUDI (conformes aux catégories RUDI)
@@ -222,6 +223,16 @@ def traduire_metadonnees(metadata_source: dict, zone: str = "Rennes Métropole",
             },
         })
 
+    media_metadata_page = {
+        "media_id": str(uuid.uuid5(uuid.NAMESPACE_URL, f"{url_source}/metadata-page")),
+        "media_type": "SERVICE",
+        "media_name": "source-metadata",
+        "media_caption": "Fiche de métadonnées du jeu de données source sur data.gouv.fr",
+        "connector": {
+            "url": url_source,
+            "interface_contract": "dwnl",
+        },
+    }
     available_formats = medias_filtres + medias_dicts + medias_pdfs + [
         {
             "media_id": media_id_source,
@@ -233,6 +244,7 @@ def traduire_metadonnees(metadata_source: dict, zone: str = "Rennes Métropole",
                 "interface_contract": "dwnl",
             },
         },
+        media_metadata_page,
     ]
 
     keywords = tags[:8] + [zone.lower()]
@@ -250,6 +262,9 @@ def traduire_metadonnees(metadata_source: dict, zone: str = "Rennes Métropole",
     if metadata_source.get("last_modified"):
         dates["updated"] = metadata_source["last_modified"][:10] + "T00:00:00Z"
 
+    contacts_source = extraire_contacts_datagouv(metadata_source)
+    contacts = resoudre_contacts(contacts_source, producer["organization_name"])
+
     rudi_metadata = {
         "local_id": _local_id_depuis_dataset_id(dataset_id),
         "resource_title": titre_localise,
@@ -258,7 +273,7 @@ def traduire_metadonnees(metadata_source: dict, zone: str = "Rennes Métropole",
         "theme": theme,
         "keywords": keywords,
         "producer": producer,
-        "contacts": [],
+        "contacts": contacts,
         "available_formats": available_formats,
         "dataset_dates": dates,
         "storage_status": "online",
@@ -281,13 +296,17 @@ def traduire_metadonnees(metadata_source: dict, zone: str = "Rennes Métropole",
 
 def traduire_metadonnees_service(config: dict,
                                   fichiers_geojson: list | None = None,
-                                  wms_service: dict | None = None) -> dict:
+                                  wms_service: dict | None = None,
+                                  metadata_urls: list | None = None,
+                                  contacts_source: list[dict] | None = None) -> dict:
     """
     Traduit un service géographique (WFS, WMS, OGC API) au format RUDI.
 
     config          : entrée de DATASETS_GEO (id, type, url, titre, producteur, theme, ...)
     fichiers_geojson: [(chemin_fichier, typename), ...] pour WFS/OGC
     wms_service     : dict lu depuis wms_service.json, pour WMS
+    metadata_urls   : URLs de fiche metadata du producteur (extraites des MetadataURL WMS)
+    contacts_source : contacts extraits du service ([{"contact_name": ..., "email": ...}, ...])
     """
     service_id = config["id"]
     service_type = config.get("type", "wfs")
@@ -354,6 +373,22 @@ def traduire_metadonnees_service(config: dict,
         "Jeu de données complet (non filtré)" if service_type == "geojson"
         else f"Service {service_type.upper()} source"
     )
+    # URL de la fiche metadata du producteur (ex: GeoNetwork, cartes.gouv.fr)
+    # Priorité : metadata_urls extraites des capabilities WMS > URL du service
+    url_metadata = config["url"]
+    if metadata_urls:
+        url_metadata = metadata_urls[0]
+
+    media_metadata_page = {
+        "media_id": str(uuid.uuid5(uuid.NAMESPACE_URL, f"geo:{service_id}:metadata-page")),
+        "media_type": "SERVICE",
+        "media_name": "source-metadata",
+        "media_caption": "Fiche de métadonnées du service source",
+        "connector": {
+            "url": url_metadata,
+            "interface_contract": "dwnl",
+        },
+    }
     available_formats.append({
         "media_id": media_id_service,
         "media_type": "SERVICE",
@@ -364,10 +399,13 @@ def traduire_metadonnees_service(config: dict,
             "interface_contract": contract,
         },
     })
+    available_formats.append(media_metadata_page)
 
     keywords = ["rennes métropole", "géographique", service_type]
     if couches_rm:
         keywords += couches_rm[:5]
+
+    contacts = resoudre_contacts(contacts_source or [], producteur_nom)
 
     now = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
@@ -379,7 +417,7 @@ def traduire_metadonnees_service(config: dict,
         "theme": theme,
         "keywords": keywords,
         "producer": {"organization_name": producteur_nom},
-        "contacts": [],
+        "contacts": contacts,
         "available_formats": available_formats,
         "dataset_dates": {"created": now, "updated": now},
         "storage_status": "online",

@@ -31,7 +31,7 @@ from translation.description_secours import (
     MARQUEUR, description_quasi_vide, entetes_depuis_csv, entetes_depuis_geojson,
     generer_complement, partie_descriptive,
 )
-from state import charger_etat, sauvegarder_etat
+from state import charger_etat, sauvegarder_etat, construire_index_dossier
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
 STATE_TAB_FILE = os.path.join(DATA_DIR, "state.json")
@@ -102,10 +102,7 @@ def main() -> None:
         "oeb": charger_etat(STATE_OEB_FILE),
         "bdnb": charger_etat(STATE_BDNB_FILE),
     }
-    index = {}  # dossier -> (source, clé dans etats[source])
-    for source, etat in etats.items():
-        for cle, entree in etat.items():
-            index[entree.get("dossier")] = (source, cle)
+    index = construire_index_dossier(*etats.items())
 
     dossiers = sorted(
         n for n in os.listdir(DATA_DIR)

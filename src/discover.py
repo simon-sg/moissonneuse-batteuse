@@ -11,7 +11,9 @@ import re
 import textwrap
 import sys
 
-import requests
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
+from connectors.http import session
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -285,7 +287,7 @@ def fetcher_datasets_par_ids(ids: list) -> list:
     datasets = []
     for did in ids:
         try:
-            r = requests.get(
+            r = session.get(
                 f"https://www.data.gouv.fr/api/1/datasets/{did}/",
                 timeout=10
             )
@@ -683,7 +685,6 @@ def reanalyser_wms_a_examiner(decouverte: dict) -> dict:
 
     Retourne un dict de stats : {"ajoutes": N, "exclus": N, "echecs": N}.
     """
-    from concurrent.futures import ThreadPoolExecutor, as_completed
     from connectors.analyseurs import analyser_wms
     from connectors.geo_services import nettoyer_url_ogc
 
@@ -759,7 +760,6 @@ def nettoyer_wms_geo_services() -> dict:
 
     Retourne un dict de stats : {"couches_ok": N, "couches_supprimees": N, "services_vides": N}.
     """
-    from concurrent.futures import ThreadPoolExecutor, as_completed
     from connectors.geo_services import wms_probe_donnees_rm, _cache_probes_wms
     _cache_probes_wms.clear()
 
@@ -869,7 +869,6 @@ def verifier_ressources_a_examiner(decouverte: dict) -> dict:
     Retourne {"total": int, "verifies": int, "sans_ressource": int} pour affichage par
     l'appelant (cli.py / dashboard.py).
     """
-    from concurrent.futures import ThreadPoolExecutor
     from connectors.datagouv import get_dataset_metadata
 
     a_verifier = [e for e in decouverte.get("a_examiner", [])
@@ -923,7 +922,6 @@ from review import (
 
 def _reanalyser_candidats_sans_champ(decouverte: dict) -> None:
     """Re-analyse les candidats sans champ géo pour détecter SIREN, lat/lon ajoutés depuis."""
-    from concurrent.futures import ThreadPoolExecutor
     from connectors.datagouv import get_dataset_metadata
 
     sans_champ = [
@@ -1031,7 +1029,6 @@ def _harvest_nouveaux_candidats(decouverte: dict, ids_avant_session: set) -> Non
 # ---------------------------------------------------------------------------
 
 def main():
-    from concurrent.futures import ThreadPoolExecutor, as_completed
     _purger_cache(jours=30)
     print("=== Découverte interactive de JDD éligibles ===")
     if RECHERCHE_STRUCTUREE:

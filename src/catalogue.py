@@ -426,29 +426,23 @@ GABARIT_HTML = r"""<!DOCTYPE html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Catalogue des jeux de données — Rennes Métropole</title>
 <script>(function(){try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<link rel="stylesheet" href="/static/dashboard.css">
 <style>
-  :root { --bg:#f5f6f8; --card:#fff; --txt:#1c2733; --muted:#667; --accent:#0b6e99; --bord:#e2e6ea;
-          --warn:#a3372c; --tag-bg:#eef3f6; --tag-txt:#345; --code-bg:#f0f2f4;
+  :root { --tag-bg:#eef3f6; --tag-txt:#345; --code-bg:#f0f2f4;
           --badge-bg:#fdecea; --badge-txt:#a3372c; }
-  :root[data-theme="dark"] { --bg:#10151b; --card:#1a222b; --txt:#dbe2e8; --muted:#8996a3;
-          --accent:#4fb3da; --bord:#29323c; --warn:#ff9686; --tag-bg:#20303a; --tag-txt:#b7c9d6;
+  :root[data-theme="dark"] { --tag-bg:#20303a; --tag-txt:#b7c9d6;
           --code-bg:#20272e; --badge-bg:#3a201d; --badge-txt:#ff9686; }
   @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) { --bg:#10151b; --card:#1a222b; --txt:#dbe2e8; --muted:#8996a3;
-          --accent:#4fb3da; --bord:#29323c; --warn:#ff9686; --tag-bg:#20303a; --tag-txt:#b7c9d6;
+    :root:not([data-theme="light"]) { --tag-bg:#20303a; --tag-txt:#b7c9d6;
           --code-bg:#20272e; --badge-bg:#3a201d; --badge-txt:#ff9686; }
   }
-  * { box-sizing: border-box; }
-  a { color:var(--accent); }
-  body { margin:0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-         background:var(--bg); color:var(--txt); line-height:1.45; }
-  header { background:var(--card); border-bottom:1px solid var(--bord); padding:18px 24px;
-           position:sticky; top:0; z-index:5; }
+  .catalogue-entete { background:var(--card); border-bottom:1px solid var(--bord); padding:18px 24px;
+           position:sticky; top:52px; z-index:5; }
   h1 { margin:0 0 4px; font-size:1.3rem; }
   .meta { color:var(--muted); font-size:.85rem; }
   .barre { margin-top:12px; display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
   #recherche { flex:2; min-width:240px; padding:10px 12px; font-size:1rem;
-               border:1px solid var(--bord); border-radius:8px; }
+               border:1px solid var(--bord); border-radius:8px; background:var(--card); color:var(--txt); }
   .barre select { padding:9px 10px; font-size:.88rem; border:1px solid var(--bord);
                border-radius:8px; background:var(--card); color:var(--txt); }
   #compteur { color:var(--muted); font-size:.85rem; white-space:nowrap; }
@@ -476,6 +470,10 @@ GABARIT_HTML = r"""<!DOCTYPE html>
   .voir-plus:hover { text-decoration:underline; }
   .tags { display:flex; flex-wrap:wrap; gap:6px; margin:8px 0; }
   .tag { background:var(--tag-bg); color:var(--tag-txt); border-radius:99px; padding:2px 10px; font-size:.75rem; }
+  .tag-connecteur { background:var(--accent); color:#fff; border-radius:99px; padding:2px 10px; font-size:.72rem; font-weight:600; white-space:nowrap; }
+  .tag-connecteur.insee { background:#1a3a6b; } .tag-connecteur.oeb { background:#2d7d46; }
+  .tag-connecteur.bdnb { background:#8c4a1a; } .tag-connecteur.datagouv { background:var(--accent); }
+  .tag-connecteur.geo { background:#5a4a8a; }
   .badge { display:inline-block; background:var(--badge-bg); color:var(--badge-txt); border-radius:99px;
            padding:2px 10px; font-size:.72rem; font-weight:600; }
   details summary { cursor:pointer; font-size:.85rem; color:var(--accent); user-select:none; }
@@ -484,48 +482,28 @@ GABARIT_HTML = r"""<!DOCTYPE html>
   table.res th { color:var(--muted); font-weight:600; }
   table.res code { background:var(--code-bg); padding:1px 5px; border-radius:4px; }
   .vide { text-align:center; color:var(--muted); padding:40px; }
-  #theme-toggle { position:absolute; top:18px; right:24px; background:none; border:1px solid var(--bord);
-                  border-radius:8px; padding:6px 10px; cursor:pointer; font-size:1rem; line-height:1;
-                  color:var(--txt); }
-  #theme-toggle:hover { background:var(--bg); }
 </style>
 </head>
 <body>
-<header>
-  <button id="theme-toggle" title="Basculer thème clair/sombre" aria-label="Basculer thème clair/sombre">🌙</button>
-  <h1>Catalogue des jeux de données — Rennes Métropole</h1>
+{{TOPBAR}}
+<section class="catalogue-entete">
+  <h1>Catalogue des jeux de données</h1>
   <div class="meta" id="entete"></div>
   <div class="barre">
     <input id="recherche" type="search" placeholder="Rechercher (titre, producteur, mot-clé, identifiant…)" autofocus>
     <select id="filtre-connecteur"><option value="">Tous connecteurs</option></select>
     <select id="filtre-format"><option value="">Tous formats</option></select>
     <select id="filtre-theme"><option value="">Tous thèmes</option></select>
+    <select id="tri"><option value="pertinence">Tri : Pertinence</option><option value="titre">Tri : Titre A-Z</option><option value="date">Tri : Plus récent</option></select>
     <span id="compteur"></span>
   </div>
-</header>
+</section>
 <main id="liste"></main>
+<button id="btn-plus-resultats" style="display:none; margin:0 auto 40px"
+        onclick="afficherPlus()">Afficher plus de résultats</button>
 
 <script id="donnees" type="application/json">/*__DONNEES__*/</script>
 <script>
-(function(){
-  const btn = document.getElementById("theme-toggle");
-  function effectif(){
-    return document.documentElement.getAttribute("data-theme") ||
-      (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-  }
-  function majIcone(){ btn.textContent = effectif() === "dark" ? "☀️" : "🌙"; }
-  btn.addEventListener("click", () => {
-    const suivant = effectif() === "dark" ? "light" : "dark";
-    document.documentElement.setAttribute("data-theme", suivant);
-    try { localStorage.setItem("theme", suivant); } catch(e) {}
-    majIcone();
-  });
-  majIcone();
-  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
-    if (!document.documentElement.getAttribute("data-theme")) majIcone();
-  });
-})();
-
 const CAT = JSON.parse(document.getElementById("donnees").textContent);
 const liste = document.getElementById("liste");
 const compteur = document.getElementById("compteur");
@@ -652,7 +630,19 @@ function texteRecherche(j){
 }
 CAT.jeux.forEach(j => j._t = texteRecherche(j));
 
+function tagConnecteur(j){
+  const c = (j.connecteur || "").toLowerCase();
+  let cls = "tag-connecteur";
+  if (c.includes("insee")) cls += " insee";
+  else if (c.includes("oeb")) cls += " oeb";
+  else if (c.includes("bdnb")) cls += " bdnb";
+  else if (c.includes("géo") || c.includes("wfs") || c.includes("wms")) cls += " geo";
+  else cls += " datagouv";
+  return `<span class="${cls}">${esc(j.connecteur || "?")}</span>`;
+}
+
 function carte(j){
+  const iconeConn = tagConnecteur(j);
   const tags = (j.mots_cles||[]).slice(0,12).map(m => `<span class="tag">${esc(m)}</span>`).join("");
   const champs = Object.entries(j.champs_geo||{}).map(([k,v]) => `${k}=<code>${esc(v)}</code>`).join(", ");
   const res = (j.ressources||[]).map(r => {
@@ -669,7 +659,7 @@ function carte(j){
   <article class="jeu">
     <h2><a href="${esc(j.source_datagouv)}" target="_blank" rel="noopener">${esc(j.titre)}</a></h2>
     <div class="infos">
-      ${j.connecteur?`<span><b>Connecteur :</b> ${esc(j.connecteur)}</span>`:""}
+      ${iconeConn}
       ${j.producteur?`<span><b>Producteur :</b> ${esc(j.producteur)}</span>`:""}
       ${j.licence?`<span><b>Licence :</b> ${esc(j.licence)}</span>`:""}
       ${j.date_maj?`<span><b>MàJ :</b> ${esc(j.date_maj.slice(0,10))}</span>`:""}
@@ -691,28 +681,56 @@ function carte(j){
 const selConnecteur = document.getElementById("filtre-connecteur");
 const selFormat = document.getElementById("filtre-format");
 const selTheme = document.getElementById("filtre-theme");
+const selTri = document.getElementById("tri");
+const btnPlus = document.getElementById("btn-plus-resultats");
+const TAILLE_PAGE = 50;
+let filtres = [];          // résultats filtrés + triés
+let offsetRendu = 0;       // combien déjà affichés
+
+function trier(liste, mode){
+  const cpy = [...liste];
+  if (mode === "titre") cpy.sort((a, b) => a.titre.localeCompare(b.titre));
+  else if (mode === "date") cpy.sort((a, b) => (b.date_maj || "").localeCompare(a.date_maj || ""));
+  return cpy;
+}
 
 function rendu(){
   const q = document.getElementById("recherche").value.trim().toLowerCase();
   const termes = q.split(/\s+/).filter(Boolean);
   const connecteur = selConnecteur.value, format = selFormat.value, theme = selTheme.value;
-  const filtres = CAT.jeux.filter(j =>
+  filtres = trier(CAT.jeux.filter(j =>
     termes.every(t => j._t.includes(t)) &&
     (!connecteur || j.connecteur === connecteur) &&
     (!format || (j.formats||[]).includes(format)) &&
     (!theme || j.theme === theme)
-  );
+  ), selTri.value);
   compteur.textContent = filtres.length + " / " + CAT.jeux.length;
-  liste.innerHTML = filtres.length
-    ? filtres.map(carte).join("")
-    : '<div class="vide">Aucun résultat.</div>';
-  // Le clamp CSS masque déjà l'excédent ; on ne révèle le bouton que pour les
-  // descriptions réellement tronquées (comparaison scrollHeight/clientHeight
-  // après mise en page, donc dans un second passage).
-  liste.querySelectorAll(".description.clamp").forEach(desc => {
-    if (desc.scrollHeight > desc.clientHeight + 1) desc.nextElementSibling.hidden = false;
+  offsetRendu = 0;
+  afficherTranche(true);
+}
+
+function afficherTranche(reinit){
+  if (reinit) offsetRendu = 0;
+  const chunk = filtres.slice(offsetRendu, offsetRendu + TAILLE_PAGE);
+  if (reinit) liste.innerHTML = "";
+  if (!chunk.length && !offsetRendu){
+    liste.innerHTML = '<div class="vide">Aucun résultat.</div>';
+    btnPlus.style.display = "none";
+    return;
+  }
+  liste.insertAdjacentHTML("beforeend", chunk.map(carte).join(""));
+  offsetRendu += chunk.length;
+  btnPlus.style.display = (offsetRendu < filtres.length) ? "block" : "none";
+
+  // Révèle les boutons "voir plus" pour les descriptions tronquées
+  requestAnimationFrame(() => {
+    liste.querySelectorAll(".description.clamp").forEach(desc => {
+      if (desc.scrollHeight > desc.clientHeight + 1) desc.nextElementSibling.hidden = false;
+    });
   });
 }
+
+function afficherPlus(){ afficherTranche(false); }
 
 // Délégué une fois pour toutes les cartes, y compris celles réaffichées après un filtre.
 liste.addEventListener("click", e => {
@@ -727,6 +745,7 @@ document.getElementById("recherche").addEventListener("input", rendu);
 selConnecteur.addEventListener("change", rendu);
 selFormat.addEventListener("change", rendu);
 selTheme.addEventListener("change", rendu);
+selTri.addEventListener("change", rendu);
 rendu();
 </script>
 </body>
@@ -744,23 +763,52 @@ GABARIT_WMS_MAP = r"""<!DOCTYPE html>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>(function(){try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
 <style>
-:root{--bg:#f5f6f8;--card:#fff;--txt:#1c2733;--muted:#667;--accent:#0b6e99;--bord:#e2e6ea}
-:root[data-theme="dark"]{--bg:#10151b;--card:#1a222b;--txt:#dbe2e8;--muted:#8996a3;--accent:#4fb3da;--bord:#29323c}
+:root{--bg:#f5f6f8;--card:#fff;--txt:#1c2733;--muted:#667;--accent:#0b6e99;--bord:#e2e6ea;
+      --sidebar-w:280px;--btn-bg:#eef3f6;--btn-bord:#c8d6e0;--btn-hover:#d4ecf7}
+:root[data-theme="dark"]{--bg:#10151b;--card:#1a222b;--txt:#dbe2e8;--muted:#8996a3;--accent:#4fb3da;--bord:#29323c;
+      --btn-bg:#1c2932;--btn-bord:#2f4552;--btn-hover:#26404d}
 @media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){--bg:#10151b;--card:#1a222b;--txt:#dbe2e8;--muted:#8996a3;--accent:#4fb3da;--bord:#29323c}
+  :root:not([data-theme="light"]){--bg:#10151b;--card:#1a222b;--txt:#dbe2e8;--muted:#8996a3;--accent:#4fb3da;--bord:#29323c;
+      --btn-bg:#1c2932;--btn-bord:#2f4552;--btn-hover:#26404d}
 }
 *{box-sizing:border-box;margin:0;padding:0}
 a{color:var(--accent)}
 body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
      background:var(--bg);color:var(--txt);display:flex;flex-direction:column;height:100vh}
 header{background:var(--card);border-bottom:1px solid var(--bord);padding:8px 16px;
-       display:flex;flex-wrap:wrap;gap:8px;align-items:center;flex-shrink:0}
+       display:flex;flex-wrap:wrap;gap:8px;align-items:center;flex-shrink:0;z-index:1000}
 h1{font-size:.9rem;font-weight:600;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #info{color:var(--muted);font-size:.82rem;white-space:nowrap}
 #theme-toggle{background:none;border:1px solid var(--bord);border-radius:6px;padding:4px 9px;
               cursor:pointer;font-size:.9rem;line-height:1;color:var(--txt);flex-shrink:0}
 #theme-toggle:hover{background:var(--bg)}
+#main{flex:1;display:flex;overflow:hidden}
 #carte{flex:1}
+#sidebar{width:var(--sidebar-w);background:var(--card);border-left:1px solid var(--bord);
+         display:flex;flex-direction:column;overflow:hidden;flex-shrink:0}
+#sidebar.collapsed{width:0;border:none}
+#sidebar-toggle{position:absolute;top:50px;right:calc(var(--sidebar-w)+10px);z-index:1000;
+                background:var(--card);border:1px solid var(--bord);border-radius:4px;
+                padding:4px 8px;cursor:pointer;font-size:.8rem;color:var(--txt)}
+#sidebar.collapsed~#sidebar-toggle{right:10px}
+#sidebar-header{padding:8px 12px;border-bottom:1px solid var(--bord);font-size:.82rem;
+                font-weight:600;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
+#search{width:100%;padding:6px 8px;border:1px solid var(--bord);border-radius:4px;
+        background:var(--bg);color:var(--txt);font-size:.82rem;margin:8px 12px;width:calc(100% - 24px)}
+#layers{flex:1;overflow-y:auto;padding:4px 0}
+.layer-item{padding:6px 12px;border-bottom:1px solid var(--bord);cursor:pointer;
+            display:flex;align-items:center;gap:8px;font-size:.82rem}
+.layer-item:hover{background:var(--bg)}
+.layer-item.active{background:var(--accent);color:#fff}
+.layer-item input[type="checkbox"]{margin-top:0;flex-shrink:0}
+.layer-info{flex:1;min-width:0}
+.layer-name{font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.layer-title{color:var(--muted);font-size:.78rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#footer{padding:8px 12px;border-top:1px solid var(--bord);font-size:.78rem;color:var(--muted);
+        display:flex;gap:8px;flex-wrap:wrap}
+#footer button{background:var(--btn-bg);border:1px solid var(--btn-bord);border-radius:4px;
+               padding:3px 8px;cursor:pointer;font-size:.78rem;color:var(--txt)}
+#footer button:hover{background:var(--btn-hover)}
 .leaflet-control-attribution{background:var(--card);color:var(--muted)}
 .leaflet-control-attribution a{color:var(--accent)}
 .leaflet-bar a{background:var(--card);color:var(--txt);border-bottom-color:var(--bord)}
@@ -773,7 +821,23 @@ h1{font-size:.9rem;font-weight:600;flex:1;white-space:nowrap;overflow:hidden;tex
   <span id="info"></span>
   <button id="theme-toggle" title="Basculer thème clair/sombre" aria-label="Basculer thème clair/sombre">🌙</button>
 </header>
-<div id="carte"></div>
+<div id="main">
+  <div id="carte"></div>
+  <div id="sidebar">
+    <div id="sidebar-header">
+      <span>Couches</span>
+      <span id="count"></span>
+    </div>
+    <input type="text" id="search" placeholder="Filtrer les couches...">
+    <div id="layers"></div>
+    <div id="footer">
+      <button id="btn-all">Tout activer</button>
+      <button id="btn-none">Tout désactiver</button>
+      <button id="btn-first">Premières</button>
+    </div>
+  </div>
+</div>
+<button id="sidebar-toggle" title="Afficher/masquer le panneau">☰</button>
 <script id="d" type="application/json">/*__DATA__*/</script>
 <script>
 function themeEffectif(){
@@ -815,14 +879,94 @@ let fond=L.tileLayer(urlFond(themeEffectif()),{
   });
 })();
 
-D.couches.forEach(c=>{
-  L.tileLayer.wms(D.url,{
-    layers:c.nom,
-    format:"image/png",
-    transparent:true,
-    opacity:0.75,
+// Sidebar toggle
+const sidebar=document.getElementById("sidebar");
+const toggleBtn=document.getElementById("sidebar-toggle");
+toggleBtn.addEventListener("click",()=>{
+  sidebar.classList.toggle("collapsed");
+  toggleBtn.textContent=sidebar.classList.contains("collapsed")?"☰":"✕";
+  setTimeout(()=>map.invalidateSize(),300);
+});
+
+// Layers
+const layerMap={};
+const layerEls=[];
+const searchInput=document.getElementById("search");
+const layersDiv=document.getElementById("layers");
+const countSpan=document.getElementById("count");
+
+function updateCount(){
+  const n=Object.values(layerMap).filter(l=>map.hasLayer(l.layer)).length;
+  countSpan.textContent=n+"/"+D.couches.length;
+}
+
+function createLayerItem(c,i){
+  const item=document.createElement("div");
+  item.className="layer-item";
+  item.dataset.nom=c.nom.toLowerCase();
+  item.dataset.titre=(c.titre||"").toLowerCase();
+  const cb=document.createElement("input");
+  cb.type="checkbox";
+  cb.id="l"+i;
+  const info=document.createElement("div");
+  info.className="layer-info";
+  const name=document.createElement("div");
+  name.className="layer-name";
+  name.textContent=c.nom;
+  const title=document.createElement("div");
+  title.className="layer-title";
+  title.textContent=c.titre||"";
+  info.appendChild(name);
+  if(c.titre&&c.titre!==c.nom)info.appendChild(title);
+  item.appendChild(cb);
+  item.appendChild(info);
+
+  const layer=L.tileLayer.wms(D.url,{
+    layers:c.nom,format:"image/png",transparent:true,opacity:0.75,
     attribution:D.producteur||c.titre||"Source WMS"
-  }).addTo(map);
+  });
+  layerMap[c.nom]={layer,cb,item};
+
+  cb.addEventListener("change",()=>{
+    if(cb.checked){map.addLayer(layer)}else{map.removeLayer(layer)}
+    item.classList.toggle("active",cb.checked);
+    updateCount();
+  });
+  item.addEventListener("click",(e)=>{
+    if(e.target===cb)return;
+    cb.checked=!cb.checked;
+    cb.dispatchEvent(new Event("change"));
+  });
+
+  layerEls.push({el:item,nom:c.nom.toLowerCase(),titre:(c.titre||"").toLowerCase()});
+  layersDiv.appendChild(item);
+  return layer;
+}
+
+D.couches.forEach((c,i)=>createLayerItem(c,i));
+updateCount();
+
+// Search
+searchInput.addEventListener("input",()=>{
+  const q=searchInput.value.toLowerCase();
+  layerEls.forEach(e=>{
+    const match=!q||e.nom.includes(q)||e.titre.includes(q);
+    e.el.style.display=match?"":"none";
+  });
+});
+
+// Footer buttons
+document.getElementById("btn-all").addEventListener("click",()=>{
+  D.couches.forEach(c=>{const l=layerMap[c.nom];if(l&&!map.hasLayer(l.layer)){l.cb.checked=true;l.cb.dispatchEvent(new Event("change"))}});
+});
+document.getElementById("btn-none").addEventListener("click",()=>{
+  D.couches.forEach(c=>{const l=layerMap[c.nom];if(l&&map.hasLayer(l.layer)){l.cb.checked=false;l.cb.dispatchEvent(new Event("change"))}});
+});
+document.getElementById("btn-first").addEventListener("click",()=>{
+  D.couches.forEach(c=>{const l=layerMap[c.nom];if(l)l.cb.checked=false;l.layer&&map.removeLayer(l.layer)});
+  const first=D.couches.slice(0,Math.min(3,D.couches.length));
+  first.forEach(c=>{const l=layerMap[c.nom];if(l){l.cb.checked=true;map.addLayer(l.layer)}});
+  updateCount();
 });
 
 map.setView([48.1,-1.68],11);

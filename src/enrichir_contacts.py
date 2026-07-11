@@ -36,8 +36,8 @@ def _trouver_rudi_metadata():
             with open(chemin, encoding="utf-8") as f:
                 meta = json.load(f)
             resultats.append((chemin, meta))
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"⚠ rudi_metadata.json illisible, ignoré : {chemin} ({e})")
     return resultats
 
 

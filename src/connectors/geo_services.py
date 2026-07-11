@@ -276,8 +276,8 @@ def wms_probe_donnees_rm(base_url: str, layer_name: str, timeout: int = 10) -> b
         ok = _png_a_donnees(r.content)
         _cache_probes_wms[cle] = ok
         return ok
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"  ⚠ probe GetMap en échec pour {layer_name} : {e} — couche considérée sans données RM")
     _cache_probes_wms[cle] = False
     return False
 

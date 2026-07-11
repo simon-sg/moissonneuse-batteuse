@@ -11,7 +11,7 @@ import hashlib
 import os
 import sys
 
-import requests
+from connectors.http import session
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from conf.discover import CACHE_DIR
@@ -56,7 +56,7 @@ def _telecharger(url: str, verbose: bool, plafond_mo: float | None = 200) -> tup
     if verbose:
         print("  Téléchargement en cours...")
     try:
-        response = requests.get(url, stream=True, timeout=60)
+        response = session.get(url, stream=True, timeout=60)
         response.raise_for_status()
     except Exception as e:
         return None, 0, False, f"téléchargement : {e}"

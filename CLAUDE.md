@@ -40,6 +40,12 @@ python3 src/enrichir_contacts.py [--dry-run] # rattrapage contacts génériques
 python3 src/monitor.py --init-db|--refresh|--import-data|--import-ref|--geocode|--status|--full
 ```
 
+**Tests** (stdlib `unittest`, logique pure sans réseau — filtres géo, traducteurs RUDI, cascade de détection, état) :
+
+```bash
+python3 -m unittest discover tests/
+```
+
 ## Key files
 
 | File | Role |

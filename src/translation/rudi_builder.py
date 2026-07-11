@@ -109,8 +109,11 @@ def _parser_date_http(date_str: str | None) -> str | None:
     if not date_str:
         return None
     import datetime
-    # Format ISO direct (OEB updatedAt : "2025-01-15T10:30:00.000Z")
-    if "T" in date_str:
+    import re
+    # Format ISO direct (OEB updatedAt : "2025-01-15T10:30:00.000Z").
+    # Motif complet obligatoire : un simple `"T" in date_str` matchait aussi
+    # le "T" de "GMT" des dates HTTP et produisait "Wed, 12 FeT00:00:00Z".
+    if re.match(r"\d{4}-\d{2}-\d{2}T", date_str):
         return date_str[:10] + "T00:00:00Z"
     # Format HTTP (INSEE/BDNB Last-Modified : "Wed, 12 Feb 2025 09:41:37 GMT")
     try:

@@ -213,11 +213,13 @@ def publier_dataset(
     noms_locaux = {os.path.basename(p) for p in fichiers_filtres if os.path.isfile(p)}
     medias[:] = [m for m in medias if m.get("media_type") != "FILE" or m.get("media_name") in noms_locaux]
 
-    # Corrige les media_ids restants (non uploadés, ex: SERVICE vers data.gouv.fr)
-    # La lib RUDI valide que tous les media_id sont des UUID v4
-    for j in range(len(noms_locaux), len(medias)):
-        nom_media = medias[j].get("media_name", "")
-        medias[j]["media_id"] = _media_id_v4(existant, nom_media)
+    # Corrige les media_ids des entrées non uploadées (SERVICE vers data.gouv.fr,
+    # source-metadata…) — la lib RUDI valide que tous les media_id sont des UUID v4.
+    # Les FILE restants ont tous été uploadés ci-dessus (les manquants viennent
+    # d'être retirés), leur media_id est déjà correct : on ne touche que le reste.
+    for m in medias:
+        if m.get("media_type") != "FILE":
+            m["media_id"] = _media_id_v4(existant, m.get("media_name", ""))
 
     print(f"  [RUDI] push métadonnées (local_id={local_id[:8]}…)")
     writer.put_metadata(rudi_metadata)

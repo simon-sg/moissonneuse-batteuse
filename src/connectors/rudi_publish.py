@@ -9,7 +9,16 @@ Usage :
     rudi_publie = publier_si_configue(rudi_metadata, fichiers_filtres)
 """
 
+import threading
+
 from connectors.rudi_node import charger_conf_rudi, publier_dataset
+
+# Les publications arrivent désormais depuis plusieurs threads (workers de
+# harvest_batch, moissons INSEE/OEB/BDNB/géo parallélisées dans cli.py). Le
+# get_or_create d'organisations/contacts côté nœud n'est pas idempotent sous
+# concurrence (risque de doublons), donc on sérialise la publication — le
+# téléchargement/filtrage, lui, reste parallèle.
+_verrou_publication = threading.Lock()
 
 
 def publier_si_configue(rudi_metadata: dict, fichiers_filtres: list[str]) -> bool:
@@ -23,8 +32,9 @@ def publier_si_configue(rudi_metadata: dict, fichiers_filtres: list[str]) -> boo
         print("  [RUDI] rudi_node.json absent — publication ignorée.")
         return False
     try:
-        publier_dataset(conf=conf_rudi, rudi_metadata=rudi_metadata,
-                        fichiers_filtres=fichiers_filtres)
+        with _verrou_publication:
+            publier_dataset(conf=conf_rudi, rudi_metadata=rudi_metadata,
+                            fichiers_filtres=fichiers_filtres)
         print("  [RUDI] Publié.")
         return True
     except Exception as e:

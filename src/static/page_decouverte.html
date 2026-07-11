@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Moissonneuse-batteuse — Découverte data.gouv.fr</title>
+<script>(function(){try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<link rel="stylesheet" href="/static/dashboard.css">
+<style>
+  main.wide { max-width:1200px; }
+  .toolbar { display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:12px; }
+  .toolbar .spacer { flex:1; }
+  .filtre-categorie { display:flex; gap:4px; flex-wrap:wrap; }
+  .cat-btn { padding:4px 10px; font-size:.78rem; border-radius:99px; border:1px solid var(--bord);
+             background:transparent; color:var(--muted); cursor:pointer; transition:all .15s; }
+  .cat-btn:hover { border-color:var(--accent); color:var(--accent); }
+  .cat-btn.actif { background:var(--accent); color:#fff; border-color:var(--accent); }
+  table.requetes { width:100%; font-size:.85rem; }
+  table.requetes th, table.requetes td { text-align:left; padding:6px 8px;
+    border-bottom:1px solid var(--bord); vertical-align:middle; }
+  table.requetes th { color:var(--muted); font-weight:600; font-size:.78rem; background:var(--card); }
+  table.requetes td { background:var(--card); }
+  .requetes-wrapper { border:1px solid var(--bord); border-radius:8px; overflow:hidden; }
+  .requetes-scroll { max-height:55vh; overflow-y:auto; }
+  table.requetes colgroup col.c-actif { width:40px; }
+  table.requetes colgroup col.c-cat { width:36px; }
+  table.requetes colgroup col.c-label { }
+  table.requetes colgroup col.c-params { width:260px; }
+  table.requetes colgroup col.c-total { width:70px; }
+  table.requetes colgroup col.c-filtre { width:70px; }
+  table.requetes colgroup col.c-duree { width:55px; }
+  table.requetes colgroup col.c-actions { width:140px; }
+  table.requetes tr:hover td { background:var(--row-hover); }
+  table.requetes tr.test-en-cours td { background:var(--row-test-bg); }
+  .cat-dot { width:10px; height:10px; border-radius:50%; display:inline-block; vertical-align:middle; }
+  .cb-actif { width:16px; height:16px; cursor:pointer; accent-color:var(--ok); }
+  .barre-progression { height:6px; background:var(--progress-bg); border-radius:3px; overflow:hidden; margin:8px 0; }
+  .barre-progression .remplissage { height:100%; background:var(--progress-fill); border-radius:3px;
+    transition:width .3s ease; }
+  #journal-test { background:#10161c; color:#d7dee4; border-radius:8px; padding:12px 14px; font-size:.8rem;
+    font-family:ui-monospace,"SF Mono",Consolas,monospace; white-space:pre-wrap; overflow-wrap:anywhere;
+    max-height:300px; overflow-y:auto; min-height:60px; }
+  #journal-test:empty::before { content:"Aucun test lancé."; color:#677; }
+  /* Modal */
+  .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:10; display:flex;
+    align-items:center; justify-content:center; }
+  .modal { background:var(--card); border:1px solid var(--bord); border-radius:12px; padding:20px 24px;
+    width:90%; max-width:520px; max-height:85vh; overflow-y:auto; box-shadow:0 8px 30px rgba(0,0,0,.2); }
+  .modal h3 { margin:0 0 14px; font-size:1rem; }
+  .modal label { display:block; margin-bottom:10px; font-size:.82rem; color:var(--muted); }
+  .modal input[type=text], .modal input[type=number], .modal select { width:100%; padding:6px 8px;
+    border:1px solid var(--bord); border-radius:6px; font-size:.85rem; background:var(--bg); color:var(--txt); }
+  .modal .ligne-form { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .modal .actions { display:flex; gap:8px; justify-content:flex-end; margin-top:16px; }
+</style>
+</head>
+<body>
+{{TOPBAR}}
+<main class="wide">
+
+<section>
+  <h2>État de la découverte</h2>
+  <div class="grille-stats" id="stats-decouverte">Chargement…</div>
+</section>
+
+<section>
+  <h2>Requêtes API <span id="badge-requetes" class="badge idle">…</span></h2>
+  <div class="toolbar">
+    <div class="filtre-categorie" id="filtres-categories"></div>
+    <span class="spacer"></span>
+    <button class="sm" onclick="ouvrirModalAjouter()" title="Ajouter une nouvelle requête">+ Ajouter</button>
+  </div>
+  <div class="requetes-wrapper">
+    <div class="requetes-scroll">
+      <table class="requetes">
+        <colgroup>
+          <col class="c-actif">
+          <col class="c-cat">
+          <col class="c-label">
+          <col class="c-params">
+          <col class="c-total">
+          <col class="c-filtre">
+          <col class="c-duree">
+          <col class="c-actions">
+        </colgroup>
+        <thead><tr>
+          <th title="Requête active / inactive">Actif</th>
+          <th></th>
+          <th>Libellé</th>
+          <th>Paramètres API</th>
+          <th>Total</th>
+          <th>Filtrés</th>
+          <th>Durée</th>
+          <th>Actions</th>
+        </tr></thead>
+        <tbody id="requetes-corps"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Exécution des tests
+    <span id="badge-test" class="badge idle" title="État du test">inactif</span>
+  </h2>
+  <div class="ligne-job">
+    <span id="label-test" class="meta">Aucun test lancé.</span>
+    <span id="duree-test" class="meta" style="display:none"></span>
+    <div>
+      <button id="btn-test-all" onclick="lancerTestTous()" title="Tester toutes les requêtes actives">Tester tout</button>
+      <button id="btn-test-stop" class="danger" style="display:none" onclick="arreterTest()" title="Annuler le test en cours">Arrêter</button>
+    </div>
+  </div>
+  <div class="barre-progression" id="barre-progression" style="display:none">
+    <div class="remplissage" id="remplissage" style="width:0%"></div>
+  </div>
+  <div id="journal-test" role="log" aria-live="polite" title="Journal du test en cours ou du dernier test exécuté"></div>
+</section>
+
+<section>
+  <h2>Paramètres</h2>
+  <div style="display:flex; gap:16px; align-items:center; flex-wrap:wrap">
+    <label style="display:flex; align-items:center; gap:8px; font-size:.85rem; color:var(--muted)">
+      Pages par requête :
+      <input type="number" id="nb-pages" min="1" max="200" style="width:70px; padding:4px 6px;
+        border:1px solid var(--bord); border-radius:6px; font-size:.85rem; background:var(--bg); color:var(--txt);">
+    </label>
+    <button class="sm success" onclick="sauvegarderConfig()" title="Sauvegarder la configuration sur disque">Sauvegarder</button>
+    <button class="sm" onclick="reinitialiserConfig()" title="Réinitialiser à la configuration par défaut"
+            style="background:transparent; color:var(--warn); border:1px solid var(--bord)">Réinitialiser</button>
+  </div>
+</section>
+
+</main>
+<div id="notif"></div>
+
+<script src="/static/dashboard.js"></script>
+<script>
+let config = null;
+let categorieActive = null;
+let timerTest = null;
+let timerDuree = null;
+
+// --- Catégories ---
+function couleurCat(catId){
+  if (!config || !config.categories) return "#667";
+  const c = config.categories.find(x => x.id === catId);
+  return c ? c.couleur : "#667";
+}
+function labelCat(catId){
+  if (!config || !config.categories) return catId;
+  const c = config.categories.find(x => x.id === catId);
+  return c ? c.label : catId;
+}
+
+function renduFiltresCategories(){
+  if (!config) return;
+  const el = document.getElementById("filtres-categories");
+  el.innerHTML = `<button class="cat-btn ${categorieActive===null?"actif":""}"
+    onclick="filtrerCategorie(null)">Toutes</button>` +
+    config.categories.map(c =>
+      `<button class="cat-btn ${categorieActive===c.id?"actif":""}"
+        style="border-color:${esc(c.couleur)}; ${categorieActive===c.id ? "background:"+esc(c.couleur)+";color:#fff" : "color:"+esc(c.couleur)}"
+        onclick="filtrerCategorie('${esc(c.id)}')">${esc(c.label)}</button>`
+    ).join("");
+}
+
+function filtrerCategorie(catId){
+  categorieActive = catId;
+  renduFiltresCategories();
+  renduRequetes();
+}
+
+// --- Requêtes ---
+function renduRequetes(){
+  if (!config) return;
+  const tbody = document.getElementById("requetes-corps");
+  const filtres = config.requetes.filter(r => !categorieActive || r.categorie === categorieActive);
+  document.getElementById("badge-requetes").textContent = config.requetes.length;
+  document.getElementById("badge-requetes").className = "badge " + (config.requetes.length ? "idle" : "warn");
+
+  if (!filtres.length){
+    tbody.innerHTML = `<tr><td colspan="8" class="meta" style="text-align:center;padding:20px">Aucune requête dans cette catégorie.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = filtres.map((r, idx) => {
+    const i = config.requetes.indexOf(r);
+    const paramsStr = Object.entries(r.params).map(([k,v]) => `${k}=${v}`).join(", ");
+    return `<tr id="rq-${i}" ${!r.actif ? 'style="opacity:.4"' : ""}>
+      <td style="text-align:center">
+        <input type="checkbox" class="cb-actif" ${r.actif ? "checked" : ""}
+               title="${r.actif ? "Désactiver" : "Activer"}" onchange="basculerActif(${i})">
+      </td>
+      <td style="text-align:center" title="${esc(labelCat(r.categorie))}">
+        <span class="cat-dot" style="background:${esc(couleurCat(r.categorie))}"></span>
+      </td>
+      <td style="font-weight:600">${esc(r.label)}</td>
+      <td style="font-family:ui-monospace,'SF Mono',Consolas,monospace;font-size:.76rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${esc(paramsStr)}">${esc(paramsStr)}</td>
+      <td id="res-total-${i}" class="meta" style="text-align:right">—</td>
+      <td id="res-filtre-${i}" class="meta" style="text-align:right">—</td>
+      <td id="res-duree-${i}" class="meta" style="text-align:right">—</td>
+      <td>
+        <button class="sm" onclick="testerRequete(${i})" title="Tester cette requête">▶</button>
+        <button class="sm" onclick="ouvrirModalEditer(${i})" title="Éditer">✎</button>
+        <button class="sm danger" onclick="supprimerRequete(${i})" title="Supprimer">×</button>
+      </td>
+    </tr>`;
+  }).join("");
+}
+
+function basculerActif(i){
+  config.requetes[i].actif = !config.requetes[i].actif;
+  renduRequetes();
+}
+
+function supprimerRequete(i){
+  if (!confirm(`Supprimer la requête « ${config.requetes[i].label} » ?`)) return;
+  config.requetes.splice(i, 1);
+  renduRequetes();
+  notifier("Requête supprimée (sauvegarder pour persist).");
+}
+
+// --- Modal édition/ajout ---
+function ouvrirModalEditer(i){
+  const r = config.requetes[i];
+  const isNew = false;
+  ouvrirModal({
+    titre: "Éditer la requête",
+    label: r.label,
+    categorie: r.categorie,
+    params: r.params,
+    onSave: (data) => {
+      config.requetes[i].label = data.label;
+      config.requetes[i].categorie = data.categorie;
+      config.requetes[i].params = data.params;
+      renduRequetes();
+      notifier("Requête mise à jour (sauvegarder pour persist).");
+    }
+  });
+}
+
+function ouvrirModalAjouter(){
+  ouvrirModal({
+    titre: "Ajouter une requête",
+    label: "",
+    categorie: categorieActive || (config.categories && config.categories[0] ? config.categories[0].id : "autre"),
+    params: {q: "", "sort": "-views"},
+    onSave: (data) => {
+      config.requetes.push({
+        id: "custom_" + Date.now(),
+        categorie: data.categorie,
+        label: data.label,
+        actif: true,
+        params: data.params,
+      });
+      renduRequetes();
+      notifier("Requête ajoutée (sauvegarder pour persist).");
+    }
+  });
+}
+
+function ouvrirModal({titre, label, categorie, params, onSave}){
+  const typesRequete = [
+    {value:"q", label:"Mot-clé (q=...)", paramKey:"q"},
+    {value:"organization", label:"Organisation (organization=...)", paramKey:"organization"},
+    {value:"format", label:"Format (format=...)", paramKey:"format"},
+    {value:"featured", label:"Featured (featured=true)", paramKey:"featured"},
+    {value:"granularity", label:"Granularité + mot-clé", paramKey:"q+granularity"},
+  ];
+  // Détecter le type actuel
+  let typeActuel = "q";
+  if (params.featured) typeActuel = "featured";
+  else if (params.organization) typeActuel = "organization";
+  else if (params.format) typeActuel = "format";
+  else if (params.granularity) typeActuel = "granularity";
+
+  const overlay = document.createElement("div");
+  overlay.className = "modal-overlay";
+  overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
+
+  const catOpts = (config.categories||[]).map(c =>
+    `<option value="${esc(c.id)}" ${c.id===categorie?"selected":""}>${esc(c.label)}</option>`
+  ).join("");
+
+  function paramsChamp(typeVal){
+    switch(typeVal){
+      case "featured": return `<div class="ligne-form">
+        <label>Valeur <input type="text" id="modal-val" value="true" disabled></label>
+        <label>Tri <select id="modal-sort"><option value="">aucun</option><option value="-views">-views</option></select></label></div>`;
+      case "organization": return `<div class="ligne-form">
+        <label>ID organisation <input type="text" id="modal-val" value="${esc(params.organization||"")}" placeholder="UUID"></label>
+        <label>Tri <select id="modal-sort"><option value="-views" ${params.sort==="-views"?"selected":""}>-views</option><option value="" ${!params.sort?"selected":""}>aucun</option></select></label></div>`;
+      case "format": return `<div class="ligne-form">
+        <label>Format <input type="text" id="modal-val" value="${esc(params.format||"")}" placeholder="wms, wfs, csv..."></label>
+        <label>Tri <select id="modal-sort"><option value="-views" ${params.sort==="-views"?"selected":""}>-views</option><option value="" ${!params.sort?"selected":""}>aucun</option></select></label></div>`;
+      case "granularity": return `<div class="ligne-form">
+        <label>Mot-clé <input type="text" id="modal-val" value="${esc(params.q||"")}" placeholder="commune, iris..."></label>
+        <label>Granularité <input type="text" id="modal-gran" value="${esc(params.granularity||"")}" placeholder="fr:commune, fr:iris"></label></div>
+        <label>Tri <select id="modal-sort"><option value="-views" ${params.sort==="-views"?"selected":""}>-views</option><option value="" ${!params.sort?"selected":""}>aucun</option></select></label>`;
+      default: return `<div class="ligne-form">
+        <label>Mot-clé (q) <input type="text" id="modal-val" value="${esc(params.q||"")}" placeholder="urbanisme, transport..."></label>
+        <label>Tri <select id="modal-sort"><option value="-views" ${params.sort==="-views"?"selected":""}>-views</option><option value="" ${!params.sort?"selected":""}>aucun</option></select></label></div>`;
+    }
+  }
+
+  function typeOpts(){
+    return typesRequete.map(t =>
+      `<option value="${t.value}" ${t.value===typeActuel?"selected":""}>${t.label}</option>`
+    ).join("");
+  }
+
+  overlay.innerHTML = `<div class="modal">
+    <h3>${esc(titre)}</h3>
+    <label>Libellé <input type="text" id="modal-label" value="${esc(label)}" placeholder="Mon urbanisme"></label>
+    <label>Catégorie <select id="modal-cat">${catOpts}</select></label>
+    <label>Type de requête <select id="modal-type" onchange="reRenderModalChamps()">${typeOpts()}</select></label>
+    <div id="modal-champs">${paramsChamp(typeActuel)}</div>
+    <div class="actions">
+      <button class="discret" onclick="this.closest('.modal-overlay').remove()">Annuler</button>
+      <button class="success" onclick="modalSave()">Enregistrer</button>
+    </div>
+  </div>`;
+
+  overlay._onSave = onSave;
+  overlay._typesRequete = typesRequete;
+  overlay._paramsChamp = paramsChamp;
+  document.body.appendChild(overlay);
+  document.getElementById("modal-label").focus();
+
+  window.reRenderModalChamps = function(){
+    const t = document.getElementById("modal-type").value;
+    document.getElementById("modal-champs").innerHTML = overlay._paramsChamp(t);
+  };
+
+  window.modalSave = function(){
+    const lbl = document.getElementById("modal-label").value.trim();
+    if (!lbl){ notifier("Le libellé est obligatoire.", true); return; }
+    const cat = document.getElementById("modal-cat").value;
+    const type = document.getElementById("modal-type").value;
+    const sort = document.getElementById("modal-sort")?.value || "";
+    const val = document.getElementById("modal-val")?.value?.trim() || "";
+    const gran = document.getElementById("modal-gran")?.value?.trim() || "";
+    let p = {};
+    if (sort) p.sort = sort;
+    switch(type){
+      case "featured": p.featured = "true"; break;
+      case "organization": p.organization = val; break;
+      case "format": p.format = val; break;
+      case "granularity": p.q = val; p.granularity = gran; break;
+      default: if (val) p.q = val; break;
+    }
+    overlay._onSave({label: lbl, categorie: cat, params: p});
+    overlay.remove();
+  };
+}
+
+// --- Tests ---
+async function testerRequete(i){
+  const {ok, data} = await apiFetch("/api/decouverte/test", {
+    method:"POST", body: JSON.stringify({indexes: [i], config})
+  });
+  if (!ok){ if(data) notifier(data.message, true); return; }
+  demarrerPollingTest();
+}
+
+async function lancerTestTous(){
+  const {ok, data} = await apiFetch("/api/decouverte/test", {
+    method:"POST", body: JSON.stringify({config})
+  });
+  if (!ok){ if(data) notifier(data.message, true); return; }
+  demarrerPollingTest();
+}
+
+async function arreterTest(){
+  await apiFetch("/api/decouverte/test/stop", {method:"POST"});
+}
+
+function demarrerPollingTest(){
+  if (timerTest) return;
+  pollTest();
+  timerTest = setInterval(pollTest, 1000);
+}
+
+async function pollTest(){
+  const {ok, data: st} = await apiFetch("/api/decouverte/test");
+  if (!ok || !st) return;
+
+  const badge = document.getElementById("badge-test");
+  const btnAll = document.getElementById("btn-test-all");
+  const btnStop = document.getElementById("btn-test-stop");
+  const barre = document.getElementById("barre-progression");
+  const remplissage = document.getElementById("remplissage");
+  const label = document.getElementById("label-test");
+
+  badge.className = "badge " + (st.en_cours ? "running" : (st.resultats.length ? "termine" : "idle"));
+  badge.textContent = st.en_cours ? `${st.termine}/${st.total}` : (st.resultats.length ? "terminé" : "inactif");
+  btnAll.style.display = st.en_cours ? "none" : "";
+  btnStop.style.display = st.en_cours ? "" : "none";
+  btnAll.disabled = false;
+
+  if (st.en_cours && st.courant){
+    label.textContent = `[${st.courant.position}/${st.total}] ${st.courant.label}`;
+    barre.style.display = "";
+    remplissage.style.width = (st.total ? (st.termine / st.total * 100) : 0) + "%";
+    // Timer
+    if (!timerDuree){
+      const debut = Date.now();
+      timerDuree = setInterval(() => {
+        const e = Date.now() - debut;
+        const m = String(Math.floor(e/60000)).padStart(2,"0");
+        const s = String(Math.floor((e%60000)/1000)).padStart(2,"0");
+        document.getElementById("duree-test").style.display = "";
+        document.getElementById("duree-test").textContent = m+":"+s;
+      }, 1000);
+    }
+  } else {
+    label.textContent = st.resultats.length ? "Terminé." : "Aucun test lancé.";
+    barre.style.display = "none";
+    if (timerDuree){ clearInterval(timerDuree); timerDuree = null; }
+    document.getElementById("duree-test").style.display = "none";
+  }
+
+  // Mettre à jour les résultats par requête
+  for (const r of st.resultats){
+    const totalEl = document.getElementById(`res-total-${r.index}`);
+    const filtreEl = document.getElementById(`res-filtre-${r.index}`);
+    const dureeEl = document.getElementById(`res-duree-${r.index}`);
+    if (totalEl) totalEl.textContent = r.total_api;
+    if (filtreEl) filtreEl.textContent = r["filtrés"];
+    if (dureeEl) dureeEl.textContent = r.duree + "s";
+    const row = document.getElementById(`rq-${r.index}`);
+    if (row) row.classList.add("test-en-cours");
+  }
+
+  document.getElementById("journal-test").textContent = st.log || "";
+  const journal = document.getElementById("journal-test");
+  journal.scrollTop = journal.scrollHeight;
+
+  if (!st.en_cours){
+    if (timerTest){ clearInterval(timerTest); timerTest = null; }
+    // Retirer les highlights
+    document.querySelectorAll("tr.test-en-cours").forEach(tr => tr.classList.remove("test-en-cours"));
+  }
+}
+
+// --- Config ---
+async function chargerConfig(){
+  const {ok, data} = await apiFetch("/api/decouverte/config");
+  if (!ok || !data) return;
+  config = data;
+  document.getElementById("nb-pages").value = config.nb_pages || 50;
+  // Stats
+  const s = config.stats || {};
+  document.getElementById("stats-decouverte").innerHTML = [
+    ["Requêtes", (config.requetes||[]).length],
+    ["Actives", (config.requetes||[]).filter(r=>r.actif).length],
+    ["Mots-clés", (config.mots_cles||[]).length],
+    ["Candidats", s.candidats ?? "?"],
+    ["Vus", s.vus ?? "?"],
+    ["Exclus", s.exclus ?? "?"],
+    ["À examiner", s["a_examiner"] ?? "?"],
+  ].map(([l,v]) => `<div class="stat"><div class="val">${esc(v)}</div><div class="lbl">${esc(l)}</div></div>`).join("");
+  renduFiltresCategories();
+  renduRequetes();
+}
+
+async function sauvegarderConfig(){
+  if (!config) return;
+  config.nb_pages = parseInt(document.getElementById("nb-pages").value) || 50;
+  const {ok, data} = await apiFetch("/api/decouverte/config", {
+    method:"POST", body: JSON.stringify(config)
+  });
+  if (data) notifier(data.message, !ok);
+}
+
+async function reinitialiserConfig(){
+  if (!confirm("Réinitialiser la configuration aux valeurs par défaut ? Les modifications non sauvegardées seront perdues.")) return;
+  // Supprimer le fichier config pour revenir aux défauts
+  config = null;
+  await chargerConfig();
+  notifier("Configuration réinitialisée aux valeurs par défaut.");
+}
+
+// --- Init ---
+chargerConfig().then(() => pollTest());
+</script>
+</body>
+</html>

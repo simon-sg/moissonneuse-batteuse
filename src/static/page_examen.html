@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Moissonneuse-batteuse — JDD à examiner</title>
+<script>(function(){try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<link rel="stylesheet" href="/static/dashboard.css">
+<style>
+  .onglets { display:flex; gap:6px; border-bottom:1px solid var(--bord); }
+  .onglet { background:transparent; color:var(--muted); border:none; border-bottom:2px solid transparent;
+            border-radius:0; padding:10px 4px; margin-bottom:-1px; font-size:.9rem; cursor:pointer;
+            display:flex; align-items:center; gap:8px; }
+  .onglet.actif { color:var(--txt); font-weight:600; border-bottom-color:var(--accent); }
+  .analyse-panneau { background:var(--bg); border:1px solid var(--bord); border-radius:8px;
+                      padding:12px 14px; display:grid; gap:10px; }
+  .analyse-apercu { display:grid; gap:2px; font-size:.78rem; max-height:140px; overflow-y:auto; }
+  .analyse-controles { display:flex; flex-wrap:wrap; gap:14px; align-items:center; }
+  .analyse-controles label { display:flex; flex-direction:column; gap:3px; font-size:.78rem; color:var(--muted); }
+  .analyse-controles select { padding:6px 8px; border:1px solid var(--bord); border-radius:6px; font-size:.85rem; }
+  .analyse-resultat { font-size:.82rem; }
+  .analyse-decision { display:flex; gap:8px; flex-wrap:wrap; }
+  .analyse-ligne td { background:var(--card); border-bottom:2px solid var(--accent); }
+  .barre-examen { display:flex; gap:10px; align-items:center; margin:10px 0; flex-wrap:wrap; }
+  .filtre-onglet { flex:1; min-width:180px; padding:8px 10px; font-size:.85rem;
+                   border:1px solid var(--bord); border-radius:6px; background:var(--card); color:var(--txt); }
+  .action-batch { display:flex; gap:6px; }
+</style>
+</head>
+<body>
+{{TOPBAR}}
+<main>
+
+<section>
+  <div class="onglets">
+    <button id="onglet-btn-examen" class="onglet actif" onclick="basculerOnglet('examen')">
+      À examiner <span id="badge-examen" class="badge idle">…</span>
+    </button>
+    <button id="onglet-btn-echec" class="onglet" onclick="basculerOnglet('echec')">
+      Analyse échouée <span id="badge-echec" class="badge idle">…</span>
+    </button>
+    <button id="onglet-btn-sans-ressource" class="onglet" onclick="basculerOnglet('sans-ressource')">
+      Sans ressource <span id="badge-sans-ressource" class="badge idle">…</span>
+    </button>
+    <button id="onglet-btn-geo" class="onglet" onclick="basculerOnglet('geo')">
+      Services géo <span id="badge-geo" class="badge idle">…</span>
+    </button>
+    <button id="onglet-btn-exclus" class="onglet" onclick="basculerOnglet('exclus')">
+      Exclus <span id="badge-exclus" class="badge idle">…</span>
+    </button>
+    <button id="onglet-btn-ignores" class="onglet" onclick="basculerOnglet('ignores')">
+      Ignorés <span id="badge-ignores" class="badge idle">…</span>
+    </button>
+  </div>
+
+  <div id="onglet-examen">
+    <p class="meta" style="margin:10px 0">Découverte automatique quotidienne (<code>harvest_auto.py</code>) : candidats
+    tabulaires ambigus (0 ligne RM détectée), en attente de confirmation manuelle.</p>
+    <div class="barre-examen">
+      <input type="search" id="filtre-examen" class="filtre-onglet" placeholder="Filtrer…"
+             oninput="filtrerOnglet()" aria-label="Filtrer les JDD">
+      <span id="action-batch-examen" class="action-batch" style="display:none">
+        <button onclick="batchResoudre('examen','exclure')">Exclure la sélection</button>
+        <button onclick="batchResoudre('examen','ignorer')">Ignorer la sélection</button>
+      </span>
+    </div>
+    <table class="purge" id="table-examen">
+      <thead><tr><th style="width:30px"><input type="checkbox" id="sel-tout-examen" onchange="selTout('examen')" aria-label="Tout sélectionner"></th><th>JDD</th><th>Raison</th><th></th></tr></thead>
+      <tbody id="examen-corps"></tbody>
+    </table>
+  </div>
+
+  <div id="onglet-echec" style="display:none">
+    <p class="meta" style="margin:10px 0">JDD tabulaires dont l'analyse automatique a levé une exception (format
+    inattendu, erreur de parsing...) — ni confirmés ni infirmés pour Rennes Métropole, à revoir manuellement
+    (bouton « Analyser »).</p>
+    <div class="barre-examen">
+      <input type="search" id="filtre-echec" class="filtre-onglet" placeholder="Filtrer…"
+             oninput="filtrerOnglet()" aria-label="Filtrer les échecs">
+    </div>
+    <table class="purge" id="table-echec">
+      <thead><tr><th>JDD</th><th>Raison</th><th></th></tr></thead>
+      <tbody id="echec-corps"></tbody>
+    </table>
+  </div>
+
+  <div id="onglet-sans-ressource" style="display:none">
+    <p class="meta" style="margin:10px 0">JDD tabulaires sans ressource exploitable (aucune ressource, ou uniquement des
+    formats non pris en charge — ODS, SHP, PDF...) — classés automatiquement à la découverte quotidienne, ou au premier
+    clic "Analyser" confirmant une absence définitive (un simple accident réseau ne fait pas basculer un JDD ici). Pour
+    reclasser le backlog existant (JDD ajoutés avant cette classification automatique) : action « Vérifier le backlog «
+    à examiner » » sur le <a href="/">tableau de bord principal</a>.</p>
+    <div class="barre-examen">
+      <input type="search" id="filtre-sans-ressource" class="filtre-onglet" placeholder="Filtrer…"
+             oninput="filtrerOnglet()" aria-label="Filtrer les sans-ressource">
+    </div>
+    <table class="purge" id="table-sans-ressource">
+      <thead><tr><th>JDD</th><th>Raison</th><th></th></tr></thead>
+      <tbody id="sans-ressource-corps"></tbody>
+    </table>
+  </div>
+
+  <div id="onglet-geo" style="display:none">
+    <p class="meta" style="margin:10px 0">Services WFS/WMS en attente de confirmation manuelle. Un service géo avec au moins
+    une donnée RM confirmée (WFS: features dans la bbox RM, WMS: couches dont la bbox chevauche RM)
+    est ajouté automatiquement dès la découverte quotidienne — seul le reliquat détecté avant
+    l'introduction de cet auto-ajout reste ici.</p>
+    <button id="btn-resoudre-wfs-masse" style="display:none; margin-bottom:10px"
+            onclick="resoudreWfsEnMasse()">Ajouter automatiquement les services géo confirmés</button>
+    <button id="btn-reanalyser-wms" style="display:none; margin-bottom:10px; margin-left:6px"
+            onclick="reanalyserWms()">Re-analyser les WMS du backlog</button>
+    <div class="barre-examen">
+      <input type="search" id="filtre-geo" class="filtre-onglet" placeholder="Filtrer…"
+             oninput="filtrerOnglet()" aria-label="Filtrer les services géo">
+      <span id="action-batch-geo" class="action-batch" style="display:none">
+        <button onclick="batchResoudre('geo','exclure')">Exclure la sélection</button>
+        <button onclick="batchResoudre('geo','ignorer')">Ignorer la sélection</button>
+      </span>
+    </div>
+    <table class="purge" id="table-geo">
+      <thead><tr><th style="width:30px"><input type="checkbox" id="sel-tout-geo" onchange="selTout('geo')" aria-label="Tout sélectionner"></th><th>JDD</th><th>Type</th><th>Raison</th><th></th></tr></thead>
+      <tbody id="geo-corps"></tbody>
+    </table>
+  </div>
+
+  <div id="onglet-exclus" style="display:none">
+    <p class="meta" style="margin:10px 0">Faux positifs écartés définitivement (bouton « Exclure »). « Rouvrir »
+    remet le JDD dans « À examiner » — indisponible pour les JDD exclus avant l'introduction de ce suivi détaillé
+    (titre/contexte non enregistrés à l'époque).</p>
+    <div class="barre-examen">
+      <input type="search" id="filtre-exclus" class="filtre-onglet" placeholder="Filtrer…"
+             oninput="filtrerOnglet()" aria-label="Filtrer les exclus">
+    </div>
+    <table class="purge" id="table-exclus">
+      <thead><tr><th>JDD</th><th>Raison</th><th>Exclu le</th><th></th></tr></thead>
+      <tbody id="exclus-corps"></tbody>
+    </table>
+  </div>
+
+  <div id="onglet-ignores" style="display:none">
+    <p class="meta" style="margin:10px 0">JDD écartés du backlog sans décision définitive (bouton « Ignorer » — par
+    exemple un service géo déjà ajouté à la main dans <code>DATASETS_GEO</code>). « Rouvrir » les remet dans
+    « À examiner ».</p>
+    <div class="barre-examen">
+      <input type="search" id="filtre-ignores" class="filtre-onglet" placeholder="Filtrer…"
+             oninput="filtrerOnglet()" aria-label="Filtrer les ignorés">
+    </div>
+    <table class="purge" id="table-ignores">
+      <thead><tr><th>JDD</th><th>Raison</th><th>Ignoré le</th><th></th></tr></thead>
+      <tbody id="ignores-corps"></tbody>
+    </table>
+  </div>
+</section>
+
+</main>
+<div id="notif"></div>
+
+<script src="/static/dashboard.js"></script>
+<script>
+let itemsExamen = [];
+let panneauOuvert = null;
+let etatAnalyse = {};
+let ongletActif = "examen";
+
+const ONGLETS = ["examen", "echec", "sans-ressource", "geo", "exclus", "ignores"];
+
+function basculerOnglet(nom){
+  ongletActif = nom;
+  for (const o of ONGLETS){
+    document.getElementById(`onglet-${o}`).style.display = (o === nom) ? "" : "none";
+    document.getElementById(`onglet-btn-${o}`).classList.toggle("actif", o === nom);
+  }
+}
+
+// Filtre textuel par onglet
+function filtrerOnglet(){
+  const q = (document.getElementById("filtre-" + ongletActif)?.value || "").toLowerCase();
+  document.querySelectorAll(`#onglet-${ongletActif} .purge tbody tr`).forEach(tr => {
+    tr.style.display = (!q || tr.textContent.toLowerCase().includes(q)) ? "" : "none";
+  });
+}
+
+// Sélection par checkbox
+function selTout(onglet){
+  const coche = document.getElementById("sel-tout-" + onglet).checked;
+  document.querySelectorAll(`#${onglet}-corps input[type=checkbox].sel-ligne`).forEach(cb => cb.checked = coche);
+  majBatchBar(onglet);
+}
+
+function majBatchBar(onglet){
+  const nb = document.querySelectorAll(`#${onglet}-corps input[type=checkbox].sel-ligne:checked`).length;
+  const barre = document.getElementById("action-batch-" + onglet);
+  if (barre) barre.style.display = nb ? "" : "none";
+}
+
+async function batchResoudre(onglet, decision){
+  const ids = [];
+  document.querySelectorAll(`#${onglet}-corps input[type=checkbox].sel-ligne:checked`).forEach(cb => ids.push(cb.value));
+  if (!ids.length) return;
+  for (const id of ids){
+    const {data} = await apiFetch("/api/a_examiner", {method:"POST", body: JSON.stringify({dataset_id: id, decision})});
+    if (data && !data.ok) notifier(data.message, true);
+  }
+  if (decision === "exclure" || decision === "ignorer") chargerHistorique();
+  chargerExamen();
+}
+
+function majBadge(nom, n){
+  const badge = document.getElementById(`badge-${nom}`);
+  badge.textContent = n;
+  badge.className = "badge " + (n ? "warn" : "idle");
+}
+
+function ligneAnalyseEchouee(it){
+  return `
+    <tr id="ligne-${it.dataset_id}">
+      <td>
+        <div style="font-weight:600">${esc(it.titre)}</div>
+        <div class="meta">${esc(it.organisation)} · <a href="${esc(it.url)}" target="_blank">data.gouv.fr</a></div>
+        ${it.description ? `<div class="meta" style="margin-top:4px">${esc(it.description.slice(0, 200))}${it.description.length > 200 ? "…" : ""}</div>` : ""}
+      </td>
+      <td class="impact">${esc(it.raison)}</td>
+      <td>
+        <div class="purge-action">
+          <button onclick="resoudreExamen('${it.dataset_id}','candidat')">Ajouter aux candidats</button>
+          <button id="btn-analyser-${it.dataset_id}" onclick="analyserJdd('${it.dataset_id}')">Analyser</button>
+          <button title="Exclusion définitive" onclick="resoudreExamen('${it.dataset_id}','exclure')">Exclure</button>
+          <button title="Retire sans blacklister" onclick="resoudreExamen('${it.dataset_id}','ignorer')">Ignorer</button>
+        </div>
+      </td>
+    </tr>
+  `;
+}
+
+async function chargerExamen(){
+  if (panneauOuvert) return;
+  const {ok, data} = await apiFetch("/api/a_examiner");
+  if (!ok || !data) return;
+  itemsExamen = data;
+  const echecAnalyse = itemsExamen.filter(it => !it.sans_ressource && (it.raison || "").startsWith("analyse échouée"));
+  const sansRessource = itemsExamen.filter(it => it.sans_ressource);
+  const reste = itemsExamen.filter(it => !it.sans_ressource && !(it.raison || "").startsWith("analyse échouée"));
+  const aExaminer = reste.filter(it => it.type === "tabulaire");
+  const servicesGeo = reste.filter(it => it.type !== "tabulaire");
+
+  majBadge("examen", aExaminer.length);
+  majBadge("echec", echecAnalyse.length);
+  majBadge("sans-ressource", sansRessource.length);
+  majBadge("geo", servicesGeo.length);
+
+  document.getElementById("examen-corps").innerHTML = aExaminer.length ? aExaminer.map(it => `
+    <tr id="ligne-${it.dataset_id}">
+      <td><input type="checkbox" class="sel-ligne" value="${it.dataset_id}" onchange="majBatchBar('examen')" aria-label="Sélectionner"></td>
+      <td>
+        <div style="font-weight:600">${esc(it.titre)}</div>
+        <div class="meta">${esc(it.organisation)} · <a href="${esc(it.url)}" target="_blank">data.gouv.fr</a></div>
+        ${it.description ? `<div class="meta" style="margin-top:4px">${esc(it.description.slice(0, 200))}${it.description.length > 200 ? "…" : ""}</div>` : ""}
+      </td>
+      <td class="impact">${esc(it.raison)}${it.nb_rm ? ` (${it.nb_rm} RM)` : ""}</td>
+      <td>
+        <div class="purge-action">
+          <button onclick="resoudreExamen('${it.dataset_id}','candidat')">Ajouter aux candidats</button>
+          <button id="btn-analyser-${it.dataset_id}" onclick="analyserJdd('${it.dataset_id}')">Analyser</button>
+          <button title="Exclusion définitive" onclick="resoudreExamen('${it.dataset_id}','exclure')">Exclure</button>
+          <button title="Retire sans blacklister" onclick="resoudreExamen('${it.dataset_id}','ignorer')">Ignorer</button>
+        </div>
+      </td>
+    </tr>
+  `).join("") : `<tr><td colspan="4" class="meta">Aucun JDD en attente d'examen.</td></tr>`;
+
+  document.getElementById("geo-corps").innerHTML = servicesGeo.length ? servicesGeo.map(it => `
+    <tr id="ligne-${it.dataset_id}">
+      <td><input type="checkbox" class="sel-ligne" value="${it.dataset_id}" onchange="majBatchBar('geo')" aria-label="Sélectionner"></td>
+      <td>
+        <div style="font-weight:600">${esc(it.titre)}</div>
+        <div class="meta">${esc(it.organisation)} · <a href="${esc(it.url)}" target="_blank">data.gouv.fr</a></div>
+        ${it.description ? `<div class="meta" style="margin-top:4px">${esc(it.description.slice(0, 200))}${it.description.length > 200 ? "…" : ""}</div>` : ""}
+      </td>
+      <td>${esc(it.type)}</td>
+      <td class="impact">${esc(it.raison)}${it.nb_rm ? ` (${it.nb_rm} RM)` : ""}</td>
+      <td>
+        <div class="purge-action">
+          <button onclick="resoudreExamen('${it.dataset_id}','ajouter_geo')">Ajouter</button>
+          ${it.type === "wms" ? `<a class="discret" href="/examen/carte/${esc(it.dataset_id)}" target="_blank">Carte</a>` : ""}
+          <button title="Exclusion définitive" onclick="resoudreExamen('${it.dataset_id}','exclure')">Exclure</button>
+          <button title="Retire sans blacklister" onclick="resoudreExamen('${it.dataset_id}','ignorer')">Ignorer</button>
+        </div>
+      </td>
+    </tr>
+  `).join("") : `<tr><td colspan="5" class="meta">Aucun service géo en attente.</td></tr>`;
+
+  const nbGeoConfirmes = servicesGeo.filter(it => ["wfs","wms"].includes(it.type) && (it.nb_rm || 0) > 0).length;
+  const btnMasse = document.getElementById("btn-resoudre-wfs-masse");
+  btnMasse.style.display = nbGeoConfirmes ? "" : "none";
+  btnMasse.textContent = `Ajouter les services géo confirmés (${nbGeoConfirmes})`;
+
+  const nbWmsBacklog = servicesGeo.filter(it => it.type === "wms").length;
+  const btnReanalyser = document.getElementById("btn-reanalyser-wms");
+  btnReanalyser.style.display = nbWmsBacklog ? "" : "none";
+  btnReanalyser.textContent = `Re-analyser les WMS du backlog (${nbWmsBacklog})`;
+
+  document.getElementById("echec-corps").innerHTML = echecAnalyse.length
+    ? echecAnalyse.map(ligneAnalyseEchouee).join("")
+    : `<tr><td colspan="3" class="meta">Aucun JDD ici.</td></tr>`;
+
+  document.getElementById("sans-ressource-corps").innerHTML = sansRessource.length ? sansRessource.map(it => `
+    <tr>
+      <td>
+        <div style="font-weight:600">${esc(it.titre)}</div>
+        <div class="meta">${esc(it.organisation)} · <a href="${esc(it.url)}" target="_blank">data.gouv.fr</a></div>
+      </td>
+      <td class="impact">${esc(it.raison_indisponible || it.raison)}</td>
+      <td>
+        <div class="purge-action">
+          <button title="Exclusion définitive" onclick="resoudreExamen('${it.dataset_id}','exclure')">Exclure</button>
+          <button title="Retire sans blacklister" onclick="resoudreExamen('${it.dataset_id}','ignorer')">Ignorer</button>
+        </div>
+      </td>
+    </tr>
+  `).join("") : `<tr><td colspan="3" class="meta">Aucun JDD sans ressource.</td></tr>`;
+
+  filtrerOnglet();
+}
+
+async function chargerHistorique(){
+  const {ok, data} = await apiFetch("/api/historique");
+  if (!ok || !data) return;
+
+  majBadge("exclus", data.exclus.length);
+  majBadge("ignores", data.ignores.length);
+
+  const ligneHistorique = (it, coldate) => `
+    <tr>
+      <td>
+        <div style="font-weight:600">${esc(it.titre)}</div>
+        <div class="meta">${esc(it.organisation || "")}${it.url ? ` · <a href="${esc(it.url)}" target="_blank">data.gouv.fr</a>` : ""}</div>
+      </td>
+      <td class="impact">${esc(it.raison || "")}</td>
+      <td class="impact">${esc(it[coldate] || "?")}</td>
+      <td>
+        ${it.rouvrable !== false
+          ? `<button onclick="rouvrirHistorique('${it.dataset_id}')">Rouvrir</button>`
+          : `<span class="meta">non rouvrable</span>`}
+      </td>
+    </tr>
+  `;
+
+  document.getElementById("exclus-corps").innerHTML = data.exclus.length
+    ? data.exclus.map(it => ligneHistorique(it, "date_decision")).join("")
+    : `<tr><td colspan="4" class="meta">Aucun JDD exclu.</td></tr>`;
+
+  document.getElementById("ignores-corps").innerHTML = data.ignores.length
+    ? data.ignores.map(it => ligneHistorique(it, "date_decision")).join("")
+    : `<tr><td colspan="4" class="meta">Aucun JDD ignoré.</td></tr>`;
+}
+
+async function rouvrirHistorique(datasetId){
+  const {ok, data} = await apiFetch("/api/historique/rouvrir", {method:"POST", body: JSON.stringify({dataset_id: datasetId})});
+  if (!ok || !data) return;
+  notifier(data.message, !data.ok);
+  if (data.ok){ chargerExamen(); chargerHistorique(); }
+}
+
+async function resoudreWfsEnMasse(){
+  const {ok, data} = await apiFetch("/api/a_examiner/resoudre_wfs_masse", {method:"POST", body: "{}"});
+  if (!ok || !data) return;
+  notifier(data.message, !data.ok);
+  if (data.ok) chargerExamen();
+}
+
+async function reanalyserWms(){
+  const {ok, data} = await apiFetch("/api/job/reanalyser_wms", {method:"POST", body: "{}"});
+  if (!ok || !data) return;
+  notifier(data.message, !data.ok);
+}
+
+async function resoudreExamen(datasetId, decision, extra){
+  const body = Object.assign({dataset_id: datasetId, decision}, extra || {});
+  const {ok, data} = await apiFetch("/api/a_examiner", {method:"POST", body: JSON.stringify(body)});
+  if (!ok || !data) return;
+  notifier(data.message, !data.ok);
+  if (data.ok){
+    fermerAnalyse(datasetId);
+    chargerExamen();
+    if (decision === "exclure" || decision === "ignorer") chargerHistorique();
+  }
+}
+
+function resumerLigne(ligne){
+  return Object.entries(ligne).slice(0, 5)
+    .map(([k, v]) => `${k}=${String(v ?? "").slice(0, 18)}`).join(" | ");
+}
+
+async function analyserJdd(datasetId){
+  const {ok, data} = await apiFetch("/api/a_examiner/preview", {method:"POST", body: JSON.stringify({dataset_id: datasetId})});
+  if (!ok || !data) return;
+  if (!data.ok){
+    notifier(data.message, true);
+    chargerExamen();
+    return;
+  }
+  etatAnalyse[datasetId] = {entetes: data.entetes, typesVariables: data.types_variables, dernierTest: null};
+  panneauOuvert = datasetId;
+  document.getElementById(`analyse-${datasetId}`)?.remove();
+  const ligne = document.getElementById(`ligne-${datasetId}`);
+  if (ligne) ligne.insertAdjacentHTML("afterend", rendreAnalyse(datasetId, data.lignes));
+}
+
+function rendreAnalyse(datasetId, lignes){
+  const st = etatAnalyse[datasetId];
+  const optsColonnes = st.entetes.map(e => `<option value="${esc(e)}">${esc(e)}</option>`).join("");
+  const optsTypes = st.typesVariables.map(([v, l]) => `<option value="${esc(v)}">${esc(l)}</option>`).join("");
+  const apercu = st.entetes.map(e => {
+    const valeurs = lignes.map(l => esc(String(l[e] ?? "").slice(0, 20))).join(", ");
+    return `<div>${esc(e)} : <span class="meta">${valeurs}</span></div>`;
+  }).join("");
+  return `
+    <tr id="analyse-${datasetId}" class="analyse-ligne"><td colspan="4">
+      <div class="analyse-panneau">
+        <div class="analyse-apercu">${apercu}</div>
+        <div class="analyse-controles">
+          <label>Colonne de filtrage
+            <select id="col1-${datasetId}" onchange="majTypeLatlon('${datasetId}')">${optsColonnes}</select>
+          </label>
+          <label>Type de variable
+            <select id="type-${datasetId}" onchange="majTypeLatlon('${datasetId}')">${optsTypes}</select>
+          </label>
+          <span id="latlon-${datasetId}"></span>
+          <button onclick="testerFiltre('${datasetId}')">Tester</button>
+        </div>
+        <div id="resultat-${datasetId}" class="analyse-resultat"></div>
+        <div class="analyse-decision">
+          <button id="btn-ajouter-${datasetId}" disabled onclick="confirmerAjout('${datasetId}')">Ajouter au catalogue</button>
+          <button title="Exclusion définitive" onclick="resoudreExamen('${datasetId}','exclure')">Exclure</button>
+          <button onclick="fermerAnalyse('${datasetId}')">Fermer</button>
+        </div>
+      </div>
+    </td></tr>`;
+}
+
+function majTypeLatlon(datasetId){
+  const type = document.getElementById(`type-${datasetId}`).value;
+  const conteneur = document.getElementById(`latlon-${datasetId}`);
+  if (type !== "latlon"){ conteneur.innerHTML = ""; delete conteneur.dataset.rendu; return; }
+  if (conteneur.dataset.rendu) return;
+  const st = etatAnalyse[datasetId];
+  const optsColonnes = st.entetes.map(e => `<option value="${esc(e)}">${esc(e)}</option>`).join("");
+  conteneur.innerHTML = `
+    <label style="flex-direction:row; align-items:center; gap:6px">
+      <input type="checkbox" id="combine-${datasetId}" checked onchange="basculerCombine('${datasetId}')">
+      Coordonnées combinées dans une seule colonne (ex. '48.11,-1.68')
+    </label>
+    <span id="col2-conteneur-${datasetId}"></span>
+  `;
+  conteneur.dataset.rendu = "1";
+}
+
+function basculerCombine(datasetId){
+  const combine = document.getElementById(`combine-${datasetId}`).checked;
+  const conteneur = document.getElementById(`col2-conteneur-${datasetId}`);
+  if (combine){ conteneur.innerHTML = ""; return; }
+  const st = etatAnalyse[datasetId];
+  const optsColonnes = st.entetes.map(e => `<option value="${esc(e)}">${esc(e)}</option>`).join("");
+  conteneur.innerHTML = `<label>Colonne de longitude <select id="col2-${datasetId}">${optsColonnes}</select></label>`;
+}
+
+async function testerFiltre(datasetId){
+  const col1 = document.getElementById(`col1-${datasetId}`).value;
+  const type = document.getElementById(`type-${datasetId}`).value;
+  let col2 = null;
+  if (type === "latlon"){
+    const combineEl = document.getElementById(`combine-${datasetId}`);
+    if (combineEl && !combineEl.checked){
+      const col2El = document.getElementById(`col2-${datasetId}`);
+      col2 = col2El ? col2El.value : null;
+    }
+  }
+  const {ok, data} = await apiFetch("/api/a_examiner/test-filter", {method:"POST",
+    body: JSON.stringify({dataset_id: datasetId, type_variable: type, col1, col2})});
+  if (!ok || !data) return;
+  const zone = document.getElementById(`resultat-${datasetId}`);
+  const btnAjouter = document.getElementById(`btn-ajouter-${datasetId}`);
+  if (!zone || !btnAjouter) return;
+  if (!data.ok){
+    notifier(data.message, true);
+    zone.innerHTML = "";
+    btnAjouter.disabled = true;
+    return;
+  }
+  etatAnalyse[datasetId].dernierTest = {type_variable: type, col1, col2, nb_rm: data.nb_rm};
+  const exemples = (data.exemples || []).map(ex => `<div class="meta">${esc(resumerLigne(ex))}</div>`).join("");
+  zone.innerHTML = `<div><strong>${data.nb_rm}</strong> ligne(s) RM sur ${data.nb_total}.</div>${exemples}`;
+  btnAjouter.disabled = false;
+}
+
+async function confirmerAjout(datasetId){
+  const test = etatAnalyse[datasetId] && etatAnalyse[datasetId].dernierTest;
+  if (!test) return;
+  if (test.nb_rm === 0 && !confirm("0 ligne RM détectée — ajouter quand même ?")) return;
+  await resoudreExamen(datasetId, "candidat", test);
+}
+
+function fermerAnalyse(datasetId){
+  document.getElementById(`analyse-${datasetId}`)?.remove();
+  delete etatAnalyse[datasetId];
+  if (panneauOuvert === datasetId) panneauOuvert = null;
+}
+
+// Raccourcis clavier
+document.addEventListener("keydown", e => {
+  if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT" || e.target.tagName === "TEXTAREA") return;
+  if (ongletActif === "examen" || ongletActif === "geo" || ongletActif === "echec"){
+    if (e.key === "a") {
+      const sel = document.querySelector(`#onglet-${ongletActif} .purge tbody tr:first-child button`);
+      if (sel && (sel.textContent.includes("Ajouter") || sel.textContent.includes("Candidat"))) sel.click();
+    }
+    if (e.key === "x") {
+      const exclure = document.querySelector(`#onglet-${ongletActif} .purge tbody tr:first-child button[title*="définitive"]`);
+      if (exclure) exclure.click();
+    }
+    if (e.key === "i") {
+      const ignorer = document.querySelector(`#onglet-${ongletActif} .purge tbody tr:first-child button[title*="blacklister"]`);
+      if (ignorer) ignorer.click();
+    }
+  }
+});
+
+chargerExamen();
+chargerHistorique();
+setInterval(chargerExamen, 15000);
+setInterval(chargerHistorique, 15000);
+</script>
+</body>
+</html>

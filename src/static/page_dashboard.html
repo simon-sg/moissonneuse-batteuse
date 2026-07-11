@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Moissonneuse-batteuse — Tableau de bord</title>
+<link rel="stylesheet" href="/static/dashboard.css">
+<style>
+  .grille-actions { display:flex; flex-direction:column; gap:4px; }
+  .action { display:flex; align-items:center; gap:10px; padding:6px 10px; border-radius:6px;
+            border:1px solid var(--bord); transition:background .1s; }
+  .action:hover { background:rgba(128,128,128,.04); }
+  .action .titre { font-weight:600; font-size:.82rem; white-space:nowrap; }
+  .action .desc { font-size:.76rem; color:var(--muted); flex:1; min-width:0;
+                  overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .action button { white-space:nowrap; padding:4px 11px; font-size:.78rem; flex-shrink:0; }
+  .action input[type=text] { width:120px; padding:3px 6px; font-size:.78rem;
+                             border:1px solid var(--bord); border-radius:5px; }
+  .action.pipeline { background:var(--pipeline-bg); border-color:var(--pipeline-bord); }
+  .action.disabled { opacity:.55; }
+  .puce { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+  .groupe-sep { display:flex; align-items:center; gap:10px; margin:14px 0 4px; }
+  .groupe-sep:first-child { margin-top:0; }
+  .groupe-sep label { font-size:.7rem; font-weight:600; color:var(--muted); text-transform:uppercase;
+                      letter-spacing:.06em; white-space:nowrap; }
+  .groupe-sep::after { content:""; flex:1; height:1px; background:var(--bord); }
+  #journal { background:#10161c; color:#d7dee4; border-radius:8px; padding:12px 14px; font-size:.8rem;
+             font-family: ui-monospace, "SF Mono", Consolas, monospace; white-space:pre-wrap;
+             overflow-wrap:anywhere; max-height:380px; overflow-y:auto; min-height:60px; }
+  #journal:empty::before { content:"Aucun job lancé."; color:#677; }
+  .outil-sticky { position:sticky; top:62px; z-index:4; background:var(--card); padding:0 0 6px; }
+</style>
+</head>
+<body>
+{{TOPBAR}}
+<main>
+
+<section>
+  <h2>État du projet</h2>
+  <div class="grille-etat" id="etat">Chargement…</div>
+</section>
+
+<section>
+  <h2>Nœud RUDI <span id="badge-noeud" class="badge idle" title="État du nœud RUDI — conteneur Podman géré par rudi_node.py">…</span></h2>
+  <div class="ligne-job">
+    <button id="btn-noeud" onclick="basculerNoeud()" disabled
+            title="Démarrer ou arrêter le conteneur Podman du nœud RUDI">…</button>
+    <a id="lien-noeud" href="#" target="_blank" class="discret desactive"
+       title="Ouvrir l'interface web du nœud RUDI (manager)">Ouvrir le nœud</a>
+  </div>
+</section>
+
+<section>
+  <h2>Superset <span id="badge-superset" class="badge idle" title="État du conteneur Docker Superset — tableau de bord data.gouv.fr">…</span></h2>
+  <div class="ligne-job">
+    <button id="btn-superset" onclick="basculerSuperset()"
+            title="Démarrer ou arrêter le conteneur Docker Superset">Démarrer</button>
+    <a id="lien-superset" href="#" target="_blank" class="discret desactive"
+       title="Ouvrir l'interface web Superset">Ouvrir Superset</a>
+  </div>
+</section>
+
+<section>
+  <h2>Actions</h2>
+  <div class="grille-actions" id="actions"></div>
+</section>
+
+<section>
+  <h2>JDD à examiner <span id="badge-examen" class="badge idle" title="Nombre de JDD en attente d'examen dans le backlog">…</span></h2>
+  <p class="meta" style="margin:0" title="Candidats ambigus (aucune colonne RM détectée) et services WFS/WMS issus de la découverte automatique, en attente de validation manuelle avant moisson">
+  Candidats ambigus et services WFS/WMS issus de la découverte automatique
+  quotidienne (<code>harvest_auto.py</code>), en attente de confirmation manuelle.
+  <a href="/examen">Voir la liste →</a></p>
+</section>
+
+<section>
+  <h2>Job en cours <span id="badge-job" class="badge idle" title="État du job : aucun job en cours">inactif</span></h2>
+  <div class="ligne-job">
+    <span id="label-job" class="meta">Aucun job lancé pour l'instant.</span>
+    <span id="duree-job" class="meta" style="display:none"></span>
+    <button id="btn-annuler-job" class="danger" style="display:none"
+            onclick="annulerJob()" title="Arrêter le job en cours (SIGINT → SIGTERM → SIGKILL)">Annuler</button>
+  </div>
+  <div id="journal" role="log" aria-live="polite" title="Sortie console du job en cours ou du dernier job exécuté"></div>
+</section>
+
+<section>
+  <h2>Purger des données existantes</h2>
+  <table class="purge">
+    <thead><tr><th title="Élément de données à purger">Élément</th><th title="Espace disque actuellement occupé">Taille</th><th title="Conséquence de la suppression — régénération possible ou non">Impact</th><th></th></tr></thead>
+    <tbody id="purge-corps"></tbody>
+  </table>
+</section>
+
+</main>
+<div id="notif"></div>
+
+<script src="/static/dashboard.js"></script>
+<script>
+const GROUPES = [
+  {id:"moisson", titre:"Moisson", couleur:"#0b6e99"},
+  {id:"catalogue", titre:"Catalogue & publication", couleur:"#2d7d46"},
+  {id:"rattrapage", titre:"Rattrapage & secours", couleur:"#8c4a1a"},
+  {id:"pipeline", titre:"Pipeline", couleur:"#a3372c"},
+];
+const ACTIONS = [
+  {id:"moisson_tabulaire", titre:"Tabulaire", desc:"data.gouv.fr configuré (DATASETS)",
+   tooltip:"Télécharge, filtre par commune RM et traduit les datasets tabulaires de data.gouv.fr listés dans DATASETS",
+   groupe:"moisson"},
+  {id:"moisson_batch", titre:"Batch", desc:"Candidats de la découverte (decouverte.json)",
+   tooltip:"Moissonne les datasets repérés par la découverte automatique comme contenant des données RM",
+   groupe:"moisson"},
+  {id:"moisson_insee", titre:"INSEE", desc:"Publications insee.fr",
+   tooltip:"Télécharge les publications INSEE — millésime automatique avec repli scraping si l'URL directe échoue",
+   champIds:true, groupe:"moisson"},
+  {id:"moisson_oeb", titre:"OEB", desc:"Observatoire env. Bretagne (data-fair)",
+   tooltip:"Moissonne les données environnementales bretonnes depuis l'Observatoire de l'Environnement en Bretagne",
+   champIds:true, groupe:"moisson"},
+  {id:"moisson_bdnb", titre:"BDNB", desc:"Bâtiments dép. 35 — DPE, énergie, FFO",
+   tooltip:"Moissonne les données BDNB (Bâtiments) du département 35 — DPE, énergie, FFO (~620 Mo téléchargés)",
+   groupe:"moisson"},
+  {id:"moisson_geo", titre:"Géo", desc:"WFS → GeoJSON · WMS · OGC API Features",
+   tooltip:"Télécharge les couches WFS en GeoJSON, enregistre les références WMS — configuré dans DATASETS_GEO",
+   groupe:"moisson"},
+  {id:"catalogue", titre:"(Re)générer", desc:"catalogue.json + .html + cartes Leaflet",
+   tooltip:"Reconstruit le catalogue, la page HTML et les cartes Leaflet — sans re-télécharger les données",
+   groupe:"catalogue"},
+  {id:"publier_rudi", titre:"Publier RUDI", desc:"Rattrapage — fichiers déjà sur disque",
+   tooltip:"Publie (ou republie) les datasets moissonnés sur le nœud RUDI à partir des rudi_metadata.json",
+   groupe:"catalogue"},
+  {id:"enrichir_descriptions", titre:"Descriptions", desc:"Rattrapage — JDD vides/quasi vides",
+   tooltip:"Génère une description de secours (thème, colonnes, producteur) pour les JDD sans description exploitable",
+   groupe:"catalogue"},
+  {id:"decouverte_interactive", titre:"Découverte interactive", desc:"Prompts input() — lancer python3 src/cli.py",
+   tooltip:"La découverte utilise des prompts input() dans le terminal — impossible depuis ce tableau de bord web",
+   groupe:"rattrapage", desactive:true},
+  {id:"verifier_backlog_examen", titre:"Backlog examen", desc:"Classe les JDD sans ressource",
+   tooltip:"Analyse le backlog decouverte.json : déplace les JDD sans ressource exploitable vers la bonne liste",
+   groupe:"rattrapage"},
+  {id:"moisson_batch_et_publier", titre:"Batch + publier", desc:"Batch → catalogue → RUDI",
+   tooltip:"Enchaîne moisson batch, catalogue et publication RUDI — utile si l'auto-lancement depuis /examen a été sauté",
+   groupe:"rattrapage"},
+  {id:"moisson_geo_et_publier", titre:"Géo + publier", desc:"Géo → catalogue → RUDI",
+   tooltip:"Enchaîne moisson géo, catalogue et publication RUDI — utile si l'auto-lancement depuis /examen a été sauté",
+   groupe:"rattrapage"},
+  {id:"pipeline_complet", titre:"Pipeline complet", desc:"Tabulaire → batch → INSEE → OEB → BDNB → géo → catalogue → RUDI",
+   tooltip:"Exécute toutes les moissons, le catalogue et la publication RUDI à la suite",
+   pipeline:true, groupe:"pipeline"},
+];
+
+function rendreActions(){
+  const conteneur = document.getElementById("actions");
+  conteneur.innerHTML = GROUPES.map(g => {
+    const items = ACTIONS.filter(a => a.groupe === g.id);
+    if (!items.length) return "";
+    return `
+    <div class="groupe-sep"><label>${esc(g.titre)}</label></div>
+    ${items.map(a => `
+      <div class="action ${a.pipeline?"pipeline":""} ${a.desactive?"disabled":""}" data-id="${a.id}" title="${esc(a.tooltip || a.desc)}">
+        <span class="puce" style="background:${g.couleur}"></span>
+        <span class="titre">${esc(a.titre)}</span>
+        <span class="desc">${esc(a.desc)}</span>
+        ${a.champIds ? `<input type="text" id="champ-${a.id}" placeholder="IDs (vide = toutes)">` : ""}
+        ${a.desactive ? "" : `<button onclick="lancerAction('${a.id}')" title="Lancer ${esc(a.titre)}">Lancer</button>`}
+      </div>
+    `).join("")}`;
+  }).join("");
+  appliquerEtatBoutons();
+}
+
+function appliquerEtatBoutons(){
+  document.querySelectorAll("#actions button:not([disabled]), .purge-action button:not([disabled])")
+    .forEach(b => b.disabled = jobEnCours);
+}
+
+async function lancerAction(id){
+  let params = {};
+  if (id === "moisson_insee" || id === "moisson_oeb"){
+    const champ = document.getElementById(`champ-${id}`);
+    params.ids = champ ? champ.value.trim() : "";
+  }
+  const {ok, data} = await apiFetch(`/api/job/${id}`, {method:"POST", body: JSON.stringify(params)});
+  if (!ok) { if (data) notifier(data.message, true); return; }
+  notifier(data.message);
+  actualiserJob();
+}
+
+const AIDE_METRIQUES = {
+  "Datasets configurés": "Jeux de données configurés dans datasets.py, par connecteur (tabulaire / géo / INSEE / OEB / BDNB)",
+  "Candidats en attente": "Datasets identifiés comme pertinents pour RM par la découverte, prêts pour la moisson batch",
+  "JDD vus / exclus": "Nombre total de datasets examinés lors des sessions de découverte / exclus volontairement",
+  "Découverte": "Historique de découverte (decouverte.json) — s'il n'existe pas, lancer src/discover.py ou src/harvest_auto.py",
+  "État tabulaire/batch": "Datasets tabulaires suivis par state.json : total configurés / déjà publiés sur le nœud RUDI",
+  "État INSEE": "Publications INSEE suivies par state_insee.json : total configurés / déjà publiés",
+  "État OEB": "Publications OEB suivies : total configurés / déjà publiés",
+  "Nœud RUDI": "Le nœud RUDI est-il configuré (rudi_node.json) ? Sans fichier de configuration, la publication est impossible",
+  "Données moissonnées": "Nombre de dossiers dans data/ — un dossier contient les fichiers filtrés + métadonnées d'un jeu de données",
+};
+
+async function actualiserEtat(){
+  const {ok, data: d} = await apiFetch("/api/etat");
+  if (!ok || !d) { return; }
+  const cfg = d.datasets_configures;
+  const stats = [];
+  stats.push(["Datasets configurés", `${cfg.tabulaire} tab. / ${cfg.geo} géo / ${cfg.insee} INSEE / ${cfg.oeb} OEB / ${cfg.bdnb} BDNB`]);
+  if (d.decouverte){
+    stats.push(["Candidats en attente", d.decouverte.candidats]);
+    stats.push(["JDD vus / exclus", `${d.decouverte.vus} / ${d.decouverte.exclus}`]);
+  } else {
+    stats.push(["Découverte", "aucun historique"]);
+  }
+  const tb = d.etat_moisson.tabulaire_batch, ins = d.etat_moisson.insee, oeb = d.etat_moisson.oeb;
+  stats.push(["État tabulaire/batch", tb ? `${tb.total} suivi(s), ${tb.rudi_publie} publié(s)` : "aucun"]);
+  stats.push(["État INSEE", ins ? `${ins.total} suivi(s), ${ins.rudi_publie} publié(s)` : "aucun"]);
+  stats.push(["État OEB", oeb ? `${oeb.total} suivi(s), ${oeb.rudi_publie} publié(s)` : "aucun"]);
+  stats.push(["Nœud RUDI", d.rudi_configure ? "configuré" : "NON configuré"]);
+  stats.push(["Données moissonnées", `${d.donnees.n_dossiers} dossier(s)`]);
+  document.getElementById("etat").innerHTML = stats.map(([lbl,val]) => `
+    <div class="stat" title="${esc(AIDE_METRIQUES[lbl] || "")}">
+      <div class="val">${esc(val)}</div>
+      <div class="lbl">${esc(lbl)}</div>
+    </div>
+  `).join("");
+}
+
+let noeudActionEnCours = false;
+let intervalleRapideNoeud = null;
+
+const LABELS_ETAT_NOEUD = {
+  running: "en cours", exited: "arrêté", paused: "en pause",
+};
+
+async function actualiserNoeud(){
+  const {ok, data: n} = await apiFetch("/api/noeud");
+  if (!ok || !n) { return; }
+
+  const badge = document.getElementById("badge-noeud");
+  const bouton = document.getElementById("btn-noeud");
+  let enDemarrage = false;
+
+  if (!n.podman_installe){
+    badge.className = "badge warn";
+    badge.textContent = "podman introuvable";
+    bouton.className = "";
+    bouton.textContent = "Démarrer";
+    bouton.disabled = true;
+  } else if (!n.existe){
+    badge.className = "badge idle";
+    badge.textContent = "absent";
+    bouton.className = "";
+    bouton.textContent = "Démarrer";
+    bouton.disabled = true;
+  } else {
+    const enCours = n.etat === "running";
+    enDemarrage = enCours && !n.pret;
+    badge.className = "badge " + (enDemarrage ? "running" : (enCours ? "termine" : "idle"));
+    badge.textContent = enDemarrage ? "démarrage…" : (LABELS_ETAT_NOEUD[n.etat] || n.etat || "inconnu");
+    badge.title = enDemarrage ? "Le conteneur tourne mais l'application n'est pas encore prête"
+                 : (enCours ? "Le nœud RUDI est opérationnel et répond aux requêtes"
+                    : "Le conteneur est arrêté — cliquer sur Démarrer pour le lancer");
+    bouton.textContent = enCours ? "Arrêter" : "Démarrer";
+    bouton.className = enCours ? "danger" : "";
+    bouton.disabled = noeudActionEnCours;
+  }
+
+  // Le lien vers le nœud n'est activé qu'une fois qu'il répond vraiment (pas seulement
+  // que le conteneur tourne — l'appli interne met plusieurs secondes à démarrer).
+  const lienNoeud = document.getElementById("lien-noeud");
+  lienNoeud.href = n.url_manager || "#";
+  lienNoeud.classList.toggle("desactive", !n.url_manager || !n.pret);
+
+  // Pendant le démarrage, on vérifie plus souvent pour refléter la disponibilité réelle
+  // dès qu'elle survient, plutôt que d'attendre le prochain rafraîchissement (15s).
+  if (enDemarrage && !intervalleRapideNoeud){
+    intervalleRapideNoeud = setInterval(actualiserNoeud, 2000);
+  } else if (!enDemarrage && intervalleRapideNoeud){
+    clearInterval(intervalleRapideNoeud);
+    intervalleRapideNoeud = null;
+  }
+}
+
+async function basculerNoeud(){
+  const bouton = document.getElementById("btn-noeud");
+  const action = bouton.textContent === "Arrêter" ? "arreter" : "demarrer";
+  noeudActionEnCours = true;
+  bouton.disabled = true;
+  const {ok, data} = await apiFetch(`/api/noeud/${action}`, {method:"POST"});
+  if (data) notifier(data.message, !ok);
+  noeudActionEnCours = false;
+  actualiserNoeud();
+  return;
+}
+
+let supersetActionEnCours = false;
+
+async function actualiserSuperset(){
+  const {ok, data: s} = await apiFetch("/api/superset");
+  if (!ok || !s) { return; }
+
+  const badge = document.getElementById("badge-superset");
+  const bouton = document.getElementById("btn-superset");
+  const lien = document.getElementById("lien-superset");
+
+  if (!s.docker_installe){
+    badge.className = "badge warn";
+    badge.textContent = "docker introuvable";
+    bouton.textContent = "Démarrer";
+    bouton.className = "";
+    bouton.disabled = true;
+  } else if (!s.existe){
+    badge.className = "badge idle";
+    badge.textContent = "absent";
+    bouton.textContent = "Démarrer";
+    bouton.className = "";
+    bouton.disabled = false;
+  } else {
+    const enCours = s.etat === "running";
+    const enDemarrage = enCours && !s.pret;
+    badge.className = "badge " + (enDemarrage ? "running" : (enCours ? "termine" : "idle"));
+    badge.textContent = enDemarrage ? "démarrage…" : (enCours ? "en cours" : (s.etat || "inconnu"));
+    badge.title = enDemarrage ? "Le conteneur tourne mais Superset n'est pas encore prêt"
+                 : (enCours ? "Superset est opérationnel"
+                    : "Le conteneur est arrêté");
+    bouton.textContent = enCours ? "Arrêter" : "Démarrer";
+    bouton.className = enCours ? "danger" : "";
+    bouton.disabled = supersetActionEnCours;
+  }
+
+  lien.href = s.url || "#";
+  lien.classList.toggle("desactive", !s.pret);
+}
+
+async function basculerSuperset(){
+  const bouton = document.getElementById("btn-superset");
+  const action = bouton.textContent === "Arrêter" ? "arreter" : "demarrer";
+  supersetActionEnCours = true;
+  bouton.disabled = true;
+  const {ok, data} = await apiFetch(`/api/superset/${action}`, {method:"POST"});
+  if (data) notifier(data.message, !ok);
+  supersetActionEnCours = false;
+  actualiserSuperset();
+  return;
+}
+
+let dernierStatut = null;
+let timerInterval = null;
+
+async function actualiserJob(){
+  const {ok, data: j} = await apiFetch("/api/job");
+  if (!ok || !j) { setTimeout(actualiserJob, 1000); return; }
+  jobEnCours = j.statut === "running" || j.statut === "cancelling";
+  appliquerEtatBoutons();
+
+  const badge = document.getElementById("badge-job");
+  badge.className = "badge " + j.statut;
+  const LABEL_STATUT = {idle:"inactif", running:"en cours", cancelling:"annulation…", cancelled:"annulé", termine:"terminé"};
+  badge.textContent = LABEL_STATUT[j.statut] || j.statut;
+  badge.title = "État : " + (LABEL_STATUT[j.statut] || j.statut);
+  document.getElementById("label-job").textContent = j.label || "Aucun job lancé pour l'instant.";
+
+  // Bouton annuler
+  const btnAnnuler = document.getElementById("btn-annuler-job");
+  btnAnnuler.style.display = (j.statut === "running") ? "" : "none";
+  btnAnnuler.disabled = j.statut !== "running";
+
+  // Timer durée
+  const dureeSpan = document.getElementById("duree-job");
+  if (j.statut === "running" && j.debut){
+    dureeSpan.style.display = "";
+    if (!timerInterval){
+      const debut = j.debut * 1000;
+      timerInterval = setInterval(() => {
+        const ecoule = Date.now() - debut;
+        const m = String(Math.floor(ecoule / 60000)).padStart(2, "0");
+        const s = String(Math.floor((ecoule % 60000) / 1000)).padStart(2, "0");
+        dureeSpan.textContent = `${m}:${s}`;
+      }, 1000);
+    }
+  } else {
+    if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+    dureeSpan.style.display = "none";
+  }
+
+  const journal = document.getElementById("journal");
+  journal.textContent = j.log || "";
+  journal.scrollTop = journal.scrollHeight;
+
+  if (j.statut === "termine" || j.statut === "cancelled"){
+    if (dernierStatut === "running" || dernierStatut === "cancelling"){
+      actualiserEtat();
+      chargerPurge();
+    }
+  }
+  dernierStatut = j.statut;
+
+  if (j.statut === "running" || j.statut === "cancelling") setTimeout(actualiserJob, 1000);
+}
+
+async function annulerJob(){
+  const {ok, data} = await apiFetch("/api/job/cancel", {method:"POST"});
+  if (data) notifier(data.message, !ok);
+  if (ok) actualiserJob();
+}
+
+async function chargerPurge(){
+  const {ok, data: items} = await apiFetch("/api/purge");
+  if (!ok || !items) { return; }
+  document.getElementById("purge-corps").innerHTML = items.map(it => {
+    const destructeurTitre = "Action destructive : tapez SUPPRIMER pour confirmer, puis cliquez sur Supprimer";
+    const normalTitre = "Supprime ces données. Attention : action irréversible pour cette catégorie.";
+    return `
+    <tr>
+      <td>${esc(it.label)}${it.destructeur ? ' <span class="badge running" title="Action destructive — confirmation par code requise">DESTRUCTEUR</span>' : ""}</td>
+      <td class="taille" title="Taille actuelle sur disque">${esc(it.taille_lisible)}</td>
+      <td class="impact" title="${esc(it.impact)}">${esc(it.impact)}</td>
+      <td>
+        <div class="purge-action">
+          ${it.destructeur ? `<input type="text" id="conf-${it.id}" placeholder="Tapez SUPPRIMER" oninput="majBoutonPurge(${it.id})">` : ""}
+          <button id="btn-purge-${it.id}" class="${it.destructeur ? "danger" : ""}"
+                  ${it.destructeur ? "disabled" : ""}
+                  title="${it.destructeur ? destructeurTitre : normalTitre}"
+                  onclick="purger(${it.id}, ${it.destructeur ? "true" : "false"})">Supprimer</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join("");
+  appliquerEtatBoutons();
+}
+
+async function actualiserBadgeExamen(){
+  const {ok, data: items} = await apiFetch("/api/a_examiner");
+  if (!ok || !items) return;
+  const badge = document.getElementById("badge-examen");
+  badge.textContent = items.length;
+  badge.className = "badge " + (items.length ? "warn" : "idle");
+}
+
+function majBoutonPurge(id){
+  const champ = document.getElementById(`conf-${id}`);
+  const bouton = document.getElementById(`btn-purge-${id}`);
+  bouton.disabled = jobEnCours || champ.value !== "SUPPRIMER";
+}
+
+async function purger(id, destructeur){
+  let confirmation;
+  if (destructeur){
+    confirmation = document.getElementById(`conf-${id}`).value;
+  } else {
+    if (!confirm("Confirmer la suppression ?")) return;
+    confirmation = "oui";
+  }
+  const {ok, data} = await apiFetch(`/api/purge/${id}`, {method:"POST", body: JSON.stringify({confirmation})});
+  if (data) notifier(data.message, !ok);
+  if (ok) chargerPurge();
+}
+
+rendreActions();
+actualiserEtat();
+actualiserJob();
+chargerPurge();
+actualiserBadgeExamen();
+actualiserNoeud();
+actualiserSuperset();
+setInterval(actualiserEtat, 15000);
+setInterval(chargerPurge, 15000);
+setInterval(actualiserBadgeExamen, 15000);
+setInterval(actualiserNoeud, 15000);
+setInterval(actualiserSuperset, 15000);
+</script>
+</body>
+</html>

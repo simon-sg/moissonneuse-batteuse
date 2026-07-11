@@ -15,7 +15,15 @@ from filters.geographic import normaliser
 
 
 # Paramètres de recherche
-KEYWORDS = ["commune", "code postal", "code insee", "iris", "adresse"]
+KEYWORDS = [
+    "commune", "code postal", "code insee", "iris", "adresse",
+    "urbanisme", "voirie", "stationnement", "mobilite", "dechet",
+    "assainissement", "eau", "logement", "action sociale", "sport",
+    "culture", "creche", "ecole", "periscolaire", "marche",
+    "espaces verts", "eclairage public", "cimetiere", "economie",
+    "proprete", "habitat", "participation citoyenne", "equipement public",
+    "zone d activite", "restauration scolaire", "equipement sportif",
+]
 
 NB_PAGES = 50  # pages récupérées par mot-clé (20 résultats/page → 1000 max par keyword)
 
@@ -41,6 +49,36 @@ REQUETES_STRUCTUREES = [
     {"params": {"format": "wms",          "sort": "-views"}, "label": "WMS"},
     {"params": {"format": "wfs",          "sort": "-views"}, "label": "WFS"},
     {"params": {"format": "geojson",      "sort": "-views"}, "label": "GeoJSON"},
+    # Compétences communales et métropolitaines
+    {"params": {"q": "urbanisme",                           "sort": "-views"}, "label": "urbanisme"},
+    {"params": {"q": "permis de construire",                "sort": "-views"}, "label": "permis de construire"},
+    {"params": {"q": "stationnement",                       "sort": "-views"}, "label": "stationnement"},
+    {"params": {"q": "voirie",                              "sort": "-views"}, "label": "voirie"},
+    {"params": {"q": "mobilite",                            "sort": "-views"}, "label": "mobilité"},
+    {"params": {"q": "dechet",                              "sort": "-views"}, "label": "déchets"},
+    {"params": {"q": "assainissement",                      "sort": "-views"}, "label": "assainissement"},
+    {"params": {"q": "eau potable",                         "sort": "-views"}, "label": "eau potable"},
+    {"params": {"q": "eclairage public",                    "sort": "-views"}, "label": "éclairage public"},
+    {"params": {"q": "logement social",                     "sort": "-views"}, "label": "logement social"},
+    {"params": {"q": "action sociale",                      "sort": "-views"}, "label": "action sociale"},
+    {"params": {"q": "equipement sportif",                  "sort": "-views"}, "label": "équipement sportif"},
+    {"params": {"q": "equipement culturel",                 "sort": "-views"}, "label": "équipement culturel"},
+    {"params": {"q": "petite enfance",                      "sort": "-views"}, "label": "petite enfance"},
+    {"params": {"q": "zone d activite",                     "sort": "-views"}, "label": "zone d'activité"},
+    {"params": {"q": "developpement economique",            "sort": "-views"}, "label": "développement économique"},
+    {"params": {"q": "participation citoyenne",             "sort": "-views"}, "label": "participation citoyenne"},
+    {"params": {"q": "proprete urbaine",                    "sort": "-views"}, "label": "propreté urbaine"},
+    {"params": {"q": "espaces verts",                       "sort": "-views"}, "label": "espaces verts"},
+    {"params": {"q": "marche",                              "sort": "-views"}, "label": "marché"},
+    {"params": {"q": "cimetiere",                           "sort": "-views"}, "label": "cimetière"},
+    {"params": {"q": "budget participatif",                 "sort": "-views"}, "label": "budget participatif"},
+    {"params": {"q": "habitat indigne",                     "sort": "-views"}, "label": "habitat indigne"},
+    {"params": {"q": "piscine",                             "sort": "-views"}, "label": "piscine"},
+    {"params": {"q": "restauration scolaire",               "sort": "-views"}, "label": "restauration scolaire"},
+    {"params": {"q": "aire d accueil",                      "sort": "-views"}, "label": "aire d'accueil"},
+    {"params": {"q": "fourriere",                           "sort": "-views"}, "label": "fourrière"},
+    {"params": {"q": "bibliotheque",                        "sort": "-views"}, "label": "bibliothèque"},
+    {"params": {"q": "trame verte",                         "sort": "-views"}, "label": "trame verte"},
 ]
 
 TITRES_HORS_RM = [
@@ -102,10 +140,12 @@ MARQUEURS_ENTETES_SUBSTR = ["epci", "iris", "insee", "commune", "adresse", "post
 # Noms de champs courants pour le code postal et la commune dans les données
 CHAMPS_CP = ["cp", "code_postal", "codepostal", "code postal", "postal_code",
              "code_post", "cp_ville", "zipcode", "zip"]
-CHAMPS_VILLE = ["ville", "commune", "libelle_commune", "nom_commune",
-                "city", "municipality", "lib_commune",
+CHAMPS_VILLE = ["ville", "commune", "communes", "libelle_commune", "nom_commune",
+                "commune_nom", "communes_nom", "commune_deleguee_nom",
+                "city", "municipality", "lib_commune", "adrs_libcommune", "libcommune",
                 "libgeo", "lib_geo", "libelle_geo", "libcom", "lib_com",
-                "nom_com", "nom_geo", "libelle"]
+                "nom_com", "nom_geo", "libelle", "consolidated_commune",
+                "nomcommune", "codcommune", "cdcommune"]
 
 # Noms de champs courants pour le code IRIS (9 chiffres : 5 INSEE + 4 IRIS)
 CHAMPS_IRIS = [
@@ -113,11 +153,15 @@ CHAMPS_IRIS = [
     "c iris", "iris", "com iris", "code iris 2024", "code iris 2023",
     "numero commune", "num commune", "code commune", "depcom", "codgeo",
     "insee", "code insee", "codeinsee", "code commune insee", "codecommune",
-    "insee com", "insee comm", "cod commune", "com insee",
-    "icom",
+    "insee com", "insee comm", "insee commune", "cod commune", "com insee",
+    "commune insee", "comm insee", "commune_deleguee_insee",
+    "icom", "idcom",
     "code geographique",
     "geocode commune", "geocode epci", "code officiel geographique",
     "code officiel commune", "cog commune", "cog",
+    "insee c", "coll insee", "codeinseecommune",
+    # Colonnes INSEE contenant des codes communes (ex. mobilités domicile-travail)
+    "lieu resid", "lieu trav",
 ]
 
 CHAMPS_DEP = ["ndept", "dep", "code dep", "code dept", "num dep", "num dept",
@@ -135,7 +179,7 @@ CHAMPS_SIREN = [
 ]
 
 CHAMPS_CIRCONSCRIPTION = [
-    "circonscription", "circo", "code circonscription", "code circo",
+    "circonscription", "circo", "circo_id", "code circonscription", "code circo",
     "circonscription legislative", "circonscription_legislative",
     "num circonscription", "num_circonscription",
     "numero circonscription", "numero_circonscription",
@@ -172,9 +216,19 @@ CHAMPS_ADRESSE = [
     "localisation", "lieu dit", "lieu_dit",
 ]
 
+# Noms de champs courants pour le code SIREN d'un EPCI (intercommunalité)
+CHAMPS_EPCI = [
+    "epci", "code epci", "codeepci", "code_epci",
+    "siren epci", "siret epci",
+    "numero epci", "numéro epci", "num epci", "n epci",
+    "code_epci_code", "epci_2024_code", "epci code", "epci 2024",
+    "libelle epci", "libellé epci", "nom epci",
+    "id epci", "identifiant epci", "siren intercommunalite",
+]
+
 # En-têtes CSV : liste large, faux positifs acceptés
 MARQUEURS_ENTETES = set(
-    CHAMPS_IRIS + CHAMPS_DEP + CHAMPS_ADRESSE + CHAMPS_CP + CHAMPS_VILLE
+    CHAMPS_IRIS + CHAMPS_DEP + CHAMPS_ADRESSE + CHAMPS_CP + CHAMPS_VILLE + CHAMPS_EPCI
 ) | {
     "code com", "cod com", "code_com", "cod_com",
     "lib com", "lib_com", "libcom", "libelle com", "libelle_com",

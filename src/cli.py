@@ -60,6 +60,14 @@ def _taille_chemin(chemin: str) -> int:
     return total
 
 
+def _formater_duree(secs: float) -> str:
+    if secs < 60:
+        return f"{secs:.1f}s"
+    m, s = divmod(int(secs), 60)
+    h, m = divmod(m, 60)
+    return f"{h}h{m:02d}m{s:02d}s" if h else f"{m}m{s:02d}s"
+
+
 def _confirmer(message: str, mot_cle: str | None = None) -> bool:
     """Demande confirmation. Si mot_cle est fourni, exige sa saisie exacte (action très destructrice)."""
     if mot_cle:
@@ -73,17 +81,19 @@ def _confirmer(message: str, mot_cle: str | None = None) -> bool:
 def _executer(label: str, fn, *args, **kwargs) -> bool:
     """Exécute une étape avec gestion uniforme des erreurs/interruptions — ne tue jamais le menu."""
     print(f"\n{'=' * 60}\n{label}\n{'=' * 60}")
+    t0 = time.time()
     try:
         fn(*args, **kwargs)
+        print(f"\n[{label}] terminé en {_formater_duree(time.time() - t0)}.")
         return True
     except KeyboardInterrupt:
-        print(f"\n[{label}] interrompu par l'utilisateur.")
+        print(f"\n[{label}] interrompu par l'utilisateur après {_formater_duree(time.time() - t0)}.")
         return False
     except SystemExit as e:
-        print(f"\n[{label}] arrêté (code {e.code}).")
+        print(f"\n[{label}] arrêté (code {e.code}) après {_formater_duree(time.time() - t0)}.")
         return False
     except Exception as e:
-        print(f"\n[{label}] ERREUR : {e}")
+        print(f"\n[{label}] ERREUR après {_formater_duree(time.time() - t0)} : {e}")
         traceback.print_exc()  # trace complète — indispensable pour diagnostiquer un run cron a posteriori
         return False
 
@@ -698,6 +708,7 @@ def menu_principal():
         for cle, _label, fn in ACTIONS:
             if choix == cle:
                 fn()
+                input("\nAppuyez sur Entrée pour revenir au menu…")
                 break
         else:
             print("Choix invalide.")

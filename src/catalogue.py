@@ -495,6 +495,13 @@ GABARIT_HTML = r"""<!DOCTYPE html>
   table.res th { color:var(--muted); font-weight:600; }
   table.res code { background:var(--code-bg); padding:1px 5px; border-radius:4px; }
   .vide { text-align:center; color:var(--muted); padding:40px; }
+  @media (max-width: 640px) {
+    main { padding: 14px 14px 40px; }
+    .catalogue-entete { padding: 12px 14px; }
+    #recherche { flex: 1 1 100%; }
+    .barre select, .barre #tri { flex: 1 1 auto; min-width: 120px; }
+    table.res { display: block; overflow-x: auto; white-space: nowrap; }
+  }
 </style>
 </head>
 <body>
@@ -733,7 +740,9 @@ function afficherTranche(reinit){
   }
   liste.insertAdjacentHTML("beforeend", chunk.map(carte).join(""));
   offsetRendu += chunk.length;
-  btnPlus.style.display = (offsetRendu < filtres.length) ? "block" : "none";
+  const restants = filtres.length - offsetRendu;
+  btnPlus.style.display = restants > 0 ? "block" : "none";
+  btnPlus.textContent = `Afficher plus de résultats (${offsetRendu} / ${filtres.length} affichés)`;
 
   // Révèle les boutons "voir plus" pour les descriptions tronquées
   requestAnimationFrame(() => {

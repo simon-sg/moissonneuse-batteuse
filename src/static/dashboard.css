@@ -170,3 +170,40 @@ table.purge .taille { white-space:nowrap; font-variant-numeric:tabular-nums; }
 #notif div { background:var(--notif-bg); color:#fff; border-radius:8px; padding:10px 14px; margin-top:8px;
              font-size:.85rem; box-shadow:0 4px 14px rgba(0,0,0,.18); cursor:pointer; }
 #notif div.erreur { background:var(--notif-err-bg); }
+
+/* --- Filtre texte générique (barres de filtrage par onglet/liste) --- */
+.filtre-onglet { flex:1; min-width:180px; padding:8px 10px; font-size:.85rem;
+                 border:1px solid var(--bord); border-radius:6px; background:var(--card); color:var(--txt); }
+
+/* --- Modal (confirmation, formulaires) — partagée entre toutes les pages --- */
+.modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:30; display:flex;
+  align-items:center; justify-content:center; }
+.modal { background:var(--card); border:1px solid var(--bord); border-radius:12px; padding:20px 24px;
+  width:90%; max-width:520px; max-height:85vh; overflow-y:auto; box-shadow:0 8px 30px rgba(0,0,0,.2); }
+.modal h3 { margin:0 0 14px; font-size:1rem; }
+.modal p.modal-msg { font-size:.88rem; margin:0 0 16px; white-space:pre-wrap; color:var(--txt); }
+.modal label { display:block; margin-bottom:10px; font-size:.82rem; color:var(--muted); }
+.modal input[type=text], .modal input[type=number], .modal select { width:100%; padding:6px 8px;
+  border:1px solid var(--bord); border-radius:6px; font-size:.85rem; background:var(--bg); color:var(--txt); }
+.modal .ligne-form { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.modal .actions { display:flex; gap:8px; justify-content:flex-end; margin-top:16px; }
+
+/* --- Indicateur de modifications non sauvegardées --- */
+.non-sauve { display:none; width:8px; height:8px; border-radius:50%; background:var(--warn);
+             margin-left:6px; vertical-align:middle; }
+.non-sauve.visible { display:inline-block; }
+
+/* --- Responsive : écrans étroits (tablette portrait, petit laptop) --- */
+@media (max-width: 720px) {
+  main, main.wide { padding: 14px 12px 40px; gap: 14px; max-width:100%; }
+  .topbar { padding: 0 10px; height:auto; min-height:52px; flex-wrap:wrap; padding-top:6px; padding-bottom:6px; }
+  .topbar-left { gap:14px; }
+  .topbar-nav { overflow-x:auto; max-width:60vw; }
+  .topbar-pills { flex-wrap:wrap; }
+  section { padding: 12px 14px; }
+  .action { flex-wrap: wrap; }
+  .action .desc { white-space: normal; }
+  table.purge, table.requetes { display: block; overflow-x: auto; white-space: nowrap; }
+  .modal { width: 94%; padding: 16px 18px; }
+  .modal .ligne-form { grid-template-columns: 1fr; }
+}

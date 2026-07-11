@@ -35,6 +35,7 @@ from conf.communes_rm import CODES_POSTAUX_RM, CODES_INSEE_RM, BBOX_RM, BBOX_RM_
 from conf.discover import (
     CHAMPS_CP, CHAMPS_VILLE, CHAMPS_IRIS, CHAMPS_DEP, CHAMPS_SIREN,
     CHAMPS_CIRCONSCRIPTION, CHAMPS_GEO_POINT, CHAMPS_LAT, CHAMPS_LON, CHAMPS_ADRESSE,
+    CHAMPS_EPCI,
     _FORMATS_EXCLUS_FMT, _FORMATS_EXCLUS_EXT,
     LOG_FILE, CACHE_DIR,
 )
@@ -45,6 +46,7 @@ from connectors.sirene import obtenir_sirens_rm
 from filters.geographic import (
     est_dans_rm, est_commune_rm, normaliser, est_circonscription_rm,
     est_iris_rm, est_valeur_commune_rm, est_epci_rm, est_point_rm, est_adresse_rm,
+    est_departement_rm,
     EPCI_SIREN_RM,
 )
 
@@ -144,11 +146,16 @@ def deviner_champs(entetes: list[str]) -> tuple[str | None, str | None]:
     if not champ_cp:
         champ_cp = next((e for e in entetes_norm if "postal" in e or e == "cp"), None)
     if not champ_ville:
+        _FAUX_POSITIFS_VILLE = ("declarant", "pollution", "siren", "siret", "marche",
+                                "activite", "effectif", "client", "fournisseur", "journey",
+                                "epci")
         champ_ville = next(
             (e for e in entetes_norm
              if ("commune" in e or "ville" in e or "libelle" in e or "libgeo" in e)
              and "insee" not in e and "dep" not in e
-             and not e.startswith("code") and "partenaire" not in e),
+             and not e.startswith("code") and "partenaire" not in e
+             and not any(e.startswith(p) or (p + "_") in e or e.endswith("_" + p)
+                         or e.endswith(p) for p in _FAUX_POSITIFS_VILLE)),
             None,
         )
     if champ_cp:
@@ -167,8 +174,22 @@ def deviner_champ_iris(entetes: list[str]) -> str | None:
         if "iris" in e and "libelle" not in e and "lib" not in e:
             return entetes[i]
     _SUFFIXES_GEO_EXCLUS = ("reg", "region", "dep", "departement", "arr", "arrondissement")
+    _PREFIXES_INSEE_EXCLUS = ("pollution", "declarant", "journey", "res",
+                              "activite", "revenu", "pop", "nb")
     for i, e in enumerate(entetes_norm):
-        if "insee" in e and not any(s in e for s in _SUFFIXES_GEO_EXCLUS):
+        if "insee" in e and not any(s in e for s in _SUFFIXES_GEO_EXCLUS) \
+                and not any(e.startswith(p) or e.startswith(p + " ") for p in _PREFIXES_INSEE_EXCLUS):
+            return entetes[i]
+    return None
+
+
+def deviner_champ_epci(entetes: list[str]) -> str | None:
+    entetes_norm = [normaliser(e) for e in entetes]
+    for nom in CHAMPS_EPCI:
+        if nom in entetes_norm:
+            return entetes[entetes_norm.index(nom)]
+    for i, e in enumerate(entetes_norm):
+        if "epci" in e:
             return entetes[i]
     return None
 
@@ -244,29 +265,36 @@ def deviner_champs_geo(entetes: list[str]) -> tuple[str | None, str | None]:
 
 
 def _detecter_champs(entetes: list[str]) -> tuple:
-    """Retourne (champ_cp, champ_ville, champ_iris, champ_dep, champ_adresse, champ_siren,
-    champ_lat, champ_lon, champ_circonscription)."""
+    """Retourne (champ_cp, champ_ville, champ_iris, champ_dep, champ_epci, champ_adresse,
+    champ_siren, champ_lat, champ_lon, champ_circonscription)."""
     champ_cp, champ_ville = deviner_champs(list(entetes))
     champ_iris = deviner_champ_iris(list(entetes))
     champ_dep = deviner_champ_dep(list(entetes)) if champ_iris else None
-    champ_adresse = (
+    champ_epci = (
         None if (champ_cp or champ_ville or champ_iris)
+        else deviner_champ_epci(list(entetes))
+    )
+    champ_adresse = (
+        None if (champ_cp or champ_ville or champ_iris or champ_epci)
         else deviner_champ_adresse(list(entetes))
     )
     champ_siren = (
-        None if (champ_cp or champ_ville or champ_iris or champ_adresse)
+        None if (champ_cp or champ_ville or champ_iris or champ_epci or champ_adresse)
         else deviner_champ_siren(list(entetes))
     )
     champ_lat, champ_lon = (None, None) if (champ_cp or champ_ville or champ_iris
-                                              or champ_adresse or champ_siren) \
+                                              or champ_epci or champ_adresse or champ_siren) \
         else deviner_champs_geo(list(entetes))
     champ_circonscription = (
-        None if (champ_cp or champ_ville or champ_iris or champ_adresse
+        None if (champ_cp or champ_ville or champ_iris or champ_epci or champ_adresse
                   or champ_siren or champ_lat)
         else deviner_champ_circonscription(list(entetes))
     )
-    return (champ_cp, champ_ville, champ_iris, champ_dep, champ_adresse, champ_siren,
-            champ_lat, champ_lon, champ_circonscription)
+    if not any([champ_cp, champ_ville, champ_iris, champ_epci, champ_adresse,
+                champ_siren, champ_lat, champ_circonscription]):
+        champ_dep = deviner_champ_dep(list(entetes))
+    return (champ_cp, champ_ville, champ_iris, champ_dep, champ_epci, champ_adresse,
+            champ_siren, champ_lat, champ_lon, champ_circonscription)
 
 
 # ---------------------------------------------------------------------------
@@ -275,7 +303,8 @@ def _detecter_champs(entetes: list[str]) -> tuple:
 
 
 def _compter_lignes_rm(rows, champ_cp, champ_ville, champ_iris, champ_dep, champ_adresse,
-                        champ_siren=None, champ_lat=None, champ_lon=None,
+                        champ_siren=None, champ_epci=None,
+                        champ_lat=None, champ_lon=None,
                         champ_circonscription=None) -> tuple:
     """Itère rows (dicts) et compte ceux appartenant à Rennes Métropole."""
     sirens_rm = obtenir_sirens_rm() if champ_siren else None
@@ -298,12 +327,16 @@ def _compter_lignes_rm(rows, champ_cp, champ_ville, champ_iris, champ_dep, champ
             elif champ_siren:
                 val = str(row.get(champ_siren, "")).strip().replace(" ", "")
                 in_rm = val.isdigit() and len(val) in (9, 14) and val[:9] in sirens_rm
+            elif champ_epci:
+                in_rm = est_epci_rm(str(row.get(champ_epci, "")))
             elif champ_lat:
                 lat_val = str(row.get(champ_lat, "")).strip()
                 lon_val = str(row.get(champ_lon, "")).strip() if champ_lon else None
                 in_rm = est_point_rm(lat_val, lon_val)
             elif champ_circonscription:
                 in_rm = est_circonscription_rm(str(row.get(champ_circonscription, "")))
+            elif champ_dep:
+                in_rm = est_departement_rm(str(row.get(champ_dep, "")))
             else:
                 cp = str(row.get(champ_cp, "")).strip() if champ_cp else ""
                 ville = str(row.get(champ_ville, "")).strip() if champ_ville else ""
@@ -326,15 +359,17 @@ def _compter_lignes_rm(rows, champ_cp, champ_ville, champ_iris, champ_dep, champ
 
 def _construire_resultat(champ_cp, champ_ville, champ_iris, champ_adresse,
                          nb_total, nb_rm, exemples, premieres_lignes,
-                         champ_siren=None, champ_lat=None, champ_lon=None,
-                         champ_circonscription=None) -> dict:
+                         champ_siren=None, champ_epci=None,
+                         champ_lat=None, champ_lon=None,
+                         champ_circonscription=None, champ_dep=None) -> dict:
     return {
         "nb_total": nb_total, "nb_rm": nb_rm,
         "champ_cp": champ_cp, "champ_ville": champ_ville,
         "champ_iris": champ_iris, "champ_adresse": champ_adresse,
-        "champ_siren": champ_siren,
+        "champ_siren": champ_siren, "champ_epci": champ_epci,
         "champ_lat": champ_lat, "champ_lon": champ_lon,
         "champ_circonscription": champ_circonscription,
+        "champ_dep": champ_dep,
         "exemples": exemples, "premieres_lignes": premieres_lignes,
     }
 
@@ -383,10 +418,11 @@ def _analyser_csv_depuis_stream(preambule: bytes, fp_bin,
     entetes = list(reader.fieldnames or [])
     log["entetes"] = entetes[:15]
 
-    (champ_cp, champ_ville, champ_iris, champ_dep, champ_adresse, champ_siren,
+    (champ_cp, champ_ville, champ_iris, champ_dep, champ_epci, champ_adresse, champ_siren,
      champ_lat, champ_lon, champ_circonscription) = _detecter_champs(entetes)
     log.update({"champ_cp": champ_cp, "champ_ville": champ_ville,
-                "champ_iris": champ_iris, "champ_adresse": champ_adresse,
+                "champ_iris": champ_iris, "champ_epci": champ_epci,
+                "champ_adresse": champ_adresse,
                 "champ_siren": champ_siren, "champ_lat": champ_lat,
                 "champ_circonscription": champ_circonscription})
 
@@ -394,6 +430,8 @@ def _analyser_csv_depuis_stream(preambule: bytes, fp_bin,
         print(f"  En-têtes détectés : {entetes[:10]}")
         if champ_iris:
             print(f"  Champ IRIS trouvé : {champ_iris}")
+        elif champ_epci:
+            print(f"  Champ EPCI trouvé : {champ_epci}")
         elif champ_adresse:
             print(f"  Champ adresse trouvé : {champ_adresse}")
         elif champ_siren:
@@ -409,7 +447,9 @@ def _analyser_csv_depuis_stream(preambule: bytes, fp_bin,
     try:
         nb_total, nb_rm, exemples, premieres_lignes = _compter_lignes_rm(
             reader, champ_cp, champ_ville, champ_iris, champ_dep, champ_adresse,
-            champ_siren, champ_lat, champ_lon, champ_circonscription
+            champ_siren=champ_siren, champ_epci=champ_epci,
+            champ_lat=champ_lat, champ_lon=champ_lon,
+            champ_circonscription=champ_circonscription,
         )
     except csv.Error as e:
         log["erreur"] = f"parsing CSV : {e}"
@@ -422,8 +462,10 @@ def _analyser_csv_depuis_stream(preambule: bytes, fp_bin,
     log_analyse(log)
     return _construire_resultat(champ_cp, champ_ville, champ_iris, champ_adresse,
                                 nb_total, nb_rm, exemples, premieres_lignes,
-                                champ_siren=champ_siren, champ_lat=champ_lat, champ_lon=champ_lon,
-                                champ_circonscription=champ_circonscription)
+                                champ_siren=champ_siren, champ_epci=champ_epci,
+                                champ_lat=champ_lat, champ_lon=champ_lon,
+                                champ_circonscription=champ_circonscription,
+                                champ_dep=champ_dep)
 
 
 def _analyser_contenu_csv(contenu: bytes, verbose: bool, dataset_id: str, titre: str,
@@ -463,10 +505,11 @@ def _analyser_contenu_csv(contenu: bytes, verbose: bool, dataset_id: str, titre:
     entetes = list(reader.fieldnames or [])
     log["entetes"] = entetes[:15]
 
-    (champ_cp, champ_ville, champ_iris, champ_dep, champ_adresse, champ_siren,
+    (champ_cp, champ_ville, champ_iris, champ_dep, champ_epci, champ_adresse, champ_siren,
      champ_lat, champ_lon, champ_circonscription) = _detecter_champs(entetes)
     log.update({"champ_cp": champ_cp, "champ_ville": champ_ville,
-                "champ_iris": champ_iris, "champ_adresse": champ_adresse,
+                "champ_iris": champ_iris, "champ_epci": champ_epci,
+                "champ_adresse": champ_adresse,
                 "champ_siren": champ_siren, "champ_lat": champ_lat,
                 "champ_circonscription": champ_circonscription})
 
@@ -474,6 +517,8 @@ def _analyser_contenu_csv(contenu: bytes, verbose: bool, dataset_id: str, titre:
         print(f"  En-têtes détectés : {entetes[:10]}")
         if champ_iris:
             print(f"  Champ IRIS trouvé : {champ_iris}")
+        elif champ_epci:
+            print(f"  Champ EPCI trouvé : {champ_epci}")
         elif champ_adresse:
             print(f"  Champ adresse trouvé : {champ_adresse}")
         elif champ_siren:
@@ -489,7 +534,9 @@ def _analyser_contenu_csv(contenu: bytes, verbose: bool, dataset_id: str, titre:
     try:
         nb_total, nb_rm, exemples, premieres_lignes = _compter_lignes_rm(
             reader, champ_cp, champ_ville, champ_iris, champ_dep, champ_adresse,
-            champ_siren, champ_lat, champ_lon, champ_circonscription
+            champ_siren=champ_siren, champ_epci=champ_epci,
+            champ_lat=champ_lat, champ_lon=champ_lon,
+            champ_circonscription=champ_circonscription,
         )
     except csv.Error as e:
         log["erreur"] = f"parsing CSV : {e}"
@@ -502,8 +549,10 @@ def _analyser_contenu_csv(contenu: bytes, verbose: bool, dataset_id: str, titre:
     log_analyse(log)
     return _construire_resultat(champ_cp, champ_ville, champ_iris, champ_adresse,
                                 nb_total, nb_rm, exemples, premieres_lignes,
-                                champ_siren=champ_siren, champ_lat=champ_lat, champ_lon=champ_lon,
-                                champ_circonscription=champ_circonscription)
+                                champ_siren=champ_siren, champ_epci=champ_epci,
+                                champ_lat=champ_lat, champ_lon=champ_lon,
+                                champ_circonscription=champ_circonscription,
+                                champ_dep=champ_dep)
 
 
 def analyser_csv(url: str, verbose: bool = True,
@@ -676,10 +725,11 @@ def analyser_xlsx(url: str, verbose: bool = False,
     entetes = [str(c or "").strip() for c in lignes[0]]
     log["entetes"] = entetes[:15]
 
-    (champ_cp, champ_ville, champ_iris, champ_dep, champ_adresse, champ_siren,
+    (champ_cp, champ_ville, champ_iris, champ_dep, champ_epci, champ_adresse, champ_siren,
      champ_lat, champ_lon, champ_circonscription) = _detecter_champs(entetes)
     log.update({"champ_cp": champ_cp, "champ_ville": champ_ville,
-                "champ_iris": champ_iris, "champ_adresse": champ_adresse,
+                "champ_iris": champ_iris, "champ_epci": champ_epci,
+                "champ_adresse": champ_adresse,
                 "champ_siren": champ_siren, "champ_lat": champ_lat,
                 "champ_circonscription": champ_circonscription})
 
@@ -687,6 +737,8 @@ def analyser_xlsx(url: str, verbose: bool = False,
         print(f"  En-têtes XLSX : {entetes[:10]}")
         if champ_iris:
             print(f"  Champ IRIS trouvé : {champ_iris}")
+        elif champ_epci:
+            print(f"  Champ EPCI trouvé : {champ_epci}")
         elif champ_adresse:
             print(f"  Champ adresse trouvé : {champ_adresse}")
         elif champ_siren:
@@ -704,13 +756,16 @@ def analyser_xlsx(url: str, verbose: bool = False,
 
     nb_total, nb_rm, exemples, premieres_lignes = _compter_lignes_rm(
         _lignes_en_dicts(), champ_cp, champ_ville, champ_iris, champ_dep, champ_adresse,
-        champ_siren, champ_lat, champ_lon, champ_circonscription
+        champ_siren=champ_siren, champ_epci=champ_epci,
+        champ_lat=champ_lat, champ_lon=champ_lon,
+        champ_circonscription=champ_circonscription,
     )
     log.update({"nb_total": nb_total, "nb_rm": nb_rm})
     log_analyse(log)
     return _construire_resultat(champ_cp, champ_ville, champ_iris, champ_adresse,
                                 nb_total, nb_rm, exemples, premieres_lignes,
-                                champ_siren=champ_siren, champ_lat=champ_lat, champ_lon=champ_lon,
+                                champ_siren=champ_siren, champ_epci=champ_epci,
+                                champ_lat=champ_lat, champ_lon=champ_lon,
                                 champ_circonscription=champ_circonscription)
 
 
@@ -743,7 +798,7 @@ def analyser_parquet(url: str, verbose: bool = False,
 
         log["entetes"] = cols[:15]
 
-        (champ_cp, champ_ville, champ_iris, champ_dep, champ_adresse, champ_siren,
+        (champ_cp, champ_ville, champ_iris, champ_dep, champ_epci, champ_adresse, champ_siren,
          champ_lat, champ_lon, champ_circonscription) = _detecter_champs(cols)
 
         if verbose:
@@ -753,13 +808,13 @@ def analyser_parquet(url: str, verbose: bool = False,
             elif champ_ville:
                 print(f"  Champ commune : {champ_ville}")
 
-        if not any([champ_iris, champ_cp, champ_ville, champ_adresse, champ_siren, champ_lat,
-                    champ_circonscription]):
+        if not any([champ_iris, champ_cp, champ_ville, champ_epci, champ_adresse, champ_siren,
+                    champ_lat, champ_circonscription]):
             log["erreur"] = "aucun champ géo détecté"
             log_analyse(log)
             return None
 
-        cols_a_lire = [c for c in [champ_iris, champ_cp, champ_ville] if c][:3]
+        cols_a_lire = [c for c in [champ_iris, champ_cp, champ_ville, champ_epci] if c][:4]
         filtres = None
         if "COMMUNE" in cols and champ_iris:
             filtres = [("COMMUNE", "in", list(CODES_INSEE_RM))]
@@ -793,7 +848,8 @@ def analyser_parquet(url: str, verbose: bool = False,
         return _construire_resultat(
             champ_cp, champ_ville, champ_iris, champ_adresse,
             nb_total, nb_rm, exemples, premieres_lignes,
-            champ_siren=champ_siren, champ_lat=champ_lat, champ_lon=champ_lon,
+            champ_siren=champ_siren, champ_epci=champ_epci,
+            champ_lat=champ_lat, champ_lon=champ_lon,
             champ_circonscription=champ_circonscription,
         )
 
@@ -816,13 +872,15 @@ def _analyser_features_geojson(features: list, verbose: bool,
         return None
 
     entetes = list((features[0].get("properties") or {}).keys())
-    (champ_cp, champ_ville, champ_iris, champ_dep, champ_adresse, champ_siren,
+    (champ_cp, champ_ville, champ_iris, champ_dep, champ_epci, champ_adresse, champ_siren,
      champ_lat, champ_lon, champ_circonscription) = _detecter_champs(entetes)
 
     if verbose:
         print(f"  Propriétés GeoJSON : {entetes[:10]}")
         if champ_iris:
             print(f"  Champ IRIS : {champ_iris}")
+        elif champ_epci:
+            print(f"  Champ EPCI : {champ_epci}")
         elif champ_adresse:
             print(f"  Champ adresse : {champ_adresse}")
         elif champ_cp or champ_ville:
@@ -830,12 +888,14 @@ def _analyser_features_geojson(features: list, verbose: bool,
         else:
             print("  Aucun champ géographique textuel — fallback coordonnées géométrie")
 
-    if (champ_cp or champ_ville or champ_iris or champ_adresse or champ_siren or champ_lat
-            or champ_circonscription):
+    if (champ_cp or champ_ville or champ_iris or champ_epci or champ_adresse or champ_siren
+            or champ_lat or champ_circonscription):
         rows = (f.get("properties") or {} for f in features)
         nb_total, nb_rm, exemples, premieres_lignes = _compter_lignes_rm(
             rows, champ_cp, champ_ville, champ_iris, champ_dep, champ_adresse,
-            champ_siren, champ_lat, champ_lon, champ_circonscription
+            champ_siren=champ_siren, champ_epci=champ_epci,
+            champ_lat=champ_lat, champ_lon=champ_lon,
+            champ_circonscription=champ_circonscription,
         )
     else:
         nb_total, nb_rm = 0, 0
@@ -857,7 +917,8 @@ def _analyser_features_geojson(features: list, verbose: bool,
     return _construire_resultat(
         champ_cp, champ_ville, champ_iris, champ_adresse,
         nb_total, nb_rm, exemples, premieres_lignes,
-        champ_siren=champ_siren, champ_lat=champ_lat, champ_lon=champ_lon,
+        champ_siren=champ_siren, champ_epci=champ_epci,
+        champ_lat=champ_lat, champ_lon=champ_lon,
         champ_circonscription=champ_circonscription,
     )
 
@@ -1022,7 +1083,7 @@ def analyser_wms(url: str, verbose: bool = False,
         log_analyse({"url": url, "dataset_id": dataset_id, "titre": titre,
                      "erreur": f"WMS GetCapabilities échoué : {e}"})
         return None
-    couches_rm = wms_couches_dans_rm(caps)
+    couches_rm = wms_couches_dans_rm(caps, base_url=base_url)
     nb_couches = len(couches_rm)
     if verbose:
         print(f"  WMS : {nb_couches} couche(s) dans bbox RM")
@@ -1034,12 +1095,13 @@ def analyser_wms(url: str, verbose: bool = False,
         "titre_service": caps.get("titre", titre),
         "couches": couches_rm,
         "nb_couches_rm": nb_couches,
+        "metadata_urls": caps.get("metadata_urls", []),
         "champ_cp": None,
         "champ_ville": None,
         "champ_iris": None,
         "champ_adresse": None,
         "nb_total": nb_couches,
-        "nb_rm": 0,
+        "nb_rm": nb_couches,  # couches bbox-chevauchant RM ≡ "lignes RM" pour un WMS
         "exemples": [],
         "premieres_lignes": [],
     }
@@ -1100,4 +1162,5 @@ def analyser_dataset(dataset: dict, verbose: bool = False) -> dict | None:
 
     if meilleur is None:
         return None
-    return {**meilleur, "nb_rm": nb_rm_total}
+    return {**meilleur, "nb_rm": nb_rm_total,
+            "last_modified": dataset.get("last_modified", "")}

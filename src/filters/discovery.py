@@ -9,10 +9,12 @@ dashboard.py.
 Aucune dépendance vers discover.py — peut être importé sans risque de cycle.
 """
 
+import hashlib
 import json
 import os
 import re
 import sys
+import time
 
 import requests
 
@@ -24,6 +26,7 @@ from conf.discover import (
     TITRES_HORS_RM, ORGS_EXCLUES,
     _MOTS_DESC_COMMUNE, _MAGIC_BINAIRE,
     ZONES_INCLUANT_RM, NB_PAGES, PAGE_SIZE,
+    CACHE_DIR,
 )
 from connectors.analyseurs import _format_analysable, analyser_dataset
 from connectors.http import session
@@ -122,6 +125,37 @@ def pre_filtrer(dataset: dict) -> tuple[str, dict | None]:
 # Recherche
 # ---------------------------------------------------------------------------
 
+_CACHE_API_TTL_SECS = 24 * 3600  # 24 heures
+
+
+def _chemin_cache_api(params: dict) -> str:
+    """Chemin de cache pour une réponse API data.gouv.fr (clé = hash des params)."""
+    cle = hashlib.md5(json.dumps(params, sort_keys=True).encode()).hexdigest()
+    return os.path.join(CACHE_DIR, f"api_{cle}.json")
+
+
+def _lire_cache_api(params: dict) -> dict | None:
+    """Retourne la réponse cacheée si elle existe et n'a pas expiré, sinon None."""
+    chemin = _chemin_cache_api(params)
+    if not os.path.exists(chemin):
+        return None
+    age = time.time() - os.path.getmtime(chemin)
+    if age > _CACHE_API_TTL_SECS:
+        return None
+    try:
+        with open(chemin, encoding="utf-8") as f:
+            return json.load(f)
+    except (json.JSONDecodeError, OSError):
+        return None
+
+
+def _ecrire_cache_api(params: dict, data: dict) -> None:
+    """Sauvegarde la réponse API en cache disque."""
+    os.makedirs(CACHE_DIR, exist_ok=True)
+    chemin = _chemin_cache_api(params)
+    with open(chemin, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False)
+
 
 def rechercher_datasets(keyword: str, nb_pages: int = NB_PAGES) -> tuple[list, int]:
     return _paginer({"q": keyword}, nb_pages)
@@ -134,11 +168,16 @@ def _paginer(params_base: dict, nb_pages: int = NB_PAGES) -> tuple[list, int]:
     for page in range(1, nb_pages + 1):
         params = {**params_base, "page_size": PAGE_SIZE, "page": page}
         try:
-            response = session.get(url, params=params, timeout=30)
-            if response.status_code == 404:
-                break
-            response.raise_for_status()
-            data = response.json()
+            cached = _lire_cache_api(params)
+            if cached is not None:
+                data = cached
+            else:
+                response = session.get(url, params=params, timeout=30)
+                if response.status_code == 404:
+                    break
+                response.raise_for_status()
+                data = response.json()
+                _ecrire_cache_api(params, data)
             resultats = data.get("data", [])
             total = data.get("total", 0)
             tous.extend(resultats)

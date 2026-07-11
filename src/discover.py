@@ -4,6 +4,7 @@ Script de découverte interactive de JDD éligibles sur data.gouv.fr.
 Usage : python3 src/discover.py
 """
 
+import datetime
 import os
 import json
 import re
@@ -73,6 +74,8 @@ def afficher_fiche(dataset: dict, extrait: str, resultat: dict | None = None) ->
             champ = " + ".join(filter(None, [resultat.get("champ_cp"), resultat.get("champ_ville")]))
         elif resultat.get("champ_circonscription"):
             methode, champ = "circonscription", resultat["champ_circonscription"]
+        elif resultat.get("champ_dep"):
+            methode, champ = "département", resultat["champ_dep"]
         else:
             methode, champ = "?", "?"
         print(f"ANALYSE  : {resultat['nb_total']} lignes | {resultat['nb_rm']} RM | {methode}: {champ}")
@@ -220,8 +223,10 @@ def traiter_resultat(ds: dict, resultat: dict | None, decouverte: dict) -> None:
             "champ_ville": resultat["champ_ville"],
             "champ_iris": resultat.get("champ_iris"),
             "champ_adresse": resultat.get("champ_adresse"),
+            "champ_dep": resultat.get("champ_dep"),
             "champ_circonscription": resultat.get("champ_circonscription"),
             "nb_rm": resultat["nb_rm"],
+            "last_modified": resultat.get("last_modified", ""),
         }
         decouverte["candidats"].append(candidat)
         print(f"  Ajouté automatiquement aux candidats.")
@@ -241,8 +246,10 @@ def traiter_resultat(ds: dict, resultat: dict | None, decouverte: dict) -> None:
                 "champ_ville": resultat["champ_ville"],
                 "champ_iris": resultat.get("champ_iris"),
                 "champ_adresse": resultat.get("champ_adresse"),
+                "champ_dep": resultat.get("champ_dep"),
                 "champ_circonscription": resultat.get("champ_circonscription"),
                 "nb_rm": 0,
+                "last_modified": resultat.get("last_modified", ""),
             }
             decouverte["candidats"].append(candidat)
             print(f"  Ajouté aux candidats.")
@@ -352,11 +359,14 @@ def _upsert_a_examiner(a_examiner_par_id: dict, ds: dict, result: dict | None, r
             "champ_cp": result.get("champ_cp"),
             "champ_ville": result.get("champ_ville"),
             "champ_iris": result.get("champ_iris"),
+            "champ_epci": result.get("champ_epci"),
             "champ_adresse": result.get("champ_adresse"),
+            "champ_dep": result.get("champ_dep"),
             "champ_circonscription": result.get("champ_circonscription"),
         },
         "couches": couches,
         "service_url": result.get("url") if type_ in ("wfs", "wms") else None,
+        "last_modified": ds.get("last_modified", ""),
         "date_ajout": datetime.date.today().isoformat(),
     }
 
@@ -388,12 +398,14 @@ def rechercher_et_filtrer_auto(decouverte: dict) -> dict:
 
     - Datasets tabulaires avec RM détecté (nb_rm > 0) : ajoutés automatiquement à
       decouverte["candidats"], exactement comme en session interactive.
-    - Services WFS avec features RM confirmées (nb_rm > 0, voir analyser_wfs()) : ajoutés
+    - Services WFS/WMS avec données RM confirmées (nb_rm > 0 — WFS: features réelles
+      téléchargées dans la bbox RM, WMS: couches dont la bbox chevauche RM) : ajoutés
       automatiquement à data/geo_services.json (_sauver_service_geo()), qui alimente
-      DATASETS_GEO — jamais présentés en revue humaine, contrairement à la session interactive.
-    - Services WMS (toujours, signal de bbox de couche jugé trop faible), WFS sans feature RM
-      confirmée, ou datasets tabulaires ambigus (0 RM détecté) ou en échec d'analyse : accumulés
-      (upsert par dataset_id) dans decouverte["a_examiner"] pour revue différée (voir
+      DATASETS_GEO — les couches non-RM ne sont pas incluses.
+    - Services WFS/WMS sans donnée RM (nb_rm == 0) : exclus automatiquement (ajoutés à
+      decouverte["exclus"]).
+    - Datasets tabulaires ambigus (0 RM détecté) ou en échec d'analyse : accumulés (upsert
+      par dataset_id) dans decouverte["a_examiner"] pour revue différée (voir
       resoudre_a_examiner() et la vue dédiée du dashboard).
 
     Retourne des statistiques de run (pas d'affichage — appelant : src/harvest_auto.py).
@@ -449,19 +461,27 @@ def rechercher_et_filtrer_auto(decouverte: dict) -> dict:
                 decouverte["vus"].append(ds["id"])
                 stats["ignores"] += 1
             elif verdict == "candidat" and result.get("type") == "wfs":
-                # Features RM réellement confirmées par analyser_wfs() (pas juste un
-                # chevauchement de bbox) — signal aussi fiable que pour un JDD tabulaire, donc
-                # même traitement : ajout direct à data/geo_services.json (alimente DATASETS_GEO,
-                # voir src/conf/datasets.py), sans passer par a_examiner. Le WMS n'a pas
-                # d'équivalent : wms_couches_dans_rm() ne teste qu'un chevauchement de bbox de
-                # couche (souvent national/régional), signal jugé trop faible pour sauter la
-                # confirmation humaine — il reste toujours routé vers a_examiner ci-dessous.
                 layers = result.get("wfs_layers", [])
                 geo_entry = {
                     "id": ds["id"][:30].replace("-", "_"),
                     "type": "wfs",
                     "url": result.get("url", ""),
                     "couches": layers[:10],
+                    "titre": ds["title"],
+                    "producteur": (ds.get("organization") or {}).get("name", ""),
+                    "dossier": ds["id"][:30].replace("-", "_"),
+                    "theme": "environment",
+                }
+                _sauver_service_geo(geo_entry)
+                decouverte["vus"].append(ds["id"])
+                stats["geo_auto"] += 1
+            elif verdict == "candidat" and result.get("type") == "wms":
+                couches_rm = result.get("couches", [])
+                geo_entry = {
+                    "id": ds["id"][:30].replace("-", "_"),
+                    "type": "wms",
+                    "url": result.get("url", ""),
+                    "couches": couches_rm[:10],
                     "titre": ds["title"],
                     "producteur": (ds.get("organization") or {}).get("name", ""),
                     "dossier": ds["id"][:30].replace("-", "_"),
@@ -480,22 +500,32 @@ def rechercher_et_filtrer_auto(decouverte: dict) -> dict:
                     "champ_iris":    result.get("champ_iris"),
                     "champ_adresse": result.get("champ_adresse"),
                     "champ_siren":   result.get("champ_siren"),
+                    "champ_dep":     result.get("champ_dep"),
                     "champ_lat":     result.get("champ_lat"),
                     "champ_lon":     result.get("champ_lon"),
                     "champ_circonscription": result.get("champ_circonscription"),
                     "nb_rm":         result["nb_rm"],
+                    "last_modified":  result.get("last_modified", ""),
                 })
                 decouverte["vus"].append(ds["id"])
                 stats["candidats_auto"] += 1
             else:
                 if result and result.get("type") in ("wfs", "wms"):
-                    raison = "service géo — confirmation requise"
+                    # Services géo sans donnée RM confirmée : exclusion automatique.
+                    # WMS : nb_rm == 0 → aucune couche ne chevauche la bbox RM.
+                    # WFS : nb_rm == 0 → aucun feature RM trouvé dans la bbox.
+                    did = ds["id"]
+                    if did not in decouverte["exclus"]:
+                        decouverte["exclus"].append(did)
+                    decouverte["vus"].append(did)
                 elif result is not None:
-                    raison = "0 ligne RM détectée"
+                    _upsert_a_examiner(a_examiner_par_id, ds, result,
+                                       raison="0 ligne RM détectée")
+                    decouverte["vus"].append(ds["id"])
                 else:
-                    raison = "analyse échouée"
-                _upsert_a_examiner(a_examiner_par_id, ds, result, raison=raison)
-                decouverte["vus"].append(ds["id"])
+                    _upsert_a_examiner(a_examiner_par_id, ds, None,
+                                       raison="analyse échouée")
+                    decouverte["vus"].append(ds["id"])
 
     decouverte["a_examiner"] = list(a_examiner_par_id.values())
     stats["a_examiner"] = len(decouverte["a_examiner"])
@@ -588,10 +618,12 @@ def resoudre_a_examiner(decouverte: dict, dataset_id: str, decision: str,
             "champ_adresse": champs.get("champ_adresse"),
             "champ_siren": champs.get("champ_siren"),
             "champ_epci": champs.get("champ_epci"),
+            "champ_dep": champs.get("champ_dep"),
             "champ_lat": champs.get("champ_lat"),
             "champ_lon": champs.get("champ_lon"),
             "champ_circonscription": champs.get("champ_circonscription"),
             "nb_rm": champs.get("nb_rm", entree.get("nb_rm", 0)),
+            "last_modified": entree.get("last_modified", ""),
         })
     elif decision == "ajouter_geo":
         if entree.get("type") not in ("wfs", "wms"):
@@ -622,19 +654,171 @@ def resoudre_a_examiner(decouverte: dict, dataset_id: str, decision: str,
     return True
 
 
-def resoudre_wfs_confirmes_en_masse(decouverte: dict) -> int:
+def resoudre_geo_confirme_en_masse(decouverte: dict) -> int:
     """
-    Résout d'un coup toutes les entrées WFS de decouverte["a_examiner"] avec nb_rm > 0 — même
-    critère que l'auto-bypass de rechercher_et_filtrer_auto(), qui ne s'applique qu'aux
-    nouvelles découvertes. Couvre le reliquat de WFS confirmés détectés avant l'existence de cet
-    auto-bypass (et tout futur cas similaire si le critère de bypass change un jour sans être
-    réappliqué au backlog existant). Retourne le nombre d'entrées résolues.
+    Résout d'un coup toutes les entrées géo de decouverte["a_examiner"] avec nb_rm > 0 —
+    même critère que l'auto-bypass de rechercher_et_filtrer_auto() (WFS: features RM
+    confirmées, WMS: couches bbox-chevauchant RM). Couvre le reliquat d'entrées confirmées
+    détectées avant l'existence de cet auto-bypass. Retourne le nombre d'entrées résolues.
     """
     a_traiter = [e["dataset_id"] for e in decouverte.get("a_examiner", [])
-                 if e.get("type") == "wfs" and (e.get("nb_rm") or 0) > 0]
+                 if e.get("type") in ("wfs", "wms") and (e.get("nb_rm") or 0) > 0]
     for dataset_id in a_traiter:
         resoudre_a_examiner(decouverte, dataset_id, "ajouter_geo")
     return len(a_traiter)
+
+
+# alias rétro-compatible (dashboard.py, anciens imports)
+resoudre_wfs_confirmes_en_masse = resoudre_geo_confirme_en_masse
+
+
+def reanalyser_wms_a_examiner(decouverte: dict) -> dict:
+    """
+    Rattrapage one-shot : re-probe le GetCapabilities de chaque WMS encore dans
+    decouverte["a_examiner"] pour déterminer si ses couches chevauchent la bbox RM.
+    - nb_couches_rm > 0 → ajouté à data/geo_services.json (couches RM uniquement)
+    - nb_couches_rm == 0 → exclu automatiquement
+    Nécessaire car les entrées existantes ont été créées avec l'ancien nb_rm=0 hardcodé
+    dans analyser_wms(), avant que nb_rm soit aligné sur nb_couches_rm.
+
+    Retourne un dict de stats : {"ajoutes": N, "exclus": N, "echecs": N}.
+    """
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+    from connectors.analyseurs import analyser_wms
+    from connectors.geo_services import nettoyer_url_ogc
+
+    a_examiner = decouverte.get("a_examiner", [])
+    wms_entries = [e for e in a_examiner if e.get("type") == "wms"]
+    if not wms_entries:
+        return {"ajoutes": 0, "exclus": 0, "echecs": 0}
+
+    print(f"[reanalyse WMS] {len(wms_entries)} WMS à re-analyser...", flush=True)
+    stats = {"ajoutes": 0, "exclus": 0, "echecs": 0}
+
+    def _reanalyser_un(entry):
+        url = entry.get("service_url", "")
+        did = entry.get("dataset_id", "")
+        titre = entry.get("titre", "")
+        if not url:
+            return did, None, "pas d'URL"
+        try:
+            result = analyser_wms(url, dataset_id=did, titre=titre)
+            return did, result, None
+        except Exception as e:
+            return did, None, str(e)
+
+    done = 0
+    with ThreadPoolExecutor(max_workers=8) as exc:
+        futures = {exc.submit(_reanalyser_un, e): e for e in wms_entries}
+        for fut in as_completed(futures):
+            done += 1
+            if done % 50 == 0 or done == len(wms_entries):
+                print(f"[reanalyse WMS]   {done}/{len(wms_entries)}...", flush=True)
+            did, result, erreur = fut.result()
+            entry = futures[fut]
+            if result is None:
+                stats["echecs"] += 1
+                continue
+            nb_rm = result.get("nb_rm", 0)
+            if nb_rm > 0:
+                couches_rm = result.get("couches", [])
+                geo_entry = {
+                    "id": did[:30].replace("-", "_"),
+                    "type": "wms",
+                    "url": result.get("url", ""),
+                    "couches": couches_rm[:10],
+                    "titre": entry.get("titre", ""),
+                    "producteur": entry.get("organisation", ""),
+                    "dossier": did[:30].replace("-", "_"),
+                    "theme": "environment",
+                }
+                _sauver_service_geo(geo_entry)
+                stats["ajoutes"] += 1
+            else:
+                if did not in decouverte["exclus"]:
+                    decouverte["exclus"].append(did)
+                stats["exclus"] += 1
+
+    decouverte["a_examiner"] = [e for e in a_examiner if e.get("type") != "wms"
+                                or (e.get("nb_rm") or 0) > 0]
+    sauvegarder_decouverte(decouverte)
+    print(f"[reanalyse WMS] Terminé : {stats['ajoutes']} ajoutés, "
+          f"{stats['exclus']} exclus, {stats['echecs']} échecs", flush=True)
+    return stats
+
+
+def nettoyer_wms_geo_services() -> dict:
+    """
+    Re-probe les couches WMS de data/geo_services.json avec un GetMap au centre de RM
+    pour vérifier qu'elles ont réellement des données à cet endroit. Supprime les couches
+    sans données (et les services vides qui en résultent).
+
+    Nécessaire après un import massif basé uniquement sur la bbox, qui ne distingue pas
+    un service national (couvre RM) d'un service départemental dont la bbox déclarée
+    couvre toute la France mais les données sont limitées.
+
+    Retourne un dict de stats : {"couches_ok": N, "couches_supprimees": N, "services_vides": N}.
+    """
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+    from connectors.geo_services import wms_probe_donnees_rm, _cache_probes_wms
+    _cache_probes_wms.clear()
+
+    GEO_FILE = os.path.join("data", "geo_services.json")
+    if not os.path.exists(GEO_FILE):
+        return {"couches_ok": 0, "couches_supprimees": 0, "services_vides": 0}
+
+    with open(GEO_FILE, encoding="utf-8") as f:
+        entries = json.load(f)
+
+    wms_entries = [e for e in entries if e.get("type") == "wms"]
+    if not wms_entries:
+        return {"couches_ok": 0, "couches_supprimees": 0, "services_vides": 0}
+
+    total_couches = sum(len(e.get("couches", [])) for e in wms_entries)
+    print(f"[nettoyage WMS] {len(wms_entries)} services, {total_couches} couches à vérifier...",
+          flush=True)
+
+    def _verifier_couche(entry, couches):
+        base_url = entry.get("url", "")
+        results = []
+        for c in couches:
+            nom = c["nom"] if isinstance(c, dict) else c
+            if not nom or not base_url:
+                results.append((c, True))  # pas de nom → garder (sera vérifié au moisson)
+                continue
+            ok = wms_probe_donnees_rm(base_url, nom)
+            results.append((c, ok))
+        return results
+
+    stats = {"couches_ok": 0, "couches_supprimees": 0, "services_vides": 0}
+    done = 0
+    with ThreadPoolExecutor(max_workers=8) as exc:
+        futures = {exc.submit(_verifier_couche, e, e.get("couches", [])): e
+                   for e in wms_entries}
+        for fut in as_completed(futures):
+            done += 1
+            if done % 20 == 0 or done == len(wms_entries):
+                print(f"[nettoyage WMS]   {done}/{len(wms_entries)}...", flush=True)
+            entry = futures[fut]
+            results = fut.result()
+            couches_ok = [c for c, ok in results if ok]
+            couches_ko = [c for c, ok in results if not ok]
+            stats["couches_ok"] += len(couches_ok)
+            stats["couches_supprimees"] += len(couches_ko)
+            entry["couches"] = couches_ok
+
+    # Supprimer les services qui n'ont plus aucune couche
+    avant = len(entries)
+    entries = [e for e in entries if e.get("type") != "wms" or e.get("couches")]
+    stats["services_vides"] = avant - len(entries)
+
+    with open(GEO_FILE, "w", encoding="utf-8") as f:
+        json.dump(entries, f, ensure_ascii=False, indent=2)
+
+    print(f"[nettoyage WMS] Terminé : {stats['couches_ok']} couches OK, "
+          f"{stats['couches_supprimees']} supprimées, "
+          f"{stats['services_vides']} services vidés", flush=True)
+    return stats
 
 
 def marquer_a_examiner_verifie(decouverte: dict, dataset_id: str, sans_ressource: bool,
@@ -685,6 +869,7 @@ def verifier_ressources_a_examiner(decouverte: dict) -> dict:
     Retourne {"total": int, "verifies": int, "sans_ressource": int} pour affichage par
     l'appelant (cli.py / dashboard.py).
     """
+    from concurrent.futures import ThreadPoolExecutor
     from connectors.datagouv import get_dataset_metadata
 
     a_verifier = [e for e in decouverte.get("a_examiner", [])
@@ -738,12 +923,14 @@ from review import (
 
 def _reanalyser_candidats_sans_champ(decouverte: dict) -> None:
     """Re-analyse les candidats sans champ géo pour détecter SIREN, lat/lon ajoutés depuis."""
+    from concurrent.futures import ThreadPoolExecutor
     from connectors.datagouv import get_dataset_metadata
 
     sans_champ = [
         c for c in decouverte.get("candidats", [])
-        if not any(c.get(ch) for ch in ("champ_cp", "champ_ville", "champ_iris", "champ_adresse",
-                                         "champ_siren", "champ_lat", "champ_circonscription"))
+        if not any(c.get(ch) for ch in ("champ_cp", "champ_ville", "champ_iris", "champ_epci",
+                                         "champ_adresse", "champ_siren",
+                                         "champ_lat", "champ_circonscription"))
     ]
     if not sans_champ:
         return
@@ -767,13 +954,16 @@ def _reanalyser_candidats_sans_champ(decouverte: dict) -> None:
         except Exception:
             result = None
         if result and any(result.get(ch) for ch in
-                          ("champ_cp", "champ_ville", "champ_iris", "champ_adresse",
-                           "champ_siren", "champ_lat", "champ_circonscription")):
+                          ("champ_cp", "champ_ville", "champ_iris", "champ_epci",
+                           "champ_adresse", "champ_siren",
+                           "champ_lat", "champ_dep", "champ_circonscription")):
             candidat["champ_cp"] = result["champ_cp"]
             candidat["champ_ville"] = result["champ_ville"]
             candidat["champ_iris"] = result.get("champ_iris")
+            candidat["champ_epci"] = result.get("champ_epci")
             candidat["champ_adresse"] = result.get("champ_adresse")
             candidat["champ_siren"] = result.get("champ_siren")
+            candidat["champ_dep"] = result.get("champ_dep")
             candidat["champ_lat"] = result.get("champ_lat")
             candidat["champ_lon"] = result.get("champ_lon")
             candidat["champ_circonscription"] = result.get("champ_circonscription")
@@ -841,6 +1031,7 @@ def _harvest_nouveaux_candidats(decouverte: dict, ids_avant_session: set) -> Non
 # ---------------------------------------------------------------------------
 
 def main():
+    from concurrent.futures import ThreadPoolExecutor, as_completed
     _purger_cache(jours=30)
     print("=== Découverte interactive de JDD éligibles ===")
     if RECHERCHE_STRUCTUREE:
@@ -855,8 +1046,9 @@ def main():
     # Évolution 4 : re-analyser les candidats sans champ géo identifié
     _n_sans_champ = sum(
         1 for c in decouverte.get("candidats", [])
-        if not any(c.get(ch) for ch in ("champ_cp", "champ_ville", "champ_iris", "champ_adresse",
-                                         "champ_siren", "champ_lat", "champ_circonscription"))
+        if not any(c.get(ch) for ch in ("champ_cp", "champ_ville", "champ_iris", "champ_epci",
+                                         "champ_adresse", "champ_siren",
+                                         "champ_lat", "champ_circonscription"))
     )
     if _n_sans_champ:
         _rep = input(f"\n{_n_sans_champ} candidat(s) sans champ géo — re-analyser maintenant ? (o/N) ").strip().lower()
@@ -991,6 +1183,7 @@ def main():
                                 "champ_iris":    result.get("champ_iris"),
                                 "champ_adresse": result.get("champ_adresse"),
                                 "nb_rm":         result["nb_rm"],
+                                "last_modified":  result.get("last_modified", ""),
                             }
                             decouverte["candidats"].append(candidat)
                             decouverte["vus"].append(ds["id"])

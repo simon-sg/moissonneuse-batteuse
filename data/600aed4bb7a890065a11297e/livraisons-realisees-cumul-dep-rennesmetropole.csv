@@ -1,7 +1,0 @@
-code_region,libelle_region,code_departement,libelle_departement,date_fin_semaine,type_de_vaccin,nb_ucd,nb_doses
-53,BRE,35,Ille-et-Vilaine,2022-06-05,Moderna,35047,347800
-53,BRE,35,Ille-et-Vilaine,2022-06-12,Moderna,35080,348130
-84,ARA,38,Is�re,2022-09-18,Moderna,35065,347265
-32,HDF,62,Pas-de-Calais,2021-11-07,Pfizer,350391,2098641
-28,NOR,76,Seine-Maritime,2022-06-12,Pfizer,353525,2117640
-11,IDF,93,Seine-Saint-Denis,2021-10-31,Pfizer,352085,2110560

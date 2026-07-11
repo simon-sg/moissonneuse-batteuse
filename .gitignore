@@ -1,10 +1,21 @@
-# Données (fichiers volumineux et temporaires)
-data/*/source.json
-data/state.json
-data/cache/
+# Données du pipeline (régénérables par une moisson — l'état incrémental vit
+# sur disque uniquement, jamais dans git)
+data/
 
-# Credentials nœud RUDI (ne pas committer)
+# Credentials / conf locale (ne pas committer)
 src/conf/rudi_node.json
+src/conf/monitor_db.json
+src/conf/rva_key.json
+.env
+
+# Nœud RUDI local (volume Podman : db, clés, médias)
+rudi-node/
+
+# Dépôt tiers de référence (harvester Geonetwork-RUDI, hors projet)
+moissonneur-master/
+
+# Scripts jetables Superset (debug/scratch)
+superset/scratch/
 
 # Python
 __pycache__/

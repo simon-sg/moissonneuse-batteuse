@@ -1,3 +1,0 @@
-code_region,region,code_departement,departement,commune,autres_communes_spr,code_insee,code_postal,population,nombre_de_spr,numero_du_spr,spr_initial_regime_de_creation,spr_initial_date_de_creation,nombre_de_plans_en_vigueur,type_de_plan_en_vigueur,evolution_type_de_plan,date_du_plan_en_vigueur,coordonnees_geo_lat_commune_spr,coordonnees_geo_long_commune_spr
-53,Bretagne,35,Ille-et-Vilaine,BECHEREL,,35022,35190,706,1,SPR53-56,ZPPAUP,02/07/1993,1,AVAP,AVAP (ex zppaup),19/12/2019,48.291284043560374,-1.948047101431708
-53,Bretagne,35,Ille-et-Vilaine,RENNES,,35238,35700,229178,1,SPR53-63,secteur S,07/01/1966,1,PSMV,PSMV révisé,16/12/2013,48.1313338944494,-1.7398665480806

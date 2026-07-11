@@ -1,4 +1,0 @@
-country_code,eutl_id,country_name,name,activity_code,activity_name,city,zip_code,address1,address2,emissions_start_year,emissions_end_year,company_country_code,company_name,snapshot_date,year,emissions_tco2e,geometry
-FR,179,France,PEUGEOT CITROEN RENNES SNC,20,Combustion of fuels,Chartres de Bretagne,35131,Route de Nantes,,2005,,FR,PEUGEOT CITROEN RENNES SNC,2025-05-20,2024,14026,"{'x': -1.7012578, 'y': 48.0281458}"
-FR,185,France,ENERGIE SUD VILAINE- Rennes,20,Combustion of fuels,Rennes,35000,8 avenue Henri Fréville,,2005,,FR,ENERGIE SUD VILAINE,2025-05-20,2024,31279,"{'x': -1.6818644999999999, 'y': 48.1119791}"
-FR,193,France,En'Rnov,20,Combustion of fuels,Rennes,35000,22 Avenue Charles Tillon,,2005,,FR,En'Rnov,2025-05-20,2024,30068,"{'x': -1.6818644999999999, 'y': 48.1119791}"

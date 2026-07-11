@@ -13,7 +13,54 @@ function notifier(message, erreur){
   div.textContent = message;
   div.addEventListener("click", () => div.remove());
   conteneur.appendChild(div);
-  setTimeout(() => div.remove(), 5000);
+  // Une erreur reste affichée plus longtemps qu'un succès — le temps de la lire vraiment.
+  setTimeout(() => div.remove(), erreur ? 10000 : 4000);
+}
+
+/* --- Modal de confirmation partagée (remplace confirm() natif) ---
+   Usage : const ok = await confirmerModal({titre, message, motCle, texteConfirmer, danger}); */
+function confirmerModal({titre, message, motCle, texteConfirmer, danger} = {}){
+  return new Promise(resolve => {
+    const overlay = document.createElement("div");
+    overlay.className = "modal-overlay";
+    let resolu = false;
+    function finir(v){
+      if (resolu) return;
+      resolu = true;
+      document.removeEventListener("keydown", surEchap);
+      overlay.remove();
+      resolve(v);
+    }
+    function surEchap(e){ if (e.key === "Escape") finir(false); }
+    overlay.addEventListener("click", e => { if (e.target === overlay) finir(false); });
+
+    overlay.innerHTML = `<div class="modal">
+      <h3>${esc(titre || "Confirmation")}</h3>
+      <p class="modal-msg">${esc(message || "")}</p>
+      ${motCle ? `<label>Tapez <strong>${esc(motCle)}</strong> pour confirmer
+        <input type="text" id="modal-confirm-input" autocomplete="off"></label>` : ""}
+      <div class="actions">
+        <button class="discret" id="modal-confirm-annuler">Annuler</button>
+        <button class="${danger ? "danger" : "success"}" id="modal-confirm-ok"
+                ${motCle ? "disabled" : ""}>${esc(texteConfirmer || "Confirmer")}</button>
+      </div>
+    </div>`;
+    document.body.appendChild(overlay);
+
+    const btnOk = overlay.querySelector("#modal-confirm-ok");
+    overlay.querySelector("#modal-confirm-annuler").addEventListener("click", () => finir(false));
+    btnOk.addEventListener("click", () => finir(true));
+    document.addEventListener("keydown", surEchap);
+
+    if (motCle){
+      const champ = overlay.querySelector("#modal-confirm-input");
+      champ.addEventListener("input", () => { btnOk.disabled = champ.value !== motCle; });
+      champ.addEventListener("keydown", e => { if (e.key === "Enter" && !btnOk.disabled) finir(true); });
+      champ.focus();
+    } else {
+      btnOk.focus();
+    }
+  });
 }
 
 async function apiFetch(url, opts){
@@ -106,6 +153,16 @@ async function actualiserTopBar(){
 
 /* --- Top bar : actions --- */
 async function tbRedemarrerDashboard(){
+  if (jobEnCours){
+    const ok = await confirmerModal({
+      titre: "Redémarrer le tableau de bord",
+      message: "Un job est actuellement en cours. Redémarrer le serveur interrompt le suivi affiché "
+              + "dans cette page (le job lui-même peut continuer selon son type). Continuer ?",
+      texteConfirmer: "Redémarrer quand même",
+      danger: true,
+    });
+    if (!ok) return;
+  }
   notifier("Redémarrage du tableau de bord\u2026");
   const {ok} = await apiFetch("/api/dashboard/restart", {method:"POST"});
   if (ok) setTimeout(() => location.reload(), 2000);

@@ -22,8 +22,6 @@
   .analyse-decision { display:flex; gap:8px; flex-wrap:wrap; }
   .analyse-ligne td { background:var(--card); border-bottom:2px solid var(--accent); }
   .barre-examen { display:flex; gap:10px; align-items:center; margin:10px 0; flex-wrap:wrap; }
-  .filtre-onglet { flex:1; min-width:180px; padding:8px 10px; font-size:.85rem;
-                   border:1px solid var(--bord); border-radius:6px; background:var(--card); color:var(--txt); }
   .action-batch { display:flex; gap:6px; }
 </style>
 </head>
@@ -57,7 +55,7 @@
     <p class="meta" style="margin:10px 0">Découverte automatique quotidienne (<code>harvest_auto.py</code>) : candidats
     tabulaires ambigus (0 ligne RM détectée), en attente de confirmation manuelle.</p>
     <div class="barre-examen">
-      <input type="search" id="filtre-examen" class="filtre-onglet" placeholder="Filtrer…"
+      <input type="search" id="filtre-examen" class="filtre-onglet" placeholder="Filtrer… (astuce : a/x/i agissent quand un seul résultat reste affiché)"
              oninput="filtrerOnglet()" aria-label="Filtrer les JDD">
       <span id="action-batch-examen" class="action-batch" style="display:none">
         <button onclick="batchResoudre('examen','exclure')">Exclure la sélection</button>
@@ -75,7 +73,7 @@
     inattendu, erreur de parsing...) — ni confirmés ni infirmés pour Rennes Métropole, à revoir manuellement
     (bouton « Analyser »).</p>
     <div class="barre-examen">
-      <input type="search" id="filtre-echec" class="filtre-onglet" placeholder="Filtrer…"
+      <input type="search" id="filtre-echec" class="filtre-onglet" placeholder="Filtrer… (astuce : a/x/i agissent quand un seul résultat reste affiché)"
              oninput="filtrerOnglet()" aria-label="Filtrer les échecs">
     </div>
     <table class="purge" id="table-echec">
@@ -110,7 +108,7 @@
     <button id="btn-reanalyser-wms" style="display:none; margin-bottom:10px; margin-left:6px"
             onclick="reanalyserWms()">Re-analyser les WMS du backlog</button>
     <div class="barre-examen">
-      <input type="search" id="filtre-geo" class="filtre-onglet" placeholder="Filtrer…"
+      <input type="search" id="filtre-geo" class="filtre-onglet" placeholder="Filtrer… (astuce : a/x/i agissent quand un seul résultat reste affiché)"
              oninput="filtrerOnglet()" aria-label="Filtrer les services géo">
       <span id="action-batch-geo" class="action-batch" style="display:none">
         <button onclick="batchResoudre('geo','exclure')">Exclure la sélection</button>
@@ -202,7 +200,7 @@ async function batchResoudre(onglet, decision){
     if (data && !data.ok) notifier(data.message, true);
   }
   if (decision === "exclure" || decision === "ignorer") chargerHistorique();
-  chargerExamen();
+  chargerExamen(true);
 }
 
 function majBadge(nom, n){
@@ -232,8 +230,11 @@ function ligneAnalyseEchouee(it){
   `;
 }
 
-async function chargerExamen(){
+async function chargerExamen(forcer){
   if (panneauOuvert) return;
+  // Un poll périodique ne doit jamais effacer une sélection multiple en cours de constitution —
+  // seuls les appels explicites après une décision (forcer=true) doivent reconstruire malgré tout.
+  if (!forcer && document.querySelector('.purge tbody input[type=checkbox].sel-ligne:checked')) return;
   const {ok, data} = await apiFetch("/api/a_examiner");
   if (!ok || !data) return;
   itemsExamen = data;
@@ -259,8 +260,9 @@ async function chargerExamen(){
       <td class="impact">${esc(it.raison)}${it.nb_rm ? ` (${it.nb_rm} RM)` : ""}</td>
       <td>
         <div class="purge-action">
-          <button onclick="resoudreExamen('${it.dataset_id}','candidat')">Ajouter aux candidats</button>
           <button id="btn-analyser-${it.dataset_id}" onclick="analyserJdd('${it.dataset_id}')">Analyser</button>
+          <button class="discret" onclick="resoudreExamen('${it.dataset_id}','candidat')"
+                  title="Ajoute sans vérifier la colonne de filtrage — préférez Analyser d'abord sur un cas ambigu">Ajouter sans vérifier</button>
           <button title="Exclusion définitive" onclick="resoudreExamen('${it.dataset_id}','exclure')">Exclure</button>
           <button title="Retire sans blacklister" onclick="resoudreExamen('${it.dataset_id}','ignorer')">Ignorer</button>
         </div>
@@ -358,14 +360,14 @@ async function rouvrirHistorique(datasetId){
   const {ok, data} = await apiFetch("/api/historique/rouvrir", {method:"POST", body: JSON.stringify({dataset_id: datasetId})});
   if (!ok || !data) return;
   notifier(data.message, !data.ok);
-  if (data.ok){ chargerExamen(); chargerHistorique(); }
+  if (data.ok){ chargerExamen(true); chargerHistorique(); }
 }
 
 async function resoudreWfsEnMasse(){
   const {ok, data} = await apiFetch("/api/a_examiner/resoudre_wfs_masse", {method:"POST", body: "{}"});
   if (!ok || !data) return;
   notifier(data.message, !data.ok);
-  if (data.ok) chargerExamen();
+  if (data.ok) chargerExamen(true);
 }
 
 async function reanalyserWms(){
@@ -381,7 +383,7 @@ async function resoudreExamen(datasetId, decision, extra){
   notifier(data.message, !data.ok);
   if (data.ok){
     fermerAnalyse(datasetId);
-    chargerExamen();
+    chargerExamen(true);
     if (decision === "exclure" || decision === "ignorer") chargerHistorique();
   }
 }
@@ -396,7 +398,7 @@ async function analyserJdd(datasetId){
   if (!ok || !data) return;
   if (!data.ok){
     notifier(data.message, true);
-    chargerExamen();
+    chargerExamen(true);
     return;
   }
   etatAnalyse[datasetId] = {entetes: data.entetes, typesVariables: data.types_variables, dernierTest: null};
@@ -496,7 +498,11 @@ async function testerFiltre(datasetId){
 async function confirmerAjout(datasetId){
   const test = etatAnalyse[datasetId] && etatAnalyse[datasetId].dernierTest;
   if (!test) return;
-  if (test.nb_rm === 0 && !confirm("0 ligne RM détectée — ajouter quand même ?")) return;
+  if (test.nb_rm === 0){
+    const ok = await confirmerModal({titre: "Ajouter malgré 0 ligne RM",
+      message: "0 ligne RM détectée avec cette colonne de filtrage — ajouter quand même ?"});
+    if (!ok) return;
+  }
   await resoudreExamen(datasetId, "candidat", test);
 }
 
@@ -506,22 +512,32 @@ function fermerAnalyse(datasetId){
   if (panneauOuvert === datasetId) panneauOuvert = null;
 }
 
-// Raccourcis clavier
+// Raccourcis clavier — n'agissent que lorsque le filtre texte isole une seule ligne visible,
+// jamais sur "la première ligne" au hasard : sur une liste longue ou après un scroll, agir sur
+// une position DOM absolue risquait de déclencher une action (dont une exclusion définitive)
+// sur un JDD différent de celui que l'utilisateur regarde.
 document.addEventListener("keydown", e => {
   if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT" || e.target.tagName === "TEXTAREA") return;
-  if (ongletActif === "examen" || ongletActif === "geo" || ongletActif === "echec"){
-    if (e.key === "a") {
-      const sel = document.querySelector(`#onglet-${ongletActif} .purge tbody tr:first-child button`);
-      if (sel && (sel.textContent.includes("Ajouter") || sel.textContent.includes("Candidat"))) sel.click();
-    }
-    if (e.key === "x") {
-      const exclure = document.querySelector(`#onglet-${ongletActif} .purge tbody tr:first-child button[title*="définitive"]`);
-      if (exclure) exclure.click();
-    }
-    if (e.key === "i") {
-      const ignorer = document.querySelector(`#onglet-${ongletActif} .purge tbody tr:first-child button[title*="blacklister"]`);
-      if (ignorer) ignorer.click();
-    }
+  if (!["examen", "geo", "echec"].includes(ongletActif)) return;
+  if (!["a", "x", "i"].includes(e.key)) return;
+
+  const lignesVisibles = [...document.querySelectorAll(`#onglet-${ongletActif} .purge tbody tr`)]
+    .filter(tr => tr.style.display !== "none" && tr.id && tr.id.startsWith("ligne-"));
+  if (lignesVisibles.length !== 1) return;
+  const ligne = lignesVisibles[0];
+
+  if (e.key === "a") {
+    const sel = [...ligne.querySelectorAll("button")]
+      .find(b => b.textContent.includes("Ajouter") || b.textContent.includes("Analyser"));
+    if (sel) sel.click();
+  }
+  if (e.key === "x") {
+    const exclure = ligne.querySelector('button[title*="définitive"]');
+    if (exclure) exclure.click();
+  }
+  if (e.key === "i") {
+    const ignorer = ligne.querySelector('button[title*="blacklister"]');
+    if (ignorer) ignorer.click();
   }
 });
 

@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Moissonneuse-batteuse — Tableau de bord</title>
+<script>(function(){try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
 <link rel="stylesheet" href="/static/dashboard.css">
 <style>
   .grille-actions { display:flex; flex-direction:column; gap:4px; }
@@ -62,14 +63,17 @@
 
 <section>
   <h2>Actions</h2>
+  <input type="search" id="filtre-actions" class="filtre-onglet" placeholder="Filtrer les actions…"
+         oninput="filtrerActions()" aria-label="Filtrer les actions" style="width:100%; margin-bottom:10px">
   <div class="grille-actions" id="actions"></div>
 </section>
 
 <section>
-  <h2>JDD à examiner <span id="badge-examen" class="badge idle" title="Nombre de JDD en attente d'examen dans le backlog">…</span></h2>
-  <p class="meta" style="margin:0" title="Candidats ambigus (aucune colonne RM détectée) et services WFS/WMS issus de la découverte automatique, en attente de validation manuelle avant moisson">
-  Candidats ambigus et services WFS/WMS issus de la découverte automatique
-  quotidienne (<code>harvest_auto.py</code>), en attente de confirmation manuelle.
+  <h2>JDD à examiner <span id="badge-examen" class="badge idle" title="Nombre de JDD tabulaires ambigus dans l'onglet « À examiner » de /examen">…</span></h2>
+  <p class="meta" style="margin:0" title="Le badge ne compte que l'onglet « À examiner » (tabulaire) — d'autres catégories existent sur la page dédiée">
+  Le badge compte les JDD tabulaires ambigus en attente (onglet « À examiner »).
+  Services géo, analyse échouée et sans ressource sont aussi listés sur la page dédiée.
+  Découverte automatique quotidienne (<code>harvest_auto.py</code>).
   <a href="/examen">Voir la liste →</a></p>
 </section>
 
@@ -81,7 +85,7 @@
     <button id="btn-annuler-job" class="danger" style="display:none"
             onclick="annulerJob()" title="Arrêter le job en cours (SIGINT → SIGTERM → SIGKILL)">Annuler</button>
   </div>
-  <div id="journal" role="log" aria-live="polite" title="Sortie console du job en cours ou du dernier job exécuté"></div>
+  <div id="journal" role="log" title="Sortie console du job en cours ou du dernier job exécuté"></div>
 </section>
 
 <section>
@@ -157,7 +161,7 @@ function rendreActions(){
     <div class="groupe-sep"><label>${esc(g.titre)}</label></div>
     ${items.map(a => `
       <div class="action ${a.pipeline?"pipeline":""} ${a.desactive?"disabled":""}" data-id="${a.id}" title="${esc(a.tooltip || a.desc)}">
-        <span class="puce" style="background:${g.couleur}"></span>
+        <span class="puce" style="background:${g.couleur}" aria-hidden="true"></span>
         <span class="titre">${esc(a.titre)}</span>
         <span class="desc">${esc(a.desc)}</span>
         ${a.champIds ? `<input type="text" id="champ-${a.id}" placeholder="IDs (vide = toutes)">` : ""}
@@ -166,6 +170,23 @@ function rendreActions(){
     `).join("")}`;
   }).join("");
   appliquerEtatBoutons();
+  filtrerActions();
+}
+
+function filtrerActions(){
+  const q = (document.getElementById("filtre-actions")?.value || "").trim().toLowerCase();
+  document.querySelectorAll("#actions .action").forEach(el => {
+    el.style.display = (!q || el.textContent.toLowerCase().includes(q)) ? "" : "none";
+  });
+  // Masque aussi les séparateurs de groupe devenus vides après filtrage.
+  document.querySelectorAll("#actions .groupe-sep").forEach(sep => {
+    let n = sep.nextElementSibling, visible = false;
+    while (n && !n.classList.contains("groupe-sep")){
+      if (n.style.display !== "none") { visible = true; break; }
+      n = n.nextElementSibling;
+    }
+    sep.style.display = visible ? "" : "none";
+  });
 }
 
 function appliquerEtatBoutons(){
@@ -403,6 +424,14 @@ async function annulerJob(){
 }
 
 async function chargerPurge(){
+  // Ne jamais reconstruire pendant que l'utilisateur tape une confirmation (ou vient d'en
+  // taper une) — un poll toutes les 15s ne doit jamais effacer une saisie en cours.
+  const corpsActuel = document.getElementById("purge-corps");
+  if (corpsActuel){
+    if (document.activeElement && corpsActuel.contains(document.activeElement)) return;
+    const champRempli = [...corpsActuel.querySelectorAll('input[type=text]')].some(i => i.value);
+    if (champRempli) return;
+  }
   const {ok, data: items} = await apiFetch("/api/purge");
   if (!ok || !items) { return; }
   document.getElementById("purge-corps").innerHTML = items.map(it => {
@@ -446,7 +475,9 @@ async function purger(id, destructeur){
   if (destructeur){
     confirmation = document.getElementById(`conf-${id}`).value;
   } else {
-    if (!confirm("Confirmer la suppression ?")) return;
+    const ok = await confirmerModal({titre: "Confirmer la suppression",
+      message: "Supprimer ces données ? Cette action est irréversible pour cette catégorie."});
+    if (!ok) return;
     confirmation = "oui";
   }
   const {ok, data} = await apiFetch(`/api/purge/${id}`, {method:"POST", body: JSON.stringify({confirmation})});

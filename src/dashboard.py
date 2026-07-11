@@ -71,11 +71,11 @@ def _html_topbar(page_active: str) -> str:
   </div>
   <div class="topbar-right">
     <div class="topbar-pills">
-      <span class="topbar-pill" id="tb-noeud" title="Nœud RUDI"><span class="tb-dot"></span>Nœud</span>
-      <span class="topbar-pill" id="tb-superset" title="Superset"><span class="tb-dot"></span>Superset</span>
-      <span class="topbar-pill" id="tb-job" title="Job"><span class="tb-dot"></span>Job</span>
+      <span class="topbar-pill" id="tb-noeud" title="Nœud RUDI"><span class="tb-dot" aria-hidden="true"></span>Nœud</span>
+      <span class="topbar-pill" id="tb-superset" title="Superset"><span class="tb-dot" aria-hidden="true"></span>Superset</span>
+      <span class="topbar-pill" id="tb-job" title="Job"><span class="tb-dot" aria-hidden="true"></span>Job</span>
       <a href="/examen" class="topbar-pill" id="tb-examen-pill" title="JDD à examiner" style="text-decoration:none">
-        <span class="tb-dot"></span>Examen&nbsp;<span class="topbar-count" id="tb-examen"></span>
+        <span class="tb-dot" aria-hidden="true"></span>Examen&nbsp;<span class="topbar-count" id="tb-examen"></span>
       </a>
     </div>
     <div class="topbar-actions">

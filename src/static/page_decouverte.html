@@ -41,17 +41,6 @@
     font-family:ui-monospace,"SF Mono",Consolas,monospace; white-space:pre-wrap; overflow-wrap:anywhere;
     max-height:300px; overflow-y:auto; min-height:60px; }
   #journal-test:empty::before { content:"Aucun test lancé."; color:#677; }
-  /* Modal */
-  .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:10; display:flex;
-    align-items:center; justify-content:center; }
-  .modal { background:var(--card); border:1px solid var(--bord); border-radius:12px; padding:20px 24px;
-    width:90%; max-width:520px; max-height:85vh; overflow-y:auto; box-shadow:0 8px 30px rgba(0,0,0,.2); }
-  .modal h3 { margin:0 0 14px; font-size:1rem; }
-  .modal label { display:block; margin-bottom:10px; font-size:.82rem; color:var(--muted); }
-  .modal input[type=text], .modal input[type=number], .modal select { width:100%; padding:6px 8px;
-    border:1px solid var(--bord); border-radius:6px; font-size:.85rem; background:var(--bg); color:var(--txt); }
-  .modal .ligne-form { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-  .modal .actions { display:flex; gap:8px; justify-content:flex-end; margin-top:16px; }
 </style>
 </head>
 <body>
@@ -67,6 +56,9 @@
   <h2>Requêtes API <span id="badge-requetes" class="badge idle">…</span></h2>
   <div class="toolbar">
     <div class="filtre-categorie" id="filtres-categories"></div>
+    <input type="search" id="filtre-requetes" class="filtre-onglet" style="max-width:260px"
+           placeholder="Rechercher une requête (libellé, paramètres)…" oninput="renduRequetes()"
+           aria-label="Rechercher une requête">
     <span class="spacer"></span>
     <button class="sm" onclick="ouvrirModalAjouter()" title="Ajouter une nouvelle requête">+ Ajouter</button>
   </div>
@@ -114,7 +106,7 @@
   <div class="barre-progression" id="barre-progression" style="display:none">
     <div class="remplissage" id="remplissage" style="width:0%"></div>
   </div>
-  <div id="journal-test" role="log" aria-live="polite" title="Journal du test en cours ou du dernier test exécuté"></div>
+  <div id="journal-test" role="log" title="Journal du test en cours ou du dernier test exécuté"></div>
 </section>
 
 <section>
@@ -122,10 +114,10 @@
   <div style="display:flex; gap:16px; align-items:center; flex-wrap:wrap">
     <label style="display:flex; align-items:center; gap:8px; font-size:.85rem; color:var(--muted)">
       Pages par requête :
-      <input type="number" id="nb-pages" min="1" max="200" style="width:70px; padding:4px 6px;
+      <input type="number" id="nb-pages" min="1" max="200" oninput="marquerModifie()" style="width:70px; padding:4px 6px;
         border:1px solid var(--bord); border-radius:6px; font-size:.85rem; background:var(--bg); color:var(--txt);">
     </label>
-    <button class="sm success" onclick="sauvegarderConfig()" title="Sauvegarder la configuration sur disque">Sauvegarder</button>
+    <button class="sm success" onclick="sauvegarderConfig()" title="Sauvegarder la configuration sur disque">Sauvegarder<span id="pastille-non-sauve" class="non-sauve" title="Modifications non sauvegardées"></span></button>
     <button class="sm" onclick="reinitialiserConfig()" title="Réinitialiser à la configuration par défaut"
             style="background:transparent; color:var(--warn); border:1px solid var(--bord)">Réinitialiser</button>
   </div>
@@ -137,9 +129,14 @@
 <script src="/static/dashboard.js"></script>
 <script>
 let config = null;
+let configModifiee = false;
 let categorieActive = null;
 let timerTest = null;
 let timerDuree = null;
+
+window.addEventListener("beforeunload", e => {
+  if (configModifiee){ e.preventDefault(); e.returnValue = ""; }
+});
 
 // --- Catégories ---
 function couleurCat(catId){
@@ -175,12 +172,18 @@ function filtrerCategorie(catId){
 function renduRequetes(){
   if (!config) return;
   const tbody = document.getElementById("requetes-corps");
-  const filtres = config.requetes.filter(r => !categorieActive || r.categorie === categorieActive);
+  const q = (document.getElementById("filtre-requetes")?.value || "").trim().toLowerCase();
+  const filtres = config.requetes.filter(r => {
+    if (categorieActive && r.categorie !== categorieActive) return false;
+    if (!q) return true;
+    const paramsStr = Object.entries(r.params).map(([k, v]) => `${k}=${v}`).join(" ").toLowerCase();
+    return r.label.toLowerCase().includes(q) || paramsStr.includes(q);
+  });
   document.getElementById("badge-requetes").textContent = config.requetes.length;
   document.getElementById("badge-requetes").className = "badge " + (config.requetes.length ? "idle" : "warn");
 
   if (!filtres.length){
-    tbody.innerHTML = `<tr><td colspan="8" class="meta" style="text-align:center;padding:20px">Aucune requête dans cette catégorie.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="8" class="meta" style="text-align:center;padding:20px">Aucune requête ne correspond aux filtres actifs.</td></tr>`;
     return;
   }
   tbody.innerHTML = filtres.map((r, idx) => {
@@ -192,7 +195,7 @@ function renduRequetes(){
                title="${r.actif ? "Désactiver" : "Activer"}" onchange="basculerActif(${i})">
       </td>
       <td style="text-align:center" title="${esc(labelCat(r.categorie))}">
-        <span class="cat-dot" style="background:${esc(couleurCat(r.categorie))}"></span>
+        <span class="cat-dot" style="background:${esc(couleurCat(r.categorie))}" aria-hidden="true"></span>
       </td>
       <td style="font-weight:600">${esc(r.label)}</td>
       <td style="font-family:ui-monospace,'SF Mono',Consolas,monospace;font-size:.76rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${esc(paramsStr)}">${esc(paramsStr)}</td>
@@ -208,15 +211,24 @@ function renduRequetes(){
   }).join("");
 }
 
+function marquerModifie(){
+  configModifiee = true;
+  document.getElementById("pastille-non-sauve")?.classList.add("visible");
+}
+
 function basculerActif(i){
   config.requetes[i].actif = !config.requetes[i].actif;
   renduRequetes();
+  marquerModifie();
 }
 
-function supprimerRequete(i){
-  if (!confirm(`Supprimer la requête « ${config.requetes[i].label} » ?`)) return;
+async function supprimerRequete(i){
+  const ok = await confirmerModal({titre: "Supprimer la requête",
+    message: `Supprimer la requête « ${config.requetes[i].label} » ?`, danger: true});
+  if (!ok) return;
   config.requetes.splice(i, 1);
   renduRequetes();
+  marquerModifie();
   notifier("Requête supprimée (sauvegarder pour persist).");
 }
 
@@ -234,6 +246,7 @@ function ouvrirModalEditer(i){
       config.requetes[i].categorie = data.categorie;
       config.requetes[i].params = data.params;
       renduRequetes();
+      marquerModifie();
       notifier("Requête mise à jour (sauvegarder pour persist).");
     }
   });
@@ -254,6 +267,7 @@ function ouvrirModalAjouter(){
         params: data.params,
       });
       renduRequetes();
+      marquerModifie();
       notifier("Requête ajoutée (sauvegarder pour persist).");
     }
   });
@@ -448,6 +462,8 @@ async function chargerConfig(){
   const {ok, data} = await apiFetch("/api/decouverte/config");
   if (!ok || !data) return;
   config = data;
+  configModifiee = false;
+  document.getElementById("pastille-non-sauve")?.classList.remove("visible");
   document.getElementById("nb-pages").value = config.nb_pages || 50;
   // Stats
   const s = config.stats || {};
@@ -471,10 +487,17 @@ async function sauvegarderConfig(){
     method:"POST", body: JSON.stringify(config)
   });
   if (data) notifier(data.message, !ok);
+  if (ok){
+    configModifiee = false;
+    document.getElementById("pastille-non-sauve")?.classList.remove("visible");
+  }
 }
 
 async function reinitialiserConfig(){
-  if (!confirm("Réinitialiser la configuration aux valeurs par défaut ? Les modifications non sauvegardées seront perdues.")) return;
+  const confirme = await confirmerModal({titre: "Réinitialiser la configuration",
+    message: "Réinitialiser la configuration aux valeurs par défaut ? Les modifications non sauvegardées seront perdues.",
+    danger: true});
+  if (!confirme) return;
   // Supprimer le fichier config pour revenir aux défauts
   config = null;
   await chargerConfig();

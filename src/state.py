@@ -41,3 +41,27 @@ def dataset_a_change(state: dict, dataset_id: str, last_modified: str) -> bool:
     """
     etat_precedent = state.get(dataset_id, {})
     return etat_precedent.get("last_modified") != last_modified
+
+
+def construire_index_dossier(*etat_pairs: tuple[str, dict]) -> dict[str, tuple[str, str]]:
+    """Construit un index dossier → (source, clé) à partir de paires (nom_source, etat_dict).
+
+    Utilisé par publish_rudi.py et enrichir_descriptions.py pour retrouver
+    l'état associé à un dossier donné, sans duploguer cette logique.
+
+    Exemple :
+        index = construire_index_dossier(
+            ("tabulaire", state_tab),
+            ("insee", state_insee),
+            ("oeb", state_oeb),
+            ("bdnb", state_bdnb),
+        )
+        # index["mon-dossier"] = ("insee", "bic-iris")
+    """
+    index = {}
+    for source, etat in etat_pairs:
+        for cle, entree in etat.items():
+            dossier = entree.get("dossier")
+            if dossier:
+                index[dossier] = (source, cle)
+    return index

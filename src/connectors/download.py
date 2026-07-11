@@ -36,7 +36,7 @@ def _purger_cache(jours: int = 30) -> None:
         print(f"  (Cache : {supprimes} fichier(s) supprimé(s), plus vieux que {jours} jours)\n")
 
 
-def _telecharger(url: str, verbose: bool, plafond_mo: float | None = 50) -> tuple:
+def _telecharger(url: str, verbose: bool, plafond_mo: float | None = 200) -> tuple:
     """
     Télécharge en streaming vers le cache disque (un chunk à la fois, jamais en mémoire).
     Retourne (chemin, taille_mo, depuis_cache, erreur).

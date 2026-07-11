@@ -16,7 +16,6 @@ import re
 import sys
 import time
 
-import requests
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -52,7 +51,7 @@ def _contient_marqueurs_geo(dataset: dict) -> bool:
 
 def _telecharger_entetes(url: str) -> list[str] | None:
     try:
-        resp = requests.get(url, stream=True, timeout=10)
+        resp = session.get(url, stream=True, timeout=10)
         if resp.status_code != 200:
             return None
         contenu = b""
@@ -336,7 +335,7 @@ def formats_disponibles(dataset: dict) -> list:
 
 def telecharger_extrait_csv(url: str, n_lignes: int = 5) -> str:
     try:
-        response = requests.get(url, stream=True, timeout=15)
+        response = session.get(url, stream=True, timeout=15)
         response.raise_for_status()
         contenu = b""
         for chunk in response.iter_content(chunk_size=4096):
@@ -362,7 +361,7 @@ def telecharger_extrait_csv(url: str, n_lignes: int = 5) -> str:
 
 def telecharger_extrait_json(url: str, n_lignes: int = 5) -> str:
     try:
-        response = requests.get(url, stream=True, timeout=15)
+        response = session.get(url, stream=True, timeout=15)
         response.raise_for_status()
         contenu = b""
         for chunk in response.iter_content(chunk_size=4096):
@@ -379,7 +378,7 @@ def telecharger_extrait_json(url: str, n_lignes: int = 5) -> str:
 
 def _obtenir_extrait_geojson(url: str) -> str:
     try:
-        resp = requests.get(url, timeout=10, stream=True)
+        resp = session.get(url, timeout=10, stream=True)
         resp.raise_for_status()
         contenu = b""
         for chunk in resp.iter_content(chunk_size=65536):

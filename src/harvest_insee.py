@@ -61,8 +61,8 @@ def _inchange(pub_id: str, url: str, state: dict, dossier: str) -> bool:
         if size:
             # Inchangé si taille identique ET (pas de Last-Modified OU date identique)
             return str(size) == str(entree.get("content_length")) and (not lm or lm == entree.get("last_modified"))
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"  ⚠ sonde HEAD impossible ({e}) — publication considérée inchangée")
     # Pas de validateur HTTP exploitable : l'URL inchangée fait foi.
     return True
 

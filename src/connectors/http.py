@@ -14,6 +14,17 @@ _retry = Retry(
 )
 _adapter = HTTPAdapter(max_retries=_retry, pool_maxsize=10)
 
-session = requests.Session()
+# Timeout par défaut : filet de sécurité si un appel oublie timeout= (un seul
+# oubli suffit à bloquer un run entier). Les timeout= explicites priment toujours.
+_TIMEOUT_DEFAUT = 30
+
+
+class _SessionAvecTimeout(requests.Session):
+    def request(self, method, url, **kwargs):
+        kwargs.setdefault("timeout", _TIMEOUT_DEFAUT)
+        return super().request(method, url, **kwargs)
+
+
+session = _SessionAvecTimeout()
 session.mount("https://", _adapter)
 session.mount("http://", _adapter)

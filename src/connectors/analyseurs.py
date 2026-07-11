@@ -29,7 +29,7 @@ from urllib.parse import urlparse, urlunparse, urlencode, parse_qs
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-import requests
+from connectors.http import session
 
 from conf.communes_rm import CODES_POSTAUX_RM, CODES_INSEE_RM, BBOX_RM, BBOX_RM_STR
 from conf.discover import (
@@ -982,7 +982,7 @@ def _wfs_get_layers(base_url: str, verbose: bool) -> list[str]:
     sep = "&" if "?" in base_url else "?"
     caps_url = f"{base_url}{sep}SERVICE=WFS&REQUEST=GetCapabilities"
     try:
-        resp = requests.get(caps_url, timeout=20)
+        resp = session.get(caps_url, timeout=20)
         resp.raise_for_status()
         root = ET.fromstring(resp.content)
     except Exception as e:
@@ -1014,7 +1014,7 @@ def _wfs_query_layer(base_url: str, layer: str, verbose: bool,
     sep = "&" if "?" in base_url else "?"
     for params in tentatives:
         try:
-            resp = requests.get(f"{base_url}{sep}{urlencode(params)}", timeout=30)
+            resp = session.get(f"{base_url}{sep}{urlencode(params)}", timeout=30)
             if resp.status_code != 200:
                 continue
             ct = resp.headers.get("content-type", "")

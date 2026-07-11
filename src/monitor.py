@@ -23,6 +23,7 @@ import datetime
 import io
 import json
 import os
+import re
 import sys
 import time
 import traceback
@@ -38,7 +39,7 @@ except ImportError:
 import discover
 from conf.communes_rm import (
     COMMUNES_RM, CODES_POSTAUX_RENNES, CODES_INSEE_RM,
-    CIRCONSCRIPTIONS_PAR_COMMUNE, BBOX_RM,
+    CIRCONSCRIPTIONS_PAR_COMMUNE, BBOX_RM, INSEE_VERS_NOM,
 )
 from conf.datasets import DATASETS, DATASETS_GEO, DATASETS_INSEE, DATASETS_OEB, DATASETS_BDNB
 from connectors.analyseurs import _detecter_champs, _detecter_delimiteur, _format_analysable
@@ -93,7 +94,13 @@ def _connecter(conf: dict):
 
 
 def _nom_schema(conf: dict, cle: str) -> str:
-    return conf.get(cle, cle)
+    """Nom de schéma depuis la conf, validé comme identifiant PostgreSQL simple —
+    les noms sont interpolés dans le DDL/DML en f-string, on refuse donc tout
+    caractère qui permettrait une injection depuis un monitor_db.json altéré."""
+    nom = conf.get(cle, cle)
+    if not re.fullmatch(r"[a-z_][a-z0-9_]*", nom):
+        raise ValueError(f"Nom de schéma invalide dans monitor_db.json : {nom!r}")
+    return nom
 
 
 # ---------------------------------------------------------------------------
@@ -289,28 +296,10 @@ def _import_ref(conf: dict, cur) -> None:
     print("[monitor] Import des communes RM…")
     centroides = _charger_centroides_communes()
 
-    insee_vers_nom = {
-        "35001": "Acigné", "35022": "Bécherel", "35024": "Betton",
-        "35032": "Bourgbarré", "35039": "Brécé", "35047": "Bruz",
-        "35051": "Cesson-Sévigné", "35055": "Chantepie",
-        "35058": "La Chapelle-Chaussée", "35059": "La Chapelle-des-Fougeretz",
-        "35065": "La Chapelle-Thouarault", "35066": "Chartres-de-Bretagne",
-        "35076": "Chavagne", "35079": "Chevaigné", "35080": "Cintré",
-        "35081": "Clayes", "35088": "Corps-Nuds", "35120": "Gévezé",
-        "35131": "L'Hermitage", "35139": "Laillé", "35144": "Langan",
-        "35180": "Miniac-sous-Bécherel", "35189": "Montgermont",
-        "35196": "Mordelles", "35204": "Nouvoitou", "35206": "Noyal-Châtillon-sur-Seiche",
-        "35208": "Orgères", "35210": "Pacé", "35216": "Parthenay-de-Bretagne",
-        "35238": "Rennes", "35240": "Le Rheu", "35245": "Romillé",
-        "35250": "Saint-Armel", "35266": "Saint-Erblon", "35275": "Saint-Gilles",
-        "35278": "Saint-Grégoire", "35281": "Saint-Jacques-de-la-Lande",
-        "35315": "Saint-Sulpice-la-Forêt", "35334": "Thorigné-Fouillard",
-        "35351": "Le Verger", "35352": "Vern-sur-Seiche", "35353": "Vezin-le-Coquet",
-        "35363": "Pont-Péan",
-    }
+    insee_vers_nom = INSEE_VERS_NOM
     insee_vers_cp = {
         code: COMMUNES_RM.get(nom.lower(), "")
-        for nom, code in insee_vers_nom.items()
+        for code, nom in insee_vers_nom.items()
     }
     # Correction pour Rennes qui a 3 CP
     insee_vers_cp["35238"] = "35000"
@@ -692,16 +681,7 @@ def _extraire_colonnes_geo(entetes: list[str], row: dict) -> dict:
         ville = str(row.get(champ_ville, "")).strip()
         geo["nom_commune"] = ville
         if not geo["code_insee"]:
-            from conf.communes_rm import COMMUNES_RM
-            nom_normalise = normaliser(ville)
-            for nom, cp in COMMUNES_RM.items():
-                if normaliser(nom) == nom_normalise:
-                    # retrouver le code INSEE depuis le mapping inverse
-                    for code, nm in _INSEE_VERS_NOM.items():
-                        if normaliser(nm) == nom_normalise:
-                            geo["code_insee"] = code
-                            break
-                    break
+            geo["code_insee"] = _NOM_NORMALISE_VERS_INSEE.get(normaliser(ville), "")
     if champ_siren:
         s = str(row.get(champ_siren, "")).strip().replace(" ", "")
         if s.isdigit() and len(s) in (9, 14):
@@ -710,25 +690,9 @@ def _extraire_colonnes_geo(entetes: list[str], row: dict) -> dict:
     return geo
 
 
-_INSEE_VERS_NOM = {
-    "35001": "Acigné", "35022": "Bécherel", "35024": "Betton",
-    "35032": "Bourgbarré", "35039": "Brécé", "35047": "Bruz",
-    "35051": "Cesson-Sévigné", "35055": "Chantepie",
-    "35058": "La Chapelle-Chaussée", "35059": "La Chapelle-des-Fougeretz",
-    "35065": "La Chapelle-Thouarault", "35066": "Chartres-de-Bretagne",
-    "35076": "Chavagne", "35079": "Chevaigné", "35080": "Cintré",
-    "35081": "Clayes", "35088": "Corps-Nuds", "35120": "Gévezé",
-    "35131": "L'Hermitage", "35139": "Laillé", "35144": "Langan",
-    "35180": "Miniac-sous-Bécherel", "35189": "Montgermont",
-    "35196": "Mordelles", "35204": "Nouvoitou", "35206": "Noyal-Châtillon-sur-Seiche",
-    "35208": "Orgères", "35210": "Pacé", "35216": "Parthenay-de-Bretagne",
-    "35238": "Rennes", "35240": "Le Rheu", "35245": "Romillé",
-    "35250": "Saint-Armel", "35266": "Saint-Erblon", "35275": "Saint-Gilles",
-    "35278": "Saint-Grégoire", "35281": "Saint-Jacques-de-la-Lande",
-    "35315": "Saint-Sulpice-la-Forêt", "35334": "Thorigné-Fouillard",
-    "35351": "Le Verger", "35352": "Vern-sur-Seiche", "35353": "Vezin-le-Coquet",
-    "35363": "Pont-Péan",
-}
+# Nom normalisé (via filters.geographic.normaliser) → code INSEE, pour retrouver
+# le code d'une commune RM depuis un libellé libre. Dérivé du référentiel partagé.
+_NOM_NORMALISE_VERS_INSEE = {normaliser(nom): code for code, nom in INSEE_VERS_NOM.items()}
 
 
 def _importer_csv(chemin: str, dossier: str, dataset_id: str, source: str, theme: str,
@@ -1028,17 +992,18 @@ def _geocode(conf: dict, cur) -> None:
         # Commune peut être dans une autre propriété
         insee = props.get("code_insee") or props.get("codgeo", "")
         result = geocoder_adresse(adresse, insee=insee if insee and len(insee) >= 5 else None)
-        if result:
-            addr = result[0]
-            x, y = addr.get("x"), addr.get("y")
-            if x and y:
-                insee_rva = addr.get("insee", "")
-                cur.execute(f"""
-                    UPDATE {sch}.data_rows
-                    SET code_insee = %s
-                    WHERE id = %s AND code_insee IS NULL
-                """, (insee_rva, rid))
-                n_ok += 1
+        addr = result[0] if result else {}
+        x, y = addr.get("x"), addr.get("y")
+        if x and y:
+            insee_rva = addr.get("insee", "")
+            cur.execute(f"""
+                UPDATE {sch}.data_rows
+                SET code_insee = %s
+                WHERE id = %s AND code_insee IS NULL
+            """, (insee_rva, rid))
+            n_ok += 1
+        else:
+            n_err += 1
     print(f"  {n_ok} adresses géocodées, {n_err} échecs.")
 
 

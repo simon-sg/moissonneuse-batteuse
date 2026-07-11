@@ -194,17 +194,23 @@ def action_menage_rudi():
 
 def action_reanalyser_wms():
     """Re-analyse les WMS du backlog a_examiner : ajoute ceux avec couches RM, exclut les autres."""
-    decouverte = discover.charger_decouverte()
-    stats = discover.reanalyser_wms_a_examiner(decouverte)
-    if stats["ajoutes"] or stats["exclus"]:
-        print(f"\nRelancez : python3 src/harvest_geo.py")
+    def _reanalyser():
+        decouverte = discover.charger_decouverte()
+        stats = discover.reanalyser_wms_a_examiner(decouverte)
+        if stats["ajoutes"] or stats["exclus"]:
+            print(f"\nRelancez : python3 src/harvest_geo.py")
+
+    _executer("Re-analyse des WMS du backlog", _reanalyser)
 
 
 def action_nettoyer_wms_geo():
     """Re-vérifie les couches WMS de geo_services.json avec un probe GetMap au centre de RM."""
-    stats = discover.nettoyer_wms_geo_services()
-    if stats["couches_supprimees"]:
-        print(f"\nRelancez : python3 src/harvest_geo.py")
+    def _nettoyer():
+        stats = discover.nettoyer_wms_geo_services()
+        if stats["couches_supprimees"]:
+            print(f"\nRelancez : python3 src/harvest_geo.py")
+
+    _executer("Nettoyage des couches WMS de geo_services.json", _nettoyer)
 
 
 def action_demarrer_superset():

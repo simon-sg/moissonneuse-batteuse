@@ -29,10 +29,7 @@ from connectors.oeb import (
 from connectors.rudi_publish import publier_si_configue
 from translation.description_secours import generer_complement
 from state import charger_etat, sauvegarder_etat
-from translation.rudi_builder import (
-    LICENCE_ETALAB, construire_rudi_metadata,
-    media_filtre, media_source as _media_source_entry,
-)
+from translation.rudi_builder import construire_rudi_metadata, media_filtre
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
 STATE_FILE = os.path.join(DATA_DIR, "state_oeb.json")

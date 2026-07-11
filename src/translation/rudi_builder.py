@@ -139,8 +139,13 @@ def construire_rudi_metadata(
     date_source: str | None = None,
     contacts_source: list[dict] | None = None,
     metadata_source_label: str = "source",
+    licence: dict | None = None,
+    dates: dict | None = None,
+    metadata_dates: dict | None = None,
+    ajouter_medias_source: bool = True,
 ) -> dict:
-    """Assemble le dict complet rudi_metadata.json.
+    """Assemble le dict complet rudi_metadata.json — point de convergence des 5
+    voies de génération (data.gouv tabulaire, service géo, INSEE, OEB, BDNB).
 
     Tous les arguments sont nommés (keyword-only) pour forcer la lisibilité
     des sites d'appel.
@@ -155,27 +160,44 @@ def construire_rudi_metadata(
         producteur_nom    : nom de l'organisation productrice
         url_source        : URL du jeu de données source (data.gouv.fr, insee.fr, etc.)
         url_fiche         : URL de la fiche de métadonnées d'origine
-        medias            : liste d'entrées available_formats (filtres + dicts + source + metadata_page)
+        medias            : liste d'entrées available_formats (filtres + dicts + source + metadata_page).
+                            NB : les media_id sont des UUIDv5 dérivés de gabarits propres à
+                            chaque voie — ne pas les « harmoniser », les IDs sur le nœud RUDI
+                            doivent rester stables d'un run à l'autre
         date_source       : Last-Modified HTTP ou updatedAt (converti en ISO 8601)
         contacts_source   : contacts du producteur (optionnel — résolu via resoudre_contacts si absent)
         metadata_source_label : nom du media SERVICE source (défaut "source")
+        licence           : bloc licence RUDI (défaut LICENCE_ETALAB ; les datasets data.gouv
+                            peuvent porter une licence CUSTOM issue de leur fiche)
+        dates             : dataset_dates complet ({"created": ..., "updated": ...}) — prime
+                            sur la dérivation depuis date_source
+        metadata_dates    : ajouté à metadata_info si fourni (voies data.gouv/géo)
+        ajouter_medias_source : ajoute source-data/source-metadata s'ils manquent (défaut) ;
+                            False pour les voies qui construisent ces entrées elles-mêmes
+                            sous d'autres noms (ex: "source-data-gouv")
     """
-    dates = {}
-    iso = _parser_date_http(date_source)
-    if iso:
-        dates["updated"] = iso
+    if dates is None:
+        dates = {}
+        iso = _parser_date_http(date_source)
+        if iso:
+            dates["updated"] = iso
 
     if contacts_source is None:
         contacts_source = resoudre_contacts([], producteur_nom)
 
-    # S'assurer qu'il y a au moins media_source + media_metadata_page
-    noms_media = {m.get("media_name") for m in medias}
-    if "source-data" not in noms_media:
-        medias.append(media_source(local_id, url_source,
-                                   f"Jeu de données complet sur {metadata_source_label}"))
-    if "source-metadata" not in noms_media:
-        medias.append(media_metadata_page(local_id, url_fiche,
-                                          f"Fiche de métadonnées du jeu de données source sur {metadata_source_label}"))
+    if ajouter_medias_source:
+        # S'assurer qu'il y a au moins media_source + media_metadata_page
+        noms_media = {m.get("media_name") for m in medias}
+        if "source-data" not in noms_media:
+            medias.append(media_source(local_id, url_source,
+                                       f"Jeu de données complet sur {metadata_source_label}"))
+        if "source-metadata" not in noms_media:
+            medias.append(media_metadata_page(local_id, url_fiche,
+                                              f"Fiche de métadonnées du jeu de données source sur {metadata_source_label}"))
+
+    metadata_info = {"metadata_source": url_fiche}
+    if metadata_dates is not None:
+        metadata_info = {"metadata_dates": metadata_dates, "metadata_source": url_fiche}
 
     return {
         "local_id": local_id,
@@ -190,9 +212,9 @@ def construire_rudi_metadata(
         "dataset_dates": dates,
         "storage_status": "online",
         "access_condition": {
-            "licence": LICENCE_ETALAB,
+            "licence": licence if licence is not None else LICENCE_ETALAB,
             "confidentiality": {"restricted_access": False, "gdpr_sensitive": False},
         },
         "geography": BBOX_RM,
-        "metadata_info": {"metadata_source": url_fiche},
+        "metadata_info": metadata_info,
     }

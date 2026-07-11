@@ -5,6 +5,7 @@ import uuid
 
 from connectors.contacts import extraire_contacts_datagouv, resoudre_contacts
 from translation.description_secours import description_quasi_vide, entetes_depuis_geojson, generer_complement
+from translation.rudi_builder import construire_rudi_metadata
 
 # Thèmes acceptés par le nœud RUDI (conformes aux catégories RUDI)
 THEMES_RUDI = {
@@ -89,9 +90,6 @@ LICENCES = {
         "licence_uri": "https://opendatacommons.org/licenses/odbl/1-0",
     },
 }
-
-from conf.communes_rm import BBOX_RM_RUDI as BBOX_RENNES_METROPOLE
-
 
 def _local_id_depuis_dataset_id(dataset_id: str) -> str:
     """Génère un local_id stable à partir de l'identifiant data.gouv.fr."""
@@ -265,33 +263,23 @@ def traduire_metadonnees(metadata_source: dict, zone: str = "Rennes Métropole",
     contacts_source = extraire_contacts_datagouv(metadata_source)
     contacts = resoudre_contacts(contacts_source, producer["organization_name"])
 
-    rudi_metadata = {
-        "local_id": _local_id_depuis_dataset_id(dataset_id),
-        "resource_title": titre_localise,
-        "synopsis": [{"lang": "fr", "text": synopsis}],
-        "summary": [{"lang": "fr", "text": description_localisee}],
-        "theme": theme,
-        "keywords": keywords,
-        "producer": producer,
-        "contacts": contacts,
-        "available_formats": available_formats,
-        "dataset_dates": dates,
-        "storage_status": "online",
-        "access_condition": {
-            "licence": licence_rudi,
-            "confidentiality": {
-                "restricted_access": False,
-                "gdpr_sensitive": False,
-            },
-        },
-        "geography": BBOX_RENNES_METROPOLE,
-        "metadata_info": {
-            "metadata_dates": dates,
-            "metadata_source": url_source,
-        },
-    }
-
-    return rudi_metadata
+    return construire_rudi_metadata(
+        local_id=_local_id_depuis_dataset_id(dataset_id),
+        titre=titre_localise,
+        synopsis=synopsis,
+        description=description_localisee,
+        theme=theme,
+        keywords=keywords,
+        producteur_nom=producer["organization_name"],
+        url_source=url_source,
+        url_fiche=url_source,
+        medias=available_formats,
+        contacts_source=contacts,
+        licence=licence_rudi,
+        dates=dates,
+        metadata_dates=dates,
+        ajouter_medias_source=False,  # entrées "source-data-gouv"/"source-metadata" déjà construites
+    )
 
 
 def traduire_metadonnees_service(config: dict,
@@ -408,30 +396,21 @@ def traduire_metadonnees_service(config: dict,
     contacts = resoudre_contacts(contacts_source or [], producteur_nom)
 
     now = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    dates = {"created": now, "updated": now}
 
-    return {
-        "local_id": local_id,
-        "resource_title": f"{titre} — Rennes Métropole",
-        "synopsis": [{"lang": "fr", "text": synopsis}],
-        "summary": [{"lang": "fr", "text": description}],
-        "theme": theme,
-        "keywords": keywords,
-        "producer": {"organization_name": producteur_nom},
-        "contacts": contacts,
-        "available_formats": available_formats,
-        "dataset_dates": {"created": now, "updated": now},
-        "storage_status": "online",
-        "access_condition": {
-            "licence": {
-                "licence_type": "STANDARD",
-                "licence_label": "etalab-2.0",
-                "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
-            },
-            "confidentiality": {"restricted_access": False, "gdpr_sensitive": False},
-        },
-        "geography": BBOX_RENNES_METROPOLE,
-        "metadata_info": {
-            "metadata_dates": {"created": now, "updated": now},
-            "metadata_source": url_service,
-        },
-    }
+    return construire_rudi_metadata(
+        local_id=local_id,
+        titre=f"{titre} — Rennes Métropole",
+        synopsis=synopsis,
+        description=description,
+        theme=theme,
+        keywords=keywords,
+        producteur_nom=producteur_nom,
+        url_source=url_service,
+        url_fiche=url_service,
+        medias=available_formats,
+        contacts_source=contacts,
+        dates=dates,
+        metadata_dates=dates,
+        ajouter_medias_source=False,  # entrées "service-<type>"/"source-metadata" déjà construites
+    )

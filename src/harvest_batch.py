@@ -27,13 +27,13 @@ from connectors.sirene import obtenir_sirens_rm
 from filters.csv import slugifier, sauvegarder_csv
 from filters.geographic import (
     est_dans_rm, est_commune_rm, normaliser, est_circonscription_rm,
-    est_iris_rm, est_valeur_commune_rm, est_epci_rm, est_point_rm, est_adresse_rm,
+    est_iris_rm, est_code_rm, est_epci_rm, est_point_rm, est_adresse_rm,
     est_departement_rm,
     EPCI_SIREN_RM,
 )
 from filters.harvest import (
     _detecter_delimiteur, _detecter_encodage_bytes, _detecter_encodage,
-    _ligne_est_rm, _extraire_csvs_zip,
+    _ligne_est_rm, _extraire_csvs_zip, nature_champ_iris,
 )
 from conf.communes_rm import CODES_POSTAUX_RM, CODES_INSEE_RM
 from translation.datagouv_to_rudi import traduire_metadonnees
@@ -125,8 +125,15 @@ def filtrer_csv(chemin: str, champ_cp, champ_ville, champ_iris, champ_adresse,
         cp, vil, iris, adr, sir, epci, lat, lon, circo, dep = _resoudre_champs(
             entetes, champ_cp, champ_ville, champ_iris, champ_adresse, champ_siren,
             champ_epci, champ_lat, champ_lon, champ_circonscription, champ_dep)
+        nature = "inconnue"
+        if iris:
+            # Pré-passe : nature INSEE/CP de la colonne, puis seconde passe de filtrage.
+            nature = nature_champ_iris(iris, reader)
+            f.seek(0)
+            reader = csv.DictReader(f, delimiter=delimiteur)
         lignes = [dict(row) for row in reader
-                  if _ligne_est_rm(row, cp, vil, iris, adr, sir, sirens_rm, epci, lat, lon, circo, dep)]
+                  if _ligne_est_rm(row, cp, vil, iris, adr, sir, sirens_rm, epci, lat, lon, circo, dep,
+                                    nature_iris=nature)]
     return lignes, entetes
 
 
@@ -143,8 +150,13 @@ def filtrer_csv_bytes(contenu: bytes, champ_cp, champ_ville, champ_iris, champ_a
     cp, vil, iris, adr, sir, epci, lat, lon, circo, dep = _resoudre_champs(
         entetes, champ_cp, champ_ville, champ_iris, champ_adresse, champ_siren,
         champ_epci, champ_lat, champ_lon, champ_circonscription, champ_dep)
+    nature = "inconnue"
+    if iris:
+        nature = nature_champ_iris(iris, reader)
+        reader = csv.DictReader(io.StringIO(texte), delimiter=delimiteur)
     lignes = [dict(row) for row in reader
-              if _ligne_est_rm(row, cp, vil, iris, adr, sir, sirens_rm, epci, lat, lon, circo, dep)]
+              if _ligne_est_rm(row, cp, vil, iris, adr, sir, sirens_rm, epci, lat, lon, circo, dep,
+                                nature_iris=nature)]
     return lignes, entetes
 
 
@@ -165,10 +177,11 @@ def filtrer_json(chemin: str, champ_cp, champ_ville, champ_iris, champ_adresse,
             raise ValueError("Structure JSON non reconnue (pas de liste de lignes)")
     else:
         raise ValueError("Contenu JSON non reconnu (ni liste ni dict)")
+    nature = nature_champ_iris(champ_iris, iter(rows)) if champ_iris else "inconnue"
     return [row for row in rows
             if _ligne_est_rm(row, champ_cp, champ_ville, champ_iris, champ_adresse, champ_siren,
                              sirens_rm, champ_epci, champ_lat, champ_lon, champ_circonscription,
-                             champ_dep)]
+                             champ_dep, nature_iris=nature)]
 
 
 def filtrer_parquet(url: str, champ_cp, champ_ville, champ_iris, champ_adresse,
@@ -277,8 +290,14 @@ def filtrer_gz(chemin: str, champ_cp, champ_ville, champ_iris, champ_adresse,
         cp, vil, iris, adr, sir, epci, lat, lon, circo, dep = _resoudre_champs(
             entetes, champ_cp, champ_ville, champ_iris, champ_adresse, champ_siren,
             champ_epci, champ_lat, champ_lon, champ_circonscription, champ_dep)
+        nature = "inconnue"
+        if iris:
+            nature = nature_champ_iris(iris, reader)
+            gz.seek(0)
+            reader = csv.DictReader(gz, delimiter=delimiteur)
         lignes = [dict(row) for row in reader
-                  if _ligne_est_rm(row, cp, vil, iris, adr, sir, sirens_rm, epci, lat, lon, circo, dep)]
+                  if _ligne_est_rm(row, cp, vil, iris, adr, sir, sirens_rm, epci, lat, lon, circo, dep,
+                                    nature_iris=nature)]
     return lignes, entetes
 
 
@@ -297,8 +316,14 @@ def filtrer_bz2(chemin: str, champ_cp, champ_ville, champ_iris, champ_adresse,
         cp, vil, iris, adr, sir, epci, lat, lon, circo, dep = _resoudre_champs(
             entetes, champ_cp, champ_ville, champ_iris, champ_adresse, champ_siren,
             champ_epci, champ_lat, champ_lon, champ_circonscription, champ_dep)
+        nature = "inconnue"
+        if iris:
+            nature = nature_champ_iris(iris, reader)
+            bz.seek(0)
+            reader = csv.DictReader(bz, delimiter=delimiteur)
         lignes = [dict(row) for row in reader
-                  if _ligne_est_rm(row, cp, vil, iris, adr, sir, sirens_rm, epci, lat, lon, circo, dep)]
+                  if _ligne_est_rm(row, cp, vil, iris, adr, sir, sirens_rm, epci, lat, lon, circo, dep,
+                                    nature_iris=nature)]
     return lignes, entetes
 
 
@@ -328,8 +353,10 @@ def filtrer_xlsx(chemin: str, champ_cp, champ_ville, champ_iris, champ_adresse,
         dict(zip(entetes, [str(v or "").strip() for v in row]))
         for row in lignes_brutes[1:]
     ]
+    nature = nature_champ_iris(iris, iter(rows)) if iris else "inconnue"
     return [r for r in rows
-            if _ligne_est_rm(r, cp, vil, iris, adr, sir, sirens_rm, epci, lat, lon, circo, dep)]
+            if _ligne_est_rm(r, cp, vil, iris, adr, sir, sirens_rm, epci, lat, lon, circo, dep,
+                              nature_iris=nature)]
 
 
 _RE_PLAGE_DEPT = re.compile(
@@ -525,9 +552,16 @@ def filtrer_toutes_ressources(
                                 entetes, champ_cp, champ_ville, champ_iris,
                                 champ_adresse, champ_siren, champ_epci, champ_lat, champ_lon,
                                 champ_circonscription, champ_dep)
+                            nature = nature_champ_iris(iris, reader) if iris else "inconnue"
+                        # Le membre est rouvert : la pré-passe nature a consommé le flux.
+                        with zf.open(nom_membre) as fp:
+                            tf = io.TextIOWrapper(fp, encoding=encoding,
+                                                  errors="replace", newline="")
+                            reader = csv.DictReader(tf, delimiter=delimiteur)
                             lignes = [dict(row) for row in reader
                                       if _ligne_est_rm(row, cp, vil, iris, adr, sir, sirens_rm,
-                                                        epci, lat, lon, circo, dep)]
+                                                        epci, lat, lon, circo, dep,
+                                                        nature_iris=nature)]
                         r_m = {**r, "title": os.path.basename(nom_membre)}
                         if len(noms_csv) > 1:
                             print(f"    ↳ {nom_membre}: {len(lignes)} lignes RM")

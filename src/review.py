@@ -28,11 +28,12 @@ from filters.discovery import trouver_ressource_analysable
 from filters.geographic import (
     normaliser,
     est_circonscription_rm,
-    est_valeur_commune_rm,
+    classer_code_rm,
     est_epci_rm,
     est_point_rm,
     est_adresse_rm,
 )
+from conf.insee_cp_35 import INSEE_SEULEMENT_35, CP_SEULEMENT_35
 
 _TYPES_VARIABLES = [
     ("commune", "Commune (code INSEE/IRIS, code postal, ou nom)"),
@@ -498,13 +499,25 @@ def _compter_lignes_variable(rows, type_variable: str, col1: str, col2: str | No
     sirens_rm = obtenir_sirens_rm() if type_variable == "siren" else None
     nb_total, nb_rm = 0, 0
     exemples, premieres_lignes = [], []
+    # Type "commune" : comptage différé — les codes ambigus INSEE/CP du dept 35
+    # sont tranchés après la boucle par la nature détectée (voir filters/geographic.py).
+    classes = {"rm": 0, "hors_rm": 0, "amb_insee": 0, "amb_cp": 0}
+    n_insee_only = n_cp_only = 0
     for row in rows:
         try:
             nb_total += 1
             if len(premieres_lignes) < 5:
                 premieres_lignes.append(dict(row))
             if type_variable == "commune":
-                in_rm = est_valeur_commune_rm(row.get(col1, ""))
+                code = str(row.get(col1, "")).strip()
+                if len(code) == 5 and code.isdigit() and code.startswith("35"):
+                    if code in INSEE_SEULEMENT_35:
+                        n_insee_only += 1
+                    elif code in CP_SEULEMENT_35:
+                        n_cp_only += 1
+                classe = classer_code_rm(code)
+                classes[classe] += 1
+                in_rm = classe == "rm"
             elif type_variable == "cp":
                 in_rm = str(row.get(col1, "")).strip() in CODES_POSTAUX_RM
             elif type_variable == "epci":
@@ -527,6 +540,11 @@ def _compter_lignes_variable(rows, type_variable: str, col1: str, col2: str | No
                     exemples.append(dict(row))
         except csv.Error:
             break
+    if type_variable == "commune":
+        nature = ("insee" if n_insee_only >= 3 * max(n_cp_only, 1)
+                  else "cp" if n_cp_only >= 3 * max(n_insee_only, 1) else "inconnue")
+        nb_rm = classes["rm"] + (classes["amb_cp"] if nature == "cp"
+                                 else classes["amb_insee"])
     return nb_total, nb_rm, exemples, premieres_lignes
 
 

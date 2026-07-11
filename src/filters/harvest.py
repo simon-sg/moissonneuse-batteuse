@@ -10,6 +10,7 @@ Contient :
 - _extraire_csvs_zip — extraction de membres CSV d'un ZIP
 """
 
+import itertools
 import zipfile
 
 import csv
@@ -18,8 +19,8 @@ from conf.discover import CACHE_DIR
 from connectors.sirene import obtenir_sirens_rm
 from filters.geographic import (
     est_dans_rm, est_commune_rm, normaliser, est_circonscription_rm,
-    est_iris_rm, est_valeur_commune_rm, est_epci_rm, est_point_rm, est_adresse_rm,
-    est_departement_rm,
+    est_iris_rm, est_code_rm, est_epci_rm, est_point_rm, est_adresse_rm,
+    est_departement_rm, detecter_nature_colonne,
     EPCI_SIREN_RM,
 )
 from conf.communes_rm import CODES_POSTAUX_RM, CODES_INSEE_RM
@@ -52,12 +53,21 @@ def _detecter_encodage(chemin: str) -> str:
     return _detecter_encodage_bytes(sample)
 
 
+def nature_champ_iris(champ_iris: str, rows, max_lignes: int = 5000) -> str:
+    """Pré-passe de filtrage : détecte la nature ("insee", "cp" ou "inconnue")
+    d'une colonne champ_iris sur un échantillon de lignes (dicts)."""
+    return detecter_nature_colonne(
+        str(row.get(champ_iris, "")) for row in itertools.islice(rows, max_lignes))
+
+
 def _ligne_est_rm(row: dict, champ_cp, champ_ville, champ_iris, champ_adresse,
                    champ_siren=None, sirens_rm=None,
                    champ_epci=None, champ_lat=None, champ_lon=None,
-                   champ_circonscription=None, champ_dep=None) -> bool:
+                   champ_circonscription=None, champ_dep=None,
+                   nature_iris="inconnue") -> bool:
     if champ_iris:
-        return est_valeur_commune_rm(str(row.get(champ_iris, "")))
+        ville = str(row.get(champ_ville, "")).strip() if champ_ville else None
+        return est_code_rm(str(row.get(champ_iris, "")), ville, nature_iris)
     if champ_adresse:
         return est_adresse_rm(str(row.get(champ_adresse, "")))
     if champ_siren:

@@ -12,7 +12,7 @@ from connectors.rudi_publish import publier_si_configue
 from connectors.sirene import obtenir_sirens_rm
 from filters.geographic import filter_json_by_postal_codes, load_json, save_json
 from filters.harvest import (
-    _detecter_delimiteur, _detecter_encodage, _ligne_est_rm,
+    _detecter_delimiteur, _detecter_encodage, _ligne_est_rm, nature_champ_iris,
 )
 from harvest_batch import _resoudre_champs
 from translation.datagouv_to_rudi import traduire_metadonnees
@@ -37,9 +37,16 @@ def _filtrer_csv(chemin: str, champ_cp, champ_ville, champ_iris, champ_adresse,
         cp, vil, iris, adr, sir, epci, lat, lon, circo, dep = _resoudre_champs(
             entetes, champ_cp, champ_ville, champ_iris, champ_adresse, champ_siren,
             champ_epci, champ_lat, champ_lon, champ_circonscription, None)
+        nature = "inconnue"
+        if iris:
+            # Pré-passe : nature INSEE/CP de la colonne, puis seconde passe de filtrage.
+            nature = nature_champ_iris(iris, reader)
+            f.seek(0)
+            reader = csv.DictReader(f, delimiter=delimiteur)
         lignes = [{k: v for k, v in row.items() if k is not None}
                   for row in reader
-                  if _ligne_est_rm(row, cp, vil, iris, adr, sir, sirens_rm, epci, lat, lon, circo, dep)]
+                  if _ligne_est_rm(row, cp, vil, iris, adr, sir, sirens_rm, epci, lat, lon, circo, dep,
+                                    nature_iris=nature)]
     return lignes, entetes
 
 

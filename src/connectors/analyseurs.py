@@ -45,10 +45,11 @@ from filters.harvest import _detecter_encodage_bytes
 from connectors.sirene import obtenir_sirens_rm
 from filters.geographic import (
     est_dans_rm, est_commune_rm, normaliser, est_circonscription_rm,
-    est_iris_rm, est_valeur_commune_rm, est_epci_rm, est_point_rm, est_adresse_rm,
+    est_iris_rm, classer_code_rm, est_epci_rm, est_point_rm, est_adresse_rm,
     est_departement_rm,
     EPCI_SIREN_RM,
 )
+from conf.insee_cp_35 import INSEE_SEULEMENT_35, CP_SEULEMENT_35
 
 csv.field_size_limit(10_000_000)
 
@@ -167,17 +168,23 @@ def deviner_champs(entetes: list[str]) -> tuple[str | None, str | None]:
 
 def deviner_champ_iris(entetes: list[str]) -> str | None:
     entetes_norm = [normaliser(e) for e in entetes]
+
+    def _est_cp(e: str) -> bool:
+        # Garde-fou : un en-tête de code postal n'est jamais un champ_iris
+        # (collisions INSEE/CP du dept 35 — voir filters/geographic.py).
+        return "postal" in e or e in CHAMPS_CP
+
     for nom in CHAMPS_IRIS:
-        if nom in entetes_norm:
+        if nom in entetes_norm and not _est_cp(nom):
             return entetes[entetes_norm.index(nom)]
     for i, e in enumerate(entetes_norm):
-        if "iris" in e and "libelle" not in e and "lib" not in e:
+        if "iris" in e and "libelle" not in e and "lib" not in e and not _est_cp(e):
             return entetes[i]
     _SUFFIXES_GEO_EXCLUS = ("reg", "region", "dep", "departement", "arr", "arrondissement")
     _PREFIXES_INSEE_EXCLUS = ("pollution", "declarant", "journey", "res",
                               "activite", "revenu", "pop", "nb")
     for i, e in enumerate(entetes_norm):
-        if "insee" in e and not any(s in e for s in _SUFFIXES_GEO_EXCLUS) \
+        if "insee" in e and not _est_cp(e) and not any(s in e for s in _SUFFIXES_GEO_EXCLUS) \
                 and not any(e.startswith(p) or e.startswith(p + " ") for p in _PREFIXES_INSEE_EXCLUS):
             return entetes[i]
     return None
@@ -306,10 +313,18 @@ def _compter_lignes_rm(rows, champ_cp, champ_ville, champ_iris, champ_dep, champ
                         champ_siren=None, champ_epci=None,
                         champ_lat=None, champ_lon=None,
                         champ_circonscription=None) -> tuple:
-    """Itère rows (dicts) et compte ceux appartenant à Rennes Métropole."""
+    """Itère rows (dicts) et compte ceux appartenant à Rennes Métropole.
+
+    Retourne (nb_total, nb_rm, exemples, premieres_lignes, nature_iris).
+    Pour champ_iris le comptage est différé : chaque valeur est classée
+    (rm / hors_rm / amb_insee / amb_cp — collisions INSEE/CP du dept 35) et la
+    nature de la colonne, détectée au fil de l'eau sur les codes discriminants,
+    tranche les ambigus après la boucle (flux itéré une seule fois)."""
     sirens_rm = obtenir_sirens_rm() if champ_siren else None
     nb_total, nb_rm = 0, 0
     exemples, premieres_lignes = [], []
+    classes = {"rm": 0, "hors_rm": 0, "amb_insee": 0, "amb_cp": 0}
+    n_insee_only = n_cp_only = 0
     for row in rows:
         try:
             nb_total += 1
@@ -321,7 +336,17 @@ def _compter_lignes_rm(rows, champ_cp, champ_ville, champ_iris, champ_dep, champ
                     dept_raw = str(row.get(champ_dep, "")).strip()
                     dept = (dept_raw.lstrip("0") or "0").zfill(2)
                     code = dept + code.zfill(3)
-                in_rm = est_iris_rm(code)
+                if len(code) == 5 and code.isdigit() and code.startswith("35"):
+                    if code in INSEE_SEULEMENT_35:
+                        n_insee_only += 1
+                    elif code in CP_SEULEMENT_35:
+                        n_cp_only += 1
+                ville = str(row.get(champ_ville, "")).strip() if champ_ville else None
+                classe = classer_code_rm(code, ville)
+                classes[classe] += 1
+                # Seules les lignes sûres alimentent les exemples ; les ambigus
+                # sont tranchés après la boucle.
+                in_rm = classe == "rm"
             elif champ_adresse:
                 in_rm = est_adresse_rm(str(row.get(champ_adresse, "")))
             elif champ_siren:
@@ -354,14 +379,27 @@ def _compter_lignes_rm(rows, champ_cp, champ_ville, champ_iris, champ_dep, champ
                     exemples.append(dict(row))
         except csv.Error:
             break
-    return nb_total, nb_rm, exemples, premieres_lignes
+    nature_iris = "inconnue"
+    if champ_iris:
+        nature_iris = ("insee" if n_insee_only >= 3 * max(n_cp_only, 1)
+                       else "cp" if n_cp_only >= 3 * max(n_insee_only, 1) else "inconnue")
+        nb_rm = classes["rm"] + (classes["amb_cp"] if nature_iris == "cp"
+                                 else classes["amb_insee"])
+    return nb_total, nb_rm, exemples, premieres_lignes, nature_iris
 
 
 def _construire_resultat(champ_cp, champ_ville, champ_iris, champ_adresse,
                          nb_total, nb_rm, exemples, premieres_lignes,
                          champ_siren=None, champ_epci=None,
                          champ_lat=None, champ_lon=None,
-                         champ_circonscription=None, champ_dep=None) -> dict:
+                         champ_circonscription=None, champ_dep=None,
+                         nature_iris="inconnue") -> dict:
+    if champ_iris and nature_iris == "cp":
+        # Colonne taguée iris mais de nature code postal : re-typage à la source,
+        # les futurs candidats partent avec le bon champ.
+        if champ_cp is None:
+            champ_cp = champ_iris
+        champ_iris = None
     return {
         "nb_total": nb_total, "nb_rm": nb_rm,
         "champ_cp": champ_cp, "champ_ville": champ_ville,
@@ -445,7 +483,7 @@ def _analyser_csv_depuis_stream(preambule: bytes, fp_bin,
             print(f"  Champ CP trouvé : {champ_cp} | Champ ville trouvé : {champ_ville}")
 
     try:
-        nb_total, nb_rm, exemples, premieres_lignes = _compter_lignes_rm(
+        nb_total, nb_rm, exemples, premieres_lignes, nature_iris = _compter_lignes_rm(
             reader, champ_cp, champ_ville, champ_iris, champ_dep, champ_adresse,
             champ_siren=champ_siren, champ_epci=champ_epci,
             champ_lat=champ_lat, champ_lon=champ_lon,
@@ -465,7 +503,7 @@ def _analyser_csv_depuis_stream(preambule: bytes, fp_bin,
                                 champ_siren=champ_siren, champ_epci=champ_epci,
                                 champ_lat=champ_lat, champ_lon=champ_lon,
                                 champ_circonscription=champ_circonscription,
-                                champ_dep=champ_dep)
+                                champ_dep=champ_dep, nature_iris=nature_iris)
 
 
 def _analyser_contenu_csv(contenu: bytes, verbose: bool, dataset_id: str, titre: str,
@@ -532,7 +570,7 @@ def _analyser_contenu_csv(contenu: bytes, verbose: bool, dataset_id: str, titre:
             print(f"  Champ CP trouvé : {champ_cp} | Champ ville trouvé : {champ_ville}")
 
     try:
-        nb_total, nb_rm, exemples, premieres_lignes = _compter_lignes_rm(
+        nb_total, nb_rm, exemples, premieres_lignes, nature_iris = _compter_lignes_rm(
             reader, champ_cp, champ_ville, champ_iris, champ_dep, champ_adresse,
             champ_siren=champ_siren, champ_epci=champ_epci,
             champ_lat=champ_lat, champ_lon=champ_lon,
@@ -552,7 +590,7 @@ def _analyser_contenu_csv(contenu: bytes, verbose: bool, dataset_id: str, titre:
                                 champ_siren=champ_siren, champ_epci=champ_epci,
                                 champ_lat=champ_lat, champ_lon=champ_lon,
                                 champ_circonscription=champ_circonscription,
-                                champ_dep=champ_dep)
+                                champ_dep=champ_dep, nature_iris=nature_iris)
 
 
 def analyser_csv(url: str, verbose: bool = True,
@@ -754,7 +792,7 @@ def analyser_xlsx(url: str, verbose: bool = False,
         for row in lignes[1:]:
             yield dict(zip(entetes, (str(v or "").strip() for v in row)))
 
-    nb_total, nb_rm, exemples, premieres_lignes = _compter_lignes_rm(
+    nb_total, nb_rm, exemples, premieres_lignes, nature_iris = _compter_lignes_rm(
         _lignes_en_dicts(), champ_cp, champ_ville, champ_iris, champ_dep, champ_adresse,
         champ_siren=champ_siren, champ_epci=champ_epci,
         champ_lat=champ_lat, champ_lon=champ_lon,
@@ -766,7 +804,8 @@ def analyser_xlsx(url: str, verbose: bool = False,
                                 nb_total, nb_rm, exemples, premieres_lignes,
                                 champ_siren=champ_siren, champ_epci=champ_epci,
                                 champ_lat=champ_lat, champ_lon=champ_lon,
-                                champ_circonscription=champ_circonscription)
+                                champ_circonscription=champ_circonscription,
+                                nature_iris=nature_iris)
 
 
 # ---------------------------------------------------------------------------
@@ -891,7 +930,7 @@ def _analyser_features_geojson(features: list, verbose: bool,
     if (champ_cp or champ_ville or champ_iris or champ_epci or champ_adresse or champ_siren
             or champ_lat or champ_circonscription):
         rows = (f.get("properties") or {} for f in features)
-        nb_total, nb_rm, exemples, premieres_lignes = _compter_lignes_rm(
+        nb_total, nb_rm, exemples, premieres_lignes, nature_iris = _compter_lignes_rm(
             rows, champ_cp, champ_ville, champ_iris, champ_dep, champ_adresse,
             champ_siren=champ_siren, champ_epci=champ_epci,
             champ_lat=champ_lat, champ_lon=champ_lon,
@@ -900,6 +939,7 @@ def _analyser_features_geojson(features: list, verbose: bool,
     else:
         nb_total, nb_rm = 0, 0
         exemples, premieres_lignes = [], []
+        nature_iris = "inconnue"
         for f in features:
             props = f.get("properties") or {}
             nb_total += 1
@@ -920,6 +960,7 @@ def _analyser_features_geojson(features: list, verbose: bool,
         champ_siren=champ_siren, champ_epci=champ_epci,
         champ_lat=champ_lat, champ_lon=champ_lon,
         champ_circonscription=champ_circonscription,
+        nature_iris=nature_iris,
     )
 
 

@@ -233,6 +233,8 @@ ACTIONS = {
                                  lambda p: None),  # exécuté via _ACTIONS_COMPOSEES
     "moisson_geo_et_publier": ("Moisson géo + catalogue + publication RUDI",
                                lambda p: None),  # exécuté via _ACTIONS_COMPOSEES
+    "reanalyser_faux_positifs": ("Ré-analyse des faux positifs INSEE/CP (dry-run)",
+                                 lambda p: cli.action_reanalyser_faux_positifs(appliquer_interactif=False)),
     "reanalyser_wms": ("Re-analyser les WMS du backlog", lambda p: cli.action_reanalyser_wms()),
     "nettoyer_wms_geo": ("Nettoyer les WMS de geo_services.json", lambda p: cli.action_nettoyer_wms_geo()),
     "pipeline_complet": ("Pipeline complet (sans découverte)",

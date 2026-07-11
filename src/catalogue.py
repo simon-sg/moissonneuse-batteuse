@@ -415,6 +415,19 @@ def ecrire_json(catalogue: dict) -> None:
 def ecrire_html(catalogue: dict) -> None:
     data_json = json.dumps(catalogue, ensure_ascii=False).replace("</", r"<\/")
     html = GABARIT_HTML.replace("/*__DONNEES__*/", data_json)
+    # Le fichier écrit doit rester lisible ouvert directement (file://), hors
+    # dashboard : le CSS partagé est inliné (le lien /static/dashboard.css ne
+    # résout que servi par dashboard.py) et le placeholder topbar devient un
+    # commentaire HTML — invisible en direct, substitué par _servir_catalogue().
+    chemin_css = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                              "static", "dashboard.css")
+    try:
+        with open(chemin_css, encoding="utf-8") as f:
+            html = html.replace('<link rel="stylesheet" href="/static/dashboard.css">',
+                                "<style>\n" + f.read() + "\n</style>")
+    except OSError as e:
+        print(f"  ⚠ CSS partagé non inliné ({e}) — catalogue stylé uniquement via le dashboard")
+    html = html.replace("{{TOPBAR}}", "<!--TOPBAR-->")
     with open(SORTIE_HTML, "w", encoding="utf-8") as f:
         f.write(html)
 

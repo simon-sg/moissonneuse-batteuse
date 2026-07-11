@@ -661,8 +661,8 @@ def _charger_config_decouverte() -> dict:
             cfg.setdefault("mots_cles", [])
             cfg.setdefault("nb_pages", CONF_NB_PAGES)
             return cfg
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"⚠ config découverte illisible ({_DECOUVERTE_CONFIG_FILE}) : {e} — valeurs par défaut")
     return _decouverte_config_par_defaut()
 
 
@@ -788,8 +788,8 @@ def _lancer_test_decouverte(cfg: dict, indexes: list[int] | None) -> None:
                 with open(_DECOUVERTE_TEST_RESULTS_FILE, "w", encoding="utf-8") as f:
                     json.dump({"resultats": _test_discover["resultats"],
                                "log": _test_discover["log"]}, f, ensure_ascii=False, indent=2)
-            except Exception:
-                pass
+            except Exception as e:
+                print(f"⚠ résultats de test découverte non persistés : {e}")
 
     threading.Thread(target=_run, daemon=True).start()
 
@@ -811,8 +811,8 @@ def _test_decouverte_etat() -> dict:
                 persisted = json.load(f)
             etat["resultats"] = persisted.get("resultats", [])
             etat["log"] = persisted.get("log", "")
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"⚠ résultats de test découverte illisibles ({_DECOUVERTE_TEST_RESULTS_FILE}) : {e}")
     return etat
 
 
@@ -850,14 +850,16 @@ class Handler(http.server.BaseHTTPRequestHandler):
         self.wfile.write(corps)
 
     def _servir_catalogue(self) -> None:
-        """Sert data/catalogue.html avec le topbar injecté (placeholder {{TOPBAR}})."""
+        """Sert data/catalogue.html avec le topbar injecté (marqueur <!--TOPBAR-->,
+        ou {{TOPBAR}} pour un catalogue généré avant l'inlining CSS)."""
         chemin = os.path.join(cli.DATA_DIR, "catalogue.html")
         if not os.path.isfile(chemin):
             self._repondre_json(404, {"erreur": "catalogue non généré"})
             return
         with open(chemin, encoding="utf-8") as f:
             html = f.read()
-        html = html.replace("{{TOPBAR}}", _html_topbar("catalogue"))
+        topbar = _html_topbar("catalogue")
+        html = html.replace("<!--TOPBAR-->", topbar).replace("{{TOPBAR}}", topbar)
         self._repondre_html(200, html)
 
     def _servir_fichier_donnees(self, chemin_relatif: str) -> None:

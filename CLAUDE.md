@@ -214,7 +214,7 @@ Harvesting and publishing to the RUDI node are decoupled: each harvest script at
 `src/publish_rudi.py` is the catch-up step — it works **only from already-saved `rudi_metadata.json` files on disk**, no re-download/re-filter:
 - Scans every `data/<dossier>/rudi_metadata.json`.
 - Resolves each dossier's origin by matching it against the `dossier` field in `state.json` (tabular/batch) or `state_insee.json` (INSEE) entries, or against `DATASETS_GEO` (geo services, which have no state file — always retried, same as `harvest_geo.py` itself).
-- Publishes only entries where `rudi_publie` is not already `true`; on success, flips the flag in the corresponding state file (geo entries have nothing to flip — there's no state for them).
+- Publishes only entries where `rudi_publie` is not already `true`; on success, flips the flag in the corresponding state file (geo entries are tracked via `state_geo["_rudi_publie"]["<dossier>"]`).
 - A dossier with `rudi_metadata.json` but no match in either state file or `DATASETS_GEO` (e.g. a config entry that was later removed) is listed but **not** auto-published — printed for manual review instead, since there's no way to confirm it's still meant to be published.
 - Reconstructs the `fichiers_filtres` argument for `publier_dataset()` by taking the `media_type: "FILE"` prefix of `available_formats` in order (the translation functions always put FILE entries before the trailing SERVICE entry — `publier_dataset()` maps `fichiers_filtres[i]` positionally to `available_formats[i]`, so order must be preserved).
 
@@ -381,3 +381,75 @@ These were identified during a full pipeline audit but deliberately left as-is r
 - **`harvest_auto.py` still re-runs the full `REQUETES_STRUCTUREES` sweep every day** (up to 50 pages each); `deja_vus` avoids re-downloading/re-analysing already-known datasets, but the API listing itself isn't incremental. Not addressed here — revisit only if run duration becomes an actual problem.
 - **`harvest_auto.py` is not actually scheduled on this machine**: no crontab entry, systemd `.timer`, or Jenkinsfile exists in or around this repo — the crontab line in "Découverte automatique" above is only ever a suggested example, never installed. In practice `harvest_auto.py`/`cli.executer_pipeline_complet()` only run when launched by hand. This is why the `/examen` auto-trigger-on-add (see "Tableau de bord web" above) matters in practice: without it, or without someone periodically running the full pipeline, additions from `/examen` and results of `discover.py` sessions accumulate in `decouverte.json`/`geo_services.json` without ever reaching the RUDI node.
 - **`champ_circonscription` is coarser than every other geographic filter field**: a circonscription législative is geographically larger than Rennes Métropole — e.g. RM's 1st circonscription (`035-01`) also covers communes south of Rennes outside RM. Matching "circonscription code ∈ {the 7 RM-overlapping codes}" only proves a row is *somewhere in a circonscription overlapping RM*, not inside one of the 43 communes — unlike IRIS/CP+ville/adresse/SIREN/EPCI/lat-lon, which all precisely identify RM membership. This is why it's always tried last (`discover.py::_detecter_champs()`, `harvest_batch.py::_ligne_est_rm()`) — accepted as an occasional false-positive source for candidates where it's the only field ever detected, not fixed, since there's no cheap way to shrink a circonscription to just its RM-overlapping portion from a single code column.
+
+## Évol. 1 : Détection de changements dans les services géographiques (`src/harvest_geo.py`)
+
+Les trois fonctions de téléchargement (`traiter_wfs()`, `traiter_ogcapi()`, `traiter_geojson()`) retournent désormais un tuple `(list, bool)` — le second élément (`changee`) indique si au moins une couche/fichier a été effectivement re-téléchargé (modifié depuis le dernier run). `data/state_geo.json` stocke une signature (ETag, Last-Modified, Content-Length) par couche WFS/OGC/GeoJSON, exactement comme `state.json` pour les datasets tabulaires.
+
+`traiter_geo_dataset()` (`harvest_geo.py:234`) exploite ce signal :
+- Si `changee` est `False` **et** que `rudi_metadata.json` existe déjà sur disque, il saute entièrement la régénération des métadonnées RUDI et la publication sur le nœud — le dataset est considéré comme inchangé.
+- Si `changee` est `True` (au moins une couche a changé, ou c'est un WMS — toujours regénéré, GetCapabilities étant léger), la régénération et la publication sont déclenchées comme avant.
+
+Ce mécanisme évite des appels RUDI inutiles à chaque run quand seuls 1 ou 2 services parmi des dizaines ont réellement évolué. Les couches WMS restent toujours regénérées (pas de signature exploitable, le sondage GetCapabilities est négligeable).
+
+## Évol. 2 : Ménage RUDI one-shot et nettoyage des médias FILE orphelins
+
+### 2a : `toutes_metadonnees_rudi()` et nettoyage des FILE manquants (`src/connectors/rudi_node.py`)
+
+`toutes_metadonnees_rudi(conf)` (`rudi_node.py:123`) interroge le nœud RUDI pour retourner la liste complète de tous les datasets enregistrés — utilisé par `publish_rudi.menage_rudi_one_shot()` pour détecter les orphelins (voir 2b). Appelle `writer.filter_metadata_list({})` via la lib `rudi_node_write`.
+
+`publier_dataset()` (`rudi_node.py:200-202`) nettoie désormais les entrées `available_formats` dont le `media_type` est `"FILE"` mais dont le fichier local correspondant a disparu (supprimé entre-temps, dossier purgé manuellement, etc.) :
+```python
+noms_locaux = {os.path.basename(p) for p in fichiers_filtres if os.path.isfile(p)}
+medias[:] = [m for m in medias if m.get("media_type") != "FILE" or m.get("media_name") in noms_locaux]
+```
+Sans ce filtre, la publication échouait sur une référence de fichier absente — le nœud RUDI refuse un media FILE sans fichier physique associé. Les entrées SERVICE (source data.gouv.fr, source-metadata, etc.) ne sont pas concernées.
+
+### 2b : `menage_rudi_one_shot()` et entrée menu CLI (`src/publish_rudi.py` + `src/cli.py`)
+
+`menage_rudi_one_shot()` (`publish_rudi.py:137`) interroge le nœud RUDI via `toutes_metadonnees_rudi()`, collecte tous les `local_id` des `rudi_metadata.json` présents sur disque, et retourne la liste des datasets enregistrés sur le nœud mais sans contrepartie locale — les **orphelins** (config supprimée, purge de données, migration).
+- N'interroge que le nœud, ne mute jamais rien.
+- Imprimé en sortie standard avec titre et `local_id` pour chaque orphelin.
+
+`cli.py` expose cette fonction via l'entrée de menu **15. Ménage RUDI one-shot (JDD orphelins sur le nœud)** (`action_menage_rudi()`, ligne 173), pour inspection manuelle avant une éventuelle suppression côté nœud.
+
+## Évol. 3 : Nouveaux mots-clés et requêtes de découverte (`src/conf/discover.py`)
+
+`KEYWORDS` (`discover.py:18`) est passé de quelques entrées génériques (commune, code postal, code insee, iris, adresse) à **26 mots-clés** couvrant les compétences métropolitaines et communales : urbanisme, voirie, stationnement, mobilité, déchet, assainissement, eau, logement, action sociale, sport, culture, crèche, école, périscolaire, marché, espaces verts, éclairage public, cimetière, économie, propreté, habitat, participation citoyenne, équipement public, zone d'activité, restauration scolaire, équipement sportif.
+
+`REQUETES_STRUCTUREES` (`discover.py:34`) s'est enrichi de **30+ nouvelles entrées** structurées par compétence, avec `sort=-views` pour prioriser par popularité. Nouvelles requêtes ajoutées :
+- Recherches par format : `format=wms`, `format=wfs`, `format=geojson` (détection des services géographiques)
+- Compétences métropolitaines : urbanisme, permis de construire, stationnement, voirie, mobilité, déchets, assainissement, eau potable, éclairage public, logement social, action sociale
+- Équipements et services : équipement sportif, équipement culturel, petite enfance, zone d'activité, développement économique, participation citoyenne, propreté urbaine, espaces verts, marché, cimetière
+- Thèmes spécialisés : budget participatif, habitat indigne, piscine, restauration scolaire, aire d'accueil, fourrière, bibliothèque, trame verte
+- Organismes producteurs : INSEE (`organization: 534fff81a3a7292c64a77e5c`), Cerema (`5c812a16634f416583ed1876`), MTECT-écologie (`534fff8da3a7292c64a77eee`)
+
+Ces nouvelles requêtes augmentent significativement la couverture de l'API data.gouv.fr — chaque mot-clé pagine jusqu'à 50 pages (`NB_PAGES`), soit jusqu'à 1000 résultats par requête. `_filtrer_communs()` et `deja_vus` évitent le re-téléchargement/re-analayse des datasets déjà connus.
+
+## Évol. 4 : `media_metadata_page` — lien vers la fiche source dans les métadonnées RUDI
+
+Une nouvelle entrée `SERVICE` de type `media_metadata_page` est désormais incluse dans `available_formats` par **tous les générateurs de métadonnées RUDI** :
+
+```python
+media_metadata_page = {
+    "media_id": (UUID déterministe basé sur l'URL de la fiche source),
+    "media_type": "SERVICE",
+    "media_name": "source-metadata",
+    "media_caption": "Fiche de métadonnées du jeu de données source sur data.gouv.fr",
+    "connector": {"url": url_fiche_source, "interface_contract": "dwnl"},
+}
+```
+
+Elle est ajoutée en dernière position de `available_formats` (après les FILE et l'entrée SERVICE source), et apparaît dans les traductions suivantes :
+
+| Fonction | Fichier | Lignes |
+|---|---|---|
+| `traduire_metadonnees()` | `src/translation/datagouv_to_rudi.py` | 225-234 (création), 246 (append) |
+| `traduire_metadonnees_service()` | `src/translation/datagouv_to_rudi.py` | 368-377 (création), 388 (append) |
+| `_generer_rudi_metadata()` (INSEE) | `src/harvest_insee.py` | 125-134 (création), 174 (inclusion) |
+| `_generer_rudi_metadata()` (OEB) | `src/harvest_oeb.py` | 105-114 (création), 138 (inclusion) |
+| `_generer_rudi_metadata()` (BDNB) | `src/harvest_bdnb.py` | 111-117 (création), 136 (inclusion) |
+
+Le `media_id` est déterministe (UUIDv5 basé sur l'URL de la fiche source) — stable d'un run à l'autre, pas de duplication sur le nœud RUDI. Le `media_type` est `"SERVICE"` (pas un fichier à uploader), donc `publier_dataset()` dans `rudi_node.py` ne tente pas de l'uploader ni de vérifier un fichier local — seul le bloc JSON est envoyé au nœud dans `available_formats`.
+
+Cette entrée permet au nœud RUDI d'afficher un lien cliquable vers la fiche de métadonnées d'origine (data.gouv.fr, insee.fr, portail OEB, BDNB) depuis l'interface du catalogue RUDI, sans avoir à ouvrir le fichier source complet.

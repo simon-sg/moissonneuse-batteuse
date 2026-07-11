@@ -16,6 +16,10 @@ from conf.communes_rm import (
     COMMUNES_RM, CODES_POSTAUX_RENNES, CIRCONSCRIPTIONS_RM,
     CODES_POSTAUX_RM, CODES_INSEE_RM, BBOX_RM, DEPARTEMENTS_RM,
 )
+from conf.insee_cp_35 import (
+    COMMUNES_35, INSEE_35, CP_35, INSEE_SEULEMENT_35, CP_SEULEMENT_35,
+    NOMS_35_VERS_INSEE,
+)
 
 
 def normaliser(texte: str) -> str:
@@ -113,15 +117,101 @@ def est_iris_rm(code: str) -> bool:
     return len(code) >= 5 and code[:5] in CODES_INSEE_RM
 
 
-def est_valeur_commune_rm(valeur: str) -> bool:
+# ---------------------------------------------------------------------------
+# Classement nature-aware des codes commune (collisions INSEE/CP du dept 35)
+# Dans le 35, certains codes INSEE de communes hors RM sont identiques à des
+# codes postaux de communes RM (35132 = INSEE Hirel, hors RM, ET CP de
+# Vezin-le-Coquet, RM) et inversement (35120 = INSEE Gévezé, RM, ET CP de
+# Dol-de-Bretagne, hors RM). L'union aveugle des deux interprétations laissait
+# passer des lignes hors RM — d'où le classement ci-dessous.
+# ---------------------------------------------------------------------------
+
+_RE_CEDEX = re.compile(r"\s+cedex(\s+\d+)?$")
+
+
+def _normaliser_ville(ville: str) -> str:
+    """normaliser() + suppression du suffixe 'cedex [n]'."""
+    return _RE_CEDEX.sub("", normaliser(ville))
+
+
+def detecter_nature_colonne(valeurs) -> str:
+    """Détermine la nature d'une colonne de codes à partir d'un échantillon de valeurs
+    (itérable de str). Retourne "insee", "cp" ou "inconnue".
+    Ne compte que les valeurs à 5 chiffres commençant par "35" (seul le 35 est
+    discriminant pour RM). Règle : majorité 3:1 requise (au moins 3 discriminants
+    purs sans opposant), sinon "inconnue"."""
+    n_insee = n_cp = 0
+    for v in valeurs:
+        v = str(v or "").strip()
+        if len(v) == 5 and v.isdigit() and v.startswith("35"):
+            if v in INSEE_SEULEMENT_35:
+                n_insee += 1
+            elif v in CP_SEULEMENT_35:
+                n_cp += 1
+    if n_insee >= 3 * max(n_cp, 1):
+        return "insee"
+    if n_cp >= 3 * max(n_insee, 1):
+        return "cp"
+    return "inconnue"
+
+
+def classer_code_rm(valeur: str, ville: str | None = None) -> str:
+    """Classe une valeur de colonne code-commune vis-à-vis de RM.
+    Retourne : "rm" (RM quelle que soit l'interprétation), "hors_rm",
+    "amb_insee" (RM seulement si la colonne est de nature INSEE — 35120/35210/35240),
+    "amb_cp" (RM seulement si la colonne est de nature CP — 35132 et consorts).
+    Si `ville` est fournie, elle arbitre les ambigus quand elle désigne une commune
+    du 35 corroborée par le code (protection contre les homonymes hors 35)."""
     v = str(valeur).strip()
-    if not v:
+    if v == EPCI_SIREN_RM:
+        return "rm"
+    if len(v) >= 5 and v[:5].isdigit() and len(v) != 5:
+        # IRIS 9 chiffres, codes suffixés — jamais un CP : pas d'ambiguïté.
+        return "rm" if est_iris_rm(v) else "hors_rm"
+    if not (len(v) == 5 and v.isdigit()):
+        if v and not v.isdigit():
+            # Colonnes taguées iris qui contiennent en fait des noms de communes.
+            return "rm" if est_commune_rm(v) else "hors_rm"
+        return "hors_rm"
+    insee_rm = v in CODES_INSEE_RM
+    cp_rm = v in CODES_POSTAUX_RM
+    if not insee_rm and not cp_rm:
+        return "hors_rm"
+    if insee_rm and cp_rm:
+        return "rm"
+    if ville:
+        code_ville = NOMS_35_VERS_INSEE.get(_normaliser_ville(str(ville)))
+        if code_ville is not None:
+            if code_ville not in CODES_INSEE_RM:
+                # La ligne dit elle-même être une commune du 35 hors RM (cas Hirel).
+                return "hors_rm"
+            if v == code_ville or v in COMMUNES_35[code_ville][1]:
+                return "rm"
+            # Ville RM non corroborée par le code (homonyme possible hors 35,
+            # ex. Saint-Armel dans le 56) : ne pas trancher par la ville.
+    if insee_rm:
+        return "rm" if v not in CP_35 else "amb_insee"
+    return "rm" if v not in INSEE_35 else "amb_cp"
+
+
+def est_code_rm(valeur, ville=None, nature="inconnue") -> bool:
+    """Résolution complète : classer_code_rm + tranchage des ambigus par la nature.
+    nature "inconnue" → défaut INSEE (sémantique du champ champ_iris : strict,
+    on préfère perdre une ligne RM que publier une ligne hors RM)."""
+    c = classer_code_rm(valeur, ville)
+    if c == "rm":
+        return True
+    if c == "hors_rm":
         return False
-    if v in CODES_POSTAUX_RM:
-        return True
-    if est_iris_rm(v):
-        return True
-    return est_commune_rm(v)
+    if c == "amb_insee":
+        return nature != "cp"
+    return nature == "cp"          # amb_cp
+
+
+def est_valeur_commune_rm(valeur: str) -> bool:
+    """Alias de compatibilité — préférer est_code_rm(valeur, ville, nature),
+    qui arbitre les collisions INSEE/CP au lieu d'accepter l'union des deux."""
+    return est_code_rm(valeur)
 
 
 def est_epci_rm(code: str) -> bool:

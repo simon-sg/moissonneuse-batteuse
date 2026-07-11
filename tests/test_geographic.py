@@ -135,7 +135,10 @@ class TestAdresseRM(unittest.TestCase):
 
 class TestValeurCommuneRM(unittest.TestCase):
     def test_cp_insee_nom(self):
-        self.assertTrue(est_valeur_commune_rm("35170"))    # CP Bruz
+        # 35170 (CP Bruz) est aussi l'INSEE de Mecé, hors RM : ambigu, refusé
+        # par défaut (nature inconnue = strict INSEE) — voir test_collisions_insee_cp.
+        self.assertFalse(est_valeur_commune_rm("35170"))
+        self.assertTrue(est_valeur_commune_rm("35510"))    # CP Cesson, jamais un INSEE
         self.assertTrue(est_valeur_commune_rm("35238"))    # INSEE Rennes
         self.assertTrue(est_valeur_commune_rm("Pacé"))
 

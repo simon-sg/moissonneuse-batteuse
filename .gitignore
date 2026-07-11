@@ -17,6 +17,9 @@ moissonneur-master/
 # Scripts jetables Superset (debug/scratch)
 superset/scratch/
 
+# Outillage de session Claude Code (permissions locales, worktrees)
+.claude/
+
 # Python
 __pycache__/
 *.pyc

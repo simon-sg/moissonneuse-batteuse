@@ -26,6 +26,7 @@ import harvest_geo
 import catalogue
 import publish_rudi
 import enrichir_descriptions
+import reanalyser_faux_positifs
 from conf.datasets import DATASETS, DATASETS_GEO, DATASETS_INSEE, DATASETS_OEB, DATASETS_BDNB
 from connectors.rudi_node import charger_conf_rudi
 
@@ -221,6 +222,26 @@ def action_nettoyer_wms_geo():
             print(f"\nRelancez : python3 src/harvest_geo.py")
 
     _executer("Nettoyage des couches WMS de geo_services.json", _nettoyer)
+
+
+def action_reanalyser_faux_positifs(appliquer_interactif: bool = True):
+    """Dry-run du re-filtrage des faux positifs INSEE/CP (collisions dept 35),
+    puis application après confirmation. Le dashboard appelle la variante
+    non-interactive (dry-run seul, pas d'input())."""
+    def _reanalyser():
+        code = reanalyser_faux_positifs.executer(appliquer=False)
+        if code != 0:
+            return
+        if not appliquer_interactif:
+            print("\n(Dry-run seul — appliquer via l'action du CLI ou "
+                  "python3 src/reanalyser_faux_positifs.py --appliquer)")
+            return
+        if _confirmer("Appliquer le re-filtrage (réécriture des fichiers filtrés + états) ?"):
+            reanalyser_faux_positifs.executer(appliquer=True)
+        else:
+            print("  Application annulée (dry-run seul).")
+
+    _executer("Ré-analyse des faux positifs INSEE/CP (dept 35)", _reanalyser)
 
 
 def action_demarrer_superset():
@@ -673,17 +694,18 @@ ACTIONS = [
     ("13", "Re-analyser les WMS du backlog", action_reanalyser_wms),
     ("14", "Nettoyer les WMS de geo_services.json", action_nettoyer_wms_geo),
     ("15", "Ménage RUDI (orphelins + organisations inutilisées)", action_menage_rudi),
+    ("16", "Ré-analyser les faux positifs INSEE/CP (dept 35)", action_reanalyser_faux_positifs),
     # --- Données & infos ---
-    ("16", "Purger des données existantes", menu_purge),
-    ("17", "État du projet", action_etat_projet),
-    ("18", "Démarrer Superset (conteneur Docker)", action_demarrer_superset),
+    ("17", "Purger des données existantes", menu_purge),
+    ("18", "État du projet", action_etat_projet),
+    ("19", "Démarrer Superset (conteneur Docker)", action_demarrer_superset),
 ]
 
 SECTIONS = [
     (0, "Moisson"),
     (7, "Pipeline & publication"),
     (11, "Maintenance"),
-    (15, "Données & infos"),
+    (16, "Données & infos"),
 ]
 
 

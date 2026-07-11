@@ -18,7 +18,7 @@ Pipeline de moisson d'open data pertinent pour Rennes Métropole (43 communes, E
 ## Commands
 
 ```bash
-python3 src/cli.py         # entrée terminal : menu 18 actions en 4 sections (voir ACTIONS/SECTIONS)
+python3 src/cli.py         # entrée terminal : menu 19 actions en 4 sections (voir ACTIONS/SECTIONS)
 python3 src/dashboard.py   # entrée web : mêmes actions à http://127.0.0.1:8765
 python3 src/harvest_auto.py # entrée cron/Jenkins : découverte auto + pipeline complet (non planifié à ce jour)
 ```
@@ -37,6 +37,7 @@ python3 src/catalogue.py
 python3 src/publish_rudi.py         # rattrapage publication RUDI
 python3 src/enrichir_descriptions.py # rattrapage descriptions vides
 python3 src/enrichir_contacts.py [--dry-run] # rattrapage contacts génériques
+python3 src/reanalyser_faux_positifs.py [--appliquer] [--dossier X] # rattrapage faux positifs INSEE/CP
 python3 src/monitor.py --init-db|--refresh|--import-data|--import-ref|--geocode|--status|--full
 ```
 
@@ -50,7 +51,7 @@ python3 -m unittest discover tests/
 
 | File | Role |
 |---|---|
-| `src/cli.py` | **Entrée terminal** — 18 actions en 4 sections (Moisson / Pipeline & publication / Maintenance / Données & infos) ; `executer_pipeline_complet()` |
+| `src/cli.py` | **Entrée terminal** — 19 actions en 4 sections (Moisson / Pipeline & publication / Maintenance / Données & infos) ; `executer_pipeline_complet()` |
 | `src/dashboard.py` | **Entrée web** — serveur stdlib local-only réutilisant `cli.py` ; pages `/`, `/examen`, `/decouverte`, `/catalogue` |
 | `src/harvest_auto.py` | **Entrée cron/Jenkins** — découverte non-interactive → warm-up nœud RUDI → pipeline complet |
 | `src/discover.py` | Découverte : recherche API, pré-filtrage, revue interactive, `rechercher_et_filtrer_auto()` |
@@ -82,6 +83,7 @@ python3 -m unittest discover tests/
 | `src/state.py` | `charger_state()`/`sauvegarder_state()` génériques + `construire_index_dossier()` (index dossier→state multi-fichiers) |
 | `src/publish_rudi.py` | Rattrapage publication + `menage_rudi_one_shot()`/`menage_organisations()` (voir « Publication RUDI ») |
 | `src/enrichir_descriptions.py` / `src/enrichir_contacts.py` | Rattrapages one-shot sur les `rudi_metadata.json` existants |
+| `src/reanalyser_faux_positifs.py` | Rattrapage offline des faux positifs INSEE/CP (re-filtrage des fichiers moissonnés, dry-run par défaut — menu 16) |
 | `src/tee.py` | Classe `Tee` (sortie dupliquée) — dashboard + harvest_auto |
 | `src/static/` | `dashboard.css` + `dashboard.js` partagés, servis sous `/static/` par le dashboard |
 | `data/decouverte.json` | État de découverte : vus, candidats, exclus, echecs, exclusions_termes, a_examiner, historique |
@@ -302,7 +304,7 @@ Chaîne d'observation du pipeline, **entièrement optionnelle** (le pipeline de 
 - **`src/monitor.py`** (CLI standalone, nécessite `psycopg2`) : `--init-db` (4 schémas : monitor/ref/decouverte/filtered, DDL idempotent), `--refresh` (métriques des `state*.json` → `metrics_history`), `--import-data` (CSV/GeoJSON filtrés → `filtered.data_rows`/`geo_features`, reprojection EPSG:2154), `--import-ref` (référentiels communes/IRIS/SIREN depuis `conf/communes_rm.py::INSEE_VERS_NOM`), `--geocode` (adresses sans code INSEE via RVA), `--status`, `--full`. Conf : `src/conf/monitor_db.json` (gitignoré, gabarit `.example`) ; les noms de schémas sont validés (`[a-z_][a-z0-9_]*`) avant interpolation SQL.
 - **Journal pipeline** : `cli.executer_pipeline_complet()` journalise chaque étape (durée, succès) dans `monitor.pipeline_runs` si la base est configurée — silencieux sinon.
 - **Provisionnement Superset** : `superset/setup_full.py` (+ `setup_dashboard.py`, `post_setup.py`), à exécuter dans le conteneur (voir docstring). Identifiants lus depuis l'environnement (`SUPERSET_ADMIN_USER/PASSWORD`, `POSTGRES_PASSWORD`). `superset/scratch/` (gitignoré) = scripts de debug jetables.
-- **Contrôle** : menu CLI 18 ou carte Superset du dashboard.
+- **Contrôle** : menu CLI 19 ou carte Superset du dashboard.
 
 ## Known limitations / not addressed
 

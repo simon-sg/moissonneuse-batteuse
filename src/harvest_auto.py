@@ -35,6 +35,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import discover
 import cli
 from connectors import rudi_node
+from tee import Tee as _TeeFichier
 
 LOG_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "logs")
 
@@ -42,24 +43,6 @@ LOG_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 # met plusieurs secondes à démarrer après que Podman rapporte le conteneur "running").
 _NOEUD_RUDI_TENTATIVES = 20
 _NOEUD_RUDI_DELAI_S = 3
-
-
-class _TeeFichier:
-    """Écrit à la fois sur la sortie standard d'origine et dans le fichier de log du run
-    (même principe que le _Tee de dashboard.py, mais vers un fichier plutôt qu'un buffer web)."""
-
-    def __init__(self, fichier, original):
-        self._fichier = fichier
-        self._original = original
-
-    def write(self, s):
-        self._fichier.write(s)
-        self._original.write(s)
-        return len(s)
-
-    def flush(self):
-        self._fichier.flush()
-        self._original.flush()
 
 
 def _demarrer_noeud_rudi() -> None:

@@ -103,6 +103,10 @@ CODES_INSEE_RM = {
     "35363",  # Pont-Péan
 }
 
+# Départements recoupant Rennes Métropole — uniquement le 35 (Ille-et-Vilaine).
+# Utilisé pour les JDD agrégés au niveau départemental (ex: indicateurs d'éducation).
+DEPARTEMENTS_RM = {"035"}
+
 # Circonscriptions législatives (Assemblée nationale) recoupant Rennes Métropole
 # Source : https://public.sig.rennesmetropole.fr/geoserver/wfs?SERVICE=WFS&REQUEST=GetFeature&VERSION=2.0.0&TYPENAMES=ladm_terri%3Acirconscription&OUTPUTFORMAT=csv
 # Chaque commune RM correspond à exactement une circonscription, SAUF Rennes qui en

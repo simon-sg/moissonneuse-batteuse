@@ -22,12 +22,12 @@ from conf.communes_rm import CODES_INSEE_RM, BBOX_RM
 from conf.datasets import DATASETS_GEO
 from connectors.geo_services import (
     nettoyer_url_ogc,
-    wfs_lister_couches, wfs_telecharger_rm, wfs_signature,
+    wfs_lister_couches, wfs_telecharger_rm, wfs_signature, wfs_get_contact,
     wms_get_capabilities, wms_couches_dans_rm,
     ogcapi_lister_collections, ogcapi_telecharger_rm, ogcapi_signature,
 )
 from translation.datagouv_to_rudi import traduire_metadonnees_service
-from connectors.rudi_node import publier_dataset, charger_conf_rudi
+from connectors.rudi_publish import publier_si_configue
 from state import charger_etat, sauvegarder_etat
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
@@ -46,20 +46,25 @@ def _sauver_geojson(chemin: str, data: dict) -> None:
     print(f"  Sauvegardé : {os.path.basename(chemin)} ({nb} features)")
 
 
-def traiter_wfs(config: dict, dossier: str, state: dict) -> list[tuple[str, str]]:
+def traiter_wfs(config: dict, dossier: str, state: dict) -> tuple[list[tuple[str, str]], bool, dict | None]:
     """
     Télécharge les couches WFS dans la bbox RM (sautées si signature inchangée
     et fichier déjà présent — voir _charger_state en tête de fichier).
-    Retourne [(chemin_fichier, typename), ...].
+    Retourne ([(chemin_fichier, typename), ...], au_moins_une_changee, contact).
     """
     url = nettoyer_url_ogc(config["url"])
     couches = config.get("couches")
+    contact = None
     if not couches:
         print("  Détection automatique des couches WFS...")
         couches = wfs_lister_couches(url)
         print(f"  {len(couches)} couche(s) : {couches[:5]}")
 
+    # Extraction du contact depuis le GetCapabilities (une seule requête)
+    contact = wfs_get_contact(url)
+
     resultats = []
+    changee = False
     for typename in couches:
         nom_fichier = f"{_slug_typename(typename)}.geojson"
         chemin = os.path.join(dossier, nom_fichier)
@@ -78,14 +83,15 @@ def traiter_wfs(config: dict, dossier: str, state: dict) -> list[tuple[str, str]
         _sauver_geojson(chemin, data)
         resultats.append((chemin, typename))
         state[cle] = {"signature": signature} if signature else {}
-    return resultats
+        changee = True
+    return resultats, changee, contact
 
 
-def traiter_ogcapi(config: dict, dossier: str, state: dict) -> list[tuple[str, str]]:
+def traiter_ogcapi(config: dict, dossier: str, state: dict) -> tuple[list[tuple[str, str]], bool]:
     """
     Télécharge les collections OGC API Features dans la bbox RM (sautées si signature
     inchangée et fichier déjà présent — voir _charger_state en tête de fichier).
-    Retourne [(chemin_fichier, collection_id), ...].
+    Retourne ([(chemin_fichier, collection_id), ...], au_moins_une_changee).
     """
     url = config["url"].rstrip("/")
     couches = config.get("couches")
@@ -96,6 +102,7 @@ def traiter_ogcapi(config: dict, dossier: str, state: dict) -> list[tuple[str, s
         print(f"  {len(couches)} collection(s) : {couches[:5]}")
 
     resultats = []
+    changee = False
     for col_id in couches:
         nom_fichier = f"{_slug_typename(col_id)}.geojson"
         chemin = os.path.join(dossier, nom_fichier)
@@ -114,10 +121,11 @@ def traiter_ogcapi(config: dict, dossier: str, state: dict) -> list[tuple[str, s
         _sauver_geojson(chemin, data)
         resultats.append((chemin, col_id))
         state[cle] = {"signature": signature} if signature else {}
-    return resultats
+        changee = True
+    return resultats, changee
 
 
-def traiter_geojson(config: dict, dossier: str, state: dict) -> list[tuple[str, str]]:
+def traiter_geojson(config: dict, dossier: str, state: dict) -> tuple[list[tuple[str, str]], bool]:
     """Télécharge un fichier GeoJSON statique et filtre les features RM.
 
     Filtrage par propriété si `champ_iris` est défini dans la config (valeur = code INSEE
@@ -135,6 +143,7 @@ def traiter_geojson(config: dict, dossier: str, state: dict) -> list[tuple[str, 
             "dossier": "centroides-communes-rm",
             "theme": "location",
         }
+    Retourne ([(chemin_fichier, nom_fichier)], au_moins_une_changee).
     """
     from connectors.http import session
 
@@ -153,7 +162,7 @@ def traiter_geojson(config: dict, dossier: str, state: dict) -> list[tuple[str, 
 
     if sig_actuelle and os.path.exists(chemin) and sig_actuelle == state.get(cle, {}).get("signature"):
         print(f"  GeoJSON inchangé (cache) : {os.path.basename(chemin)}")
-        return [(chemin, nom_fichier)]
+        return [(chemin, nom_fichier)], False
 
     print(f"  Téléchargement GeoJSON : {url[:70]}")
     resp = session.get(url, timeout=120)
@@ -189,7 +198,7 @@ def traiter_geojson(config: dict, dossier: str, state: dict) -> list[tuple[str, 
         json.dump(geojson_rm, f, ensure_ascii=False)
 
     state[cle] = {"signature": sig_actuelle} if sig_actuelle else {}
-    return [(chemin, nom_fichier)]
+    return [(chemin, nom_fichier)], True
 
 
 def traiter_wms(config: dict, dossier: str) -> dict:
@@ -218,6 +227,8 @@ def traiter_wms(config: dict, dossier: str) -> dict:
         "titre_service": titre_service,
         "producteur": config.get("producteur", ""),
         "couches": couches_rm,
+        "metadata_urls": caps.get("metadata_urls", []) if caps else [],
+        "contact": caps.get("contact") if caps else None,
     }
     chemin = os.path.join(dossier, "wms_service.json")
     with open(chemin, "w", encoding="utf-8") as f:
@@ -234,42 +245,49 @@ def traiter_geo_dataset(config: dict, state: dict) -> None:
     print(f"  Type : {service_type.upper()}  |  URL : {config['url'][:70]}")
 
     fichiers_geojson: list[tuple[str, str]] = []
+    changee = False
     wms_service: dict | None = None
+    contact_source: dict | None = None
 
     if service_type == "wfs":
-        fichiers_geojson = traiter_wfs(config, dossier, state)
+        fichiers_geojson, changee, contact_source = traiter_wfs(config, dossier, state)
     elif service_type == "ogcapi":
-        fichiers_geojson = traiter_ogcapi(config, dossier, state)
+        fichiers_geojson, changee = traiter_ogcapi(config, dossier, state)
     elif service_type == "wms":
         wms_service = traiter_wms(config, dossier)
+        contact_source = wms_service.get("contact") if wms_service else None
+        changee = True  # WMS toujours regénéré (GetCapabilities léger)
     elif service_type == "geojson":
-        fichiers_geojson = traiter_geojson(config, dossier, state)
+        fichiers_geojson, changee = traiter_geojson(config, dossier, state)
     else:
         print(f"  Type inconnu : {service_type!r}. Types supportés : wfs, wms, ogcapi, geojson")
         return
 
-    # Métadonnées RUDI
     rudi_metadata_file = os.path.join(dossier, "rudi_metadata.json")
+    # Si rien n'a changé et que rudi_metadata.json existe déjà, on garde l'existant
+    if not changee and os.path.isfile(rudi_metadata_file):
+        print("  Aucune donnée modifiée — métadonnées RUDI et publication inchangées.")
+        return
+
+    # Métadonnées RUDI
+    metadata_urls = wms_service.get("metadata_urls", []) if wms_service else []
     rudi_metadata = traduire_metadonnees_service(
         config=config,
         fichiers_geojson=fichiers_geojson,
         wms_service=wms_service,
+        metadata_urls=metadata_urls,
+        contacts_source=[contact_source] if contact_source else None,
     )
     with open(rudi_metadata_file, "w", encoding="utf-8") as f:
         json.dump(rudi_metadata, f, ensure_ascii=False, indent=2)
     print("  Métadonnées RUDI sauvegardées.")
 
     # Publication sur le nœud RUDI
-    conf_rudi = charger_conf_rudi()
-    if conf_rudi:
-        try:
-            chemins = [ch for ch, _ in fichiers_geojson]
-            publier_dataset(conf=conf_rudi, rudi_metadata=rudi_metadata,
-                            fichiers_filtres=chemins)
-        except Exception as e:
-            print(f"  [RUDI] Erreur publication : {e}")
-    else:
-        print("  [RUDI] src/conf/rudi_node.json absent, publication ignorée.")
+    publie = publier_si_configue(rudi_metadata, [ch for ch, _ in fichiers_geojson])
+
+    if publie:
+        state.setdefault("_rudi_publie", {})
+        state["_rudi_publie"][config["dossier"]] = True
 
 
 def main():

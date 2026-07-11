@@ -34,21 +34,19 @@ from connectors.bdnb import (
     extraire_batiments_rm, extraire_table_par_bg_id, sauvegarder_csv,
     TABLES_DEFAUT, CHAMP_BG_ID,
 )
-from connectors.rudi_node import publier_dataset, charger_conf_rudi
+from connectors.rudi_publish import publier_si_configue
 from translation.description_secours import generer_complement
 from state import charger_etat, sauvegarder_etat
-from conf.communes_rm import BBOX_RM_RUDI as _BBOX_RM
+from translation.rudi_builder import (
+    construire_rudi_metadata,
+    media_filtre, media_source as _media_source_entry,
+)
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
 STATE_FILE = os.path.join(DATA_DIR, "state_bdnb.json")
 
 _PRODUCTEUR = "Centre Scientifique et Technique du Bâtiment (CSTB)"
 _ZONE = "Rennes Métropole"
-_LICENCE_ETALAB = {
-    "licence_type": "STANDARD",
-    "licence_label": "etalab-2.0",
-    "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
-}
 
 
 def _inchange(config_id: str, last_modified: str | None, content_length: str | None,
@@ -72,70 +70,36 @@ def _generer_rudi_metadata(config: dict, fichiers: list[tuple[str, list[str], in
     millesime = config.get("millesime", "")
     url_source = config.get("url_zip", "https://bdnb.io/download/")
     titre_base = f"Base de Données Nationale des Bâtiments (BDNB{(' ' + millesime) if millesime else ''})"
-    titre = f"{titre_base} — {_ZONE}"
-    synopsis = f"Données BDNB{(' millésime ' + millesime) if millesime else ''} filtrées sur {_ZONE}."[:150]
-
-    local_id = str(uuid.uuid5(uuid.NAMESPACE_URL, f"bdnb/{config_id}"))
 
     colonnes_principales = fichiers[0][1] if fichiers else []
-    description = generer_complement(
+    complement = generer_complement(
         theme=theme, producteur=_PRODUCTEUR, zone=_ZONE, colonnes=colonnes_principales
     )
     description = (
         f"Données BDNB filtrées sur {_ZONE}.\n\n"
         f"Le millésime {millesime} inclut {len(fichiers)} table(s) : "
         + ", ".join(n for n, _, _ in fichiers) + ".\n\n"
-        f"Source : {url_source}\n\n" + description
+        f"Source : {url_source}\n\n" + complement
     )
 
-    medias_fichiers = [
-        {
-            "media_id": str(uuid.uuid5(uuid.NAMESPACE_URL, f"bdnb/{config_id}/{nom}")),
-            "media_type": "FILE",
-            "media_name": nom,
-            "media_caption": f"{nom} — données BDNB filtrées sur {_ZONE} (CSV, {nb_rm} bâtiments)",
-            "connector": {
-                "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
-                "interface_contract": "dwnl",
-            },
-        }
-        for nom, _, nb_rm in fichiers
-    ]
-    media_source = {
-        "media_id": str(uuid.uuid5(uuid.NAMESPACE_URL, f"bdnb/{config_id}/source")),
-        "media_type": "SERVICE",
-        "media_name": "source-bdnb",
-        "media_caption": f"ZIP source BDNB département 35 (Bretagne entière)",
-        "connector": {"url": url_source, "interface_contract": "dwnl"},
-    }
+    medias = [media_filtre(f"bdnb/{config_id}", nom, _ZONE,
+                           f"{nom} — données BDNB filtrées sur {_ZONE} (CSV, {nb_rm} bâtiments)")
+              for nom, _, nb_rm in fichiers]
 
-    dates = {}
-    if last_modified:
-        try:
-            from email.utils import parsedate_to_datetime
-            dates["updated"] = parsedate_to_datetime(last_modified).strftime("%Y-%m-%dT00:00:00Z")
-        except Exception:
-            dates["updated"] = datetime.date.today().isoformat() + "T00:00:00Z"
-
-    return {
-        "local_id": local_id,
-        "resource_title": titre,
-        "synopsis": [{"lang": "fr", "text": synopsis}],
-        "summary": [{"lang": "fr", "text": description}],
-        "theme": theme,
-        "keywords": ["bdnb", "bâtiment", "dpe", "énergie", _ZONE.lower()],
-        "producer": {"organization_name": _PRODUCTEUR},
-        "contacts": [],
-        "available_formats": medias_fichiers + [media_source],
-        "dataset_dates": dates,
-        "storage_status": "online",
-        "access_condition": {
-            "licence": _LICENCE_ETALAB,
-            "confidentiality": {"restricted_access": False, "gdpr_sensitive": False},
-        },
-        "geography": _BBOX_RM,
-        "metadata_info": {"metadata_source": url_source},
-    }
+    return construire_rudi_metadata(
+        local_id=str(uuid.uuid5(uuid.NAMESPACE_URL, f"bdnb/{config_id}")),
+        titre=f"{titre_base} — {_ZONE}",
+        synopsis=f"Données BDNB{(' millésime ' + millesime) if millesime else ''} filtrées sur {_ZONE}."[:150],
+        description=description,
+        theme=theme,
+        keywords=["bdnb", "bâtiment", "dpe", "énergie", _ZONE.lower()],
+        producteur_nom=_PRODUCTEUR,
+        url_source=url_source,
+        url_fiche=url_source,
+        medias=medias,
+        date_source=last_modified,
+        metadata_source_label="bdnb.io",
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -229,18 +193,7 @@ def traiter_config(config: dict, state: dict) -> dict:
     print(f"  → rudi_metadata.json ({len(fichiers_produits)} fichier(s))")
 
     # 6. Publication RUDI
-    rudi_publie = False
-    conf_rudi = charger_conf_rudi()
-    if conf_rudi:
-        try:
-            publier_dataset(conf=conf_rudi, rudi_metadata=rudi_meta,
-                            fichiers_filtres=chemins_csv)
-            print(f"  [RUDI] Publié.")
-            rudi_publie = True
-        except Exception as e:
-            print(f"  [RUDI] Erreur : {e}")
-    else:
-        print(f"  [RUDI] rudi_node.json absent — publication ignorée.")
+    rudi_publie = publier_si_configue(rudi_meta, chemins_csv)
 
     # 7. État
     nb_total = sum(nb for _, _, nb in fichiers_produits)

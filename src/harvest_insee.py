@@ -18,19 +18,21 @@ import os
 import sys
 import uuid
 
-import requests
-
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from conf.datasets import DATASETS_INSEE
 from connectors.insee import resoudre_url, extraire_membres, extraire_dictionnaire
+from connectors.http import session
 from translation.description_secours import generer_complement
-from connectors.rudi_node import publier_dataset, charger_conf_rudi
+from connectors.rudi_publish import publier_si_configue
 from harvest_batch import filtrer_csv_bytes
+from translation.rudi_builder import (
+    LICENCE_ETALAB, construire_rudi_metadata,
+    media_filtre, media_dict,
+)
 from filters.csv import slugifier, sauvegarder_csv
 from connectors.analyseurs import _detecter_champs
 from state import charger_etat, sauvegarder_etat
-from conf.communes_rm import BBOX_RM_RUDI as _BBOX_RM
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
 STATE_FILE = os.path.join(DATA_DIR, "state_insee.json")
@@ -53,7 +55,7 @@ def _inchange(pub_id: str, url: str, state: dict, dossier: str) -> bool:
     if not glob.glob(os.path.join(dossier, "*-rennesmetropole.csv")):
         return False
     try:
-        r = requests.head(url, headers=_HEADERS, timeout=15, allow_redirects=True)
+        r = session.head(url, headers=_HEADERS, timeout=15, allow_redirects=True)
         size = r.headers.get("Content-Length")
         lm   = r.headers.get("Last-Modified")
         if size:
@@ -69,11 +71,10 @@ def _inchange(pub_id: str, url: str, state: dict, dossier: str) -> bool:
 # Métadonnées RUDI
 # ---------------------------------------------------------------------------
 
-_LICENCE_ETALAB = {
-    "licence_type": "STANDARD",
-    "licence_label": "etalab-2.0",
-    "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
-}
+_PRODUCTEUR = "Institut national de la statistique et des études économiques (Insee)"
+_ZONE = "Rennes Métropole"
+
+
 def _generer_rudi_metadata(pub: dict, fichiers_data: list[tuple[str, int]],
                             date_maj: str | None,
                             fichiers_dict: list[str] | None = None,
@@ -86,92 +87,33 @@ def _generer_rudi_metadata(pub: dict, fichiers_data: list[tuple[str, int]],
                        n'ont jamais de description source, on la complète systématiquement
     """
     url_page = pub["url_page"]
-    zone = "Rennes Métropole"
-    titre = f"{pub['titre']} — {zone}"
-    synopsis = f"{pub['titre'][:110]} — données filtrées sur {zone}."[:150]
-    producteur_nom = "Institut national de la statistique et des études économiques (Insee)"
+    cle_stable = pub["id"]
     theme = pub.get("theme", "society")
 
-    # local_id déterministe basé sur pub["id"] (clé stable dans DATASETS_INSEE/state_insee.json),
-    # pas sur url_page : insee.fr renumérote parfois une publication (nouveau millésime), ce qui
-    # changerait url_page et créerait une fiche en double orpheline sur le nœud plutôt que de
-    # mettre à jour l'existante.
-    cle_stable = pub["id"]
-    local_id = str(uuid.uuid5(uuid.NAMESPACE_URL, f"insee:{cle_stable}"))
-
-    medias_filtres = [
-        {
-            "media_id": str(uuid.uuid5(uuid.NAMESPACE_URL, f"insee:{cle_stable}/filtered/{nom}")),
-            "media_type": "FILE",
-            "media_name": nom,
-            "media_caption": f"{nom} — données filtrées sur {zone} (CSV)",
-            "connector": {
-                "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
-                "interface_contract": "dwnl",
-            },
-        }
-        for nom, _ in fichiers_data
-    ]
-    media_source = {
-        "media_id": str(uuid.uuid5(uuid.NAMESPACE_URL, f"insee:{cle_stable}/source")),
-        "media_type": "SERVICE",
-        "media_name": "source-insee",
-        "media_caption": "Publication complète (France entière) sur insee.fr",
-        "connector": {
-            "url": pub.get("url_direct", url_page),
-            "interface_contract": "dwnl",
-        },
-    }
-
-
-    medias_dict = [
-        {
-            "media_id": str(uuid.uuid5(uuid.NAMESPACE_URL, f"insee:{cle_stable}/dict/{nom}")),
-            "media_type": "FILE",
-            "media_name": nom,
-            "media_caption": f"Dictionnaire des variables — {nom} (CSV)",
-            "connector": {
-                "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
-                "interface_contract": "dwnl",
-            },
-        }
-        for nom in (fichiers_dict or [])
-    ]
-    dates = {}
-    if date_maj:
-        # Last-Modified HTTP ex: "Wed, 12 Feb 2025 09:41:37 GMT" → "2025-02-12T00:00:00Z"
-        try:
-            from email.utils import parsedate_to_datetime
-            dates["updated"] = parsedate_to_datetime(date_maj).strftime("%Y-%m-%dT00:00:00Z")
-        except Exception:
-            dates["updated"] = datetime.date.today().isoformat() + "T00:00:00Z"
+    medias = [media_filtre(f"insee:{cle_stable}", nom, _ZONE) for nom, _ in fichiers_data]
+    medias += [media_dict(f"insee:{cle_stable}", nom) for nom in (fichiers_dict or [])]
 
     description = (
-        f"Données INSEE filtrées sur {zone}.\n\n"
+        f"Données INSEE filtrées sur {_ZONE}.\n\n"
         f"Source : {url_page}\n\n"
-        + generer_complement(theme=theme, producteur=producteur_nom, zone=zone,
+        + generer_complement(theme=theme, producteur=_PRODUCTEUR, zone=_ZONE,
                               colonnes=entetes_colonnes)
     )
 
-    return {
-        "local_id": local_id,
-        "resource_title": titre,
-        "synopsis": [{"lang": "fr", "text": synopsis}],
-        "summary": [{"lang": "fr", "text": description}],
-        "theme": theme,
-        "keywords": ["insee", zone.lower(), pub["id"]],
-        "producer": {"organization_name": producteur_nom},
-        "contacts": [],
-        "available_formats": medias_filtres + medias_dict + [media_source],
-        "dataset_dates": dates,
-        "storage_status": "online",
-        "access_condition": {
-            "licence": _LICENCE_ETALAB,
-            "confidentiality": {"restricted_access": False, "gdpr_sensitive": False},
-        },
-        "geography": _BBOX_RM,
-        "metadata_info": {"metadata_source": url_page},
-    }
+    return construire_rudi_metadata(
+        local_id=str(uuid.uuid5(uuid.NAMESPACE_URL, f"insee:{cle_stable}")),
+        titre=f"{pub['titre']} — {_ZONE}",
+        synopsis=f"{pub['titre'][:110]} — données filtrées sur {_ZONE}."[:150],
+        description=description,
+        theme=theme,
+        keywords=["insee", _ZONE.lower(), pub["id"]],
+        producteur_nom=_PRODUCTEUR,
+        url_source=pub.get("url_direct", url_page),
+        url_fiche=url_page,
+        medias=medias,
+        date_source=date_maj,
+        metadata_source_label="insee.fr",
+    )
 
 
 
@@ -213,7 +155,7 @@ def _filtrer_dict_variables(contenu: bytes) -> bytes:
 def telecharger_zip(pub_id: str, url: str) -> str:
     """Télécharge un ZIP en streaming vers un fichier temporaire. Retourne le chemin."""
     chemin_tmp = os.path.join(DATA_DIR, f"_tmp_{pub_id}.zip")
-    r = requests.get(url, headers=_HEADERS, timeout=120, stream=True)
+    r = session.get(url, headers=_HEADERS, timeout=120, stream=True)
     r.raise_for_status()
     total_attendu = int(r.headers.get("Content-Length", 0))
     total = 0
@@ -260,7 +202,7 @@ def traiter_publication(pub: dict, state: dict) -> dict:
 
     # 3. Métadonnées HTTP (pour la détection de changement future)
     try:
-        r_head = requests.head(url, headers=_HEADERS, timeout=15, allow_redirects=True)
+        r_head = session.head(url, headers=_HEADERS, timeout=15, allow_redirects=True)
         content_length = r_head.headers.get("Content-Length")
         last_modified  = r_head.headers.get("Last-Modified")
     except Exception:
@@ -379,17 +321,7 @@ def traiter_publication(pub: dict, state: dict) -> dict:
         print(f"  → rudi_metadata.json généré")
 
         # 9. Publication optionnelle sur le nœud RUDI
-        conf_rudi = charger_conf_rudi()
-        if conf_rudi:
-            try:
-                publier_dataset(conf=conf_rudi, rudi_metadata=rudi_meta,
-                                fichiers_filtres=chemins_csv + chemins_dict)
-                print(f"  [RUDI] Publié.")
-                rudi_publie = True
-            except Exception as e:
-                print(f"  [RUDI] Erreur publication : {e}")
-        else:
-            print(f"  [RUDI] rudi_node.json absent — publication ignorée.")
+        rudi_publie = publier_si_configue(rudi_meta, chemins_csv + chemins_dict)
 
     # 10. Mettre à jour le cache. Le téléchargement/filtrage est acquis dès qu'on
     # arrive ici ; `rudi_publie` distingue séparément si la publication a réussi.

@@ -1,0 +1,39 @@
+services:
+  postgis:
+    image: postgis/postgis:16-3.4
+    container_name: mb-postgis
+    environment:
+      POSTGRES_DB: moissonneuse
+      POSTGRES_USER: monitor
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-moissonneuse}
+    volumes:
+      - postgis-data:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:5433:5432"
+    networks:
+      - mb-internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U monitor -d moissonneuse"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  superset:
+    image: apache/superset:4.1.1
+    container_name: mb-superset
+    environment:
+      SUPERSET_SECRET_KEY: ${SUPERSET_SECRET_KEY:-changeme}
+    ports:
+      - "127.0.0.1:8088:8088"
+    networks:
+      - mb-internal
+    depends_on:
+      postgis:
+        condition: service_healthy
+
+volumes:
+  postgis-data:
+
+networks:
+  mb-internal:
+    driver: bridge

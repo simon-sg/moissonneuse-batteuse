@@ -162,7 +162,8 @@ CREATE TABLE IF NOT EXISTS {schema_ref}.communes_rm (
     code_insee CHAR(5) PRIMARY KEY,
     nom TEXT NOT NULL,
     code_postal TEXT,
-    centroid GEOMETRY(Point, 2154)
+    centroid GEOMETRY(Point, 2154),
+    geom GEOMETRY(MultiPolygon, 2154)
 );
 
 CREATE TABLE IF NOT EXISTS {schema_ref}.iris_rm (
@@ -291,9 +292,75 @@ def _charger_centroides_communes() -> dict[str, tuple[float, float]]:
     return centroides
 
 
+def _importer_contours_communes(conf: dict, cur) -> None:
+    """Télécharge les contours des 43 communes RM et les importe dans ref.communes_rm.geom."""
+    sch = _nom_schema(conf, "schema_ref")
+    contours_path = os.path.join(DATA_DIR, "contours_communes_rm.geojson")
+
+    # Télécharger si absent ou ancien (> 30 jours)
+    need_download = True
+    if os.path.isfile(contours_path):
+        age = time.time() - os.path.getmtime(contours_path)
+        if age < 30 * 86400:
+            need_download = False
+
+    if need_download:
+        url = "https://geo.api.gouv.fr/communes?codeEpci=243500139&format=geojson&geometry=contour"
+        print(f"[monitor] Téléchargement des contours communes RM…")
+        try:
+            r = session.get(url, timeout=60)
+            r.raise_for_status()
+            with open(contours_path, "w", encoding="utf-8") as f:
+                f.write(r.text)
+            print(f"  Sauvegardé : {contours_path}")
+        except Exception as e:
+            print(f"  (Erreur téléchargement contours : {e})")
+            return
+
+    # Importer les contours dans la base
+    try:
+        with open(contours_path, encoding="utf-8") as f:
+            data = json.load(f)
+    except (OSError, json.JSONDecodeError) as e:
+        print(f"  (Erreur lecture contours : {e})")
+        return
+
+    features = data.get("features", [])
+    if not features:
+        print("  Aucun contour trouvé dans le fichier.")
+        return
+
+    n = 0
+    for feat in features:
+        props = feat.get("properties", {})
+        code_insee = str(props.get("code") or props.get("INSEE_COM") or "").strip()
+        if not code_insee or len(code_insee) != 5:
+            continue
+        geom = feat.get("geometry")
+        if not geom:
+            continue
+        wkt = _geojson_geom_to_wkt(geom)
+        if not wkt:
+            continue
+        cur.execute(f"""
+            UPDATE {sch}.communes_rm
+            SET geom = ST_Transform(ST_GeomFromText(%s), 2154)
+            WHERE code_insee = %s
+        """, (f"SRID=4326;{wkt}", code_insee))
+        n += 1
+    print(f"  {n} contours de communes importés (4326 → 2154).")
+
+
 def _import_ref(conf: dict, cur) -> None:
     sch = _nom_schema(conf, "schema_ref")
     print("[monitor] Import des communes RM…")
+
+    # S'assurer que la colonne geom existe (pour les tables préexistantes)
+    cur.execute(f"""
+        ALTER TABLE {sch}.communes_rm
+        ADD COLUMN IF NOT EXISTS geom GEOMETRY(MultiPolygon, 2154)
+    """)
+
     centroides = _charger_centroides_communes()
 
     insee_vers_nom = INSEE_VERS_NOM
@@ -376,6 +443,9 @@ def _import_ref(conf: dict, cur) -> None:
         n_siren += 1
     print(f"  {n_siren} SIREN importés.")
 
+    # Contours des communes (fichier top-level, survit à la purge)
+    _importer_contours_communes(conf, cur)
+
 
 # ---------------------------------------------------------------------------
 # Refresh : lecture des state_*.json -> monitor.datasets + metrics_history
@@ -408,16 +478,27 @@ def _upsert_datasets(cur, sch: str, entries: list[tuple]) -> None:
         """, e)
 
 
-def _lire_theme_depuis_rudi(dossier_nom: str) -> str | None:
-    """Lit le thème depuis le rudi_metadata.json d'un dossier moissonné."""
+def _lire_meta_depuis_rudi(dossier_nom: str) -> dict:
+    """Lit thème, titre et producteur depuis le rudi_metadata.json d'un dossier moissonné."""
     chemin = os.path.join(DATA_DIR, dossier_nom, "rudi_metadata.json")
     if os.path.isfile(chemin):
         try:
             with open(chemin, encoding="utf-8") as f:
-                return json.load(f).get("theme")
+                meta = json.load(f)
+            producteur = None
+            org = meta.get("organization") or meta.get("producer") or {}
+            if isinstance(org, dict):
+                producteur = org.get("organization_name") or org.get("name")
+            elif isinstance(org, str):
+                producteur = org
+            return {
+                "theme": meta.get("theme"),
+                "titre": meta.get("resource_title") or meta.get("title"),
+                "producteur": producteur,
+            }
         except (OSError, ValueError):
             pass
-    return None
+    return {"theme": None, "titre": None, "producteur": None}
 
 
 def _refresh(conf: dict, cur) -> None:
@@ -455,37 +536,40 @@ def _refresh(conf: dict, cur) -> None:
                     lmod = datetime.datetime.strptime(lmod, "%Y-%m-%dT%H:%M:%S")
             except (ValueError, TypeError):
                 lmod = None
+        meta = _lire_meta_depuis_rudi(ds.get("dossier", ds_id))
         entries.append((
             ds_id, ds.get("dossier", ds_id), "tabular",
-            _lire_theme_depuis_rudi(ds.get("dossier", ds_id)),
-            None, None, nb_rm,
+            meta["theme"], meta["titre"], meta["producteur"], nb_rm,
             ds.get("date_harvest", str(now)), ds.get("rudi_publie", False), lmod,
         ))
 
     # INSEE
     for ds_id, ds in state_insee.items():
+        meta = _lire_meta_depuis_rudi(ds.get("dossier", ds_id))
         entries.append((
             ds_id, ds.get("dossier", ds_id), "insee",
-            _lire_theme_depuis_rudi(ds.get("dossier", ds_id)),
-            None, None, ds.get("nb_rm", 0),
+            meta["theme"], meta["titre"], meta["producteur"],
+            ds.get("nb_rm", 0),
             ds.get("date_harvest", str(now)), ds.get("rudi_publie", False), None,
         ))
 
     # OEB
     for ds_id, ds in state_oeb.items():
+        meta = _lire_meta_depuis_rudi(ds.get("dossier", ds_id))
         entries.append((
             ds_id, ds.get("dossier", ds_id), "oeb",
-            _lire_theme_depuis_rudi(ds.get("dossier", ds_id)),
-            None, None, ds.get("nb_rm", 0),
+            meta["theme"], meta["titre"], meta["producteur"],
+            ds.get("nb_rm", 0),
             ds.get("date_harvest", str(now)), ds.get("rudi_publie", False), None,
         ))
 
     # BDNB
     for ds_id, ds in state_bdnb.items():
+        meta = _lire_meta_depuis_rudi(ds.get("dossier", ds_id))
         entries.append((
             ds_id, ds.get("dossier", ds_id), "bdnb",
-            _lire_theme_depuis_rudi(ds.get("dossier", ds_id)),
-            "BDNB", None, ds.get("nb_rm", 0),
+            meta["theme"], meta["titre"] or "BDNB", meta["producteur"],
+            ds.get("nb_rm", 0),
             ds.get("date_harvest", str(now)), ds.get("rudi_publie", False), None,
         ))
 
@@ -893,6 +977,8 @@ def _import_data(conf: dict, cur, dossier_filtre: str = "", limite: int = 0) -> 
         source = "tabular"
         theme = None
         dataset_id = dossier
+        titre = None
+        producteur = None
         meta_path = os.path.join(dpath, "rudi_metadata.json")
         if os.path.isfile(meta_path):
             try:
@@ -900,8 +986,22 @@ def _import_data(conf: dict, cur, dossier_filtre: str = "", limite: int = 0) -> 
                     meta = json.load(f)
                 theme = meta.get("theme")
                 dataset_id = meta.get("local_id", meta.get("global_id", dossier))
+                titre = meta.get("resource_title") or meta.get("title")
+                org = meta.get("organization") or meta.get("producer") or {}
+                if isinstance(org, dict):
+                    producteur = org.get("organization_name") or org.get("name")
+                elif isinstance(org, str):
+                    producteur = org
             except (OSError, json.JSONDecodeError):
                 pass
+
+        # Récupérer la vraie source depuis monitor.datasets
+        cur.execute(f"""
+            SELECT source FROM {sch_mon}.datasets WHERE dossier = %s LIMIT 1
+        """, (dossier,))
+        row_src = cur.fetchone()
+        if row_src:
+            source = row_src[0]
 
         fichiers = sorted(os.listdir(dpath))
         n_csv = 0
@@ -928,12 +1028,13 @@ def _import_data(conf: dict, cur, dossier_filtre: str = "", limite: int = 0) -> 
         if n_csv or n_geo:
             total_dossiers += 1
             print(f"  {dossier}: {n_csv} lignes, {n_geo} features géo")
-            # Marquer comme importé dans datasets
+            # Marquer comme importé et renseigner titre/producteur si disponibles
             cur.execute(f"""
                 UPDATE {sch_mon}.datasets
-                SET data_imported = TRUE, data_imported_at = NOW()
+                SET data_imported = TRUE, data_imported_at = NOW(),
+                    titre = COALESCE(%s, titre), producteur = COALESCE(%s, producteur)
                 WHERE dossier = %s
-            """, (dossier,))
+            """, (titre, producteur, dossier))
             # Commit périodique pour éviter rollback en cas d'interruption
             if total_dossiers % 20 == 0:
                 cur.connection.commit()
@@ -1012,15 +1113,17 @@ def _geocode(conf: dict, cur) -> None:
 # ---------------------------------------------------------------------------
 
 def _log_pipeline(conf: dict, cur,
-                  duree: float = 0, succes: bool = True, etape: str = "") -> None:
+                  duree: float = 0, succes: bool = True, etape: str = "",
+                  erreur: str | None = None) -> None:
     sch = _nom_schema(conf, "schema_monitor")
     now = datetime.datetime.now()
     cur.execute(f"""
         INSERT INTO {sch}.pipeline_runs
-            (date_run, start_time, end_time, etape, duree_secondes, succes)
-        VALUES (%s, %s, %s, %s, %s, %s)
+            (date_run, start_time, end_time, etape, duree_secondes, succes, error_message)
+        VALUES (%s, %s, %s, %s, %s, %s, %s)
     """, (now.date(), now - datetime.timedelta(seconds=duree), now,
-          etape or "pipeline", duree, succes))
+          etape or "pipeline", duree, succes,
+          (erreur[:500] if erreur else None)))
     # Insert/update metrics_history for today
     cur.execute(f"""
         INSERT INTO {sch}.metrics_history (date_key, pipeline_duree_sec, pipeline_succes)

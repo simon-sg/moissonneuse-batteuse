@@ -279,7 +279,8 @@ ETAPES_PIPELINE = [
 ]
 
 
-def _log_pipeline_etape(etape: str, duree: float, succes: bool) -> None:
+def _log_pipeline_etape(etape: str, duree: float, succes: bool,
+                        erreur: str | None = None) -> None:
     """Optionnel : log l'étape dans la base monitor si monitor_db.json existe."""
     try:
         from monitor import _charger_conf_db, _connecter, _log_pipeline
@@ -287,7 +288,7 @@ def _log_pipeline_etape(etape: str, duree: float, succes: bool) -> None:
         conn = _connecter(conf)
         try:
             cur = conn.cursor()
-            _log_pipeline(conf, cur, duree, succes, etape)
+            _log_pipeline(conf, cur, duree, succes, etape, erreur=erreur)
             conn.commit()
         finally:
             conn.close()
@@ -324,9 +325,24 @@ def executer_pipeline_complet(etapes_supplementaires: list | None = None) -> lis
 
     def _exec_etape(label, fn, args, kwargs):
         t0 = time.time()
-        ok = _executer(label, fn, *args, **kwargs)
+        ok = False
+        erreur = None
+        print(f"\n{'=' * 60}\n{label}\n{'=' * 60}")
+        try:
+            fn(*args, **kwargs)
+            ok = True
+        except KeyboardInterrupt:
+            print(f"\n[{label}] interrompu par l'utilisateur.")
+        except SystemExit as e:
+            print(f"\n[{label}] arrêté (code {e.code}).")
+        except Exception as e:
+            print(f"\n[{label}] ERREUR : {e}")
+            traceback.print_exc()
+            erreur = str(e)[:500]
         duree = time.time() - t0
-        _log_pipeline_etape(label, duree, ok)
+        if ok:
+            print(f"\n[{label}] terminé en {_formater_duree(duree)}.")
+        _log_pipeline_etape(label, duree, ok, erreur)
         return label, ok
 
     # 1. Étapes séquentielles avant le parallèle (tabulaire, batch)
@@ -347,6 +363,32 @@ def executer_pipeline_complet(etapes_supplementaires: list | None = None) -> lis
     # 3. Étapes séquentielles après le parallèle (catalogue, publication RUDI)
     for label, fn, args, kwargs in etapes[idx_fin_par:]:
         resultats.append(_exec_etape(label, fn, args, kwargs))
+
+    # 4. Mise à jour monitoring (best-effort, jamais bloquant)
+    def _maj_monitoring():
+        from monitor import (_charger_conf_db, _connecter, _refresh,
+                             _import_data, _import_ref, _nom_schema)
+        conf = _charger_conf_db()
+        conn = _connecter(conf)
+        try:
+            cur = conn.cursor()
+            _refresh(conf, cur)
+            conn.commit()
+            _import_data(conf, cur)
+            conn.commit()
+            # Import-ref si les tables de référence sont vides
+            cur.execute(f"SELECT COUNT(*) FROM {_nom_schema(conf, 'schema_ref')}.communes_rm")
+            if cur.fetchone()[0] == 0:
+                _import_ref(conf, cur)
+                conn.commit()
+        finally:
+            conn.close()
+
+    try:
+        _maj_monitoring()
+        resultats.append(("Mise à jour monitoring", True))
+    except Exception:
+        resultats.append(("Mise à jour monitoring", False))
 
     print(f"\n{'=' * 60}\nRésumé du pipeline complet\n{'=' * 60}")
     for label, ok in resultats:

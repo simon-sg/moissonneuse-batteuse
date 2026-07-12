@@ -377,6 +377,11 @@ def construire_catalogue() -> dict:
         producteur = (meta.get("producer") or {}).get("organization_name", "")
         licence = ((meta.get("access_condition") or {}).get("licence") or {}).get("licence_label", "")
         date_maj = (meta.get("dataset_dates") or {}).get("updated", "")
+        date_ajout = ""
+        if os.path.exists(chemin_meta):
+            date_ajout = datetime.fromtimestamp(
+                os.path.getmtime(chemin_meta), tz=timezone.utc
+            ).strftime("%Y-%m-%dT%H:%M:%SZ")
 
         formats = sorted({r.get("format") for r in ressources if r.get("format")})
 
@@ -392,6 +397,7 @@ def construire_catalogue() -> dict:
             "mots_cles": meta.get("keywords", []),
             "licence": licence,
             "date_maj": date_maj,
+            "date_ajout": date_ajout,
             "source_datagouv": _source_datagouv(meta, dossier),
             "nb_lignes_rm": cand.get("nb_rm"),
             "champs_geo": _champs_geo(cand),
@@ -399,7 +405,7 @@ def construire_catalogue() -> dict:
             "complet": bool(meta),
         })
 
-    jeux.sort(key=lambda j: j["titre"].lower())
+    jeux.sort(key=lambda j: j.get("date_ajout", ""), reverse=True)
     return {
         "genere_le": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "nb_jeux": len(jeux),
@@ -514,7 +520,7 @@ GABARIT_HTML = r"""<!DOCTYPE html>
     <select id="filtre-connecteur"><option value="">Tous connecteurs</option></select>
     <select id="filtre-format"><option value="">Tous formats</option></select>
     <select id="filtre-theme"><option value="">Tous thèmes</option></select>
-    <select id="tri"><option value="pertinence">Tri : Pertinence</option><option value="titre">Tri : Titre A-Z</option><option value="date">Tri : Plus récent</option></select>
+    <select id="tri"><option value="ajout" selected>Tri : Plus récent ajout</option><option value="pertinence">Tri : Pertinence</option><option value="titre">Tri : Titre A-Z</option><option value="date">Tri : Plus récent (source)</option></select>
     <span id="compteur"></span>
   </div>
 </section>
@@ -711,6 +717,7 @@ function trier(liste, mode){
   const cpy = [...liste];
   if (mode === "titre") cpy.sort((a, b) => a.titre.localeCompare(b.titre));
   else if (mode === "date") cpy.sort((a, b) => (b.date_maj || "").localeCompare(a.date_maj || ""));
+  else if (mode === "ajout") cpy.sort((a, b) => (b.date_ajout || "").localeCompare(a.date_ajout || ""));
   return cpy;
 }
 

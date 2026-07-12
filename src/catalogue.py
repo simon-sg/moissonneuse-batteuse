@@ -383,7 +383,8 @@ def construire_catalogue() -> dict:
                 os.path.getmtime(chemin_meta), tz=timezone.utc
             ).strftime("%Y-%m-%dT%H:%M:%SZ")
 
-        formats = sorted({r.get("format") for r in ressources if r.get("format")})
+        formats = sorted({r.get("format") for r in ressources
+                          if r.get("format") and not r.get("nom", "").startswith("dict-")})
 
         jeux.append({
             "dataset_id": dossier,

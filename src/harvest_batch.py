@@ -767,7 +767,18 @@ def traiter_candidat(candidat: dict, state: dict) -> dict:
         if r is None:
             continue
         titre_r = r.get("title") or "dictionnaire"
-        ext = (r.get("format") or "csv").lower()
+        ext = (r.get("format") or "csv").lower().strip()
+        # Normaliser les extensions non standard renvoyées par data.gouv.fr
+        _EXT_DICT = {"url": "html", "page web": "html", "other": "html",
+                     "document": "docx"}
+        for anomal, propre in _EXT_DICT.items():
+            if anomal in ext:
+                ext = propre
+                break
+        else:
+            ext = ext.split()[0] if " " in ext else ext
+        if not ext or len(ext) > 10:
+            ext = "html"
         nom = f"dict-{_slugifier(titre_r)}.{ext}"
         print(f"  Dictionnaire : {titre_r[:55]}")
         chemin_cache = None

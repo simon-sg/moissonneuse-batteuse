@@ -62,6 +62,16 @@
 </section>
 
 <section>
+  <h2>Portail RUDI <span id="badge-portail" class="badge idle" title="État du stack Docker Compose portail RUDI (ROOB)">…</span></h2>
+  <div class="ligne-job">
+    <button id="btn-portail" onclick="basculerPortail()"
+            title="Démarrer ou arrêter le portail RUDI (Docker Compose — ~18 conteneurs)">Démarrer</button>
+    <a id="lien-portail" href="#" target="_blank" class="discret desactive"
+       title="Ouvrir le portail RUDI (front Angular)">Ouvrir le portail</a>
+  </div>
+</section>
+
+<section>
   <h2>Actions</h2>
   <input type="search" id="filtre-actions" class="filtre-onglet" placeholder="Filtrer les actions…"
          oninput="filtrerActions()" aria-label="Filtrer les actions" style="width:100%; margin-bottom:10px">
@@ -77,7 +87,7 @@
   <a href="/examen">Voir la liste →</a></p>
 </section>
 
-<section>
+<section id="section-job">
   <h2>Job en cours <span id="badge-job" class="badge idle" title="État du job : aucun job en cours">inactif</span></h2>
   <div class="ligne-job">
     <span id="label-job" class="meta">Aucun job lancé pour l'instant.</span>
@@ -366,6 +376,66 @@ async function basculerSuperset(){
   return;
 }
 
+let portailActionEnCours = false;
+let intervalleRapidePortail = null;
+
+async function actualiserPortail(){
+  const {ok, data: p} = await apiFetch("/api/portail");
+  if (!ok || !p) { return; }
+
+  const badge = document.getElementById("badge-portail");
+  const bouton = document.getElementById("btn-portail");
+  const lien = document.getElementById("lien-portail");
+  let enDemarrage = false;
+
+  if (!p.docker_installe){
+    badge.className = "badge warn";
+    badge.textContent = "docker introuvable";
+    bouton.textContent = "Démarrer";
+    bouton.className = "";
+    bouton.disabled = true;
+  } else if (!p.existe){
+    badge.className = "badge idle";
+    badge.textContent = "absent";
+    bouton.textContent = "Démarrer";
+    bouton.className = "";
+    bouton.disabled = false;
+  } else {
+    const enCours = p.etat === "running";
+    enDemarrage = enCours && !p.pret;
+    badge.className = "badge " + (enDemarrage ? "running" : (enCours ? "termine" : "idle"));
+    badge.textContent = enDemarrage ? "démarrage…" : (enCours ? "en cours" : (p.etat || "inconnu"));
+    badge.title = enDemarrage ? "Le stack tourne mais le portail n'est pas encore prêt (5-15 min)"
+                 : (enCours ? "Le portail RUDI est opérationnel"
+                    : "Le stack est arrêté");
+    bouton.textContent = enCours ? "Arrêter" : "Démarrer";
+    bouton.className = enCours ? "danger" : "";
+    bouton.disabled = portailActionEnCours;
+  }
+
+  lien.href = p.url || "#";
+  lien.classList.toggle("desactive", !p.pret);
+
+  if (enDemarrage && !intervalleRapidePortail){
+    intervalleRapidePortail = setInterval(actualiserPortail, 5000);
+  } else if (!enDemarrage && intervalleRapidePortail){
+    clearInterval(intervalleRapidePortail);
+    intervalleRapidePortail = null;
+  }
+}
+
+async function basculerPortail(){
+  const bouton = document.getElementById("btn-portail");
+  const action = bouton.textContent === "Arrêter" ? "arreter" : "demarrer";
+  portailActionEnCours = true;
+  bouton.disabled = true;
+  const {ok, data} = await apiFetch(`/api/portail/${action}`, {method:"POST"});
+  if (data) notifier(data.message, !ok);
+  portailActionEnCours = false;
+  actualiserPortail();
+  return;
+}
+
 let dernierStatut = null;
 let timerInterval = null;
 
@@ -406,7 +476,7 @@ async function actualiserJob(){
   }
 
   const journal = document.getElementById("journal");
-  journal.textContent = j.log || "";
+  journal.textContent = j.log || ((j.statut === "running" || j.statut === "cancelling") ? "Démarrage\u2026" : "");
   journal.scrollTop = journal.scrollHeight;
 
   if (j.statut === "termine" || j.statut === "cancelled"){
@@ -495,11 +565,14 @@ chargerPurge();
 actualiserBadgeExamen();
 actualiserNoeud();
 actualiserSuperset();
+actualiserPortail();
 setInterval(actualiserEtat, 15000);
+setInterval(actualiserJob, 15000);
 setInterval(chargerPurge, 15000);
 setInterval(actualiserBadgeExamen, 15000);
 setInterval(actualiserNoeud, 15000);
 setInterval(actualiserSuperset, 15000);
+setInterval(actualiserPortail, 15000);
 </script>
 </body>
 </html>

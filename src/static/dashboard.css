@@ -98,6 +98,7 @@ a { color:var(--accent); }
 .topbar-pill.running { background:var(--badge-running-bg); }
 .topbar-pill.running .tb-dot { background:var(--badge-running-txt); }
 .topbar-pill.warn .tb-dot { background:var(--warn); }
+a.topbar-pill { cursor:pointer; }
 
 /* Action buttons */
 .topbar-actions { display:flex; gap:4px; align-items:center; margin-left:6px; }

@@ -36,7 +36,7 @@ import cli
 import discover
 from catalogue import GABARIT_WMS_MAP
 from conf.discover import REQUETES_STRUCTUREES, KEYWORDS, NB_PAGES as CONF_NB_PAGES
-from connectors import rudi_node, superset
+from connectors import rudi_node, rudi_portal, superset
 from filters.discovery import _paginer, _filtrer_communs
 
 HOST = "127.0.0.1"
@@ -73,7 +73,8 @@ def _html_topbar(page_active: str) -> str:
     <div class="topbar-pills">
       <span class="topbar-pill" id="tb-noeud" title="Nœud RUDI"><span class="tb-dot" aria-hidden="true"></span>Nœud</span>
       <span class="topbar-pill" id="tb-superset" title="Superset"><span class="tb-dot" aria-hidden="true"></span>Superset</span>
-      <span class="topbar-pill" id="tb-job" title="Job"><span class="tb-dot" aria-hidden="true"></span>Job</span>
+      <span class="topbar-pill" id="tb-portail" title="Portail RUDI"><span class="tb-dot" aria-hidden="true"></span>Portail</span>
+      <a href="/#section-job" class="topbar-pill" id="tb-job" title="Job en cours" style="text-decoration:none"><span class="tb-dot" aria-hidden="true"></span>Job</a>
       <a href="/examen" class="topbar-pill" id="tb-examen-pill" title="JDD à examiner" style="text-decoration:none">
         <span class="tb-dot" aria-hidden="true"></span>Examen&nbsp;<span class="topbar-count" id="tb-examen"></span>
       </a>
@@ -396,6 +397,28 @@ def _traiter_superset_demarrer() -> tuple[int, dict]:
 
 def _traiter_superset_arreter() -> tuple[int, dict]:
     ok, message = superset.arreter_conteneur()
+    return (200 if ok else 500), {"ok": ok, "message": message}
+
+
+# ---------------------------------------------------------------------------
+# Portail RUDI (stack Docker Compose)
+# ---------------------------------------------------------------------------
+
+def _etat_portail() -> dict:
+    etat = rudi_portal.statut_conteneur()
+    en_cours = etat.get("etat") == "running"
+    etat["pret"] = bool(en_cours and rudi_portal.portail_pret())
+    etat["url"] = rudi_portal.URL_PORTAIL
+    return etat
+
+
+def _traiter_portail_demarrer() -> tuple[int, dict]:
+    ok, message = rudi_portal.demarrer_conteneur()
+    return (200 if ok else 500), {"ok": ok, "message": message}
+
+
+def _traiter_portail_arreter() -> tuple[int, dict]:
+    ok, message = rudi_portal.arreter_conteneur()
     return (200 if ok else 500), {"ok": ok, "message": message}
 
 
@@ -923,6 +946,8 @@ class Handler(http.server.BaseHTTPRequestHandler):
             self._repondre_json(200, _etat_noeud())
         elif self.path == "/api/superset":
             self._repondre_json(200, _etat_superset())
+        elif self.path == "/api/portail":
+            self._repondre_json(200, _etat_portail())
         elif self.path == "/api/a_examiner":
             self._repondre_json(200, _a_examiner_json())
         elif self.path == "/api/historique":
@@ -974,6 +999,12 @@ class Handler(http.server.BaseHTTPRequestHandler):
             self._repondre_json(code, payload)
         elif self.path == "/api/superset/arreter":
             code, payload = _traiter_superset_arreter()
+            self._repondre_json(code, payload)
+        elif self.path == "/api/portail/demarrer":
+            code, payload = _traiter_portail_demarrer()
+            self._repondre_json(code, payload)
+        elif self.path == "/api/portail/arreter":
+            code, payload = _traiter_portail_arreter()
             self._repondre_json(code, payload)
         elif self.path == "/api/a_examiner":
             code, payload = _traiter_a_examiner(params)

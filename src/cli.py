@@ -214,6 +214,17 @@ def action_reanalyser_wms():
     _executer("Re-analyse des WMS du backlog", _reanalyser)
 
 
+def action_reanalyser_a_examiner_tabulaire():
+    """Re-analyse les JDD tabulaires du backlog a_examiner avec la cascade courante."""
+    def _reanalyser():
+        decouverte = discover.charger_decouverte()
+        stats = discover.reanalyser_a_examiner_tabulaire(decouverte)
+        if stats["promus_candidats"]:
+            print(f"\nRelancez : python3 src/harvest_batch.py")
+
+    _executer("Re-analyse tabulaire du backlog", _reanalyser)
+
+
 def action_nettoyer_wms_geo():
     """Re-vérifie les couches WMS de geo_services.json avec un probe GetMap au centre de RM."""
     def _nettoyer():
@@ -734,20 +745,21 @@ ACTIONS = [
     # --- Maintenance ---
     ("12", "Vérifier le backlog « à examiner »", action_verifier_backlog_examen),
     ("13", "Re-analyser les WMS du backlog", action_reanalyser_wms),
-    ("14", "Nettoyer les WMS de geo_services.json", action_nettoyer_wms_geo),
-    ("15", "Ménage RUDI (orphelins + organisations inutilisées)", action_menage_rudi),
-    ("16", "Ré-analyser les faux positifs INSEE/CP (dept 35)", action_reanalyser_faux_positifs),
+    ("14", "Re-analyser les JDD tabulaires du backlog (nouvelle cascade)", action_reanalyser_a_examiner_tabulaire),
+    ("15", "Nettoyer les WMS de geo_services.json", action_nettoyer_wms_geo),
+    ("16", "Ménage RUDI (orphelins + organisations inutilisées)", action_menage_rudi),
+    ("17", "Ré-analyser les faux positifs INSEE/CP (dept 35)", action_reanalyser_faux_positifs),
     # --- Données & infos ---
-    ("17", "Purger des données existantes", menu_purge),
-    ("18", "État du projet", action_etat_projet),
-    ("19", "Démarrer Superset (conteneur Docker)", action_demarrer_superset),
+    ("18", "Purger des données existantes", menu_purge),
+    ("19", "État du projet", action_etat_projet),
+    ("20", "Démarrer Superset (conteneur Docker)", action_demarrer_superset),
 ]
 
 SECTIONS = [
     (0, "Moisson"),
     (7, "Pipeline & publication"),
     (11, "Maintenance"),
-    (16, "Données & infos"),
+    (17, "Données & infos"),
 ]
 
 

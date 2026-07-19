@@ -748,6 +748,111 @@ def reanalyser_wms_a_examiner(decouverte: dict) -> dict:
     return stats
 
 
+def reanalyser_a_examiner_tabulaire(decouverte: dict) -> dict:
+    """
+    Rattrapage one-shot : re-analyse chaque JDD tabulaire encore dans decouverte["a_examiner"]
+    avec la cascade de détection courante (pre_filtrer() -> analyser_dataset()). Nécessaire
+    quand un nouveau signal géo est ajouté à la cascade (ex. champ EPCI) après que ces entrées
+    aient déjà été classées "analyse échouée" / "0 ligne RM détectée" avec l'ancienne cascade.
+
+    - Cascade détecte RM (nb_rm > 0) -> promu vers decouverte["candidats"] (comme un run normal).
+    - Un WFS/WMS apparaît là où il n'y en avait pas -> data/geo_services.json (cas rare).
+    - Toujours rien -> l'entrée reste dans a_examiner, champs_detectes/raison rafraîchis,
+      date_ajout d'origine préservée (ce n'est pas une nouvelle découverte).
+
+    Retourne un dict de stats : {"analysees", "promus_candidats", "mis_a_jour", "inchanges", "echecs"}.
+    """
+    from connectors.datagouv import get_dataset_metadata
+
+    a_examiner = decouverte.get("a_examiner", [])
+    entrees = [e for e in a_examiner if e.get("type") == "tabulaire"]
+    stats = {"analysees": len(entrees), "promus_candidats": 0, "mis_a_jour": 0,
+             "inchanges": 0, "echecs": 0}
+    if not entrees:
+        return stats
+
+    print(f"[reanalyse a_examiner] {len(entrees)} JDD tabulaires à re-analyser...", flush=True)
+
+    def _reanalyser_un(entree):
+        did = entree["dataset_id"]
+        try:
+            ds = get_dataset_metadata(did)
+            return entree, ds, pre_filtrer(ds), None
+        except Exception as e:
+            return entree, None, None, str(e)
+
+    a_examiner_par_id = {e["dataset_id"]: e for e in a_examiner}
+    done = 0
+    with ThreadPoolExecutor(max_workers=5) as exc:
+        futures = [exc.submit(_reanalyser_un, e) for e in entrees]
+        for fut in as_completed(futures):
+            done += 1
+            if done % 50 == 0 or done == len(entrees):
+                print(f"[reanalyse a_examiner]   {done}/{len(entrees)}...", flush=True)
+            entree, ds, pf, erreur = fut.result()
+            did = entree["dataset_id"]
+            if erreur is not None or ds is None:
+                stats["echecs"] += 1
+                continue
+
+            verdict, result = pf
+            if verdict == "candidat" and result.get("type") not in ("wfs", "wms"):
+                decouverte.setdefault("candidats", []).append({
+                    "dataset_id": did,
+                    "titre": ds["title"],
+                    "dossier": did[:30].replace("-", "_"),
+                    "champ_cp": result["champ_cp"],
+                    "champ_ville": result["champ_ville"],
+                    "champ_iris": result.get("champ_iris"),
+                    "champ_epci": result.get("champ_epci"),
+                    "champ_adresse": result.get("champ_adresse"),
+                    "champ_siren": result.get("champ_siren"),
+                    "champ_dep": result.get("champ_dep"),
+                    "champ_lat": result.get("champ_lat"),
+                    "champ_lon": result.get("champ_lon"),
+                    "champ_circonscription": result.get("champ_circonscription"),
+                    "nb_rm": result["nb_rm"],
+                    "last_modified": result.get("last_modified", ""),
+                })
+                a_examiner_par_id.pop(did, None)
+                stats["promus_candidats"] += 1
+                print(f"  -> candidat : {entree['titre'][:60]} ({result['nb_rm']} lignes RM)", flush=True)
+            elif verdict == "candidat" and result.get("type") in ("wfs", "wms"):
+                type_ = result["type"]
+                couches = result.get("wfs_layers", []) if type_ == "wfs" else result.get("couches", [])
+                geo_entry = {
+                    "id": did[:30].replace("-", "_"),
+                    "type": type_,
+                    "url": result.get("url", ""),
+                    "couches": couches[:10],
+                    "titre": ds["title"],
+                    "producteur": (ds.get("organization") or {}).get("name", ""),
+                    "dossier": did[:30].replace("-", "_"),
+                    "theme": "environment",
+                }
+                _sauver_service_geo(geo_entry)
+                a_examiner_par_id.pop(did, None)
+                stats["promus_candidats"] += 1
+                print(f"  -> service géo : {entree['titre'][:60]}", flush=True)
+            else:
+                ancien_champs = entree.get("champs_detectes")
+                ancienne_date = entree.get("date_ajout")
+                nouvelle_raison = "0 ligne RM détectée" if result is not None else "analyse échouée"
+                _upsert_a_examiner(a_examiner_par_id, ds, result, raison=nouvelle_raison)
+                a_examiner_par_id[did]["date_ajout"] = ancienne_date
+                if a_examiner_par_id[did]["champs_detectes"] != ancien_champs:
+                    stats["mis_a_jour"] += 1
+                else:
+                    stats["inchanges"] += 1
+
+    decouverte["a_examiner"] = list(a_examiner_par_id.values())
+    sauvegarder_decouverte(decouverte)
+    print(f"[reanalyse a_examiner] Terminé : {stats['promus_candidats']} promus candidats, "
+          f"{stats['mis_a_jour']} mis à jour, {stats['inchanges']} inchangés, "
+          f"{stats['echecs']} échecs", flush=True)
+    return stats
+
+
 def nettoyer_wms_geo_services() -> dict:
     """
     Re-probe les couches WMS de data/geo_services.json avec un GetMap au centre de RM

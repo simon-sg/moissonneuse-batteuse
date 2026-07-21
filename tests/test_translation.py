@@ -5,7 +5,9 @@ import unittest
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "src"))
 
-from translation.datagouv_to_rudi import traduire_metadonnees, THEMES_RUDI, _detecter_theme
+from translation.datagouv_to_rudi import (
+    traduire_metadonnees, traduire_metadonnees_service, THEMES_RUDI, _detecter_theme,
+)
 from translation.description_secours import description_quasi_vide, generer_complement
 from translation.rudi_builder import (
     construire_rudi_metadata, media_filtre, media_source, media_metadata_page,
@@ -71,6 +73,80 @@ class TestTraduireMetadonnees(unittest.TestCase):
                                     entetes_colonnes=["cp", "ville", "prix"])
         summary = meta["summary"][0]["text"]
         self.assertIn("Jeu de données du thème", summary)
+
+
+_GEO_CONFIG_MIN = {
+    "id": "geo-test-1",
+    "type": "wms",
+    "url": "https://exemple.fr/wms",
+    "titre": "Service géo de test",
+    "producteur": "Producteur test",
+    "theme": "environment",
+}
+
+
+class TestTraduireMetadonneesService(unittest.TestCase):
+    """connector_parameters requis par le portail RUDI (bug D4, voir
+    rudi-portal-local/RAPPORT_BUGS_RUDI.md) : le composant carte du portail exige que
+    available_formats[0].connector.connector_parameters porte les clés versions/layer/
+    default_crs/formats, faute de quoi l'onglet carte reste bloqué — pour un WMS-only,
+    ces valeurs sont aussi réellement utilisées pour construire la requête GetMap."""
+
+    def _cles(self, connector_parameters):
+        return {p["key"]: p["value"] for p in connector_parameters}
+
+    def test_wms_connector_parameters_reels(self):
+        config = dict(_GEO_CONFIG_MIN, type="wms")
+        wms_service = {"couches": [{"nom": "COUCHE_A"}, {"nom": "COUCHE_B"}]}
+        meta = traduire_metadonnees_service(config, wms_service=wms_service)
+        formats = meta["available_formats"]
+        self.assertEqual(formats[0]["media_type"], "SERVICE")
+        cles = self._cles(formats[0]["connector"]["connector_parameters"])
+        self.assertEqual(set(cles), {"versions", "layer", "default_crs", "formats"})
+        self.assertEqual(cles["layer"], "COUCHE_A,COUCHE_B")
+        self.assertNotEqual(cles["default_crs"], "n/a")
+
+    def test_wfs_avec_fichiers_file_avant_service(self):
+        config = dict(_GEO_CONFIG_MIN, id="geo-test-2", type="wfs")
+        meta = traduire_metadonnees_service(
+            config, fichiers_geojson=[("f1.geojson", "commune:batiments"),
+                                      ("f2.geojson", "commune:routes")],
+        )
+        formats = meta["available_formats"]
+        types = [m["media_type"] for m in formats]
+        premier_service = types.index("SERVICE")
+        # Non-régression : FILE toujours contigus en tête (publish_rudi.py en dépend).
+        self.assertEqual(types[:premier_service], ["FILE"] * premier_service)
+        self.assertNotIn("FILE", types[premier_service:])
+        # Les entrées FILE ne doivent jamais bloquer sur un connector_parameters absent.
+        for media in formats[:premier_service]:
+            cles = self._cles(media["connector"]["connector_parameters"])
+            self.assertEqual(set(cles), {"versions", "layer", "default_crs", "formats"})
+        # L'entrée SERVICE porte le typename réellement téléchargé (premier fichier).
+        service = next(m for m in formats if m["media_name"] == "service-wfs")
+        cles = self._cles(service["connector"]["connector_parameters"])
+        self.assertEqual(cles["layer"], "commune:batiments")
+
+    def test_geojson_statique_placeholder(self):
+        config = dict(_GEO_CONFIG_MIN, id="geo-test-3", type="geojson")
+        meta = traduire_metadonnees_service(
+            config, fichiers_geojson=[("f1.geojson", "jeu-complet")],
+        )
+        service = next(m for m in meta["available_formats"] if m["media_name"] == "service-geojson")
+        self.assertEqual(service["connector"]["interface_contract"], "dwnl")
+        cles = self._cles(service["connector"]["connector_parameters"])
+        self.assertEqual(cles["layer"], "n/a")
+
+    def test_toutes_entrees_ont_connector_parameters(self):
+        """Quel que soit le type, chaque média doit avoir les 4 clés — sans quoi
+        available_formats[0] casse la garde du portail, peu importe l'ordre."""
+        config = dict(_GEO_CONFIG_MIN, id="geo-test-4", type="ogcapi")
+        meta = traduire_metadonnees_service(
+            config, fichiers_geojson=[("f1.geojson", "collection-a")],
+        )
+        for media in meta["available_formats"]:
+            cles = self._cles(media["connector"]["connector_parameters"])
+            self.assertEqual(set(cles), {"versions", "layer", "default_crs", "formats"})
 
 
 class TestDetecterTheme(unittest.TestCase):

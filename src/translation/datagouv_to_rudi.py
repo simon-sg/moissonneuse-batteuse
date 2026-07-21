@@ -282,6 +282,49 @@ def traduire_metadonnees(metadata_source: dict, zone: str = "Rennes Métropole",
     )
 
 
+# default_crs ne sert pas qu'à la couche WMS/WFS elle-même : le composant carte du portail
+# (app-map-tab) l'utilise aussi comme PROJECTION DE LA CARTE ENTIÈRE (viewProjectionString),
+# y compris le fond de plan (basemap), dès que la valeur n'est pas null (sinon repli sur
+# EPSG:3857 par défaut). EPSG:3857 (Web Mercator) est la projection native du fond de plan et de
+# la quasi-totalité des serveurs WMS/WFS modernes — l'utiliser évite toute déformation visuelle
+# et toute reprojection, y compris pour les valeurs factices (si jamais lues malgré le bug D6 qui
+# les supprime aujourd'hui côté portail pour les médias FILE/wfs).
+_DEFAULT_CRS_CARTE = "EPSG:3857"
+
+
+def _placeholder_connector_parameters() -> list[dict]:
+    """connector_parameters factice (4 clés attendues par le portail RUDI, voir
+    rudi-portal-local/RAPPORT_BUGS_RUDI.md bug D4) pour un média FILE ou un connecteur "dwnl" :
+    jamais lu pour le rendu (createGeojsonDataLayer ne lit que connector.url), présent uniquement
+    pour satisfaire la garde available_formats[0] du portail. default_crs vaut tout de même
+    EPSG:3857 (pas "n/a") : c'est aussi la projection de la carte entière (voir _DEFAULT_CRS_CARTE)."""
+    return [{"key": cle, "value": _DEFAULT_CRS_CARTE if cle == "default_crs" else "n/a"}
+            for cle in ("versions", "layer", "default_crs", "formats")]
+
+
+def _connector_parameters_wms(couches_rm: list[str]) -> list[dict]:
+    """connector_parameters pour un connecteur SERVICE WMS : ces valeurs sont réellement lues
+    par le portail (createWmsDataLayer) pour construire la requête GetMap (LAYERS/VERSION)."""
+    layer = ",".join(couches_rm) if couches_rm else "n/a"
+    return [
+        {"key": "versions", "value": "1.3.0"},
+        {"key": "layer", "value": layer},
+        {"key": "default_crs", "value": _DEFAULT_CRS_CARTE},
+        {"key": "formats", "value": "image/png"},
+    ]
+
+
+def _connector_parameters_wfs(typename: str | None) -> list[dict]:
+    """connector_parameters pour un connecteur SERVICE WFS/OGC API : "layer"/"formats"/"versions"
+    sont réellement lus par le portail (createWfsDataLayer) pour construire la requête GetFeature."""
+    return [
+        {"key": "versions", "value": "2.0.0"},
+        {"key": "layer", "value": typename or "n/a"},
+        {"key": "default_crs", "value": _DEFAULT_CRS_CARTE},
+        {"key": "formats", "value": "application/json"},
+    ]
+
+
 def traduire_metadonnees_service(config: dict,
                                   fichiers_geojson: list | None = None,
                                   wms_service: dict | None = None,
@@ -337,6 +380,7 @@ def traduire_metadonnees_service(config: dict,
                 "connector": {
                     "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
                     "interface_contract": "dwnl",
+                    "connector_parameters": _placeholder_connector_parameters(),
                 },
             })
 
@@ -375,8 +419,16 @@ def traduire_metadonnees_service(config: dict,
         "connector": {
             "url": url_metadata,
             "interface_contract": "dwnl",
+            "connector_parameters": _placeholder_connector_parameters(),
         },
     }
+    if contract == "wms":
+        connector_parameters = _connector_parameters_wms(couches_rm)
+    elif contract == "wfs":
+        premier_typename = fichiers_geojson[0][1] if fichiers_geojson else None
+        connector_parameters = _connector_parameters_wfs(premier_typename)
+    else:
+        connector_parameters = _placeholder_connector_parameters()
     available_formats.append({
         "media_id": media_id_service,
         "media_type": "SERVICE",
@@ -385,6 +437,7 @@ def traduire_metadonnees_service(config: dict,
         "connector": {
             "url": caps_url,
             "interface_contract": contract,
+            "connector_parameters": connector_parameters,
         },
     })
     available_formats.append(media_metadata_page)

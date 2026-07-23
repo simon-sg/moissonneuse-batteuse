@@ -36,7 +36,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from conf.datasets import DATASETS_GEO
-from state import charger_etat, sauvegarder_etat
+from state import charger_etat, sauvegarder_etat, lire_rudi_publie
 from translation.datagouv_to_rudi import (
     _placeholder_connector_parameters, _connector_parameters_wms, _connector_parameters_wfs,
 )
@@ -134,7 +134,12 @@ def appliquer_modification(rapport: dict, state_geo: dict) -> None:
     with open(chemin_meta, "w", encoding="utf-8") as f:
         json.dump(meta, f, ensure_ascii=False, indent=2)
 
-    state_geo.setdefault("_rudi_publie", {})[rapport["dossier"]] = False
+    # La fiche vient de changer : invalider la publication sur chaque nœud qui la
+    # portait, pour que publish_rudi.py la repousse. Un nœud hors périmètre (clé
+    # absente) le reste — corriger une fiche n'est pas une raison de l'amorcer ailleurs.
+    geo_publie = state_geo.setdefault("_rudi_publie", {})
+    rp = lire_rudi_publie({"rudi_publie": geo_publie.get(rapport["dossier"])})
+    geo_publie[rapport["dossier"]] = {nom_noeud: False for nom_noeud in rp}
 
 
 def executer(appliquer: bool = False, dossier: str | None = None) -> int:

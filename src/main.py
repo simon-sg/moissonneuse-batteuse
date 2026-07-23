@@ -137,7 +137,7 @@ def traiter_dataset(config: dict, state: dict) -> dict:
         json.dump(rudi_metadata, f, ensure_ascii=False, indent=2)
     print(f"  Métadonnées RUDI sauvegardées.")
 
-    # Étape 6 : publication sur le nœud RUDI
+    # Étape 6 : publication sur le(s) nœud(s) RUDI
     rudi_publie = publier_si_configue(rudi_metadata, fichiers_filtres)
 
     # Étape 7 : mise à jour de l'état

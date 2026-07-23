@@ -28,10 +28,13 @@ import publish_rudi
 import enrichir_descriptions
 import reanalyser_faux_positifs
 from conf.datasets import DATASETS, DATASETS_GEO, DATASETS_INSEE, DATASETS_OEB, DATASETS_BDNB
-from connectors.rudi_node import charger_conf_rudi
+from connectors.rudi_node import charger_conf_rudi, charger_confs_rudi
+from state import compter_publies, compter_publies_noeud, lire_rudi_publie
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
-CONF_RUDI_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "conf", "rudi_node.json")
+_SRC_DIR = os.path.dirname(os.path.abspath(__file__))
+CONF_RUDI_FILE = os.path.join(_SRC_DIR, "conf", "rudi_node.json")
+CONF_RUDI_NODES_FILE = os.path.join(_SRC_DIR, "conf", "rudi_nodes.json")
 
 
 # ---------------------------------------------------------------------------
@@ -434,7 +437,8 @@ def etat_projet() -> dict:
         },
         "decouverte": None,
         "etat_moisson": {},
-        "rudi_configure": os.path.isfile(CONF_RUDI_FILE),
+        "rudi_configure": os.path.isfile(CONF_RUDI_FILE) or os.path.isfile(CONF_RUDI_NODES_FILE),
+        "noeuds_rudi": [n.get("nom") for n in charger_confs_rudi()],
     }
 
     chemin_decouverte = os.path.join(DATA_DIR, "decouverte.json")
@@ -463,7 +467,7 @@ def etat_projet() -> dict:
                 s = json.load(f)
             donnees["etat_moisson"][cle] = {
                 "total": len(s),
-                "rudi_publie": sum(1 for v in s.values() if v.get("rudi_publie")),
+                "rudi_publie": compter_publies(s),
             }
         else:
             donnees["etat_moisson"][cle] = None
@@ -473,10 +477,18 @@ def etat_projet() -> dict:
         with open(chemin_state_geo, encoding="utf-8") as f:
             sg = json.load(f)
         couches = {k: v for k, v in sg.items() if not k.startswith("_")}
+        # Compter les géo publiés : _rudi_publie contient {dossier: {noeud: bool}}
+        n_publie_geo = 0
+        geo_rudi = sg.get("_rudi_publie", {})
+        for dossier, rp in geo_rudi.items():
+            if isinstance(rp, bool):
+                if rp:
+                    n_publie_geo += 1
+            elif isinstance(rp, dict) and any(rp.values()):
+                n_publie_geo += 1
         donnees["etat_moisson"]["geo"] = {
             "total": len(couches),
-            "rudi_publie": sum(1 for v in sg.values()
-                               if isinstance(v, dict) and v.get("rudi_publie")),
+            "rudi_publie": n_publie_geo,
         }
     else:
         donnees["etat_moisson"]["geo"] = None
@@ -521,7 +533,8 @@ def action_etat_projet():
             print(f"  État moisson {label} : aucun")
 
     if d["rudi_configure"]:
-        print("  Nœud RUDI : configuré (src/conf/rudi_node.json présent)")
+        noeuds = d.get("noeuds_rudi", [])
+        print(f"  Nœud(s) RUDI : {', '.join(noeuds) if noeuds else 'configuré(s)'}")
     else:
         print("  Nœud RUDI : NON configuré — les publications seront ignorées")
 

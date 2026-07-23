@@ -17,12 +17,45 @@ CONTENEUR_RUDI = "rudinode"
 
 
 def charger_conf_rudi() -> dict | None:
-    """Charge la config du nœud RUDI (src/conf/rudi_node.json), ou None si absente."""
-    chemin = os.path.join(_CONF_DIR, "rudi_node.json")
-    if not os.path.isfile(chemin):
+    """Charge la config du nœud RUDI principal (src/conf/rudi_node.json), ou None si absent.
+
+    Rétrocompatible : si rudi_nodes.json existe, retourne le nœud marqué ``principal=true`` ;
+    sinon, lit rudi_node.json et le traite comme nœud ``"docker"`` principal.
+    """
+    noeuds = charger_confs_rudi()
+    if not noeuds:
         return None
-    with open(chemin, encoding="utf-8") as f:
-        return json.load(f)
+    principal = next((n for n in noeuds if n.get("principal")), noeuds[0])
+    return principal
+
+
+def charger_confs_rudi() -> list[dict]:
+    """Charge la liste des nœuds RUDI configurés.
+
+    Priorité à ``src/conf/rudi_nodes.json`` (liste d'objets avec nom/url/usr/pwd/principal).
+    Si absent, fallback sur ``src/conf/rudi_node.json`` traité comme nœud ``"docker"``
+    unique et principal — rétrocompatible avec la config existante.
+    """
+    chemin_nodes = os.path.join(_CONF_DIR, "rudi_nodes.json")
+    if os.path.isfile(chemin_nodes):
+        with open(chemin_nodes, encoding="utf-8") as f:
+            noeuds = json.load(f)
+        # Nom par défaut pour les entrées sans "nom". Le port est inclus : le nom sert
+        # de clé dans rudi_publie et de clé de verrou, deux nœuds sur le même hôte
+        # (cas nominal ici : localhost:3032 et localhost:4032) ne doivent pas collisionner.
+        for n in noeuds:
+            n.setdefault("nom", "noeud-" + urlparse(n["url"]).netloc.replace(":", "-"))
+        return noeuds
+
+    # Fallback : rudi_node.json → nœud "docker" unique
+    chemin_node = os.path.join(_CONF_DIR, "rudi_node.json")
+    if not os.path.isfile(chemin_node):
+        return []
+    with open(chemin_node, encoding="utf-8") as f:
+        conf = json.load(f)
+    conf.setdefault("nom", "docker")
+    conf["principal"] = True
+    return [conf]
 
 
 # ---------------------------------------------------------------------------
@@ -86,21 +119,47 @@ def arreter_conteneur() -> tuple[bool, str]:
 
 
 def noeud_pret(conf: dict) -> bool:
-    """Vérifie que le nœud répond vraiment (pas seulement que le conteneur Podman tourne) —
-    l'application interne (Node/Java) met plusieurs secondes à démarrer après `podman start`."""
+    """Vérifie que le nœud est vraiment exploitable, pas seulement qu'il écoute.
+
+    On sonde `/manager/conf` — l'endpoint que la lib de publication interroge en premier
+    (catalogPubUrl, storagePubUrl, backPath). Un simple GET sur la racine ne suffit pas :
+    juste après un `podman start`, la racine répond déjà 200 alors que `/manager/conf`
+    renvoie encore 500 pendant ~20 s, et toute publication lancée dans cet intervalle
+    échoue sur « This node version is not compatible with this object »."""
     try:
-        session.get(conf["url"], timeout=3)
-        return True
+        r = session.get(conf["url"].rstrip("/") + "/manager/conf", timeout=5)
+        return r.status_code == 200
     except Exception:
         return False
 
 
-def _api_version(base_url: str) -> str:
+def chercher_noeud(nom: str) -> dict | None:
+    """Retourne la conf du nœud dont le nom correspond, ou None."""
+    for n in charger_confs_rudi():
+        if n.get("nom") == nom:
+            return n
+    return None
+
+
+def url_catalog(conf: dict) -> str:
+    """URL de l'API catalog du nœud, sans slash final.
+
+    Prend `url_catalog` de la config si présent ; sinon dérive l'URL du manager sur
+    le port 3030 — la disposition de l'image Docker. Ce repli est faux dès qu'un nœud
+    n'est pas bâti sur cette image : le nœud source expose son catalog sur 4030, et
+    sans ce champ il irait interroger le catalog de son voisin (ou, celui-ci arrêté,
+    retomberait silencieusement sur la version par défaut).
+    """
+    if conf.get("url_catalog"):
+        return conf["url_catalog"].rstrip("/")
+    parsed = urlparse(conf["url"].rstrip("/"))
+    return f"{parsed.scheme}://{parsed.hostname}:3030/catalog"
+
+
+def _api_version(conf: dict) -> str:
     """Récupère la version de l'API catalog du nœud RUDI."""
-    parsed = urlparse(base_url.rstrip("/"))
-    catalog_url = f"{parsed.scheme}://{parsed.hostname}:3030/catalog"
     try:
-        return session.get(f"{catalog_url}/version", timeout=5).text.strip()
+        return session.get(f"{url_catalog(conf)}/version", timeout=5).text.strip()
     except Exception as e:
         print(f"  [RUDI] AVERTISSEMENT : impossible de récupérer la version de l'API ({e}), valeur par défaut 1.4.0 utilisée.")
         return "1.4.0"
@@ -147,7 +206,7 @@ def publier_dataset(
     existant = existants[0] if existants else None
 
     rudi_metadata["global_id"] = existant["global_id"] if existant else str(uuid.uuid4())
-    rudi_metadata.setdefault("metadata_info", {})["api_version"] = _api_version(conf["url"])
+    rudi_metadata.setdefault("metadata_info", {})["api_version"] = _api_version(conf)
 
     # organization_id : réutilise celui du nœud si l'org existe, sinon UUID v4
     org = rudi_metadata["producer"]

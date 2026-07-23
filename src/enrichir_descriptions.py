@@ -31,7 +31,8 @@ from translation.description_secours import (
     MARQUEUR, description_quasi_vide, entetes_depuis_csv, entetes_depuis_geojson,
     generer_complement, partie_descriptive,
 )
-from state import charger_etat, sauvegarder_etat, construire_index_dossier
+from state import (charger_etat, sauvegarder_etat, construire_index_dossier,
+                   lire_rudi_publie, ecrire_rudi_publie)
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
 STATE_TAB_FILE = os.path.join(DATA_DIR, "state.json")
@@ -122,8 +123,11 @@ def main() -> None:
             n_traites += 1
             if nom in index:
                 source, cle = index[nom]
-                if etats[source][cle].get("rudi_publie"):
-                    etats[source][cle]["rudi_publie"] = False
+                rp = lire_rudi_publie(etats[source][cle])
+                if any(rp.values()):
+                    for nom_noeud in rp:
+                        rp[nom_noeud] = False
+                    ecrire_rudi_publie(etats[source][cle], rp)
                     n_republier += 1
 
     sauvegarder_etat(STATE_TAB_FILE, etats["tabulaire"])

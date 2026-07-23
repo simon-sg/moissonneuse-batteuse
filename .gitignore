@@ -4,6 +4,7 @@ data/
 
 # Credentials / conf locale (ne pas committer)
 src/conf/rudi_node.json
+src/conf/rudi_nodes.json
 src/conf/monitor_db.json
 src/conf/rva_key.json
 .env

@@ -1,14 +1,24 @@
 """
-Publie sur le nœud RUDI les JDD déjà moissonnés mais pas encore marqués
-publiés (`rudi_publie` absent ou faux dans state.json / state_insee.json /
-state_geo.json).
+Publie sur les nœuds RUDI les JDD déjà moissonnés mais pas encore marqués
+publiés (`rudi_publie` dans state.json / state_insee.json / state_geo.json).
 
 Travaille uniquement à partir des rudi_metadata.json déjà sur disque : ne
 retélécharge ni ne refiltre rien. Utile pour rattraper une publication ratée
 (nœud injoignable au moment de la moisson) ou une moisson faite avant la
-configuration de src/conf/rudi_node.json, sans refaire tout le téléchargement.
+configuration des nœuds, sans refaire tout le téléchargement.
 
-Usage : python3 src/publish_rudi.py
+`rudi_publie` est un dict {nom_noeud: bool} (un booléen hérité est lu comme
+{"docker": <valeur>}). Trois états, trois comportements — c'est ce qui permet
+d'ajouter un nœud sans lui repousser rétroactivement tout l'historique :
+
+    clé absente  → jamais tenté, hors périmètre  → PAS de rattrapage
+    False        → tenté et échoué               → rattrapage
+    True         → publié                        → rien à faire
+
+Usage :
+    python3 src/publish_rudi.py                      # rattrape tous les nœuds
+    python3 src/publish_rudi.py --noeud source       # un seul nœud
+    python3 src/publish_rudi.py --noeud source --retroactif   # force l'historique
 """
 import json
 import os
@@ -16,10 +26,12 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from connectors.rudi_node import (publier_dataset, charger_conf_rudi, toutes_metadonnees_rudi,
-                                   supprimer_dataset, supprimer_organisation, _creer_writer)
+from connectors.rudi_node import (publier_dataset, charger_conf_rudi, charger_confs_rudi,
+                                   toutes_metadonnees_rudi, supprimer_dataset,
+                                   supprimer_organisation, _creer_writer)
 from conf.datasets import DATASETS_GEO
-from state import charger_etat, sauvegarder_etat, construire_index_dossier
+from state import (charger_etat, sauvegarder_etat, construire_index_dossier,
+                   lire_rudi_publie, ecrire_rudi_publie)
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
 STATE_TAB_FILE = os.path.join(DATA_DIR, "state.json")
@@ -40,18 +52,44 @@ def _fichiers_a_uploader(dossier_path: str, rudi_metadata: dict) -> list[str]:
     return fichiers
 
 
-def main() -> None:
-    conf_rudi = charger_conf_rudi()
-    if not conf_rudi:
-        print("src/conf/rudi_node.json absent — impossible de publier.")
+def _noeuds_a_rattraper(rudi_publie: dict, confs: list[dict], retroactif: bool) -> list[dict]:
+    """Sélectionne les nœuds pour lesquels ce JDD doit être (re)publié.
+
+    Voir la docstring du module : une clé absente signifie « hors périmètre »
+    et n'est rattrapée que sur demande explicite (`--retroactif`)."""
+    cibles = []
+    for conf in confs:
+        etat = rudi_publie.get(conf.get("nom"))
+        if etat is True:
+            continue
+        if etat is False or retroactif:
+            cibles.append(conf)
+    return cibles
+
+
+def main(noeuds: list[str] | None = None, retroactif: bool = False) -> None:
+    confs = charger_confs_rudi()
+    if not confs:
+        print("Aucun nœud RUDI configuré (src/conf/rudi_nodes.json ni rudi_node.json) — "
+              "impossible de publier.")
         return
+    if noeuds:
+        confs = [c for c in confs if c.get("nom") in noeuds]
+        if not confs:
+            print(f"Aucun nœud configuré ne porte le(s) nom(s) {', '.join(noeuds)}.")
+            return
+
+    print(f"Nœud(s) ciblé(s) : {', '.join(c.get('nom', '?') for c in confs)}"
+          f"{' — mode RÉTROACTIF (inclut les JDD hors périmètre)' if retroactif else ''}\n")
 
     state_tab = charger_etat(STATE_TAB_FILE)
     state_insee = charger_etat(STATE_INSEE_FILE)
     state_oeb = charger_etat(STATE_OEB_FILE)
     state_bdnb = charger_etat(STATE_BDNB_FILE)
     state_geo = charger_etat(STATE_GEO_FILE)
-    geo_deja_publie = state_geo.get("_rudi_publie", {})
+    # setdefault (et non get) : on veut le dict réellement stocké dans state_geo,
+    # pour que les mises à jour faites plus bas soient visibles à la relecture.
+    geo_deja_publie = state_geo.setdefault("_rudi_publie", {})
     dossiers_geo = {c["dossier"] for c in DATASETS_GEO}
 
     # dossier -> ("tabulaire"|"insee"|"oeb"|"bdnb", clé dans l'état correspondant)
@@ -63,19 +101,24 @@ def main() -> None:
     # Mappe source → dict d'état pour la mise à jour rudi_publie
     etats = {"tabulaire": state_tab, "insee": state_insee, "oeb": state_oeb, "bdnb": state_bdnb}
 
-    a_publier = []   # [(dossier, source, cle_etat_ou_None)]
+    a_publier = []   # [(dossier, source, cle_etat_ou_None, [confs de nœuds à rattraper])]
     inconnus = []
     for nom in sorted(os.listdir(DATA_DIR)):
         chemin_meta = os.path.join(DATA_DIR, nom, "rudi_metadata.json")
         if not os.path.isfile(chemin_meta):
             continue
         if nom in dossiers_geo:
-            if not geo_deja_publie.get(nom):
-                a_publier.append((nom, "geo", None))
+            # state_geo["_rudi_publie"][dossier] porte directement la valeur (bool hérité ou dict)
+            rp = lire_rudi_publie({"rudi_publie": geo_deja_publie.get(nom)})
+            cibles = _noeuds_a_rattraper(rp, confs, retroactif)
+            if cibles:
+                a_publier.append((nom, "geo", None, cibles))
         elif nom in index:
             source, cle = index[nom]
-            if not etats[source][cle].get("rudi_publie"):
-                a_publier.append((nom, source, cle))
+            rp = lire_rudi_publie(etats[source][cle])
+            cibles = _noeuds_a_rattraper(rp, confs, retroactif)
+            if cibles:
+                a_publier.append((nom, source, cle, cibles))
         else:
             inconnus.append(nom)
 
@@ -87,28 +130,45 @@ def main() -> None:
         print()
 
     if not a_publier:
-        print("Rien à publier — tout est déjà marqué publié.")
+        print("Rien à publier — tout est déjà marqué publié sur les nœuds ciblés.")
         return
 
-    print(f"=== Publication RUDI — {len(a_publier)} JDD à (re)publier ===\n")
+    nb_pub = sum(len(c) for _, _, _, c in a_publier)
+    print(f"=== Publication RUDI — {len(a_publier)} JDD, {nb_pub} publication(s) à faire ===\n")
     ok, echecs = 0, 0
-    for dossier, source, cle in a_publier:
+    for dossier, source, cle, cibles in a_publier:
         dossier_path = os.path.join(DATA_DIR, dossier)
-        print(f"--- {dossier} ({source}) ---")
-        try:
-            with open(os.path.join(dossier_path, "rudi_metadata.json"), encoding="utf-8") as f:
-                rudi_metadata = json.load(f)
-            fichiers = _fichiers_a_uploader(dossier_path, rudi_metadata)
-            publier_dataset(conf=conf_rudi, rudi_metadata=rudi_metadata, fichiers_filtres=fichiers)
-            ok += 1
-            if source == "geo":
-                state_geo.setdefault("_rudi_publie", {})
-                state_geo["_rudi_publie"][dossier] = True
-            else:
-                etats[source][cle]["rudi_publie"] = True
-        except Exception as e:
-            print(f"  [RUDI] ERREUR : {e}")
-            echecs += 1
+        noms_cibles = ", ".join(c.get("nom", "?") for c in cibles)
+        print(f"--- {dossier} ({source}) → {noms_cibles} ---")
+
+        if source == "geo":
+            rp = lire_rudi_publie({"rudi_publie": geo_deja_publie.get(dossier)})
+        else:
+            rp = lire_rudi_publie(etats[source][cle])
+
+        for conf_noeud in cibles:
+            nom_noeud = conf_noeud.get("nom", "?")
+            try:
+                # Rechargé pour chaque nœud : publier_dataset() mute rudi_metadata en place
+                # (global_id, producer, contacts, available_formats remplacés par les objets
+                # du nœud). Repartir du fichier évite de propager l'empreinte d'un nœud sur
+                # la fiche envoyée au suivant.
+                with open(os.path.join(dossier_path, "rudi_metadata.json"), encoding="utf-8") as f:
+                    rudi_metadata = json.load(f)
+                fichiers = _fichiers_a_uploader(dossier_path, rudi_metadata)
+                publier_dataset(conf=conf_noeud, rudi_metadata=rudi_metadata,
+                                fichiers_filtres=fichiers)
+                rp[nom_noeud] = True
+                ok += 1
+            except Exception as e:
+                print(f"  [RUDI:{nom_noeud}] ERREUR : {e}")
+                rp[nom_noeud] = False
+                echecs += 1
+
+        if source == "geo":
+            geo_deja_publie[dossier] = rp
+        else:
+            ecrire_rudi_publie(etats[source][cle], rp)
         print()
 
     sauvegarder_etat(STATE_TAB_FILE, state_tab)
@@ -116,7 +176,7 @@ def main() -> None:
     sauvegarder_etat(STATE_OEB_FILE, state_oeb)
     sauvegarder_etat(STATE_BDNB_FILE, state_bdnb)
     sauvegarder_etat(STATE_GEO_FILE, state_geo)
-    print(f"=== Terminé : {ok} publié(s), {echecs} échec(s) sur {len(a_publier)} ===")
+    print(f"=== Terminé : {ok} publication(s) réussie(s), {echecs} échec(s) sur {nb_pub} ===")
 
 
 def menage_rudi_one_shot() -> list[dict]:
@@ -125,13 +185,16 @@ def menage_rudi_one_shot() -> list[dict]:
     ceux qui n'ont plus de correspondance locale (rudi_metadata.json absent).
 
     Retourne la liste des datasets orphelins (dicts RUDI).
+
+    N'opère que sur le nœud **principal** : le ménage supprime des données, on ne
+    l'étend pas implicitement aux autres nœuds (voir action_menage_rudi du CLI).
     """
     conf_rudi = charger_conf_rudi()
     if not conf_rudi:
-        print("src/conf/rudi_node.json absent — impossible d'interroger le nœud.")
+        print("Aucun nœud RUDI configuré — impossible d'interroger le nœud.")
         return []
 
-    print("Récupération de tous les datasets depuis le nœud RUDI…")
+    print(f"Récupération de tous les datasets depuis le nœud « {conf_rudi.get('nom', '?')} »…")
     try:
         tous = toutes_metadonnees_rudi(conf_rudi)
     except Exception as e:
@@ -172,10 +235,12 @@ def menage_organisations() -> list[dict]:
     référencées par aucun dataset (producteur ni éditeur de métadonnées).
 
     Retourne la liste des organisations non utilisées (dicts RUDI).
+
+    N'opère que sur le nœud **principal**, comme menage_rudi_one_shot().
     """
     conf_rudi = charger_conf_rudi()
     if not conf_rudi:
-        print("src/conf/rudi_node.json absent — impossible d'interroger le nœud.")
+        print("Aucun nœud RUDI configuré — impossible d'interroger le nœud.")
         return []
 
     writer = _creer_writer(conf_rudi)
@@ -221,4 +286,15 @@ def supprimer_organisations(conf: dict, organisations: list[dict]) -> tuple[int,
 
 
 if __name__ == "__main__":
-    main()
+    import argparse
+
+    parseur = argparse.ArgumentParser(description=__doc__,
+                                      formatter_class=argparse.RawDescriptionHelpFormatter)
+    parseur.add_argument("--noeud", action="append", metavar="NOM",
+                         help="Restreint le rattrapage à ce nœud (répétable). "
+                              "Par défaut : tous les nœuds configurés.")
+    parseur.add_argument("--retroactif", action="store_true",
+                         help="Publie aussi les JDD hors périmètre du nœud (clé absente) — "
+                              "sert à amorcer un nœud ajouté après coup.")
+    args = parseur.parse_args()
+    main(noeuds=args.noeud, retroactif=args.retroactif)

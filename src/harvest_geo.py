@@ -282,12 +282,12 @@ def traiter_geo_dataset(config: dict, state: dict) -> None:
         json.dump(rudi_metadata, f, ensure_ascii=False, indent=2)
     print("  Métadonnées RUDI sauvegardées.")
 
-    # Publication sur le nœud RUDI
-    publie = publier_si_configue(rudi_metadata, [ch for ch, _ in fichiers_geojson])
+    # Publication sur le(s) nœud(s) RUDI
+    resultats = publier_si_configue(rudi_metadata, [ch for ch, _ in fichiers_geojson])
 
-    if publie:
+    if resultats:
         state.setdefault("_rudi_publie", {})
-        state["_rudi_publie"][config["dossier"]] = True
+        state["_rudi_publie"][config["dossier"]] = resultats
 
 
 def main():

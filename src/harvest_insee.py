@@ -31,6 +31,7 @@ from translation.rudi_builder import (
     media_filtre, media_dict,
 )
 from filters.csv import slugifier, sauvegarder_csv
+from filters.harvest import _detecter_encodage_bytes
 from connectors.analyseurs import _detecter_champs
 from state import charger_etat, sauvegarder_etat
 
@@ -122,9 +123,7 @@ def _filtrer_dict_variables(contenu: bytes) -> bytes:
     (COD_MOD vide). Élimine les milliers de lignes de modalités géographiques (codes IRIS,
     communes) qui gonflent le fichier sans apporter d'information utile."""
     import io
-    texte = contenu.decode("utf-8-sig", errors="replace")
-    if texte.count("\ufffd") > 10:
-        texte = contenu.decode("latin-1")
+    texte = contenu.decode(_detecter_encodage_bytes(contenu), errors="replace")
     # Détection délimiteur
     premiere = texte.split("\n")[0]
     delim = max(";", "\t", ",", "|", key=lambda d: premiere.count(d))
@@ -309,9 +308,8 @@ def traiter_publication(pub: dict, state: dict) -> dict:
     os.remove(chemin_zip)
 
     # 8. Générer rudi_metadata.json (catalogue + nœud RUDI)
-    rudi_publie = True  # rien à publier (pas de fichiers_data) -> rien à retenter non plus
+    rudi_publie: dict[str, bool] = {}
     if fichiers_data:
-        rudi_publie = False
         rudi_meta = _generer_rudi_metadata(pub, fichiers_data, last_modified,
                                             fichiers_dict=noms_dict,
                                             entetes_colonnes=dernieres_entetes)
@@ -320,7 +318,7 @@ def traiter_publication(pub: dict, state: dict) -> dict:
             json.dump(rudi_meta, f, ensure_ascii=False, indent=2)
         print(f"  → rudi_metadata.json généré")
 
-        # 9. Publication optionnelle sur le nœud RUDI
+        # 9. Publication optionnelle sur le(s) nœud(s) RUDI
         rudi_publie = publier_si_configue(rudi_meta, chemins_csv + chemins_dict)
 
     # 10. Mettre à jour le cache. Le téléchargement/filtrage est acquis dès qu'on

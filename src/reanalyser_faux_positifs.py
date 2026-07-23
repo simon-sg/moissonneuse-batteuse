@@ -30,7 +30,7 @@ from conf.insee_cp_35 import INSEE_SEULEMENT_35, CP_SEULEMENT_35
 from filters.geographic import detecter_nature_colonne
 from filters.harvest import _detecter_delimiteur, _detecter_encodage, _ligne_est_rm
 from harvest_batch import _resoudre_champs
-from state import charger_state, sauvegarder_state, construire_index_dossier
+from state import charger_state, sauvegarder_state, construire_index_dossier, lire_rudi_publie, ecrire_rudi_publie
 from discover import charger_decouverte, sauvegarder_decouverte
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
@@ -194,7 +194,10 @@ def appliquer_modifications(rapport: dict, state: dict, index: dict) -> None:
     if correspondance:
         _, cle = correspondance
         state[cle]["nb_rm"] = rapport["apres"]
-        state[cle]["rudi_publie"] = False
+        rp = lire_rudi_publie(state[cle])
+        for nom_noeud in rp:
+            rp[nom_noeud] = False
+        ecrire_rudi_publie(state[cle], rp)
         # last_modified conservé : le skip-si-inchangé doit continuer à fonctionner.
         sauvegarder_state(state)
     else:

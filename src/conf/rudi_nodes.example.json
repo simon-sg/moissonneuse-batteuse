@@ -1,0 +1,18 @@
+[
+  {
+    "nom": "docker",
+    "url": "http://localhost:3032",
+    "url_catalog": "http://localhost:3030/catalog",
+    "usr": "CHANGE_ME",
+    "pwd": "CHANGE_ME",
+    "principal": true
+  },
+  {
+    "nom": "source",
+    "url": "http://localhost:4032",
+    "url_catalog": "http://localhost:4030/catalog",
+    "usr": "CHANGE_ME",
+    "pwd": "CHANGE_ME",
+    "principal": false
+  }
+]

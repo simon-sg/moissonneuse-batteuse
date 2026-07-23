@@ -86,3 +86,21 @@ def portail_pret() -> bool:
         return r.status_code < 500
     except Exception:
         return False
+
+
+def redemarrer_konsult() -> tuple[bool, str]:
+    """Redémarre uniquement le microservice Konsult (recharge customization.json)."""
+    try:
+        cmd = _compose_cmd() + ["restart", "konsult"]
+        r = subprocess.run(
+            cmd, capture_output=True, text=True, timeout=60,
+            cwd=_DOCKER_DIR,
+        )
+    except FileNotFoundError:
+        return False, "docker n'est pas installé ou introuvable dans le PATH."
+    except subprocess.TimeoutExpired:
+        return False, "docker compose restart konsult : délai dépassé (60s)."
+
+    if r.returncode == 0:
+        return True, "Konsult redémarré."
+    return False, (r.stderr or r.stdout).strip() or "Échec du redémarrage de Konsult."

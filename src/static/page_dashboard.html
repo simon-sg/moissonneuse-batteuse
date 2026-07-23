@@ -42,12 +42,9 @@
 </section>
 
 <section>
-  <h2>Nœud RUDI <span id="badge-noeud" class="badge idle" title="État du nœud RUDI — conteneur Podman géré par rudi_node.py">…</span></h2>
-  <div class="ligne-job">
-    <button id="btn-noeud" onclick="basculerNoeud()" disabled
-            title="Démarrer ou arrêter le conteneur Podman du nœud RUDI">…</button>
-    <a id="lien-noeud" href="#" target="_blank" class="discret desactive"
-       title="Ouvrir l'interface web du nœud RUDI (manager)">Ouvrir le nœud</a>
+  <h2>Nœud(s) RUDI</h2>
+  <div id="noeuds-container">
+    <div class="ligne-job"><span class="badge idle">…</span></div>
   </div>
 </section>
 
@@ -250,7 +247,7 @@ async function actualiserEtat(){
   stats.push(["État tabulaire/batch", tb ? `${tb.total} suivi(s), ${tb.rudi_publie} publié(s)` : "aucun"]);
   stats.push(["État INSEE", ins ? `${ins.total} suivi(s), ${ins.rudi_publie} publié(s)` : "aucun"]);
   stats.push(["État OEB", oeb ? `${oeb.total} suivi(s), ${oeb.rudi_publie} publié(s)` : "aucun"]);
-  stats.push(["Nœud RUDI", d.rudi_configure ? "configuré" : "NON configuré"]);
+  stats.push(["Nœud RUDI", d.rudi_configure ? (d.noeuds_rudi || []).join(", ") || "configuré" : "NON configuré"]);
   stats.push(["Données moissonnées", `${d.donnees.n_dossiers} dossier(s)`]);
   document.getElementById("etat").innerHTML = stats.map(([lbl,val]) => `
     <div class="stat" title="${esc(AIDE_METRIQUES[lbl] || "")}">
@@ -271,43 +268,59 @@ async function actualiserNoeud(){
   const {ok, data: n} = await apiFetch("/api/noeud");
   if (!ok || !n) { return; }
 
-  const badge = document.getElementById("badge-noeud");
-  const bouton = document.getElementById("btn-noeud");
-  let enDemarrage = false;
-
-  if (!n.podman_installe){
-    badge.className = "badge warn";
-    badge.textContent = "podman introuvable";
-    bouton.className = "";
-    bouton.textContent = "Démarrer";
-    bouton.disabled = true;
-  } else if (!n.existe){
-    badge.className = "badge idle";
-    badge.textContent = "absent";
-    bouton.className = "";
-    bouton.textContent = "Démarrer";
-    bouton.disabled = true;
-  } else {
-    const enCours = n.etat === "running";
-    enDemarrage = enCours && !n.pret;
-    badge.className = "badge " + (enDemarrage ? "running" : (enCours ? "termine" : "idle"));
-    badge.textContent = enDemarrage ? "démarrage…" : (LABELS_ETAT_NOEUD[n.etat] || n.etat || "inconnu");
-    badge.title = enDemarrage ? "Le conteneur tourne mais l'application n'est pas encore prête"
-                 : (enCours ? "Le nœud RUDI est opérationnel et répond aux requêtes"
-                    : "Le conteneur est arrêté — cliquer sur Démarrer pour le lancer");
-    bouton.textContent = enCours ? "Arrêter" : "Démarrer";
-    bouton.className = enCours ? "danger" : "";
-    bouton.disabled = noeudActionEnCours;
+  const container = document.getElementById("noeuds-container");
+  const noeuds = n.noeuds || [];
+  if (noeuds.length === 0){
+    container.innerHTML = `<div class="ligne-job"><span class="badge warn">Aucun nœud configuré</span></div>`;
+    return;
   }
 
-  // Le lien vers le nœud n'est activé qu'une fois qu'il répond vraiment (pas seulement
-  // que le conteneur tourne — l'appli interne met plusieurs secondes à démarrer).
-  const lienNoeud = document.getElementById("lien-noeud");
-  lienNoeud.href = n.url_manager || "#";
-  lienNoeud.classList.toggle("desactive", !n.url_manager || !n.pret);
+  let enDemarrage = false;
+  let html = "";
+  for (const nd of noeuds){
+    const nom = nd.nom || "inconnu";
+    const isDocker = nd.podman !== undefined;
+    let badgeClass = "idle", badgeText = "…", badgeTitle = "";
 
-  // Pendant le démarrage, on vérifie plus souvent pour refléter la disponibilité réelle
-  // dès qu'elle survient, plutôt que d'attendre le prochain rafraîchissement (15s).
+    if (isDocker){
+      const pm = nd.podman || {};
+      if (!pm.podman_installe){
+        badgeClass = "warn"; badgeText = "podman introuvable";
+      } else if (!pm.existe){
+        badgeClass = "idle"; badgeText = "absent";
+      } else {
+        const enCours = pm.etat === "running";
+        const demarrage = enCours && !nd.pret;
+        enDemarrage = enDemarrage || demarrage;
+        badgeClass = demarrage ? "running" : (enCours ? "termine" : "idle");
+        badgeText = demarrage ? "démarrage…" : (LABELS_ETAT_NOEUD[pm.etat] || pm.etat || "inconnu");
+        badgeTitle = demarrage ? "Le conteneur tourne mais l'application n'est pas encore prête"
+                   : (enCours ? "Opérationnel" : "Le conteneur est arrêté");
+      }
+    } else {
+      badgeClass = nd.pret ? "termine" : "idle";
+      badgeText = nd.pret ? "opérationnel" : "arrété";
+      badgeTitle = nd.pret ? "Le nœud source répond" : "Le process natif ne répond pas";
+    }
+
+    const labelPrincipal = nd.principal ? " (principal)" : "";
+    const lienManager = nd.url_manager || "#";
+    const boutonHtml = isDocker
+      ? `<button onclick="basculerNoeud('${nom}')"
+           ${(nd.podman||{}).etat === "running" ? 'class="danger"' : ''}
+           title="Démarrer ou arrêter le conteneur Podman du nœud « ${nom} »">
+           ${(nd.podman||{}).etat === "running" ? "Arrêter" : "Démarrer"}</button>`
+      : "";
+    html += `<div class="ligne-job">
+      <span class="badge ${badgeClass}" title="${esc(badgeTitle)}">${esc(nom)}${esc(labelPrincipal)} : ${esc(badgeText)}</span>
+      ${boutonHtml}
+      <a href="${esc(lienManager)}" target="_blank" class="discret ${nd.pret ? '' : 'desactive'}"
+         title="Ouvrir le manager du nœud « ${nom} »">Ouvrir</a>
+    </div>`;
+  }
+  container.innerHTML = html;
+
+  // Pendant le démarrage, on vérifie plus souvent
   if (enDemarrage && !intervalleRapideNoeud){
     intervalleRapideNoeud = setInterval(actualiserNoeud, 2000);
   } else if (!enDemarrage && intervalleRapideNoeud){
@@ -316,11 +329,9 @@ async function actualiserNoeud(){
   }
 }
 
-async function basculerNoeud(){
-  const bouton = document.getElementById("btn-noeud");
-  const action = bouton.textContent === "Arrêter" ? "arreter" : "demarrer";
+async function basculerNoeud(nom){
+  const action = "arreter";
   noeudActionEnCours = true;
-  bouton.disabled = true;
   const {ok, data} = await apiFetch(`/api/noeud/${action}`, {method:"POST"});
   if (data) notifier(data.message, !ok);
   noeudActionEnCours = false;

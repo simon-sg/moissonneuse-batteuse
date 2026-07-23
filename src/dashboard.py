@@ -36,7 +36,7 @@ import cli
 import discover
 from catalogue import GABARIT_WMS_MAP
 from conf.discover import REQUETES_STRUCTUREES, KEYWORDS, NB_PAGES as CONF_NB_PAGES
-from connectors import rudi_node, rudi_portal, superset
+from connectors import rudi_node, rudi_portal, rudi_portal_config, superset
 from filters.discovery import _paginer, _filtrer_communs
 
 HOST = "127.0.0.1"
@@ -57,6 +57,7 @@ def _html_topbar(page_active: str) -> str:
         ("catalogue", "/catalogue", "Catalogue", False),
         ("examen", "/examen", "Examen", False),
         ("decouverte", "/decouverte", "Découverte", False),
+        ("portail", "/portail", "Portail config", False),
     ]
     nav_html = ""
     for pid, href, label, ext in liens:
@@ -363,13 +364,26 @@ def _traiter_purge(idx_str: str, params: dict) -> tuple[int, dict]:
 # ---------------------------------------------------------------------------
 
 def _etat_noeud() -> dict:
-    etat = rudi_node.statut_conteneur()
+    """État de tous les nœuds RUDI configurés."""
+    noeuds = rudi_node.charger_confs_rudi()
+    etats_noeuds = []
+    for conf in noeuds:
+        nom = conf.get("nom", "inconnu")
+        etat_noeud: dict = {"nom": nom, "url": conf["url"], "principal": conf.get("principal", False)}
 
-    conf = rudi_node.charger_conf_rudi()
-    etat["url_manager"] = (conf["url"].rstrip("/") + "/manager/") if conf else None
-    etat["pret"] = bool(conf and etat.get("etat") == "running" and rudi_node.noeud_pret(conf))
+        # Podman lifecycle only applies to Docker nodes
+        is_docker = nom == "docker"
+        if is_docker:
+            statut_podman = rudi_node.statut_conteneur()
+            etat_noeud["podman"] = statut_podman
+            etat_noeud["pret"] = bool(statut_podman.get("etat") == "running" and rudi_node.noeud_pret(conf))
+        else:
+            etat_noeud["pret"] = bool(rudi_node.noeud_pret(conf))
 
-    return etat
+        etat_noeud["url_manager"] = conf["url"].rstrip("/") + "/manager/"
+        etats_noeuds.append(etat_noeud)
+
+    return {"noeuds": etats_noeuds}
 
 
 def _traiter_noeud_action(nom: str) -> tuple[int, dict]:
@@ -422,6 +436,44 @@ def _traiter_portail_demarrer() -> tuple[int, dict]:
 def _traiter_portail_arreter() -> tuple[int, dict]:
     ok, message = rudi_portal.arreter_conteneur()
     return (200 if ok else 500), {"ok": ok, "message": message}
+
+
+def _traiter_konsult_restart() -> tuple[int, dict]:
+    ok, message = rudi_portal.redemarrer_konsult()
+    return (200 if ok else 500), {"ok": ok, "message": message}
+
+
+def _traiter_portail_upload(handler) -> tuple[int, dict]:
+    """Traite l'upload d'une image vers config/konsult/."""
+    content_type = handler.headers.get("Content-Type", "")
+    if "multipart/form-data" not in content_type:
+        return 400, {"ok": False, "erreur": "Content-Type must be multipart/form-data"}
+
+    import cgi
+    import io
+
+    content_length = int(handler.headers.get("Content-Length", 0))
+    if content_length == 0:
+        return 400, {"ok": False, "erreur": "Empty request"}
+
+    body = handler.rfile.read(content_length)
+    environ = {
+        "REQUEST_METHOD": "POST",
+        "CONTENT_TYPE": content_type,
+        "CONTENT_LENGTH": str(content_length),
+    }
+    form = cgi.FieldStorage(fp=io.BytesIO(body), environ=environ, keep_blank_values=True)
+    file_item = form["file"]
+    if not file_item.filename:
+        return 400, {"ok": False, "erreur": "No file uploaded"}
+
+    try:
+        chemin = rudi_portal_config.sauvegarder_image(
+            file_item.filename, file_item.file.read()
+        )
+        return 200, {"ok": True, "chemin": chemin}
+    except Exception as e:
+        return 500, {"ok": False, "erreur": str(e)}
 
 
 # ---------------------------------------------------------------------------
@@ -934,6 +986,8 @@ class Handler(http.server.BaseHTTPRequestHandler):
             self._repondre_html(200, PAGE_EXAMEN_HTML)
         elif self.path == "/decouverte":
             self._repondre_html(200, PAGE_DECOUVERTE_HTML)
+        elif self.path == "/portail":
+            self._repondre_html(200, PAGE_PORTAIL_HTML)
         elif self.path == "/catalogue":
             self._servir_catalogue()
         elif self.path.startswith("/static/"):
@@ -950,6 +1004,10 @@ class Handler(http.server.BaseHTTPRequestHandler):
             self._repondre_json(200, _etat_superset())
         elif self.path == "/api/portail":
             self._repondre_json(200, _etat_portail())
+        elif self.path == "/api/portail/config":
+            self._repondre_json(200, rudi_portal_config.lire_config())
+        elif self.path == "/api/portail/images":
+            self._repondre_json(200, {"images": rudi_portal_config.lister_images()})
         elif self.path == "/api/a_examiner":
             self._repondre_json(200, _a_examiner_json())
         elif self.path == "/api/historique":
@@ -971,6 +1029,13 @@ class Handler(http.server.BaseHTTPRequestHandler):
             self._repondre_json(404, {"erreur": "introuvable"})
 
     def do_POST(self):
+        content_type = self.headers.get("Content-Type", "")
+
+        if self.path == "/api/portail/upload":
+            code, payload = _traiter_portail_upload(self)
+            self._repondre_json(code, payload)
+            return
+
         longueur = int(self.headers.get("Content-Length", 0) or 0)
         brut = self.rfile.read(longueur) if longueur else b""
         try:
@@ -1007,6 +1072,18 @@ class Handler(http.server.BaseHTTPRequestHandler):
             self._repondre_json(code, payload)
         elif self.path == "/api/portail/arreter":
             code, payload = _traiter_portail_arreter()
+            self._repondre_json(code, payload)
+        elif self.path == "/api/portail/config/save":
+            try:
+                rudi_portal_config.sauvegarder_config(params)
+                self._repondre_json(200, {"ok": True})
+            except Exception as e:
+                self._repondre_json(500, {"ok": False, "erreur": str(e)})
+        elif self.path == "/api/portail/restart":
+            code, payload = _traiter_portail_demarrer()
+            self._repondre_json(code, payload)
+        elif self.path == "/api/portail/konsult/restart":
+            code, payload = _traiter_konsult_restart()
             self._repondre_json(code, payload)
         elif self.path == "/api/a_examiner":
             code, payload = _traiter_a_examiner(params)
@@ -1061,6 +1138,9 @@ PAGE_EXAMEN_HTML = _charger_page("page_examen.html", "examen")
 
 
 PAGE_DECOUVERTE_HTML = _charger_page("page_decouverte.html", "decouverte")
+
+
+PAGE_PORTAIL_HTML = _charger_page("page_portail.html", "portail")
 
 
 def main() -> None:

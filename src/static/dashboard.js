@@ -107,15 +107,18 @@ async function actualiserTopBar(){
     fetch("/api/a_examiner").then(r => r.json()),
   ]);
 
-  // Nœud RUDI
+  // Nœud RUDI (multi-nœuds)
   const pill = document.getElementById("tb-noeud");
   if (pill && noeudR.status === "fulfilled"){
     const n = noeudR.value;
-    if (!n.podman_installe){ pill.className = "topbar-pill warn"; pill.title = "Podman introuvable"; }
-    else if (!n.existe){ pill.className = "topbar-pill"; pill.title = "Conteneur absent"; }
-    else if (n.etat === "running" && !n.pret){ pill.className = "topbar-pill running"; pill.title = "Démarrage\u2026"; }
-    else if (n.etat === "running"){ pill.className = "topbar-pill ok"; pill.title = "Opérationnel"; }
-    else { pill.className = "topbar-pill warn"; pill.title = n.etat || "Arrêté"; }
+    const noeuds = n.noeuds || [];
+    const toutPret = noeuds.length > 0 && noeuds.every(nd => nd.pret);
+    const aucunPret = noeuds.every(nd => !nd.pret);
+    const aucunInstalle = noeuds.length === 0;
+    if (aucunInstalle){ pill.className = "topbar-pill warn"; pill.title = "Aucun nœud configuré"; }
+    else if (toutPret){ pill.className = "topbar-pill ok"; pill.title = "Tous les nœuds prêts"; }
+    else if (aucunPret){ pill.className = "topbar-pill warn"; pill.title = "Aucun nœud prêt"; }
+    else { pill.className = "topbar-pill running"; pill.title = "Certains nœuds en cours"; }
   }
 
   // Superset

@@ -156,7 +156,28 @@ Les 4 sous-modules sont déjà clonés dans `/media/simon/DATA4T/Dev/rudi-node-b
 Vérification : les 4 process répondent sur 4030/4031/4032, et `POST` d'une fiche de test via le manager
 aboutit. **Puis, immédiatement : PR n° 1** (voir étape 7) — elle ne dépend d'aucun portail.
 
-### Étape 3 — Boucle de travail hybride sur le portail (le cœur du cycle)
+### Étape 3 — Boucle de travail hybride sur le portail — ✅ FAIT, 2 défauts corrigés (contrôlé le 2026-07-23)
+
+> Konsult tourne en natif depuis `rudi-portal-source` (**3.4.0**, Spring Boot 3.5.7, JDK 21), avec la
+> conf ROOB et JDWP sur 5005, son conteneur arrêté. Vérifié : `/konsult/v1/datasets/metadatas` renvoie
+> le même JSON (372 fiches) en direct et à travers le portail.
+>
+> Deux pièges levés, tous deux **silencieux** :
+> 1. **Traefik construit ses routeurs depuis les labels Docker** : conteneur arrêté = plus de routeur
+>    `konsult@docker`, et `/konsult/*` retombe sur le routeur générique du portail, qui répond
+>    l'`index.html` du front. Symptôme : HTTP **200 avec du HTML** là où le front attend du JSON, donc
+>    un catalogue vide sans aucune erreur. Corrigé par un routeur de fichier `konsult-natif` (priorité
+>    200) vers `https://host.docker.internal:8443` dans `config/traefik-dynamic.yml`.
+> 2. **Les IP Docker inscrites dans `/etc/hosts`** (posées pour que le process natif résolve `acl`,
+>    `dataverse`, `magnolia`, `registry`, `database`) se périment à **chaque recréation de conteneur** :
+>    `acl` pointait sur dataverse, `dataverse` sur solr. Le konsult natif répondait 500
+>    (`Connexion refusée: dataverse/172.19.0.9:8080`). À re-synchroniser depuis `docker inspect` — la
+>    boucle est un candidat naturel pour le superviseur de l'étape 7.
+>
+> ⚠️ Le konsult natif est en **3.4.0 face à des voisins en v3.3.12** : c'est le principe même du mode
+> hybride, mais une incompatibilité d'API entre konsult et acl/kos/strukture reste possible.
+
+### Étape 3 (spécification d'origine) — Boucle de travail hybride sur le portail
 
 C'est le mode par défaut au quotidien. La stack ROOB tourne normalement ; pour le microservice que tu
 patches :
@@ -225,7 +246,32 @@ enregistrement du `node_provider` (compte ROBOT) en rejouant `PLAN_PORTAIL_RUDI_
 `raccordement/declarer_noeud.py` — en gardant à l'esprit que la mécanique peut différer entre 3.3.12 et
 3.4.0, et que `declarer_noeud.py` est déjà marqué obsolète depuis la recréation de la base.
 
-### Étape 6 — Pipeline `moissonneuse-batteuse` multi-nœuds — ✅ FAIT (relu et corrigé le 2026-07-22)
+### ⟳ Décision 2026-07-23 — retour à un nœud UNIQUE (le source), fin du multi-nœuds
+
+> **L'étape 6 (multi-nœuds) est REMPLACÉE.** Constat : pour le travail de PR, seul le nœud source
+> (modifiable) compte ; le nœud Docker double la charge sans rien apporter. Le pipeline et le dashboard
+> sont revenus au **mono-nœud**, ciblant le nœud source (commit `pipeline : retour au mono-nœud`).
+> `rudi_publie` redevient un booléen ; on conserve `url_catalog` par config (catalog source sur 4030)
+> et la sonde `noeud_pret()` sur `/manager/conf`. Le nœud Docker reste en place mais hors chaîne
+> (`podman` non arrêté — gardé de côté, réversible). Vérifié : `charger_conf_rudi()` → source,
+> `_api_version` → 1.4.3 via 4030, 93 tests OK, publication d'un JDD → arrive sur le seul nœud source.
+>
+> **Bascule du portail sur le nœud source : infra prête, intégration bloquée.**
+> - CORS du storage source patché (cors-fix.patch) + storage relancé ✅
+> - Push source→portail : authentification réparée (bug `oauth_pub=oauth2/jwts` au lieu de `oauth2/jwks`
+>   dans `portal_conf_custom.ini` → 403 ; + compte ROBOT nodestub `5596b5b2`/`Rud1R00B-NP-nodestub`).
+>   Le push atteint désormais le portail et crée une `integration_request` ✅
+> - **Bloqueur restant** : l'intégration côté portail part en **KO** (`INTEGRATION_HANDLED`, la fiche
+>   n'entre pas au catalogue konsult). Même classe de problème que pour le nœud Docker, dont les 383
+>   fiches avaient dû être poussées par `raccordement/repousser_metadonnees.py` (le push natif était
+>   déjà problématique), pas par le push natif du nœud. Raison exacte non stockée queryablement, pas de
+>   rapport renvoyé au nœud. À reprendre comme travail de raccordement dédié.
+> - Proxy médias Traefik laissé sur **3031** (nœud Docker) : les 383 fiches existantes restent
+>   téléchargeables. Repasser à 4031 quand l'intégration source→portail fonctionnera.
+> - Retrait du nœud Docker (B4) et nettoyage du catalogue portail (B5) : **suspendus** tant que le
+>   portail n'est pas alimenté par le source.
+
+### Étape 6 (HISTORIQUE, remplacé) — Pipeline `moissonneuse-batteuse` multi-nœuds
 
 > Implémenté, puis relu. Quatre défauts corrigés à la relecture : `publish_rudi.py` n'avait pas été
 > repris (un dict non vide est toujours truthy → plus aucun rattrapage possible dès le premier état

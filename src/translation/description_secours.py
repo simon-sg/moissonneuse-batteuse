@@ -12,6 +12,8 @@ import io
 import json
 import re
 
+from filters.harvest import _detecter_encodage_bytes
+
 # En dessous de ce nombre de caractères, une description source est considérée
 # vide ou quasi vide (ex: une seule phrase passe-partout).
 SEUIL_CARACTERES = 40
@@ -49,9 +51,7 @@ def description_quasi_vide(texte: str | None) -> bool:
 def entetes_depuis_csv(contenu: bytes | str, max_colonnes: int = 20) -> list[str]:
     """Extrait les noms de colonnes (première ligne) d'un contenu CSV."""
     if isinstance(contenu, bytes):
-        texte = contenu.decode("utf-8-sig", errors="replace")
-        if texte.count("�") > 10:
-            texte = contenu.decode("latin-1", errors="replace")
+        texte = contenu.decode(_detecter_encodage_bytes(contenu), errors="replace")
     else:
         texte = contenu
     premiere = texte.splitlines()[0] if texte else ""

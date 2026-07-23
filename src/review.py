@@ -25,6 +25,7 @@ from connectors.analyseurs import _detecter_delimiteur, _format_analysable
 from connectors.download import _telecharger
 from connectors.sirene import obtenir_sirens_rm
 from filters.discovery import trouver_ressource_analysable
+from filters.harvest import _detecter_encodage_bytes
 from filters.geographic import (
     normaliser,
     est_circonscription_rm,
@@ -53,9 +54,7 @@ def _decoder_apercu_csv(contenu: bytes):
     if debut.startswith((b"<!doctype", b"<html")):
         return None
 
-    texte = contenu.decode("utf-8-sig", errors="replace")
-    if texte.count("�") > 10:
-        texte = contenu.decode("latin-1")
+    texte = contenu.decode(_detecter_encodage_bytes(contenu), errors="replace")
     sample = texte[:4096]
     delimiteur = _detecter_delimiteur(sample)
 

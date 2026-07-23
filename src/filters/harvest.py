@@ -41,15 +41,28 @@ def _detecter_delimiteur(sample: str) -> str:
 
 
 def _detecter_encodage_bytes(sample: bytes) -> str:
-    """Détecte l'encodage d'un échantillon de bytes (utf-8-sig ou latin-1)."""
-    decoded = sample.decode("utf-8-sig", errors="replace")
-    return "utf-8-sig" if decoded.count("�") <= 10 else "latin-1"
+    """Détecte l'encodage d'un échantillon de bytes (utf-8-sig si décodable sans
+    la moindre erreur, cp1252 sinon). Tolérer un peu d'UTF-8 invalide (ancien seuil
+    à 10 caractères de remplacement) est un piège : le fichier est ensuite décodé
+    en entier avec errors="replace", donc chaque octet accentué non conforme se
+    retrouve gravé en "�" dans le CSV filtré final — publié tel quel sur RUDI. Un
+    CSV réellement Windows-1252 (le cas quasi-systématique hors UTF-8 sur
+    data.gouv.fr) ne décode jamais proprement en UTF-8 sur un échantillon de
+    quelques Ko dès qu'il contient des accents ; un seul octet invalide suffit
+    donc à trancher."""
+    try:
+        sample.decode("utf-8-sig", errors="strict")
+        return "utf-8-sig"
+    except UnicodeDecodeError:
+        return "cp1252"
 
 
 def _detecter_encodage(chemin: str) -> str:
-    """Détecte l'encodage d'un fichier texte (utf-8-sig ou latin-1)."""
+    """Détecte l'encodage d'un fichier texte (utf-8-sig ou cp1252). Échantillon large
+    (256 Ko) pour limiter le risque qu'un CSV Windows-1252 ne porte ses premiers
+    accents qu'au-delà de la fenêtre analysée."""
     with open(chemin, "rb") as f:
-        sample = f.read(8192)
+        sample = f.read(262144)
     return _detecter_encodage_bytes(sample)
 
 

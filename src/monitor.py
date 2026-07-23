@@ -140,7 +140,6 @@ CREATE TABLE IF NOT EXISTS {schema_monitor}.datasets (
     nb_rm INT DEFAULT 0,
     date_harvest DATE,
     rudi_publie BOOLEAN DEFAULT FALSE,
-    rudi_publie_source BOOLEAN,
     last_modified TIMESTAMPTZ,
     data_imported BOOLEAN DEFAULT FALSE,
     data_imported_at TIMESTAMPTZ,
@@ -255,12 +254,6 @@ def _init_db(conf: dict, cur) -> None:
         "schema_filtered": _nom_schema(conf, "schema_filtered"),
     }
     cur.execute(SQL_INIT_DB.format(**fmt))
-    # Migration : ajouter rudi_publie_source si la table existe déjà sans cette colonne
-    sch_mon = fmt["schema_monitor"]
-    cur.execute(f"""
-        ALTER TABLE {sch_mon}.datasets
-        ADD COLUMN IF NOT EXISTS rudi_publie_source BOOLEAN
-    """)
     print("[monitor] Schémas et tables créés/vérifiés.")
 
 
@@ -467,20 +460,19 @@ def _lire_state(chemin: str) -> dict:
 
 def _upsert_datasets(cur, sch: str, entries: list[tuple]) -> None:
     """entries: [(id, dossier, source, theme, titre, producteur, nb_rm,
-                  date_harvest, rudi_publie, rudi_publie_source, last_modified), ...]"""
+                  date_harvest, rudi_publie, last_modified), ...]"""
     for e in entries:
         cur.execute(f"""
             INSERT INTO {sch}.datasets
                 (id, dossier, source, theme, titre, producteur, nb_rm, date_harvest,
-                 rudi_publie, rudi_publie_source, last_modified, updated_at)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW())
+                 rudi_publie, last_modified, updated_at)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW())
             ON CONFLICT (id) DO UPDATE SET
                 dossier = EXCLUDED.dossier, theme = EXCLUDED.theme,
                 titre = EXCLUDED.titre, producteur = EXCLUDED.producteur,
                 nb_rm = EXCLUDED.nb_rm,
                 date_harvest = EXCLUDED.date_harvest,
                 rudi_publie = EXCLUDED.rudi_publie,
-                rudi_publie_source = EXCLUDED.rudi_publie_source,
                 last_modified = EXCLUDED.last_modified,
                 updated_at = NOW()
         """, e)
@@ -530,13 +522,11 @@ def _refresh(conf: dict, cur) -> None:
 
     now = datetime.date.today()
 
-    def _extraire_rudi(rp_val):
-        """Extrait (rudi_publie: bool, rudi_publie_source: bool|None) depuis l'état."""
+    def _rudi_bool(rp_val) -> bool:
+        """Booléen « publié » — tolère un dict {noeud: bool} résiduel d'un ancien état."""
         if isinstance(rp_val, dict):
-            return any(rp_val.values()), rp_val.get("source")
-        if isinstance(rp_val, bool):
-            return rp_val, None
-        return False, None
+            return any(rp_val.values())
+        return bool(rp_val)
 
     # Upsert datasets (tabular/batch)
     entries = []
@@ -553,44 +543,40 @@ def _refresh(conf: dict, cur) -> None:
             except (ValueError, TypeError):
                 lmod = None
         meta = _lire_meta_depuis_rudi(ds.get("dossier", ds_id))
-        rp, rp_src = _extraire_rudi(ds.get("rudi_publie"))
         entries.append((
             ds_id, ds.get("dossier", ds_id), "tabular",
             meta["theme"], meta["titre"], meta["producteur"], nb_rm,
-            ds.get("date_harvest", str(now)), rp, rp_src, lmod,
+            ds.get("date_harvest", str(now)), _rudi_bool(ds.get("rudi_publie")), lmod,
         ))
 
     # INSEE
     for ds_id, ds in state_insee.items():
         meta = _lire_meta_depuis_rudi(ds.get("dossier", ds_id))
-        rp, rp_src = _extraire_rudi(ds.get("rudi_publie"))
         entries.append((
             ds_id, ds.get("dossier", ds_id), "insee",
             meta["theme"], meta["titre"], meta["producteur"],
             ds.get("nb_rm", 0),
-            ds.get("date_harvest", str(now)), rp, rp_src, None,
+            ds.get("date_harvest", str(now)), _rudi_bool(ds.get("rudi_publie")), None,
         ))
 
     # OEB
     for ds_id, ds in state_oeb.items():
         meta = _lire_meta_depuis_rudi(ds.get("dossier", ds_id))
-        rp, rp_src = _extraire_rudi(ds.get("rudi_publie"))
         entries.append((
             ds_id, ds.get("dossier", ds_id), "oeb",
             meta["theme"], meta["titre"], meta["producteur"],
             ds.get("nb_rm", 0),
-            ds.get("date_harvest", str(now)), rp, rp_src, None,
+            ds.get("date_harvest", str(now)), _rudi_bool(ds.get("rudi_publie")), None,
         ))
 
     # BDNB
     for ds_id, ds in state_bdnb.items():
         meta = _lire_meta_depuis_rudi(ds.get("dossier", ds_id))
-        rp, rp_src = _extraire_rudi(ds.get("rudi_publie"))
         entries.append((
             ds_id, ds.get("dossier", ds_id), "bdnb",
             meta["theme"], meta["titre"] or "BDNB", meta["producteur"],
             ds.get("nb_rm", 0),
-            ds.get("date_harvest", str(now)), rp, rp_src, None,
+            ds.get("date_harvest", str(now)), _rudi_bool(ds.get("rudi_publie")), None,
         ))
 
     # Geo services (from DATASETS_GEO) — rudi_publie depuis state_geo.json
@@ -598,14 +584,10 @@ def _refresh(conf: dict, cur) -> None:
         gid = g.get("id", "")
         if gid:
             dossier = g.get("dossier", gid)
-            rp_geo = geo_rudi_publie.get(dossier, False)
-            rp_geo_dict = rp_geo if isinstance(rp_geo, dict) else ({"docker": rp_geo} if isinstance(rp_geo, bool) else {})
-            rp_any = any(rp_geo_dict.values()) if rp_geo_dict else False
-            rp_src = rp_geo_dict.get("source")
             entries.append((
                 gid, dossier, "geo_" + g.get("type", "wfs"),
                 g.get("theme"), g.get("titre"), g.get("producteur"), 0,
-                str(now), rp_any, rp_src, None,
+                str(now), _rudi_bool(geo_rudi_publie.get(dossier, False)), None,
             ))
 
     _upsert_datasets(cur, sch_mon, entries)
@@ -1189,7 +1171,6 @@ def _status(conf: dict, cur) -> None:
     for label, sql in [
         ("Datasets monitorés", f"SELECT COUNT(*) FROM {sch_mon}.datasets"),
         ("Datasets publiés RUDI", f"SELECT COUNT(*) FROM {sch_mon}.datasets WHERE rudi_publie = TRUE"),
-        ("Datasets publiés (source)", f"SELECT COUNT(*) FROM {sch_mon}.datasets WHERE rudi_publie_source = TRUE"),
         ("Lignes filtrées importées", f"SELECT COUNT(*) FROM {sch_filt}.data_rows"),
         ("Features géo importées", f"SELECT COUNT(*) FROM {sch_filt}.geo_features"),
         ("Communes de référence", f"SELECT COUNT(*) FROM {sch_ref}.communes_rm"),

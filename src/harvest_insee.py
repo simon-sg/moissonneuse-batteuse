@@ -308,8 +308,9 @@ def traiter_publication(pub: dict, state: dict) -> dict:
     os.remove(chemin_zip)
 
     # 8. Générer rudi_metadata.json (catalogue + nœud RUDI)
-    rudi_publie: dict[str, bool] = {}
+    rudi_publie = True  # rien à publier (pas de fichiers_data) -> rien à retenter non plus
     if fichiers_data:
+        rudi_publie = False
         rudi_meta = _generer_rudi_metadata(pub, fichiers_data, last_modified,
                                             fichiers_dict=noms_dict,
                                             entetes_colonnes=dernieres_entetes)
@@ -318,7 +319,7 @@ def traiter_publication(pub: dict, state: dict) -> dict:
             json.dump(rudi_meta, f, ensure_ascii=False, indent=2)
         print(f"  → rudi_metadata.json généré")
 
-        # 9. Publication optionnelle sur le(s) nœud(s) RUDI
+        # 9. Publication optionnelle sur le nœud RUDI
         rudi_publie = publier_si_configue(rudi_meta, chemins_csv + chemins_dict)
 
     # 10. Mettre à jour le cache. Le téléchargement/filtrage est acquis dès qu'on

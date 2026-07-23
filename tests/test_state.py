@@ -7,8 +7,7 @@ import unittest
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "src"))
 
-from state import (charger_etat, sauvegarder_etat, dataset_a_change, construire_index_dossier,
-                   lire_rudi_publie, ecrire_rudi_publie, compter_publies, compter_publies_noeud)
+from state import (charger_etat, sauvegarder_etat, dataset_a_change, construire_index_dossier)
 
 
 class TestChargerEtat(unittest.TestCase):
@@ -53,82 +52,6 @@ class TestConstruireIndexDossier(unittest.TestCase):
         self.assertEqual(index["dossier-a"], ("tabulaire", "jdd-a"))
         self.assertEqual(index["dossier-b"], ("insee", "pub-b"))
         self.assertEqual(len(index), 2)  # l'entrée sans dossier est ignorée
-
-
-class TestLireRudiPublie(unittest.TestCase):
-    """Tests de migration douce bool → dict pour rudi_publie."""
-
-    def test_valeur_absente(self):
-        """Entrée écrite avant l'existence du flag : à rattraper, pas à oublier."""
-        self.assertEqual(lire_rudi_publie({}), {"docker": False})
-
-    def test_valeur_none(self):
-        self.assertEqual(lire_rudi_publie({"rudi_publie": None}), {"docker": False})
-
-    def test_dict_vide(self):
-        """Moisson faite avant qu'un nœud ne soit configuré : à rattraper aussi."""
-        self.assertEqual(lire_rudi_publie({"rudi_publie": {}}), {"docker": False})
-
-    def test_booleen_herite_true(self):
-        """Un booléen hérité est lu comme {'docker': True}."""
-        self.assertEqual(lire_rudi_publie({"rudi_publie": True}), {"docker": True})
-
-    def test_booleen_herite_false(self):
-        self.assertEqual(lire_rudi_publie({"rudi_publie": False}), {"docker": False})
-
-    def test_dict_present(self):
-        val = {"docker": True, "source": False}
-        self.assertEqual(lire_rudi_publie({"rudi_publie": val}), val)
-
-    def test_dict_retourne_est_une_copie(self):
-        """Muter le résultat ne doit pas modifier l'état sous-jacent."""
-        entree = {"rudi_publie": {"docker": True}}
-        lire_rudi_publie(entree)["docker"] = False
-        self.assertEqual(entree["rudi_publie"], {"docker": True})
-
-    def test_valeur_inattendue(self):
-        """Valeur illisible : republier est idempotent, oublier est définitif."""
-        self.assertEqual(lire_rudi_publie({"rudi_publie": "oui"}), {"docker": False})
-
-
-class TestEcrireRudiPublie(unittest.TestCase):
-    def test_ecrit_dict(self):
-        entree = {}
-        ecrire_rudi_publie(entree, {"docker": True, "source": False})
-        self.assertEqual(entree["rudi_publie"], {"docker": True, "source": False})
-
-    def test_ecrase_valeur_precedente(self):
-        entree = {"rudi_publie": True}
-        ecrire_rudi_publie(entree, {"docker": False, "source": True})
-        self.assertEqual(entree["rudi_publie"], {"docker": False, "source": True})
-
-
-class TestCompterPublies(unittest.TestCase):
-    def test_aucun(self):
-        self.assertEqual(compter_publies({}), 0)
-
-    def test_un_noeud(self):
-        state = {"jdd-a": {"rudi_publie": {"docker": True}},
-                 "jdd-b": {"rudi_publie": {"docker": False}}}
-        self.assertEqual(compter_publies(state), 1)
-
-    def test_multi_noeuds(self):
-        state = {"jdd-a": {"rudi_publie": {"docker": True, "source": True}},
-                 "jdd-b": {"rudi_publie": {"docker": False, "source": False}}}
-        self.assertEqual(compter_publies(state), 1)
-
-    def test_legacy_bool(self):
-        state = {"jdd-a": {"rudi_publie": True}}
-        self.assertEqual(compter_publies(state), 1)
-
-
-class TestCompterPubliesNoeud(unittest.TestCase):
-    def test_compte_par_noeud(self):
-        state = {"jdd-a": {"rudi_publie": {"docker": True, "source": False}},
-                 "jdd-b": {"rudi_publie": {"docker": True, "source": True}}}
-        self.assertEqual(compter_publies_noeud(state, "docker"), 2)
-        self.assertEqual(compter_publies_noeud(state, "source"), 1)
-        self.assertEqual(compter_publies_noeud(state, "inexistant"), 0)
 
 
 if __name__ == "__main__":

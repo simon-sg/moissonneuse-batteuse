@@ -17,45 +17,16 @@ CONTENEUR_RUDI = "rudinode"
 
 
 def charger_conf_rudi() -> dict | None:
-    """Charge la config du nœud RUDI principal (src/conf/rudi_node.json), ou None si absent.
+    """Charge la config du nœud RUDI (src/conf/rudi_node.json), ou None si absente.
 
-    Rétrocompatible : si rudi_nodes.json existe, retourne le nœud marqué ``principal=true`` ;
-    sinon, lit rudi_node.json et le traite comme nœud ``"docker"`` principal.
+    La config est un dict ``url``/``url_catalog``/``usr``/``pwd``. ``url_catalog`` est
+    facultatif : voir ``url_catalog()`` pour le repli.
     """
-    noeuds = charger_confs_rudi()
-    if not noeuds:
+    chemin = os.path.join(_CONF_DIR, "rudi_node.json")
+    if not os.path.isfile(chemin):
         return None
-    principal = next((n for n in noeuds if n.get("principal")), noeuds[0])
-    return principal
-
-
-def charger_confs_rudi() -> list[dict]:
-    """Charge la liste des nœuds RUDI configurés.
-
-    Priorité à ``src/conf/rudi_nodes.json`` (liste d'objets avec nom/url/usr/pwd/principal).
-    Si absent, fallback sur ``src/conf/rudi_node.json`` traité comme nœud ``"docker"``
-    unique et principal — rétrocompatible avec la config existante.
-    """
-    chemin_nodes = os.path.join(_CONF_DIR, "rudi_nodes.json")
-    if os.path.isfile(chemin_nodes):
-        with open(chemin_nodes, encoding="utf-8") as f:
-            noeuds = json.load(f)
-        # Nom par défaut pour les entrées sans "nom". Le port est inclus : le nom sert
-        # de clé dans rudi_publie et de clé de verrou, deux nœuds sur le même hôte
-        # (cas nominal ici : localhost:3032 et localhost:4032) ne doivent pas collisionner.
-        for n in noeuds:
-            n.setdefault("nom", "noeud-" + urlparse(n["url"]).netloc.replace(":", "-"))
-        return noeuds
-
-    # Fallback : rudi_node.json → nœud "docker" unique
-    chemin_node = os.path.join(_CONF_DIR, "rudi_node.json")
-    if not os.path.isfile(chemin_node):
-        return []
-    with open(chemin_node, encoding="utf-8") as f:
-        conf = json.load(f)
-    conf.setdefault("nom", "docker")
-    conf["principal"] = True
-    return [conf]
+    with open(chemin, encoding="utf-8") as f:
+        return json.load(f)
 
 
 # ---------------------------------------------------------------------------
@@ -131,14 +102,6 @@ def noeud_pret(conf: dict) -> bool:
         return r.status_code == 200
     except Exception:
         return False
-
-
-def chercher_noeud(nom: str) -> dict | None:
-    """Retourne la conf du nœud dont le nom correspond, ou None."""
-    for n in charger_confs_rudi():
-        if n.get("nom") == nom:
-            return n
-    return None
 
 
 def url_catalog(conf: dict) -> str:

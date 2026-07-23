@@ -107,18 +107,13 @@ async function actualiserTopBar(){
     fetch("/api/a_examiner").then(r => r.json()),
   ]);
 
-  // Nœud RUDI (multi-nœuds)
+  // Nœud RUDI
   const pill = document.getElementById("tb-noeud");
   if (pill && noeudR.status === "fulfilled"){
     const n = noeudR.value;
-    const noeuds = n.noeuds || [];
-    const toutPret = noeuds.length > 0 && noeuds.every(nd => nd.pret);
-    const aucunPret = noeuds.every(nd => !nd.pret);
-    const aucunInstalle = noeuds.length === 0;
-    if (aucunInstalle){ pill.className = "topbar-pill warn"; pill.title = "Aucun nœud configuré"; }
-    else if (toutPret){ pill.className = "topbar-pill ok"; pill.title = "Tous les nœuds prêts"; }
-    else if (aucunPret){ pill.className = "topbar-pill warn"; pill.title = "Aucun nœud prêt"; }
-    else { pill.className = "topbar-pill running"; pill.title = "Certains nœuds en cours"; }
+    if (!n.configure){ pill.className = "topbar-pill warn"; pill.title = "Nœud non configuré"; }
+    else if (n.pret){ pill.className = "topbar-pill ok"; pill.title = "Opérationnel"; }
+    else { pill.className = "topbar-pill warn"; pill.title = "Injoignable"; }
   }
 
   // Superset

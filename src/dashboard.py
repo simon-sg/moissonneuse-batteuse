@@ -364,34 +364,17 @@ def _traiter_purge(idx_str: str, params: dict) -> tuple[int, dict]:
 # ---------------------------------------------------------------------------
 
 def _etat_noeud() -> dict:
-    """État de tous les nœuds RUDI configurés."""
-    noeuds = rudi_node.charger_confs_rudi()
-    etats_noeuds = []
-    for conf in noeuds:
-        nom = conf.get("nom", "inconnu")
-        etat_noeud: dict = {"nom": nom, "url": conf["url"], "principal": conf.get("principal", False)}
-
-        # Podman lifecycle only applies to Docker nodes
-        is_docker = nom == "docker"
-        if is_docker:
-            statut_podman = rudi_node.statut_conteneur()
-            etat_noeud["podman"] = statut_podman
-            etat_noeud["pret"] = bool(statut_podman.get("etat") == "running" and rudi_node.noeud_pret(conf))
-        else:
-            etat_noeud["pret"] = bool(rudi_node.noeud_pret(conf))
-
-        etat_noeud["url_manager"] = conf["url"].rstrip("/") + "/manager/"
-        etats_noeuds.append(etat_noeud)
-
-    return {"noeuds": etats_noeuds}
-
-
-def _traiter_noeud_action(nom: str) -> tuple[int, dict]:
-    fn = {"demarrer": rudi_node.demarrer_conteneur, "arreter": rudi_node.arreter_conteneur}.get(nom)
-    if fn is None:
-        return 404, {"ok": False, "message": "Action de nœud inconnue."}
-    ok, message = fn()
-    return (200 if ok else 500), {"ok": ok, "message": message}
+    """État du nœud RUDI configuré (informatif — le nœud tourne en processus natifs,
+    pas de conteneur à piloter depuis le dashboard)."""
+    conf = rudi_node.charger_conf_rudi()
+    if not conf:
+        return {"configure": False, "pret": False, "url": None, "url_manager": None}
+    return {
+        "configure": True,
+        "pret": bool(rudi_node.noeud_pret(conf)),
+        "url": conf["url"],
+        "url_manager": conf["url"].rstrip("/") + "/manager/",
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -1056,10 +1039,6 @@ class Handler(http.server.BaseHTTPRequestHandler):
         elif self.path.startswith("/api/purge/"):
             idx_str = self.path[len("/api/purge/"):]
             code, payload = _traiter_purge(idx_str, params)
-            self._repondre_json(code, payload)
-        elif self.path.startswith("/api/noeud/"):
-            nom = self.path[len("/api/noeud/"):]
-            code, payload = _traiter_noeud_action(nom)
             self._repondre_json(code, payload)
         elif self.path == "/api/superset/demarrer":
             code, payload = _traiter_superset_demarrer()

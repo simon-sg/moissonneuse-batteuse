@@ -19,6 +19,7 @@ import re
 from datetime import datetime, timezone
 
 from filters.geographic import normaliser
+from filters.harvest import _detecter_encodage_bytes
 from translation.description_secours import partie_descriptive
 
 RACINE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -54,9 +55,7 @@ def _apercu_csv(chemin: str, max_lignes: int = 5000) -> dict | None:
     try:
         with open(chemin, "rb") as f:
             raw = f.read()
-        texte = raw.decode("utf-8-sig", errors="replace")
-        if texte.count("�") > 10:
-            texte = raw.decode("latin-1")
+        texte = raw.decode(_detecter_encodage_bytes(raw), errors="replace")
         try:
             dialect = csv.Sniffer().sniff(texte[:4096], delimiters=";,\t|")
             delim = dialect.delimiter
@@ -139,9 +138,7 @@ def _charger_dictionnaire(chemin: str) -> dict[str, str]:
             return {}
         with open(chemin, "rb") as f:
             raw = f.read()
-        texte = raw.decode("utf-8-sig", errors="replace")
-        if texte.count("�") > 10:
-            texte = raw.decode("latin-1")
+        texte = raw.decode(_detecter_encodage_bytes(raw), errors="replace")
         reader = csv.DictReader(texte.splitlines(), delimiter=delim)
         mapping: dict[str, str] = {}
         if fmt == "colonne":
@@ -197,9 +194,7 @@ def _apercu_geo_csv(chemin: str, max_points: int = 5000) -> dict | None:
     try:
         with open(chemin, "rb") as f:
             raw = f.read()
-        texte = raw.decode("utf-8-sig", errors="replace")
-        if texte.count("�") > 10:
-            texte = raw.decode("latin-1")
+        texte = raw.decode(_detecter_encodage_bytes(raw), errors="replace")
         try:
             dialect = csv.Sniffer().sniff(texte[:4096], delimiters=";,\t|")
             delim = dialect.delimiter

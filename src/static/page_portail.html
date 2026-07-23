@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Moissonneuse-batteuse — Configuration du portail RUDI</title>
+<script>(function(){try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<link rel="stylesheet" href="/static/dashboard.css">
+<style>
+  .portail-grid { display:grid; gap:20px; max-width:900px; }
+  .portail-section { background:var(--card); border:1px solid var(--bord); border-radius:8px; padding:16px 18px; }
+  .portail-section h3 { margin:0 0 12px; font-size:1rem; text-align:left; text-transform:none; }
+  .portail-champ { display:flex; flex-direction:column; gap:4px; margin-bottom:12px; }
+  .portail-champ label { font-size:.82rem; color:var(--muted); font-weight:500; }
+  .portail-champ input[type="text"], .portail-champ input[type="number"], .portail-champ textarea {
+    padding:8px 10px; border:1px solid var(--bord); border-radius:6px; font-size:.9rem;
+    background:var(--bg); color:var(--txt); font-family:inherit;
+  }
+  .portail-champ textarea { min-height:60px; resize:vertical; }
+  .portail-champ input:focus, .portail-champ textarea:focus { border-color:var(--accent); outline:none; }
+  .portail-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .portail-row-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
+  .portail-couleur { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+  .portail-couleur input[type="color"] { width:40px; height:32px; border:1px solid var(--bord); border-radius:4px; cursor:pointer; padding:0; }
+  .portail-couleur .couleur-label { font-size:.82rem; color:var(--muted); min-width:120px; }
+  .portail-couleur .couleur-val { font-size:.78rem; font-family:monospace; color:var(--txt); }
+  .portail-preview { margin-top:12px; padding:16px; border-radius:8px; border:1px solid var(--bord); }
+  .portail-preview-bar { display:flex; gap:8px; align-items:center; padding:10px 14px; border-radius:6px; margin-bottom:10px; }
+  .portail-preview-bar span { font-size:.85rem; font-weight:600; }
+  .portail-preview-btn { padding:6px 16px; border:none; border-radius:4px; font-size:.85rem; cursor:default; }
+  .portail-preview-card { padding:14px; border-radius:6px; border:1px solid var(--bord); }
+  .portail-preview-card h4 { margin:0 0 6px; font-size:.95rem; text-align:left; }
+  .portail-preview-card p { margin:0; font-size:.82rem; }
+  .portail-images { display:grid; grid-template-columns:repeat(auto-fill, minmax(140px, 1fr)); gap:12px; }
+  .portail-image-card { display:flex; flex-direction:column; align-items:center; gap:6px; padding:10px; border:1px solid var(--bord); border-radius:6px; background:var(--bg); }
+  .portail-image-card img { max-width:120px; max-height:60px; object-fit:contain; border-radius:4px; }
+  .portail-image-card .img-placeholder { width:120px; height:60px; display:flex; align-items:center; justify-content:center;
+    background:var(--bord); border-radius:4px; font-size:.7rem; color:var(--muted); }
+  .portail-image-card span { font-size:.72rem; color:var(--muted); text-align:center; word-break:break-all; }
+  .portail-upload { display:flex; gap:6px; align-items:center; }
+  .portail-upload input[type="file"] { font-size:.78rem; }
+  .portail-social { display:flex; gap:8px; align-items:center; margin-bottom:8px; }
+  .portail-social input { flex:1; min-width:0; }
+  .portail-actions { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-top:8px; }
+  .portail-actions .spacer { flex:1; }
+  .badge-ok { background:var(--ok); color:#fff; padding:3px 8px; border-radius:4px; font-size:.78rem; }
+  .badge-err { background:var(--warn); color:#fff; padding:3px 8px; border-radius:4px; font-size:.78rem; }
+</style>
+</head>
+<body>
+{{TOPBAR}}
+<main>
+
+<section>
+  <h2 style="text-align:left">Configuration du portail RUDI</h2>
+  <p style="color:var(--muted);margin-top:-8px">
+    Édite les fichiers de config natifs du portail
+    (<code>customization.json</code>, <code>konsult-front-office.json</code>,
+    <code>konsult.properties</code>, <code>style-override.css</code>).
+  </p>
+</section>
+
+<div class="portail-grid" id="portail-config">
+
+  <!-- Identité -->
+  <div class="portail-section">
+    <h3>Identité</h3>
+    <div class="portail-row">
+      <div class="portail-champ">
+        <label>Nom du portail</label>
+        <input type="text" id="pc-projectName" placeholder="RUDI Rennes Métropole">
+      </div>
+      <div class="portail-champ">
+        <label>Nom d'équipe</label>
+        <input type="text" id="pc-teamName" placeholder="Rennes Data">
+      </div>
+    </div>
+  </div>
+
+  <!-- Couleurs -->
+  <div class="portail-section">
+    <h3>Couleurs</h3>
+    <div id="pc-couleurs-liste"></div>
+    <div class="portail-preview" id="pc-preview">
+      <div class="portail-preview-bar" id="pc-preview-nav">
+        <span>Portail</span>
+        <span style="margin-left:auto;font-weight:400;font-size:.8rem">Données · Réutilisations</span>
+      </div>
+      <div class="portail-preview-card" id="pc-preview-card">
+        <h4>Titre du dataset</h4>
+        <p>Description du jeu de données</p>
+        <div style="margin-top:10px">
+          <button class="portail-preview-btn" id="pc-preview-btn">Explorer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Textes -->
+  <div class="portail-section">
+    <h3>Textes (français)</h3>
+    <div class="portail-row">
+      <div class="portail-champ">
+        <label>Hero — titre principal</label>
+        <input type="text" id="pc-hero_titre1" placeholder="Portail de partage et d'accès aux données territoriales">
+      </div>
+      <div class="portail-champ">
+        <label>Hero — sous-titre</label>
+        <input type="text" id="pc-hero_titre2" placeholder="de RUDI Rennes Métropole">
+      </div>
+    </div>
+    <div class="portail-row">
+      <div class="portail-champ">
+        <label>Projets — titre</label>
+        <input type="text" id="pc-projects_titre1" placeholder="Découvrez">
+      </div>
+      <div class="portail-champ">
+        <label>Projets — sous-titre</label>
+        <input type="text" id="pc-projects_titre2" placeholder="les réutilisations">
+      </div>
+    </div>
+    <div class="portail-champ">
+      <label>Projets — description</label>
+      <textarea id="pc-projects_description" placeholder="Les données du catalogue peuvent être réutilisées..."></textarea>
+    </div>
+    <div class="portail-row">
+      <div class="portail-champ">
+        <label>Features — titre</label>
+        <input type="text" id="pc-features_titre1" placeholder="Les fonctionnalités de">
+      </div>
+      <div class="portail-champ">
+        <label>Features — sous-titre</label>
+        <input type="text" id="pc-features_titre2" placeholder="RUDI Rennes Métropole">
+      </div>
+    </div>
+    <div class="portail-champ">
+      <label>Features — description</label>
+      <textarea id="pc-features_description" placeholder="Découvrez comment ce portail peut vous être utile..."></textarea>
+    </div>
+  </div>
+
+  <!-- Liens & Carte -->
+  <div class="portail-section">
+    <h3>Liens & Carte</h3>
+    <div class="portail-row">
+      <div class="portail-champ">
+        <label>URL contact</label>
+        <input type="text" id="pc-contact" placeholder="https://...">
+      </div>
+      <div class="portail-champ">
+        <label>URL documentation</label>
+        <input type="text" id="pc-docRudi" placeholder="https://doc.rudi.fr/">
+      </div>
+    </div>
+    <div class="portail-champ">
+      <label>URL footer</label>
+      <input type="text" id="pc-footer_url" placeholder="https://rudi.fr">
+    </div>
+    <h3 style="margin-top:16px">Réseaux sociaux</h3>
+    <div id="pc-social-liste"></div>
+    <button class="discret" onclick="portailAjouterSocial()" style="font-size:.82rem;margin-top:4px">+ Ajouter un lien</button>
+    <h3 style="margin-top:16px">Carte</h3>
+    <div class="portail-row-3">
+      <div class="portail-champ">
+        <label>Longitude centre</label>
+        <input type="number" step="0.000001" id="pc-center_lon" value="-1.662712">
+      </div>
+      <div class="portail-champ">
+        <label>Latitude centre</label>
+        <input type="number" step="0.000001" id="pc-center_lat" value="48.114767">
+      </div>
+      <div class="portail-champ">
+        <label>Zoom par défaut</label>
+        <input type="number" min="1" max="20" id="pc-zoom" value="13">
+      </div>
+    </div>
+  </div>
+
+  <!-- Images -->
+  <div class="portail-section">
+    <h3>Images</h3>
+    <div class="portail-images" id="pc-images-grille"></div>
+    <div class="portail-upload" style="margin-top:12px">
+      <input type="file" id="pc-upload-fichier" accept="image/*">
+      <button class="discret" onclick="portailUploadImage()">Uploader</button>
+      <span id="pc-upload-statut" style="font-size:.78rem;color:var(--muted)"></span>
+    </div>
+    <details style="margin-top:10px">
+      <summary style="font-size:.82rem;color:var(--muted);cursor:pointer">Fichiers disponibles sur le serveur</summary>
+      <div id="pc-images-liste" style="font-size:.78rem;margin-top:6px;color:var(--muted)"></div>
+    </details>
+  </div>
+
+  <!-- Actions -->
+  <div class="portail-section">
+    <div class="portail-actions">
+      <span id="pc-statut" style="font-size:.82rem"></span>
+      <span class="spacer"></span>
+      <button class="discret" onclick="portailRecharger()" title="Relire les fichiers disque (annule les modifications non sauvegardées)">Recharger</button>
+      <button class="success" onclick="portailSauvegarder()">Appliquer</button>
+    </div>
+  </div>
+</div>
+
+</main>
+<script src="/static/dashboard.js"></script>
+<script src="/static/portail.js"></script>
+</body>
+</html>

@@ -35,6 +35,9 @@ from filters.geographic import normaliser, est_commune_rm
 # Nb: aussi défini dans filters/geographic.py pour est_adresse_rm().
 _COMMUNES_NORM_RM = {normaliser(c) for c in COMMUNES_RM}
 
+# Ensemble normalisé de TITRES_HORS_RM (utilisé par est_org_hors_rm / titre_hors_rm)
+_TITRES_HORS_RM_NORM = {normaliser(t) for t in TITRES_HORS_RM}
+
 
 # ---------------------------------------------------------------------------
 # Pré-filtrage automatique (description + en-têtes CSV)
@@ -232,7 +235,14 @@ def est_org_hors_rm(dataset: dict) -> bool:
             nom_commune = nom[len(prefix):]
             return not est_commune_rm(nom_commune)
 
-    if any(region in nom for region in TITRES_HORS_RM):
+    # Directions départementales/régionales : toujours géolocalisées
+    for prefixe in ("ddt ", "ddtm ", "dreal ", "odre ", "dtam "):
+        if nom.startswith(prefixe) or (" " + prefixe) in nom:
+            return ("35" not in slug and "ille" not in slug
+                    and "35" not in nom and "ille" not in nom
+                    and "bretagne" not in nom)
+
+    if any(t in nom for t in _TITRES_HORS_RM_NORM):
         return True
 
     return False
@@ -250,7 +260,7 @@ def titre_hors_rm(dataset: dict) -> bool:
             if not any(reste.startswith(c) for c in _COMMUNES_NORM_RM):
                 return True
             break
-    return any(region in titre for region in TITRES_HORS_RM)
+    return any(t in titre_norm for t in _TITRES_HORS_RM_NORM)
 
 
 def description_suggerant_commune(dataset: dict) -> bool:

@@ -7,6 +7,8 @@ from urllib.parse import urlencode, urlparse, urlunparse, parse_qs
 
 from connectors.http import session
 from conf.communes_rm import BBOX_RM_STR, BBOX_RM as _BBOX_RM_TUPLE
+from conf.discover import TITRES_HORS_RM
+from filters.geographic import normaliser
 
 _RM_BBOX = BBOX_RM_STR
 _RM_LON_MIN, _RM_LAT_MIN, _RM_LON_MAX, _RM_LAT_MAX = _BBOX_RM_TUPLE
@@ -29,6 +31,9 @@ _OGC_KEYS = {
     "outputformat", "bbox", "maxfeatures", "count", "srsname",
     "layers", "width", "height", "format", "styles", "crs", "srs",
 }
+
+# Ensemble normalisé des titres géographiques hors RM (pour filtrage couches WMS)
+_TITRES_HORS_RM_NORM = {normaliser(t) for t in TITRES_HORS_RM}
 
 
 def nettoyer_url_ogc(url: str) -> str:
@@ -457,7 +462,12 @@ def wms_couches_dans_rm(capabilities: dict, base_url: str = "") -> list[dict]:
                 # bbox déclarée et de taille raisonnable → fiable
                 resultats.append(c)
             else:
-                # bbox absente ou très large (nationale) → probe GetMap
+                # bbox absente ou très large (nationale) → vérifier le titre de la couche
+                # avant de sonder : si le titre mentionne une zone géographique hors RM,
+                # la couche ne concerne probablement pas RM même si le probe retourne des données.
+                titre_couche = normaliser(c.get("titre", ""))
+                if titre_couche and any(t in titre_couche for t in _TITRES_HORS_RM_NORM):
+                    continue
                 if wms_probe_donnees_rm(base_url, nom):
                     resultats.append(c)
     return resultats

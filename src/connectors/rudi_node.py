@@ -236,21 +236,15 @@ def publier_dataset(
         media_id = _media_id_v4(existant, medias[i].get("media_name", nom))
         medias[i]["media_id"] = media_id
         caption = medias[i].get("media_caption", "")
-        connector_parameters = medias[i].get("connector", {}).get("connector_parameters")
         print(f"  [RUDI] upload {nom} (media_id={media_id[:8]}…)")
         media_info: RudiMediaFile = writer.post_local_file_and_media_info(
             file_local_path=chemin,
             media_id=media_id,
         )
         # Remplace le media dict par celui retourné (contient file_type, file_size, checksum…)
-        # — ce dict généré par rudi_node_write ne connaît pas connector_parameters (ajout
-        # maison, voir traduire_metadonnees_service/bug D4), donc à réinjecter après coup,
-        # sans quoi tout média FILE le perd silencieusement à chaque publication.
         medias[i] = json.loads(str(media_info))
         if caption:
             medias[i]["media_caption"] = caption
-        if connector_parameters:
-            medias[i].setdefault("connector", {})["connector_parameters"] = connector_parameters
         print(f"  [RUDI] URL storage : {medias[i]['connector']['url']}")
 
     # Nettoyage Local→Rudi : retirer les médias FILE dont le fichier local a disparu

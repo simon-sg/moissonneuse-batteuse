@@ -18,7 +18,7 @@ Pipeline de moisson d'open data pertinent pour Rennes Métropole (43 communes, E
 ## Commands
 
 ```bash
-python3 src/cli.py         # entrée terminal : menu 19 actions en 4 sections (voir ACTIONS/SECTIONS)
+python3 src/cli.py         # entrée terminal : menu 21 actions en 4 sections (voir ACTIONS/SECTIONS)
 python3 src/dashboard.py   # entrée web : mêmes actions à http://127.0.0.1:8765
 python3 src/harvest_auto.py # entrée cron/Jenkins : découverte auto + pipeline complet (non planifié à ce jour)
 ```
@@ -36,6 +36,7 @@ python3 src/harvest_geo.py
 python3 src/catalogue.py
 python3 src/publish_rudi.py         # rattrapage publication RUDI
 python3 src/enrichir_descriptions.py # rattrapage descriptions vides
+python3 src/enrichir_organisations.py [--dry-run] # rattrapage descriptions producteurs (nœud RUDI)
 python3 src/enrichir_contacts.py [--dry-run] # rattrapage contacts génériques
 python3 src/reanalyser_faux_positifs.py [--appliquer] [--dossier X] # rattrapage faux positifs INSEE/CP
 python3 src/monitor.py --init-db|--refresh|--import-data|--import-ref|--geocode|--status|--full
@@ -51,7 +52,7 @@ python3 -m unittest discover tests/
 
 | File | Role |
 |---|---|
-| `src/cli.py` | **Entrée terminal** — 19 actions en 4 sections (Moisson / Pipeline & publication / Maintenance / Données & infos) ; `executer_pipeline_complet()` |
+| `src/cli.py` | **Entrée terminal** — 21 actions en 4 sections (Moisson / Pipeline & publication / Maintenance / Données & infos) ; `executer_pipeline_complet()` |
 | `src/dashboard.py` | **Entrée web** — serveur stdlib local-only réutilisant `cli.py` ; pages `/`, `/examen`, `/decouverte`, `/catalogue` |
 | `src/harvest_auto.py` | **Entrée cron/Jenkins** — découverte non-interactive → warm-up nœud RUDI → pipeline complet |
 | `src/discover.py` | Découverte : recherche API, pré-filtrage, revue interactive, `rechercher_et_filtrer_auto()` |
@@ -63,6 +64,7 @@ python3 -m unittest discover tests/
 | `src/conf/datasets.py` | `DATASETS`, `DATASETS_GEO`, `DATASETS_INSEE`, `DATASETS_OEB`, `DATASETS_BDNB` |
 | `src/conf/communes_rm.py` | Référentiel : 43 communes, `COMMUNES_RM` (nom→CP), `CODES_INSEE_RM`, `INSEE_VERS_NOM`, `DEPARTEMENTS_RM`, circonscriptions, bbox |
 | `src/conf/discover.py` | `KEYWORDS` (26 mots-clés compétences), `REQUETES_STRUCTUREES` (~50 requêtes), `CHAMPS_*` (détection colonnes) |
+| `src/conf/organisations.py` | `ALIAS_ORGANISATIONS` — alias curées des producteurs connus (titre Wikipédia, override, ou repli forcé) |
 | `src/filters/geographic.py` | `est_dans_rm()`, `est_commune_rm()`, `normaliser()`, `est_circonscription_rm()`, `est_departement_rm()`, `est_point_rm()` |
 | `src/filters/discovery.py` | Téléchargements d'extraits pour l'analyse + **cache disque 24 h des réponses API** |
 | `src/filters/harvest.py` / `src/filters/csv.py` | Filtrage ligne-à-ligne RM / utilitaires CSV (slugifier, sauvegarder) |
@@ -74,15 +76,17 @@ python3 -m unittest discover tests/
 | `src/connectors/rudi_node.py` | `publier_dataset()`, `charger_conf_rudi()`, contrôle Podman, `toutes_metadonnees_rudi()`, `supprimer_dataset/_organisation()` |
 | `src/connectors/rudi_publish.py` | `publier_si_configue()` — point unique de publication best-effort, **sérialisé par verrou** (voir « Publication RUDI ») |
 | `src/connectors/contacts.py` | Extraction/résolution de contacts (data.gouv, fallback RFC 2606) |
+| `src/connectors/wikipedia.py` | Résumés Wikipédia/Wikidata pour les organisations (caption CC0 + summary CC BY-SA) |
 | `src/connectors/rva.py` | Géocodage API RVA Rennes Métropole (clé dans `src/conf/rva_key.json`, non commitée ; cache interdit par CGU) |
 | `src/connectors/superset.py` | Contrôle du conteneur Docker Superset (`mb-superset`) |
 | `src/connectors/download.py` | Téléchargement streaming vers cache disque partagé (`data/cache/`) |
 | `src/translation/datagouv_to_rudi.py` | `traduire_metadonnees()` + `traduire_metadonnees_service()` (voies data.gouv tabulaire + géo) |
 | `src/translation/rudi_builder.py` | Constructeur partagé `construire_rudi_metadata()` + helpers `media_*()` (voies INSEE/OEB/BDNB) |
 | `src/translation/description_secours.py` | `generer_complement()` — description de secours factuelle (voir « Fallback descriptions ») |
+| `src/translation/organisation_secours.py` | `enrichir_organisation()` — caption + summary des producteurs (voir « Fallback descriptions d'organisations ») |
 | `src/state.py` | `charger_state()`/`sauvegarder_state()` génériques + `construire_index_dossier()` (index dossier→state multi-fichiers) |
 | `src/publish_rudi.py` | Rattrapage publication + `menage_rudi_one_shot()`/`menage_organisations()` (voir « Publication RUDI ») |
-| `src/enrichir_descriptions.py` / `src/enrichir_contacts.py` | Rattrapages one-shot sur les `rudi_metadata.json` existants |
+| `src/enrichir_descriptions.py` / `src/enrichir_contacts.py` / `src/enrichir_organisations.py` | Rattrapages one-shot (descriptions JDD, contacts génériques, descriptions producteurs nœud RUDI) |
 | `src/reanalyser_faux_positifs.py` | Rattrapage offline des faux positifs INSEE/CP (re-filtrage des fichiers moissonnés, dry-run par défaut — menu 16) |
 | `src/tee.py` | Classe `Tee` (sortie dupliquée) — dashboard + harvest_auto |
 | `src/static/` | `dashboard.css` + `dashboard.js` partagés, servis sous `/static/` par le dashboard |
@@ -241,6 +245,8 @@ Fichiers d'état : `data/state.json` (main + batch), `state_insee.json`, `state_
 
 Chaque script de moisson publie inline via `connectors/rudi_publish.py::publier_si_configue()` (y compris `harvest_batch` désormais) : best-effort, jamais bloquant, résultat tracé dans `rudi_publie`. **La publication est sérialisée par un verrou module-level** — les moissons tournent en parallèle (workers batch + pipeline parallélisé) mais le `get_or_create` d'organisations/contacts du nœud n'est pas idempotent sous concurrence (doublons). Ne pas contourner ce point d'étranglement.
 
+**Cible de publication (mono-nœud).** Le pipeline publie vers **un seul** nœud RUDI, défini par `src/conf/rudi_node.json` (dict `url`/`url_catalog`/`usr`/`pwd`, gitignoré). `rudi_publie` est un **booléen**. Depuis 2026-07-24 la cible est le **nœud source bâti depuis les sources RUDI** (processus natifs, catalog 4030 / storage 4031 / manager 4032 / jwtauth 4033), qui alimente un **portail hybride** (ROOB Docker, microservices remplaçables à chaud par leur version source). Le nœud Docker Podman `rudinode` (3030-3032) est **hors chaîne** mais conservé. Cet environnement de dev RUDI (montage, bascule, correctifs de code source à remonter en PR) est documenté dans **`PLAN_ENVIRONNEMENT_RUDI_SOURCE.md`** (racine). `url_catalog` par config est indispensable : le catalog du nœud source est sur 4030, pas 3030.
+
 `src/publish_rudi.py` est le rattrapage — il travaille **uniquement depuis les `rudi_metadata.json` sur disque** :
 - Scanne `data/<dossier>/rudi_metadata.json`, résout l'origine via `construire_index_dossier()` (state.json / state_insee / state_oeb / state_bdnb) ou `DATASETS_GEO`.
 - Publie ce qui n'est pas `rudi_publie: true` ; à la réussite, bascule le flag — y compris pour les géo via `state_geo["_rudi_publie"]["<dossier>"]`.
@@ -262,6 +268,15 @@ Chaque script de moisson publie inline via `connectors/rudi_publish.py::publier_
 Many sources never provide a usable description (data.gouv datasets with empty `description`, INSEE, geo services). `generer_complement()` builds 1-3 factual sentences from what's actually available — theme label, producer, CSV/GeoJSON column names, WMS layer names, keywords as last resort. It never invents what the data means. `description_quasi_vide()` gates this (< 40 chars pour data.gouv ; toujours pour INSEE et géo).
 
 Wired into every live harvest path (les scripts passent `entetes_colonnes` aux traducteurs). `src/enrichir_descriptions.py` est le rattrapage pour les JDD antérieurs — idempotent via le marqueur "Jeu de données du thème". `catalogue.py::partie_descriptive()` extrait la partie descriptive du `summary` pour l'afficher sur les cartes du catalogue.
+
+## Fallback descriptions d'organisations (`src/translation/organisation_secours.py`)
+
+Les organisations productrices publiées sur le nœud RUDI n'ont **aucune description** — le `producer` publié ne contient que `organization_name`. `enrichir_organisation()` génère `organization_caption` (phrase courte) et `organization_summary` (2-3 phrases) via :
+1. **Alias curée** (`src/conf/organisations.py::ALIAS_ORGANISATIONS`) — override manuel ou titre Wikipédia exact
+2. **Wikipédia FR** (`src/connectors/wikipedia.py::resumer_wikipedia()`) — caption = description Wikidata (CC0), summary = extract Wikipédia (CC BY-SA) + suffixe `" (source : Wikipédia)"`
+3. **Repli factuel** — `"Producteur de jeux de données moissonnés sur {source_label}."`
+
+Câblé dans `construire_rudi_metadata()` (`source_producteur` + `page_producteur` params), donc toutes les voies de moisson (data.gouv, INSEE, OEB, BDNB, géo) enrichissent les organisations au moment de la publication. `publier_dataset()` met à jour les orgs existantes sans summary via `put_admin_api`. `src/enrichir_organisations.py` est le rattrapage pour les orgs déjà publiées — `--dry-run` par défaut, `--force` pour ré-enrichir les non-vides.
 
 ## Purge de données (`src/cli.py`)
 

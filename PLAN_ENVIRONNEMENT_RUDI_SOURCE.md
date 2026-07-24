@@ -271,6 +271,55 @@ enregistrement du `node_provider` (compte ROBOT) en rejouant `PLAN_PORTAIL_RUDI_
 > - Retrait du nœud Docker (B4) et nettoyage du catalogue portail (B5) : **suspendus** tant que le
 >   portail n'est pas alimenté par le source.
 
+### ✅ 2026-07-24 — Bascule portail TERMINÉE : environnement fonctionnel
+
+> **Le portail a été vidé et repeuplé intégralement depuis le nœud source.** L'environnement
+> **nœud source (natif) + portail hybride** est opérationnel de bout en bout.
+>
+> **État final vérifié :**
+> - Nœud source : **364 fiches**, 87 organisations (les 4 process natifs + Mongo tournent).
+> - Portail : **~355 fiches** au catalogue konsult, toutes d'origine nœud source.
+> - **Téléchargement de média OK** via le portail (`/medias/{gid}/{mid}/dwnl` → proxy Traefik →
+>   storage source 4031, HTTP 200 + CSV réel).
+>
+> **Diagnostic de l'intégration KO (résolu) :** ce n'était PAS un problème de version. Via
+> `kalim_data.integration_request_error` : **ERR-304** (local_id/global_id déjà présents — le nœud Docker
+> avait déjà poussé ces datasets) et **ERR-112** (organisation productrice pas liée au provider — le nœud
+> source génère ses propres uuids d'org, absents du référentiel portail aligné sur le Docker). Deux
+> problèmes d'**état** nœud↔portail, pas de code.
+>
+> **Ce qui a été fait (méthode, réutilisable) :**
+> 1. Peuplement du nœud source : `publish_rudi.py` (push portail coupé pendant l'upload).
+> 2. Provisionnement SQL des 87 orgs source sur le portail (`strukture_data.organization` VALIDATED +
+>    `linked_producer` vers provider `MOISS_BATTEUSE_RM` id=2). Le nœud 2.7.3 **ne déclare pas** ses orgs
+>    au portail (`put_org_url` non câblé à la publication — piste PR, cf. `createPortalOrganization`).
+> 3. Vidage Dataverse : les 377 datasets étaient en **DRAFT** → simple `DELETE /api/datasets/{id}` (pas
+>    besoin de superuser) ; `TRUNCATE kalim_data.integration_request*`.
+> 4. Re-push + **accélération kalim** (`treatment.delay` 300000→15000, `pool.size`→4 dans
+>    `config/kalim/kalim.properties`).
+> 5. **Piège majeur — tempête de retries** : le push en masse via le catalog génère ~5× de doublons
+>    (retries), qui noient kalim (cf. mémoire « l'envoi en masse s'auto-noie »). Résolu en coupant
+>    l'injection (arrêt catalog + `publish_rudi`) puis **déduplication SQL** de la queue kalim (garder
+>    1 CREATED par global_id, supprimer ceux déjà OK) → drain propre.
+> 6. Storage source repassé en **`listening_address=0.0.0.0`** (sinon proxy médias → 502, injoignable
+>    depuis le conteneur Traefik). Corrigé aussi dans `start-source-node.sh`.
+>
+> **Nœud Docker** : hors chaîne, `podman` non supprimé (réversible).
+
+### Étape 7bis — Modifications de code source déjà en place (base des PR)
+
+> On n'est **pas** complètement natif : deux correctifs de code source existent déjà, à remonter en PR.
+>
+> | Dépôt | Branche | Modif | Statut |
+> |---|---|---|---|
+> | `rudi-node-storage` (sous-module rudi-storage) | `fix/cors-credentials-reflection` | `fix(storage): reflect Origin + Allow-Credentials in CORS headers` (bug D3) + `fix: max file size` | **committé** — PR-ready |
+> | `rudi-node-catalog` (sous-module rudi-catalog, branche `irisa`) | — | `genericController.js` : ré-active la modif d'organisations via l'API admin (RUDI-5672, désactivée en amont par un `NotImplementedError`) — permet l'enrichissement d'orgs du pipeline | **non committé** |
+> | `rudi-portal` (rudi-portal-source) | `main` | **aucune** — microservices en natif non modifié | hybride pur |
+>
+> **Workflow PR à mettre en place** (étape 8) : fork GitHub de `rudi-platform/<dépôt>`, push de la
+> branche de correctif, PR selon `CONTRIBUTING.md`. Le sous-module rudi-storage a déjà sa branche
+> dédiée — commencer par celle-là (correctif CORS, le plus mûr et validé bout-en-bout).
+
 ### Étape 6 (HISTORIQUE, remplacé) — Pipeline `moissonneuse-batteuse` multi-nœuds
 
 > Implémenté, puis relu. Quatre défauts corrigés à la relecture : `publish_rudi.py` n'avait pas été

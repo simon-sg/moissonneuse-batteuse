@@ -190,15 +190,20 @@ def publier_dataset(
               f"Thèmes valides : {themes_valides}. Précisez 'theme' dans datasets.py.")
         raise ValueError(f"Thème RUDI invalide pour ce nœud : {rudi_metadata.get('theme')!r}")
 
-    # contacts : le nœud exige au moins un contact avec email valide
+    # contacts : le nœud exige au moins un contact avec email valide. Le nœud déduplique
+    # les contacts par email — un email de repli partagé ferait collapser tous les
+    # fallbacks sur un seul contact (voir connectors/contacts.py::contacter_pardefaut) —
+    # donc l'email de repli est unique par nom de contact/producteur.
+    from connectors.contacts import email_par_defaut
     contacts_source = rudi_metadata.get("contacts", [])
     if contacts_source:
         # Contacts extraits de la source (data.gouv.fr, WFS/WMS) — on les "booste" contre le nœud
         rudi_contacts = []
         for c in contacts_source:
+            nom_contact = c.get("contact_name", org_name or "Contact")
             contact = writer.connector.get_or_create_contact_with_info(
-                contact_name=c.get("contact_name", org_name or "Contact"),
-                contact_email=c.get("email", conf.get("contact_email", "contact@example.org")),
+                contact_name=nom_contact,
+                contact_email=c.get("email") or email_par_defaut(nom_contact),
             )
             rudi_contacts.append(contact.to_json())
         rudi_metadata["contacts"] = rudi_contacts
@@ -206,7 +211,7 @@ def publier_dataset(
         # Fallback : contact générique au nom de l'organisation productrice
         contact = writer.connector.get_or_create_contact_with_info(
             contact_name=org_name or "Contact",
-            contact_email=conf.get("contact_email", "contact@example.org"),
+            contact_email=email_par_defaut(org_name or "Contact"),
         )
         rudi_metadata["contacts"] = [contact.to_json()]
 

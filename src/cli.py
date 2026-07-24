@@ -26,6 +26,7 @@ import harvest_geo
 import catalogue
 import publish_rudi
 import enrichir_descriptions
+import enrichir_organisations
 import reanalyser_faux_positifs
 from conf.datasets import DATASETS, DATASETS_GEO, DATASETS_INSEE, DATASETS_OEB, DATASETS_BDNB
 from connectors.rudi_node import charger_conf_rudi
@@ -165,6 +166,11 @@ def action_publier_rudi():
 def action_enrichir_descriptions():
     _executer("Enrichissement des descriptions (JDD avec métadonnées vides/quasi vides)",
                enrichir_descriptions.main)
+
+
+def action_enrichir_organisations():
+    _executer("Enrichissement des descriptions de producteurs (nœud RUDI)",
+               enrichir_organisations.main)
 
 
 def action_verifier_backlog_examen():
@@ -744,23 +750,24 @@ ACTIONS = [
     ("10", "Publier sur le nœud RUDI (rattrapage)", action_publier_rudi),
     ("11", "Enrichir les descriptions vides/quasi vides", action_enrichir_descriptions),
     # --- Maintenance ---
-    ("12", "Vérifier le backlog « à examiner »", action_verifier_backlog_examen),
-    ("13", "Re-analyser les WMS du backlog", action_reanalyser_wms),
-    ("14", "Re-analyser les JDD tabulaires du backlog (nouvelle cascade)", action_reanalyser_a_examiner_tabulaire),
-    ("15", "Nettoyer les WMS de geo_services.json", action_nettoyer_wms_geo),
-    ("16", "Ménage RUDI (orphelins + organisations inutilisées)", action_menage_rudi),
-    ("17", "Ré-analyser les faux positifs INSEE/CP (dept 35)", action_reanalyser_faux_positifs),
+    ("12", "Enrichir les descriptions de producteurs (nœud RUDI)", action_enrichir_organisations),
+    ("13", "Vérifier le backlog « à examiner »", action_verifier_backlog_examen),
+    ("14", "Re-analyser les WMS du backlog", action_reanalyser_wms),
+    ("15", "Re-analyser les JDD tabulaires du backlog (nouvelle cascade)", action_reanalyser_a_examiner_tabulaire),
+    ("16", "Nettoyer les WMS de geo_services.json", action_nettoyer_wms_geo),
+    ("17", "Ménage RUDI (orphelins + organisations inutilisées)", action_menage_rudi),
+    ("18", "Ré-analyser les faux positifs INSEE/CP (dept 35)", action_reanalyser_faux_positifs),
     # --- Données & infos ---
-    ("18", "Purger des données existantes", menu_purge),
-    ("19", "État du projet", action_etat_projet),
-    ("20", "Démarrer Superset (conteneur Docker)", action_demarrer_superset),
+    ("19", "Purger des données existantes", menu_purge),
+    ("20", "État du projet", action_etat_projet),
+    ("21", "Démarrer Superset (conteneur Docker)", action_demarrer_superset),
 ]
 
 SECTIONS = [
     (0, "Moisson"),
     (7, "Pipeline & publication"),
     (11, "Maintenance"),
-    (17, "Données & infos"),
+    (18, "Données & infos"),
 ]
 
 

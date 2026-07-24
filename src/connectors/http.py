@@ -28,3 +28,7 @@ class _SessionAvecTimeout(requests.Session):
 session = _SessionAvecTimeout()
 session.mount("https://", _adapter)
 session.mount("http://", _adapter)
+session.headers["User-Agent"] = (
+    "moissonneuse-batteuse/1.0 "
+    "(https://github.com/user/moissonneuse-batteuse; contact@example.org)"
+)

@@ -118,35 +118,47 @@ class TestTraduireMetadonneesService(unittest.TestCase):
         # Non-régression : FILE toujours contigus en tête (publish_rudi.py en dépend).
         self.assertEqual(types[:premier_service], ["FILE"] * premier_service)
         self.assertNotIn("FILE", types[premier_service:])
-        # Les entrées FILE ne doivent jamais bloquer sur un connector_parameters absent.
+        # Les entrées FILE ne portent PAS de connector_parameters (PR-6 les rend inutiles).
         for media in formats[:premier_service]:
-            cles = self._cles(media["connector"]["connector_parameters"])
-            self.assertEqual(set(cles), {"versions", "layer", "default_crs", "formats"})
+            self.assertNotIn("connector_parameters", media["connector"])
         # L'entrée SERVICE porte le typename réellement téléchargé (premier fichier).
         service = next(m for m in formats if m["media_name"] == "service-wfs")
         cles = self._cles(service["connector"]["connector_parameters"])
         self.assertEqual(cles["layer"], "commune:batiments")
 
-    def test_geojson_statique_placeholder(self):
+    def test_geojson_statique_sans_connector_parameters(self):
+        """Contrat dwnl (geojson statique) : pas de connector_parameters (non validable)."""
         config = dict(_GEO_CONFIG_MIN, id="geo-test-3", type="geojson")
         meta = traduire_metadonnees_service(
             config, fichiers_geojson=[("f1.geojson", "jeu-complet")],
         )
         service = next(m for m in meta["available_formats"] if m["media_name"] == "service-geojson")
         self.assertEqual(service["connector"]["interface_contract"], "dwnl")
-        cles = self._cles(service["connector"]["connector_parameters"])
-        self.assertEqual(cles["layer"], "n/a")
+        self.assertNotIn("connector_parameters", service["connector"])
 
-    def test_toutes_entrees_ont_connector_parameters(self):
-        """Quel que soit le type, chaque média doit avoir les 4 clés — sans quoi
-        available_formats[0] casse la garde du portail, peu importe l'ordre."""
+    def test_source_metadata_sans_connector_parameters(self):
+        """source-metadata (contrat dwnl) : pas de connector_parameters."""
+        config = dict(_GEO_CONFIG_MIN, id="geo-test-5", type="wfs")
+        meta = traduire_metadonnees_service(config)
+        metadata_page = next(m for m in meta["available_formats"] if m["media_name"] == "source-metadata")
+        self.assertNotIn("connector_parameters", metadata_page["connector"])
+
+    def test_seuls_service_wms_wfs_ont_connector_parameters(self):
+        """Seuls les médias SERVICE avec contrat validable (wms/wfs) portent les 4 clés.
+        Les FILE et les SERVICE dwnl n'en ont pas."""
         config = dict(_GEO_CONFIG_MIN, id="geo-test-4", type="ogcapi")
         meta = traduire_metadonnees_service(
             config, fichiers_geojson=[("f1.geojson", "collection-a")],
         )
         for media in meta["available_formats"]:
-            cles = self._cles(media["connector"]["connector_parameters"])
-            self.assertEqual(set(cles), {"versions", "layer", "default_crs", "formats"})
+            if media["media_type"] == "FILE":
+                self.assertNotIn("connector_parameters", media["connector"])
+            elif media["connector"]["interface_contract"] == "dwnl":
+                self.assertNotIn("connector_parameters", media["connector"])
+            else:
+                # SERVICE wms/wfs : les 4 clés sont réellement nécessaires
+                cles = self._cles(media["connector"]["connector_parameters"])
+                self.assertEqual(set(cles), {"versions", "layer", "default_crs", "formats"})
 
 
 class TestDetecterTheme(unittest.TestCase):

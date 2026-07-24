@@ -382,7 +382,6 @@ def traduire_metadonnees_service(config: dict,
                 "connector": {
                     "url": "À_RENSEIGNER_APRES_DEPOT_SUR_NOEUD",
                     "interface_contract": "dwnl",
-                    "connector_parameters": _placeholder_connector_parameters(),
                 },
             })
 
@@ -421,7 +420,6 @@ def traduire_metadonnees_service(config: dict,
         "connector": {
             "url": url_metadata,
             "interface_contract": "dwnl",
-            "connector_parameters": _placeholder_connector_parameters(),
         },
     }
     if contract == "wms":
@@ -429,18 +427,21 @@ def traduire_metadonnees_service(config: dict,
     elif contract == "wfs":
         premier_typename = fichiers_geojson[0][1] if fichiers_geojson else None
         connector_parameters = _connector_parameters_wfs(premier_typename)
-    else:
-        connector_parameters = _placeholder_connector_parameters()
+    # contrat "dwnl" (geojson statique) : pas de connector_parameters (contrat non validable)
+
+    connecteur_service = {
+        "url": caps_url,
+        "interface_contract": contract,
+    }
+    if contract in ("wms", "wfs"):
+        connecteur_service["connector_parameters"] = connector_parameters
+
     available_formats.append({
         "media_id": media_id_service,
         "media_type": "SERVICE",
         "media_name": f"service-{service_type}",
         "media_caption": caption_service,
-        "connector": {
-            "url": caps_url,
-            "interface_contract": contract,
-            "connector_parameters": connector_parameters,
-        },
+        "connector": connecteur_service,
     })
     available_formats.append(media_metadata_page)
 

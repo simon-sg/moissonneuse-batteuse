@@ -110,6 +110,7 @@ _ACTIONS_CMD = {
     "catalogue": ["python3", "src/catalogue.py"],
     "publier_rudi": ["python3", "src/publish_rudi.py"],
     "enrichir_descriptions": ["python3", "src/enrichir_descriptions.py"],
+    "enrichir_organisations": ["python3", "src/enrichir_organisations.py"],
 }
 
 # Actions composites : séquence de sous-actions
@@ -229,6 +230,8 @@ ACTIONS = {
     "publier_rudi": ("Publication sur le nœud RUDI", lambda p: cli.action_publier_rudi()),
     "enrichir_descriptions": ("Enrichir les descriptions vides/quasi vides",
                               lambda p: cli.action_enrichir_descriptions()),
+    "enrichir_organisations": ("Enrichir les descriptions de producteurs (nœud RUDI)",
+                                lambda p: cli.action_enrichir_organisations()),
     "verifier_backlog_examen": ("Vérifier le backlog « à examiner » (ressources)",
                                 lambda p: cli.action_verifier_backlog_examen()),
     "moisson_batch_et_publier": ("Moisson batch + catalogue + publication RUDI",

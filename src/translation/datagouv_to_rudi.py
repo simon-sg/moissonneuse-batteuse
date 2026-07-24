@@ -279,6 +279,8 @@ def traduire_metadonnees(metadata_source: dict, zone: str = "Rennes Métropole",
         dates=dates,
         metadata_dates=dates,
         ajouter_medias_source=False,  # entrées "source-data-gouv"/"source-metadata" déjà construites
+        source_producteur="data.gouv.fr",
+        page_producteur=org.get("page"),
     )
 
 
@@ -466,4 +468,5 @@ def traduire_metadonnees_service(config: dict,
         dates=dates,
         metadata_dates=dates,
         ajouter_medias_source=False,  # entrées "service-<type>"/"source-metadata" déjà construites
+        source_producteur=url_service.split("/")[2] if "/" in url_service else None,
     )

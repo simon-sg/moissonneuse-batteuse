@@ -114,6 +114,7 @@ def _generer_rudi_metadata(pub: dict, fichiers_data: list[tuple[str, int]],
         medias=medias,
         date_source=date_maj,
         metadata_source_label="insee.fr",
+        source_producteur="insee.fr",
     )
 
 

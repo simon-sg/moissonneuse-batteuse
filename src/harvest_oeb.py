@@ -88,6 +88,7 @@ def _generer_rudi_metadata(
         medias=[media_filtre(slug, nom_csv, _ZONE)],
         date_source=info.get("updatedAt"),
         metadata_source_label="portail OEB",
+        source_producteur="OEB",
     )
 
 

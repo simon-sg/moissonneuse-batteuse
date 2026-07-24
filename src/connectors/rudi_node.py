@@ -179,6 +179,17 @@ def publier_dataset(
         None,
     )
     if org_existante:
+        # Si l'org existante n'a pas de summary mais l'entrant en a, enrichir
+        if not org_existante.get("organization_summary") and org.get("organization_summary"):
+            try:
+                org_mise_a_jour = {**org_existante,
+                                   "organization_caption": org.get("organization_caption", ""),
+                                   "organization_summary": org.get("organization_summary", "")}
+                writer.connector.put_catalog("organizations", org_mise_a_jour)
+                org_existante = org_mise_a_jour
+                print(f"  [RUDI] organisation « {org_name} » enrichie (caption + summary)")
+            except Exception as e:
+                print(f"  [RUDI] AVERTISSEMENT : impossible d'enrichir l'org « {org_name} » : {e}")
         rudi_metadata["producer"] = org_existante
     elif "organization_id" not in org:
         org["organization_id"] = str(uuid.uuid4())

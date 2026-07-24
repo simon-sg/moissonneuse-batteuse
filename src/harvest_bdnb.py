@@ -96,6 +96,7 @@ def _generer_rudi_metadata(config: dict, fichiers: list[tuple[str, list[str], in
         medias=medias,
         date_source=last_modified,
         metadata_source_label="bdnb.io",
+        source_producteur="bdnb.io",
     )
 
 

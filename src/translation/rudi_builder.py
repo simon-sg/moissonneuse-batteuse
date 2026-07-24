@@ -146,6 +146,8 @@ def construire_rudi_metadata(
     dates: dict | None = None,
     metadata_dates: dict | None = None,
     ajouter_medias_source: bool = True,
+    source_producteur: str | None = None,
+    page_producteur: str | None = None,
 ) -> dict:
     """Assemble le dict complet rudi_metadata.json — point de convergence des 5
     voies de génération (data.gouv tabulaire, service géo, INSEE, OEB, BDNB).
@@ -178,6 +180,8 @@ def construire_rudi_metadata(
         ajouter_medias_source : ajoute source-data/source-metadata s'ils manquent (défaut) ;
                             False pour les voies qui construisent ces entrées elles-mêmes
                             sous d'autres noms (ex: "source-data-gouv")
+        source_producteur : nom de la plateforme source pour le repli factuel (ex: "data.gouv.fr")
+        page_producteur   : URL de la page producteur sur la source (ex: page org data.gouv)
     """
     if dates is None:
         dates = {}
@@ -202,6 +206,19 @@ def construire_rudi_metadata(
     if metadata_dates is not None:
         metadata_info = {"metadata_dates": metadata_dates, "metadata_source": url_fiche}
 
+    _producer = {"organization_name": producteur_nom}
+    try:
+        from translation.organisation_secours import enrichir_organisation
+        _org_enrichie = enrichir_organisation(
+            producteur_nom,
+            source_label=source_producteur,
+            page_url=page_producteur,
+        )
+        if _org_enrichie:
+            _producer.update(_org_enrichie)
+    except Exception:
+        pass  # best-effort : ne jamais échouer la traduction
+
     return {
         "local_id": local_id,
         "resource_title": titre,
@@ -209,7 +226,7 @@ def construire_rudi_metadata(
         "summary": [{"lang": "fr", "text": description}],
         "theme": theme,
         "keywords": list(dict.fromkeys(keywords)),
-        "producer": {"organization_name": producteur_nom},
+        "producer": _producer,
         "contacts": contacts_source,
         "available_formats": medias,
         "dataset_dates": dates,

@@ -289,19 +289,8 @@ def traduire_metadonnees(metadata_source: dict, zone: str = "Rennes Métropole",
 # y compris le fond de plan (basemap), dès que la valeur n'est pas null (sinon repli sur
 # EPSG:3857 par défaut). EPSG:3857 (Web Mercator) est la projection native du fond de plan et de
 # la quasi-totalité des serveurs WMS/WFS modernes — l'utiliser évite toute déformation visuelle
-# et toute reprojection, y compris pour les valeurs factices (si jamais lues malgré le bug D6 qui
-# les supprime aujourd'hui côté portail pour les médias FILE/wfs).
+# et toute reprojection.
 _DEFAULT_CRS_CARTE = "EPSG:3857"
-
-
-def _placeholder_connector_parameters() -> list[dict]:
-    """connector_parameters factice (4 clés attendues par le portail RUDI, voir
-    rudi-portal-local/RAPPORT_BUGS_RUDI.md bug D4) pour un média FILE ou un connecteur "dwnl" :
-    jamais lu pour le rendu (createGeojsonDataLayer ne lit que connector.url), présent uniquement
-    pour satisfaire la garde available_formats[0] du portail. default_crs vaut tout de même
-    EPSG:3857 (pas "n/a") : c'est aussi la projection de la carte entière (voir _DEFAULT_CRS_CARTE)."""
-    return [{"key": cle, "value": _DEFAULT_CRS_CARTE if cle == "default_crs" else "n/a"}
-            for cle in ("versions", "layer", "default_crs", "formats")]
 
 
 def _connector_parameters_wms(couches_rm: list[str]) -> list[dict]:

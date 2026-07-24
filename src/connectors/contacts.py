@@ -6,10 +6,27 @@ Fournit des contacts exploitables depuis les sources de données
 sur l'organisation productrice quand la source ne fournit pas de contact.
 """
 import re
+import unicodedata
 
-# Email fallback utilisé quand aucune source ne fournit d'email valide.
+# Domaine fallback quand aucune source ne fournit d'email valide.
 # RFC 2606 : domaine réservé, ne recevra jamais de courrier.
-_EMAIL_DEFAUT = "contact@example.org"
+_DOMAINE_DEFAUT = "example.org"
+_EMAIL_DEFAUT = "contact@" + _DOMAINE_DEFAUT
+
+
+def _slug_email(nom: str) -> str:
+    """Slug ASCII minuscule utilisable comme local-part d'email (sans accents/espaces)."""
+    n = unicodedata.normalize("NFKD", nom or "").encode("ascii", "ignore").decode()
+    n = re.sub(r"[^a-zA-Z0-9]+", "-", n).strip("-").lower()
+    return n[:64] or "contact"
+
+
+def email_par_defaut(nom: str) -> str:
+    """Email de repli **unique par nom** sous le domaine réservé example.org (RFC 2606).
+
+    À utiliser partout où un email fallback est nécessaire, pour ne pas faire collapser
+    les contacts dédupliqués par email côté nœud (voir contacter_pardefaut)."""
+    return f"{_slug_email(nom)}@{_DOMAINE_DEFAUT}"
 
 
 def extraire_contacts_datagouv(metadata_source: dict) -> list[dict]:
@@ -42,20 +59,30 @@ def extraire_contacts_datagouv(metadata_source: dict) -> list[dict]:
     return contacts
 
 
-def contacter_pardefaut(nom_org: str, email_defaut: str = _EMAIL_DEFAUT) -> dict:
-    """Construit un contact fallback à partir du nom de l'organisation productrice."""
+def contacter_pardefaut(nom_org: str, email_defaut: str | None = None) -> dict:
+    """Construit un contact fallback à partir du nom de l'organisation productrice.
+
+    L'email de repli est **unique par producteur** (`<slug-org>@example.org`), et non
+    un `contact@example.org` partagé : le nœud RUDI déduplique les contacts par email,
+    donc un email partagé fait collapser TOUS les fallbacks sur un seul contact — celui
+    du premier producteur créé — et affiche son nom (ex. « SDIS de l'Essonne ») sur des
+    centaines de fiches sans rapport. Un local-part dérivé du nom d'org donne un contact
+    distinct et correctement nommé par producteur, sans jamais envoyer de courrier réel.
+    """
+    email = email_defaut or email_par_defaut(nom_org)
     return {
         "contact_name": nom_org or "Contact",
-        "email": email_defaut,
+        "email": email,
     }
 
 
 def resoudre_contacts(contacts_source: list[dict], nom_org: str,
-                      email_defaut: str = _EMAIL_DEFAUT) -> list[dict]:
+                      email_defaut: str | None = None) -> list[dict]:
     """Retourne au moins un contact valide pour un dataset.
 
     Si contacts_source contient des contacts exploitables, retourne le premier.
-    Sinon, construit un contact fallback avec le nom de l'organisation.
+    Sinon, construit un contact fallback avec le nom de l'organisation (email unique
+    par producteur — voir contacter_pardefaut). `email_defaut` reste surchargeable.
     Le nœud RUDI exige un email valide — aucun contact sans email n'est retourné.
     """
     if contacts_source:

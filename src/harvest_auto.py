@@ -9,8 +9,9 @@ Enchaîne :
      data.gouv.fr, ajout automatique des candidats tabulaires avec données RM détectées,
      mise en attente (decouverte["a_examiner"]) des cas ambigus (0 RM, échec d'analyse,
      services WFS/WMS) pour revue différée via le tableau de bord web.
-  2. Démarrage du nœud RUDI local (conteneur Podman) si configuré et pas déjà démarré,
-     avec attente qu'il réponde réellement avant de lancer la publication.
+  2. Démarrage du nœud RUDI source (process natifs : catalog:4030, storage:4031,
+     manager:4032, jwtauth:4033) si configuré et pas déjà actif, avec attente qu'il
+     réponde réellement avant de lancer la publication.
   3. Pipeline complet existant (cli.executer_pipeline_complet()) : moisson
      tabulaire/batch/INSEE/OEB/BDNB/géo → catalogue → publication RUDI.
 
@@ -46,7 +47,7 @@ _NOEUD_RUDI_DELAI_S = 3
 
 
 def _demarrer_noeud_rudi() -> None:
-    """Démarre le conteneur du nœud RUDI si nécessaire et attend qu'il réponde.
+    """Démarre le nœud RUDI source (process natifs) si nécessaire et attend qu'il réponde.
     N'échoue jamais : si le nœud reste indisponible, la publication de cette exécution
     sera simplement différée (rudi_publie=false, rattrapée au prochain run)."""
     conf = rudi_node.charger_conf_rudi()
@@ -54,15 +55,14 @@ def _demarrer_noeud_rudi() -> None:
         print("[Nœud RUDI] non configuré (src/conf/rudi_node.json absent) — publication ignorée cette fois.")
         return
 
-    statut = rudi_node.statut_conteneur()
-    if statut.get("etat") != "running":
-        print(f"[Nœud RUDI] conteneur non démarré (état={statut.get('etat')!r}) — démarrage...")
-        ok, message = rudi_node.demarrer_conteneur()
+    if rudi_node.noeud_source_actif(conf):
+        print("[Nœud RUDI] nœud source déjà actif.")
+    else:
+        print("[Nœud RUDI] nœud source non démarré — démarrage...")
+        ok, message = rudi_node.demarrer_noeud_source(conf)
         print(f"[Nœud RUDI] {message}")
         if not ok:
             return
-    else:
-        print("[Nœud RUDI] conteneur déjà démarré.")
 
     for tentative in range(1, _NOEUD_RUDI_TENTATIVES + 1):
         if rudi_node.noeud_pret(conf):

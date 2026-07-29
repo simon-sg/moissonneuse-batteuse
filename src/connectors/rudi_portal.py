@@ -1,9 +1,14 @@
+import re
 import subprocess
 
 from connectors.http import session
+from connectors.rudi_node import _etat_git
 
 CONTENEUR_PORTAIL = "rudiplatform-portail-1"
-URL_PORTAIL = "http://127.0.0.1:8088"
+# Le port 8088 (host) mappe le port 8080 du conteneur reverse-proxy — le dashboard
+# Traefik, pas l'appli. Le vrai point d'entrée (routage par hôte) est rudi.localhost,
+# résolu vers 127.0.0.1 sans entrée /etc/hosts (TLD .localhost).
+URL_PORTAIL = "http://rudi.localhost"
 
 _DOCKER_DIR = "/media/simon/DATA4T/Dev/rudi-portal-local/rudi-out-of-the-box"
 _COMPOSE_FILES = [
@@ -12,6 +17,32 @@ _COMPOSE_FILES = [
     "docker-compose-dataverse.yml",
     "docker-compose-network.yml",
 ]
+
+_CHEMIN_PORTAIL_SOURCE = "/media/simon/DATA4T/Dev/rudi-portal-source"
+
+MODULES_PORTAIL = {
+    "registry":    "Registry",
+    "gateway":     "Gateway",
+    "acl":         "ACL",
+    "apigateway":  "API Gateway",
+    "strukture":   "Strukture",
+    "kalim":       "Kalim",
+    "konsult":     "Konsult",
+    "kos":         "KOS",
+    "projekt":     "Projekt",
+    "selfdata":    "Selfdata",
+    "konsent":     "Konsent",
+    "portail":     "Portail (front)",
+}
+
+INFRA_PORTAIL = {
+    "reverse-proxy": "Reverse proxy (Traefik)",
+    "database":      "Base de données",
+    "mailhog":       "MailHog",
+    "dataverse":     "Dataverse",
+    "solr":          "Solr",
+    "magnolia":      "Magnolia CMS",
+}
 
 
 def _compose_cmd() -> list[str]:
@@ -104,3 +135,120 @@ def redemarrer_konsult() -> tuple[bool, str]:
     if r.returncode == 0:
         return True, "Konsult redémarré."
     return False, (r.stderr or r.stdout).strip() or "Échec du redémarrage de Konsult."
+
+
+# ---------------------------------------------------------------------------
+# État détaillé des modules (conteneurs + process natifs hybrides)
+# ---------------------------------------------------------------------------
+
+def _conteneurs_portail() -> dict[str, dict]:
+    """Interroge Docker sur tous les conteneurs rudiplatform-* en un seul appel.
+
+    Retourne dict nom_service → {"etat": str, "image": str}.
+    Ne lève jamais.
+    """
+    try:
+        r = subprocess.run(
+            ["docker", "ps", "-a",
+             "--filter", "name=rudiplatform-",
+             "--format", "{{.Names}}\t{{.Image}}\t{{.State}}"],
+            capture_output=True, text=True, timeout=10,
+        )
+    except (FileNotFoundError, subprocess.TimeoutExpired):
+        return {}
+    if r.returncode != 0:
+        return {}
+    result = {}
+    for ligne in r.stdout.strip().splitlines():
+        m = re.match(r"rudiplatform-(.+)-\d+$", ligne.split("\t")[0])
+        if m:
+            parties = ligne.split("\t")
+            result[m.group(1)] = {
+                "etat": parties[2] if len(parties) > 2 else "inconnu",
+                "image": parties[1] if len(parties) > 1 else "",
+            }
+    return result
+
+
+def _classifier_image(image: str | None) -> dict:
+    """Classe une image Docker : patché (:source), natif (:vX.Y.Z), ou inconnu."""
+    if not image:
+        return {"patche": None, "version": None, "label": "inconnu"}
+    if image.endswith(":source"):
+        return {"patche": True, "version": None, "label": "patché"}
+    m = re.search(r":v?(\d+\.\d+\.\d+)$", image)
+    if m:
+        return {"patche": False, "version": m.group(1), "label": f"v{m.group(1)}"}
+    return {"patche": None, "version": None, "label": image.split(":")[-1]}
+
+
+def _processus_natifs() -> set[str]:
+    """Détecte les microservices RUDI tournant en process Java natif (hors conteneur)."""
+    try:
+        r = subprocess.run(
+            ["pgrep", "-af", "rudi-microservice-"],
+            capture_output=True, text=True, timeout=5,
+        )
+    except (FileNotFoundError, subprocess.TimeoutExpired):
+        return set()
+    if r.returncode != 0:
+        return set()
+    noms = set()
+    for ligne in r.stdout.strip().splitlines():
+        m = re.search(r"rudi-microservice-([a-z]+)", ligne)
+        if m and m.group(1) in MODULES_PORTAIL:
+            noms.add(m.group(1))
+    return noms
+
+
+def etat_modules_portail() -> list[dict]:
+    """État détaillé de chaque module du portail RUDI (12 microservices/front).
+
+    Combine : mode natif hybride (process Java hors conteneur), conteneur Docker, tag d'image.
+    Ne lève jamais.
+    """
+    conteneurs = _conteneurs_portail()
+    natifs = _processus_natifs()
+    modules = []
+    for nom_mod, label in MODULES_PORTAIL.items():
+        cont = conteneurs.get(nom_mod)
+        est_natif = nom_mod in natifs
+        if est_natif:
+            mode = "natif hybride"
+            image_info = {"patche": None, "version": None, "label": "process natif"}
+        elif cont:
+            mode = "conteneur"
+            image_info = _classifier_image(cont.get("image"))
+        else:
+            mode = "absent"
+            image_info = {"patche": None, "version": None, "label": ""}
+        modules.append({
+            "module": nom_mod,
+            "label": label,
+            "mode": mode,
+            "etat": cont["etat"] if cont else ("actif" if est_natif else "absent"),
+            "image": image_info["label"],
+            "patche": image_info["patche"],
+            "version": image_info["version"],
+        })
+    return modules
+
+
+def etat_infra_portail() -> list[dict]:
+    """État des services d'infrastructure du portail (6 services, images tierces)."""
+    conteneurs = _conteneurs_portail()
+    infra = []
+    for nom_mod, label in INFRA_PORTAIL.items():
+        cont = conteneurs.get(nom_mod)
+        infra.append({
+            "module": nom_mod,
+            "label": label,
+            "etat": cont["etat"] if cont else "absent",
+            "image": cont.get("image", "") if cont else "",
+        })
+    return infra
+
+
+def etat_git_portail_source() -> dict:
+    """État Git du monorepo rudi-portal-source (informatif, pas par microservice)."""
+    return _etat_git(_CHEMIN_PORTAIL_SOURCE)

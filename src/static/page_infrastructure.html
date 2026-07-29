@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Moissonneuse-batteuse — Infrastructure</title>
+<script>(function(){try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<link rel="stylesheet" href="/static/dashboard.css">
+<style>
+  .infra-grid { display:grid; gap:20px; max-width:960px; }
+  .infra-section { background:var(--card); border:1px solid var(--bord); border-radius:8px; padding:16px 18px; }
+  .infra-section h3 { margin:0 0 12px; font-size:1rem; text-align:left; text-transform:none; }
+  .infra-table { width:100%; border-collapse:collapse; font-size:.85rem; }
+  .infra-table th { text-align:left; font-weight:600; color:var(--muted); padding:6px 8px; border-bottom:1px solid var(--bord); font-size:.78rem; text-transform:uppercase; letter-spacing:.04em; }
+  .infra-table td { padding:6px 8px; border-bottom:1px solid var(--bord); vertical-align:middle; }
+  .infra-table tr:last-child td { border-bottom:none; }
+  .infra-compact { display:flex; align-items:center; gap:12px; padding:6px 0; font-size:.85rem; }
+  .infra-compact .label { font-weight:600; min-width:160px; }
+  .badge-git { display:inline-block; padding:2px 7px; border-radius:4px; font-size:.72rem; font-weight:600; }
+  .badge-git.natif { background:var(--ok); color:#fff; }
+  .badge-git.patche { background:var(--accent); color:#fff; }
+  .badge-git.inconnu { background:var(--bord); color:var(--muted); }
+  .badge-mode { display:inline-block; padding:2px 7px; border-radius:4px; font-size:.72rem; font-weight:600; }
+  .badge-mode.conteneur { background:#0b6e99; color:#fff; }
+  .badge-mode.natif { background:var(--ok); color:#fff; }
+  .badge-mode.absent { background:var(--bord); color:var(--muted); }
+  .badge-etat { display:inline-block; padding:2px 7px; border-radius:4px; font-size:.72rem; font-weight:600; }
+  .badge-etat.running { background:var(--ok); color:#fff; }
+  .badge-etat.stopped { background:var(--warn); color:#fff; }
+  .badge-etat.inconnu { background:var(--bord); color:var(--muted); }
+  .infra-retour { margin-top:16px; }
+  .infra-retour a { font-size:.85rem; color:var(--accent); }
+</style>
+</head>
+<body>
+{{TOPBAR}}
+<main>
+
+<section>
+  <h2 style="text-align:left">Infrastructure — état par module</h2>
+  <p style="color:var(--muted);margin-top:-8px">
+    État détaillé du nœud RUDI source (process natifs), du nœud Docker historique et du portail hybride (conteneurs + process natifs).
+    Rafraîchissement automatique toutes les 20 s.
+  </p>
+</section>
+
+<div class="infra-grid">
+
+  <!-- Nœud source -->
+  <div class="infra-section">
+    <h3>Nœud source (process natifs)</h3>
+    <p id="ns-config" style="font-size:.82rem;color:var(--muted);margin:0 0 8px"></p>
+    <table class="infra-table" id="ns-table">
+      <thead><tr><th>Module</th><th>Port</th><th>État</th><th>Git</th></tr></thead>
+      <tbody id="ns-corps"><tr><td colspan="4" style="color:var(--muted)">Chargement…</td></tr></tbody>
+    </table>
+    <div class="infra-compact" id="ns-mongo" style="margin-top:8px"></div>
+  </div>
+
+  <!-- Nœud Docker (hors chaîne) -->
+  <div class="infra-section">
+    <h3>Nœud Docker <span style="font-weight:400;font-size:.82rem;color:var(--muted)">(hors chaîne — historique Podman)</span></h3>
+    <div id="nd-container">
+      <div style="color:var(--muted);font-size:.85rem">Chargement…</div>
+    </div>
+  </div>
+
+  <!-- Portail hybride -->
+  <div class="infra-section">
+    <h3>Portail hybride (Docker Compose ROOB)</h3>
+    <table class="infra-table" id="ph-table">
+      <thead><tr><th>Module</th><th>Mode</th><th>Image / version</th><th>État</th></tr></thead>
+      <tbody id="ph-corps"><tr><td colspan="4" style="color:var(--muted)">Chargement…</td></tr></tbody>
+    </table>
+    <h3 style="margin-top:16px">Infrastructure</h3>
+    <table class="infra-table" id="ph-infra-table">
+      <thead><tr><th>Service</th><th>État</th><th>Image</th></tr></thead>
+      <tbody id="ph-infra-corps"><tr><td colspan="3" style="color:var(--muted)">Chargement…</td></tr></tbody>
+    </table>
+    <div id="ph-git" style="margin-top:8px;font-size:.82rem;color:var(--muted)"></div>
+  </div>
+
+</div>
+
+<div class="infra-retour"><a href="/">&larr; Tableau de bord</a></div>
+
+</main>
+<script src="/static/dashboard.js"></script>
+<script>
+function badgeEtat(etat){
+  const e = (etat||"").toLowerCase();
+  if (e==="running"||e==="actif") return `<span class="badge-etat running">actif</span>`;
+  if (e==="exited"||e==="stopped"||e==="created") return `<span class="badge-etat stopped">arrêté</span>`;
+  return `<span class="badge-etat inconnu">${esc(etat||"inconnu")}</span>`;
+}
+function badgeGit(git){
+  if (!git || !git.disponible) return `<span class="badge-git inconnu">inconnu</span>`;
+  if (git.patche===true) return `<span class="badge-git patche" title="${esc(git.branche||"")} — ${git.commits_avance} commit(s) non fusionné(s)">patché (${git.commits_avance})</span>`;
+  if (git.patche===false) return `<span class="badge-git natif" title="${esc(git.branche||"")} — vanilla">natif</span>`;
+  return `<span class="badge-git inconnu" title="${esc(git.branche||"")}">${esc(git.branche||"")}</span>`;
+}
+function badgeMode(mode){
+  const cls = mode==="conteneur"?"conteneur":mode.includes("natif")?"natif":"absent";
+  return `<span class="badge-mode ${cls}">${esc(mode)}</span>`;
+}
+
+async function chargerInfrastructure(){
+  const {ok, data: d} = await apiFetch("/api/infrastructure");
+  if (!ok || !d) return;
+
+  // --- Nœud source ---
+  const nsCfg = document.getElementById("ns-config");
+  nsCfg.textContent = d.noeud_source.configure ? "" : "Nœud source non configuré (rudi_node.json absent).";
+  const nsCorps = document.getElementById("ns-corps");
+  if (!d.noeud_source.modules || !d.noeud_source.modules.length){
+    nsCorps.innerHTML = `<tr><td colspan="4" style="color:var(--muted)">Aucun module détecté.</td></tr>`;
+  } else {
+    nsCorps.innerHTML = d.noeud_source.modules.map(m => `<tr>
+      <td><strong>${esc(m.module)}</strong></td>
+      <td>${m.port}</td>
+      <td>${m.up ? badgeEtat("running") : badgeEtat("stopped")}</td>
+      <td>${badgeGit(m.git)}</td>
+    </tr>`).join("");
+  }
+  const mongo = d.noeud_source.mongo || {};
+  document.getElementById("ns-mongo").innerHTML = `<span class="label">MongoDB (rudi-source-mongo)</span> ${badgeEtat(mongo.etat)}`;
+
+  // --- Nœud Docker ---
+  const nd = d.noeud_docker || {};
+  const ndEl = document.getElementById("nd-container");
+  if (!nd.podman_installe){
+    ndEl.innerHTML = `<div class="badge-etat inconnu">Podman introuvable</div>`;
+  } else if (!nd.existe){
+    ndEl.innerHTML = `<div class="badge-etat stopped">Conteneur absent</div>`;
+  } else {
+    ndEl.innerHTML = `<div>${badgeEtat(nd.etat)} <span style="font-size:.82rem;color:var(--muted)">rudinode</span></div>`;
+  }
+
+  // --- Portail hybride ---
+  const phCorps = document.getElementById("ph-corps");
+  if (!d.portail.modules || !d.portail.modules.length){
+    phCorps.innerHTML = `<tr><td colspan="4" style="color:var(--muted)">Aucun module détecté.</td></tr>`;
+  } else {
+    phCorps.innerHTML = d.portail.modules.map(m => `<tr>
+      <td><strong>${esc(m.label)}</strong></td>
+      <td>${badgeMode(m.mode)}</td>
+      <td>${esc(m.image || "—")}</td>
+      <td>${badgeEtat(m.etat)}</td>
+    </tr>`).join("");
+  }
+  const phInfra = document.getElementById("ph-infra-corps");
+  if (!d.portail.infra || !d.portail.infra.length){
+    phInfra.innerHTML = `<tr><td colspan="3" style="color:var(--muted)">Aucun service détecté.</td></tr>`;
+  } else {
+    phInfra.innerHTML = d.portail.infra.map(s => `<tr>
+      <td>${esc(s.label)}</td>
+      <td>${badgeEtat(s.etat)}</td>
+      <td style="font-size:.78rem;color:var(--muted)">${esc(s.image || "—")}</td>
+    </tr>`).join("");
+  }
+  const gi = d.portail.checkout_source || {};
+  const phGit = document.getElementById("ph-git");
+  if (gi.disponible){
+    phGit.innerHTML = `Checkout source : branche <strong>${esc(gi.branche||"")}</strong>` +
+      (gi.commits_avance !== null ? `, ${gi.commits_avance} commit(s) non fusionné(s)` : "");
+  } else {
+    phGit.textContent = "";
+  }
+}
+
+chargerInfrastructure();
+setInterval(chargerInfrastructure, 20000);
+</script>
+</body>
+</html>

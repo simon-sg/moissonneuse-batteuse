@@ -58,6 +58,7 @@ def _html_topbar(page_active: str) -> str:
         ("examen", "/examen", "Examen", False),
         ("decouverte", "/decouverte", "Découverte", False),
         ("portail", "/portail", "Portail config", False),
+        ("infrastructure", "/infrastructure", "Infrastructure", False),
     ]
     nav_html = ""
     for pid, href, label, ext in liens:
@@ -72,9 +73,9 @@ def _html_topbar(page_active: str) -> str:
   </div>
   <div class="topbar-right">
     <div class="topbar-pills">
-      <span class="topbar-pill" id="tb-noeud" title="Nœud RUDI"><span class="tb-dot" aria-hidden="true"></span>Nœud</span>
+      <a href="/infrastructure" class="topbar-pill" id="tb-noeud" title="Nœud RUDI" style="text-decoration:none"><span class="tb-dot" aria-hidden="true"></span>Nœud</a>
       <span class="topbar-pill" id="tb-superset" title="Superset"><span class="tb-dot" aria-hidden="true"></span>Superset</span>
-      <span class="topbar-pill" id="tb-portail" title="Portail RUDI"><span class="tb-dot" aria-hidden="true"></span>Portail</span>
+      <a href="/infrastructure" class="topbar-pill" id="tb-portail" title="Portail RUDI" style="text-decoration:none"><span class="tb-dot" aria-hidden="true"></span>Portail</a>
       <a href="/#section-job" class="topbar-pill" id="tb-job" title="Job en cours" style="text-decoration:none"><span class="tb-dot" aria-hidden="true"></span>Job</a>
       <a href="/examen" class="topbar-pill" id="tb-examen-pill" title="JDD à examiner" style="text-decoration:none">
         <span class="tb-dot" aria-hidden="true"></span>Examen&nbsp;<span class="topbar-count" id="tb-examen"></span>
@@ -367,14 +368,14 @@ def _traiter_purge(idx_str: str, params: dict) -> tuple[int, dict]:
 # ---------------------------------------------------------------------------
 
 def _etat_noeud() -> dict:
-    """État du nœud RUDI configuré (informatif — le nœud tourne en processus natifs,
-    pas de conteneur à piloter depuis le dashboard)."""
+    """État du nœud RUDI configuré — process natifs du nœud source."""
     conf = rudi_node.charger_conf_rudi()
     if not conf:
-        return {"configure": False, "pret": False, "url": None, "url_manager": None}
+        return {"configure": False, "pret": False, "actif": False, "url": None, "url_manager": None}
     return {
         "configure": True,
         "pret": bool(rudi_node.noeud_pret(conf)),
+        "actif": bool(rudi_node.noeud_source_actif(conf)),
         "url": conf["url"],
         "url_manager": conf["url"].rstrip("/") + "/manager/",
     }
@@ -429,6 +430,27 @@ def _traiter_konsult_restart() -> tuple[int, dict]:
     return (200 if ok else 500), {"ok": ok, "message": message}
 
 
+# ---------------------------------------------------------------------------
+# Infrastructure (état détaillé par module — lecture seule)
+# ---------------------------------------------------------------------------
+
+def _etat_infrastructure() -> dict:
+    conf = rudi_node.charger_conf_rudi()
+    return {
+        "noeud_source": {
+            "configure": bool(conf),
+            "mongo": rudi_node.statut_conteneur("rudi-source-mongo"),
+            "modules": rudi_node.etat_modules_noeud_source(conf) if conf else [],
+        },
+        "noeud_docker": rudi_node.statut_conteneur("rudinode"),
+        "portail": {
+            "modules": rudi_portal.etat_modules_portail(),
+            "infra": rudi_portal.etat_infra_portail(),
+            "checkout_source": rudi_portal.etat_git_portail_source(),
+        },
+    }
+
+
 def _traiter_portail_upload(handler) -> tuple[int, dict]:
     """Traite l'upload d'une image vers config/konsult/."""
     content_type = handler.headers.get("Content-Type", "")
@@ -460,6 +482,23 @@ def _traiter_portail_upload(handler) -> tuple[int, dict]:
         return 200, {"ok": True, "chemin": chemin}
     except Exception as e:
         return 500, {"ok": False, "erreur": str(e)}
+
+
+# ---------------------------------------------------------------------------
+# Nœud source (démarrage/arrêt process natifs)
+# ---------------------------------------------------------------------------
+
+def _traiter_noeud_demarrer() -> tuple[int, dict]:
+    conf = rudi_node.charger_conf_rudi()
+    if not conf:
+        return 400, {"ok": False, "message": "Nœud RUDI non configuré."}
+    ok, message = rudi_node.demarrer_noeud_source(conf)
+    return (200 if ok else 500), {"ok": ok, "message": message}
+
+
+def _traiter_noeud_arreter() -> tuple[int, dict]:
+    ok, message = rudi_node.arreter_noeud_source()
+    return (200 if ok else 500), {"ok": ok, "message": message}
 
 
 # ---------------------------------------------------------------------------
@@ -974,6 +1013,8 @@ class Handler(http.server.BaseHTTPRequestHandler):
             self._repondre_html(200, PAGE_DECOUVERTE_HTML)
         elif self.path == "/portail":
             self._repondre_html(200, PAGE_PORTAIL_HTML)
+        elif self.path == "/infrastructure":
+            self._repondre_html(200, PAGE_INFRASTRUCTURE_HTML)
         elif self.path == "/catalogue":
             self._servir_catalogue()
         elif self.path.startswith("/static/"):
@@ -990,6 +1031,8 @@ class Handler(http.server.BaseHTTPRequestHandler):
             self._repondre_json(200, _etat_superset())
         elif self.path == "/api/portail":
             self._repondre_json(200, _etat_portail())
+        elif self.path == "/api/infrastructure":
+            self._repondre_json(200, _etat_infrastructure())
         elif self.path == "/api/portail/config":
             self._repondre_json(200, rudi_portal_config.lire_config())
         elif self.path == "/api/portail/images":
@@ -1054,6 +1097,12 @@ class Handler(http.server.BaseHTTPRequestHandler):
             self._repondre_json(code, payload)
         elif self.path == "/api/portail/arreter":
             code, payload = _traiter_portail_arreter()
+            self._repondre_json(code, payload)
+        elif self.path == "/api/noeud/demarrer":
+            code, payload = _traiter_noeud_demarrer()
+            self._repondre_json(code, payload)
+        elif self.path == "/api/noeud/arreter":
+            code, payload = _traiter_noeud_arreter()
             self._repondre_json(code, payload)
         elif self.path == "/api/portail/config/save":
             try:
@@ -1123,6 +1172,9 @@ PAGE_DECOUVERTE_HTML = _charger_page("page_decouverte.html", "decouverte")
 
 
 PAGE_PORTAIL_HTML = _charger_page("page_portail.html", "portail")
+
+
+PAGE_INFRASTRUCTURE_HTML = _charger_page("page_infrastructure.html", "infrastructure")
 
 
 def main() -> None:

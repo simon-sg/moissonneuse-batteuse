@@ -42,7 +42,7 @@
 </section>
 
 <section>
-  <h2>Nœud RUDI</h2>
+  <h2>Nœud RUDI <span id="badge-noeud" class="badge idle" title="État du nœud RUDI source (process natifs)">…</span></h2>
   <div id="noeuds-container">
     <div class="ligne-job"><span class="badge idle">…</span></div>
   </div>
@@ -65,6 +65,7 @@
             title="Démarrer ou arrêter le portail RUDI (Docker Compose — ~18 conteneurs)">Démarrer</button>
     <a id="lien-portail" href="#" target="_blank" class="discret desactive"
        title="Ouvrir le portail RUDI (front Angular)">Ouvrir le portail</a>
+    <a href="/infrastructure" class="discret" title="Voir l'état détaillé par module">Détails →</a>
   </div>
 </section>
 
@@ -264,21 +265,41 @@ async function actualiserNoeud(){
   const {ok, data: n} = await apiFetch("/api/noeud");
   if (!ok || !n) { return; }
 
+  const badge = document.getElementById("badge-noeud");
   const container = document.getElementById("noeuds-container");
   if (!n.configure){
+    badge.className = "badge warn";
+    badge.textContent = "non configuré";
     container.innerHTML = `<div class="ligne-job"><span class="badge warn">NON configuré (rudi_node.json absent)</span></div>`;
     return;
   }
 
-  const badgeClass = n.pret ? "termine" : "idle";
-  const badgeText = n.pret ? "opérationnel" : "injoignable";
-  const badgeTitle = n.pret ? "Le nœud RUDI répond" : "Le nœud RUDI ne répond pas";
+  const enDemarrage = n.actif && !n.pret;
+  badge.className = "badge " + (n.pret ? "termine" : (enDemarrage ? "running" : "idle"));
+  badge.textContent = n.pret ? "opérationnel" : (enDemarrage ? "démarrage…" : "injoignable");
+
   const lienManager = n.url_manager || "#";
   container.innerHTML = `<div class="ligne-job">
-    <span class="badge ${badgeClass}" title="${esc(badgeTitle)}">Nœud RUDI : ${esc(badgeText)}</span>
+    <button id="btn-noeud" class="${n.actif ? "danger" : ""}" onclick="basculerNoeud()"
+            title="Démarrer ou arrêter le nœud RUDI source (process natifs)">${n.actif ? "Arrêter" : "Démarrer"}</button>
     <a href="${esc(lienManager)}" target="_blank" class="discret ${n.pret ? '' : 'desactive'}"
        title="Ouvrir le manager du nœud RUDI">Ouvrir</a>
+    <a href="/infrastructure" class="discret" title="Voir l'état détaillé par module">Détails →</a>
   </div>`;
+  document.getElementById("btn-noeud").disabled = noeudActionEnCours;
+}
+
+let noeudActionEnCours = false;
+
+async function basculerNoeud(){
+  const bouton = document.getElementById("btn-noeud");
+  const action = bouton.textContent === "Arrêter" ? "arreter" : "demarrer";
+  noeudActionEnCours = true;
+  bouton.disabled = true;
+  const {ok, data} = await apiFetch(`/api/noeud/${action}`, {method:"POST"});
+  if (data) notifier(data.message, !ok);
+  noeudActionEnCours = false;
+  actualiserNoeud();
 }
 
 let supersetActionEnCours = false;

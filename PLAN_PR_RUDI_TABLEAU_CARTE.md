@@ -52,6 +52,27 @@ l'eau, puis nettoyer les contournements.
 
 ---
 
+## STATUT au 2026-07-24 (après validation en environnement) — À LIRE EN PREMIER
+
+Le tableau et les cartes **fonctionnent maintenant nativement** (médias FILE servis par l'apigateway
+→ storage nœud source via `host.docker.internal:4031`), **sans aucun contournement** et **sans PR-3**.
+Voir `project-portail-media-serving` (mémoire) et `REF_ENV_RUDI_LOCAL.md`.
+
+| PR | Sujet | Statut réel |
+|---|---|---|
+| **PR-3** apigateway permit-all | D3 | **❌ ABANDONNÉE** — inutile. Le 302 d'origine venait de l'état JWT (`Invalid signature`), pas d'un permit-all manquant. La retirer de `integration/tableau-carte`, garder apigateway **stock**. |
+| **PR-1** nœud CORS | D3 | ✅ prête (branche `fix/cors-credentials-reflection`), utile pour l'accès cross-origin. |
+| **PR-9** RUDI-5672 orgs | — | ✅ prête (branche `feat/enable-organization-update`). |
+| **PR-4** dédoublonnage query | D5 WMS | ⚠️ **à re-cadrer** — le WMS `/medias/.../wms` renvoie 400 `InvalidParameterValue` (query `GetCapabilities`+`GetMap` fusionnée sans dédoublonnage). PR-4 vise ça mais **vérifier d'abord** que ce n'est pas résiduel de l'état JWT. Seule vraie piste de code restante côté visualisation. |
+| **PR-5** ConcurrentHashMap | D5 | ⚠️ robustesse, à évaluer avec PR-4. |
+| **PR-6 / PR-7** front D4 | D4 | ✅ correctes (garde carte + projection) — indépendantes du serveur, à garder pour les producteurs à `default_crs` non-3857. |
+| **PR-8** kalim null-guard | A6 | ✅ correcte (NPE sur `connector_parameters` null), robustesse. |
+
+**Leçon** : avant de conclure qu'un 302/500/400 média nécessite un correctif de code, vérifier
+l'**état JWT inter-services** (recreate coordonnée du tier applicatif) et la **joignabilité des URL**
+(`localhost` vs `host.docker.internal` depuis les conteneurs). Beaucoup de « bugs » du RAPPORT étaient
+en réalité de l'état d'environnement.
+
 ## 3. Inventaire des contournements (état actuel)
 
 | Réf | Contournement | Bug | Emplacement | Sort |
@@ -175,6 +196,48 @@ amont est déjà corrigé, ne pas ouvrir la PR : le noter et passer au contourne
 - **Déploiement** : recette §4 pour `rudi-microservice-apigateway`.
 - **Retire (avec PR-1)** : le routeur Traefik `medias-dwnl` (**W2**).
 - **Commit** : `fix(apigateway): permit public access to dataset media download route`.
+
+> ### ❌ MISE À JOUR 2026-07-24 (révisée) — PR-3 EST INUTILE, NE PAS LA SOUMETTRE
+> **Test décisif** : apigateway repassé en **stock v3.3.12 (sans PR-3)** → un média **SERVICE servable
+> se télécharge en anonyme = 200**, et un média **FILE = 302** (exactement comme avec PR-3). Donc PR-3
+> **n'apporte rien** et le vrai blocage FILE lui est indépendant.
+> **Cause réelle du 302 d'origine (D3)** : ce n'était pas un permit-all manquant, mais l'échec de
+> `check_token` (**JWT `Invalid signature`**, incohérence inter-services issue du brassage multi-agents),
+> **déjà réparé** par la recreate coordonnée du tier applicatif. Une fois le JWT cohérent, l'apigateway
+> **stock sert les médias ouverts en anonyme comme prévu** (modèle RUDI : `isRestricted =
+> confidentiality.restrictedAccess == TRUE` → public sauf restriction explicite ; `AccessControlGlobalFilter`
+> applique ce gate à **chaque** requête média, indépendamment du permit-all).
+> **Décision** : **abandonner PR-3** (`fix/apigateway-permit-all-datasets`), la retirer de
+> `integration/tableau-carte`, garder apigateway en stock. La mettre en permit-all affaiblirait la
+> défense en profondeur (contourne la validation de token `OAuth2ApiWebFilter` sur les routes média)
+> sans bénéfice. Idem à réévaluer pour PR-4/PR-5 (WMS) : vérifier d'abord si le vrai souci n'était pas
+> le même état JWT avant de conclure qu'un correctif de code est nécessaire.
+>
+> _(Historique, conservé pour trace : le reste de la fiche PR-3 ci-dessus décrivait le permit-all ; il
+> est caduc.)_ Les médias **SERVICE** se téléchargent en 200 **même sans PR-3**.
+>
+> **En revanche, tout média FILE (fichier réel hébergé côté nœud) → `302 /login` (20/20 JDD testés).**
+> Analyse approfondie (demande de Simon : « es-tu sûr que c'est un bug et pas un fonctionnement normal
+> mal compris ? la prod RM tourne sur les mêmes sources ») → **ce n'est PAS un bug de code** :
+> - Ce n'est **pas** Spring Security (permit-all OK) ni `AccessControlGlobalFilter` (qui renvoie **401**,
+>   pas 302 — hypothèse précédente **infirmée**).
+> - Le 302 est une **boucle de redirection vers `/login`** dans la résolution/routage du média FILE.
+> - `ApiPathRouteDefinitionLocator.isValidUri()` exige un **schéma** (http/https) sur `connector.url` ;
+>   or le `connector.url` d'un média FILE portail est le **relatif auto-référent** `/medias/{gid}/{mid}/dwnl`.
+> - Surtout : le contournement **W2** existait précisément pour router `/medias/.../dwnl` **directement
+>   vers le storage du NŒUD** (`host.docker.internal:4031/storage/download/{mid}`) — preuve que **les
+>   octets des fichiers vivent sur le nœud, pas dans le storage du portail**. Nos JDD ont été poussés
+>   par `repousser_metadonnees.py` / SQL (métadonnées uniquement), **sans l'ingestion normale des médias
+>   dans le portail** que fait kalim en prod. Le portail n'a donc **rien à servir** → boucle `/login`.
+>
+> **Conclusion : ne PAS développer de correctif apigateway pour ceci** (ce serait « corriger » un
+> non-bug ; la prod RM marche car son intégration stocke bien les médias côté portail). Le vrai sujet
+> est **environnemental/d'intégration**. Deux voies : (a) **restaurer W2/W3** (routage direct vers le
+> storage du nœud) comme architecture assumée de cet env hybride ; (b) **ingérer réellement les octets
+> des médias dans le storage du portail** (réparer le flux d'intégration/push). PR-3 reste une bonne
+> contribution (permit-all manquant, réel), mais **ne retire W2 que si (b) est fait** ; sinon W2 reste
+> nécessaire. Le WMS (D5) suit la même logique : W3/`wms_proxy` relaie vers le serveur WMS externe car
+> le portail ne porte pas ces flux — même nature env, pas un bug de code.
 
 ### PR-4 — apigateway : dédoublonner la fusion de query du reroutage (bug D5, cause 1)
 

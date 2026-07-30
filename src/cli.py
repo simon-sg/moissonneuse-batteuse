@@ -261,27 +261,6 @@ def action_reanalyser_faux_positifs(appliquer_interactif: bool = True):
     _executer("Ré-analyse des faux positifs INSEE/CP (dept 35)", _reanalyser)
 
 
-def action_demarrer_superset():
-    """Démarre le conteneur Docker Superset (mb-superset) via docker compose."""
-    from connectors.superset import statut_conteneur, demarrer_conteneur, superset_pret, URL_SUPERSET
-    etat = statut_conteneur()
-    if not etat.get("docker_installe"):
-        print("Docker n'est pas installé.")
-        return
-    if etat.get("existe") and etat["etat"] == "running":
-        pret = superset_pret()
-        if pret:
-            print(f"✓ Superset est déjà en cours d'exécution — ouvrir {URL_SUPERSET}")
-            return
-        print("Superset est en cours de démarrage (conteneur lancé, application pas encore prête)…")
-        return
-    print("Démarrage de Superset…")
-    ok, msg = demarrer_conteneur()
-    print(msg)
-    if ok:
-        print(f"  Ouvrir {URL_SUPERSET}")
-
-
 # Étapes déterministes du pipeline complet (sans découverte, jamais interactives) —
 # réutilisées telles quelles par dashboard.py pour le déclenchement web.
 ETAPES_PIPELINE = [
@@ -294,23 +273,6 @@ ETAPES_PIPELINE = [
     ("Génération du catalogue", catalogue.main, [], {}),
     ("Publication sur le nœud RUDI", publish_rudi.main, [], {}),
 ]
-
-
-def _log_pipeline_etape(etape: str, duree: float, succes: bool,
-                        erreur: str | None = None) -> None:
-    """Optionnel : log l'étape dans la base monitor si monitor_db.json existe."""
-    try:
-        from monitor import _charger_conf_db, _connecter, _log_pipeline
-        conf = _charger_conf_db()
-        conn = _connecter(conf)
-        try:
-            cur = conn.cursor()
-            _log_pipeline(conf, cur, duree, succes, etape, erreur=erreur)
-            conn.commit()
-        finally:
-            conn.close()
-    except Exception:
-        pass  # monitor non configuré, silencieux
 
 
 def executer_pipeline_complet(etapes_supplementaires: list | None = None) -> list[tuple[str, bool]]:
@@ -359,7 +321,6 @@ def executer_pipeline_complet(etapes_supplementaires: list | None = None) -> lis
         duree = time.time() - t0
         if ok:
             print(f"\n[{label}] terminé en {_formater_duree(duree)}.")
-        _log_pipeline_etape(label, duree, ok, erreur)
         return label, ok
 
     # 1. Étapes séquentielles avant le parallèle (tabulaire, batch)
@@ -380,32 +341,6 @@ def executer_pipeline_complet(etapes_supplementaires: list | None = None) -> lis
     # 3. Étapes séquentielles après le parallèle (catalogue, publication RUDI)
     for label, fn, args, kwargs in etapes[idx_fin_par:]:
         resultats.append(_exec_etape(label, fn, args, kwargs))
-
-    # 4. Mise à jour monitoring (best-effort, jamais bloquant)
-    def _maj_monitoring():
-        from monitor import (_charger_conf_db, _connecter, _refresh,
-                             _import_data, _import_ref, _nom_schema)
-        conf = _charger_conf_db()
-        conn = _connecter(conf)
-        try:
-            cur = conn.cursor()
-            _refresh(conf, cur)
-            conn.commit()
-            _import_data(conf, cur)
-            conn.commit()
-            # Import-ref si les tables de référence sont vides
-            cur.execute(f"SELECT COUNT(*) FROM {_nom_schema(conf, 'schema_ref')}.communes_rm")
-            if cur.fetchone()[0] == 0:
-                _import_ref(conf, cur)
-                conn.commit()
-        finally:
-            conn.close()
-
-    try:
-        _maj_monitoring()
-        resultats.append(("Mise à jour monitoring", True))
-    except Exception:
-        resultats.append(("Mise à jour monitoring", False))
 
     print(f"\n{'=' * 60}\nRésumé du pipeline complet\n{'=' * 60}")
     for label, ok in resultats:
@@ -760,7 +695,6 @@ ACTIONS = [
     # --- Données & infos ---
     ("19", "Purger des données existantes", menu_purge),
     ("20", "État du projet", action_etat_projet),
-    ("21", "Démarrer Superset (conteneur Docker)", action_demarrer_superset),
 ]
 
 SECTIONS = [

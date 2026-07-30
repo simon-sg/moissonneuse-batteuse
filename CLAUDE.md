@@ -11,9 +11,8 @@ Pipeline de moisson d'open data pertinent pour Rennes Métropole (43 communes, E
 3. **Moisson géo** (`src/harvest_geo.py`) — WFS (GeoJSON téléchargé), WMS (référence de service), OGC API Features
 4. **Moissons directes** — `src/harvest_insee.py` (insee.fr), `src/harvest_oeb.py` (data-fair OEB), `src/harvest_bdnb.py` (ZIP BDNB dép. 35)
 5. **Catalogue + publication** — `src/catalogue.py` (catalogue.json/html + visionneuses/cartes), `src/publish_rudi.py` (rattrapage RUDI)
-6. **Monitoring (optionnel)** — `src/monitor.py` alimente une base PostGIS visualisée par Superset (voir « Monitoring & Superset »)
 
-**Dépendances** : stdlib + `requests` pour tout le pipeline de moisson. Optionnels, dégradés proprement s'ils manquent : `psycopg2` (monitoring PostGIS uniquement), `openpyxl`/`pyarrow`/`fsspec` (analyse XLSX/Parquet en découverte), `rudi_node_write` (publication RUDI). Côté conteneurs : Podman pour le nœud RUDI local, Docker (compose) pour PostGIS+Superset.
+**Dépendances** : stdlib + `requests` pour tout le pipeline de moisson. Optionnels, dégradés proprement s'ils manquent : `openpyxl`/`pyarrow`/`fsspec` (analyse XLSX/Parquet en découverte), `rudi_node_write` (publication RUDI). Côté conteneurs : Podman pour le nœud RUDI local.
 
 ## Commands
 
@@ -39,7 +38,6 @@ python3 src/enrichir_descriptions.py # rattrapage descriptions vides
 python3 src/enrichir_organisations.py [--dry-run] # rattrapage descriptions producteurs (nœud RUDI)
 python3 src/enrichir_contacts.py [--dry-run] # rattrapage contacts génériques
 python3 src/reanalyser_faux_positifs.py [--appliquer] [--dossier X] # rattrapage faux positifs INSEE/CP
-python3 src/monitor.py --init-db|--refresh|--import-data|--import-ref|--geocode|--status|--full
 ```
 
 **Tests** (stdlib `unittest`, logique pure sans réseau — filtres géo, traducteurs RUDI, cascade de détection, état) :
@@ -60,7 +58,6 @@ python3 -m unittest discover tests/
 | `src/harvest_batch.py` | Moisson des candidats découverts : état par-ressource, filtre RM multi-champ, publication inline |
 | `src/main.py` | Moisson des datasets `DATASETS` (JSON **et** CSV, filtre RM complet) |
 | `src/harvest_geo.py` / `src/harvest_insee.py` / `src/harvest_oeb.py` / `src/harvest_bdnb.py` | Moissons spécialisées (voir sections dédiées) |
-| `src/monitor.py` | Monitoring : alimente PostGIS (métriques, données filtrées, référentiels, géocodage RVA, journal pipeline) |
 | `src/conf/datasets.py` | `DATASETS`, `DATASETS_GEO`, `DATASETS_INSEE`, `DATASETS_OEB`, `DATASETS_BDNB` |
 | `src/conf/communes_rm.py` | Référentiel : 43 communes, `COMMUNES_RM` (nom→CP), `CODES_INSEE_RM`, `INSEE_VERS_NOM`, `DEPARTEMENTS_RM`, circonscriptions, bbox |
 | `src/conf/discover.py` | `KEYWORDS` (26 mots-clés compétences), `REQUETES_STRUCTUREES` (~50 requêtes), `CHAMPS_*` (détection colonnes) |
@@ -78,7 +75,6 @@ python3 -m unittest discover tests/
 | `src/connectors/contacts.py` | Extraction/résolution de contacts (data.gouv, fallback RFC 2606) |
 | `src/connectors/wikipedia.py` | Résumés Wikipédia/Wikidata pour les organisations (caption CC0 + summary CC BY-SA) |
 | `src/connectors/rva.py` | Géocodage API RVA Rennes Métropole (clé dans `src/conf/rva_key.json`, non commitée ; cache interdit par CGU) |
-| `src/connectors/superset.py` | Contrôle du conteneur Docker Superset (`mb-superset`) |
 | `src/connectors/download.py` | Téléchargement streaming vers cache disque partagé (`data/cache/`) |
 | `src/translation/datagouv_to_rudi.py` | `traduire_metadonnees()` + `traduire_metadonnees_service()` (voies data.gouv tabulaire + géo) |
 | `src/translation/rudi_builder.py` | Constructeur partagé `construire_rudi_metadata()` + helpers `media_*()` (voies INSEE/OEB/BDNB) |
@@ -292,10 +288,10 @@ Stdlib-only (`http.server.ThreadingHTTPServer`), **127.0.0.1 uniquement** — au
 - **Zéro logique métier dupliquée** : importe `cli` et appelle ses `action_*`, `PURGE_ITEMS`, `etat_projet()`. Nouvelle action = l'ajouter au dict `ACTIONS` Python **et** au tableau `ACTIONS` du JS.
 - **Assets partagés** : `src/static/dashboard.css`/`dashboard.js` servis sous `/static/`, topbar commun injecté via le marqueur `<!--TOPBAR-->` (`_html_topbar()`). Le catalogue écrit sur disque est **autonome** (CSS inliné à la génération, marqueur invisible en `file://`) — le dashboard substitue le marqueur quand il le sert (`/catalogue`).
 - **Un job à la fois** (`_verrou_job`, HTTP 409 sinon) ; un second verrou bloque les purges pendant une moisson. Log en direct par capture stdout (`tee.Tee`) + polling 1 s.
-- **Pages** : `/` (actions, état, nœud RUDI, Superset, badge examen), `/examen` (backlog en 6 onglets : À examiner / Analyse échouée / Sans ressource / Services géo / Exclus / Ignorés — les 2 derniers depuis `decouverte["historique"]` via `GET /api/historique`, avec `POST /api/historique/rouvrir` pour annuler), `/decouverte` (édition de la config de recherche — requêtes/mots-clés/nb_pages persistés — et test de découverte en direct), `/catalogue`.
+- **Pages** : `/` (actions, état, nœud RUDI, badge examen), `/examen` (backlog en 6 onglets : À examiner / Analyse échouée / Sans ressource / Services géo / Exclus / Ignorés — les 2 derniers depuis `decouverte["historique"]` via `GET /api/historique`, avec `POST /api/historique/rouvrir` pour annuler), `/decouverte` (édition de la config de recherche — requêtes/mots-clés/nb_pages persistés — et test de découverte en direct), `/catalogue`.
 - **Découverte interactive exclue** (elle appelle `input()`) — le pipeline du dashboard appelle `executer_pipeline_complet()` sans prompt. `cli.action_moisson_insee(ids=...)` accepte un paramètre pour la même raison.
 - Ajout d'un candidat/service géo depuis `/examen` **déclenche automatiquement** (best-effort) la chaîne moisson+catalogue+publication correspondante (`moisson_batch_et_publier`/`moisson_geo_et_publier`) ; si un job tourne déjà, no-op — le prochain run ramasse l'ajout.
-- **Cartes nœud RUDI (Podman) et Superset (Docker)** : contrôle direct des conteneurs (`/api/noeud/*`, `/api/superset/*`). `noeud_pret()` fait un vrai probe HTTP du manager — ne pas se rabattre sur le seul statut Podman (bouton « cassé » sinon). Conteneurs : `rudinode` (`CONTENEUR_RUDI` dans `rudi_node.py`), `mb-superset`.
+- **Carte nœud RUDI (Podman)** : contrôle direct du conteneur (`/api/noeud/*`). `noeud_pret()` fait un vrai probe HTTP du manager — ne pas se rabattre sur le seul statut Podman (bouton « cassé » sinon). Conteneur : `rudinode` (`CONTENEUR_RUDI` dans `rudi_node.py`).
 - Purge revalidée **côté serveur** exactement comme `cli._confirmer()`.
 - `GET /data/<chemin>` sert les fichiers sous `data/` (path-traversal-guardé) — un lien `file://` depuis une page `http://` est bloqué par les navigateurs.
 
@@ -305,21 +301,11 @@ Entrée non-interactive pour cron/Jenkins — ex. `0 5 * * * cd <repo> && python
 
 1. **Découverte non-interactive** — `rechercher_et_filtrer_auto()` (voir « Discovery pipeline » pour les règles d'auto-décision).
 2. **Warm-up nœud RUDI** — démarre le conteneur Podman si besoin, attend `noeud_pret()` ~60 s ; ne fait jamais échouer le run (publication différée sinon).
-3. **Pipeline complet** — `cli.executer_pipeline_complet()` : moisson tabulaire → batch en séquence, puis **INSEE/OEB/BDNB/géo en parallèle** (`ThreadPoolExecutor(max_workers=4)`), puis catalogue → publication RUDI. Chaque étape est chronométrée et journalisée dans la base monitoring si configurée (`_log_pipeline_etape()`, silencieux sinon).
+3. **Pipeline complet** — `cli.executer_pipeline_complet()` : moisson tabulaire → batch en séquence, puis **INSEE/OEB/BDNB/géo en parallèle** (`ThreadPoolExecutor(max_workers=4)`), puis catalogue → publication RUDI.
 
 Exit `0` seulement si tout a réussi. **Logs** : chaque run écrit `logs/harvest_auto_<horodatage>.log` (un fichier par run, gitignoré) ; `cli._executer()` imprime la traceback complète sur échec d'étape.
 
 **Revue du backlog `a_examiner`** : dashboard `/examen` (3 actions par entrée : Ajouter aux candidats / Faux positif / Ignorer) ou revue manuelle CLI (menu 2, `discover.revue_manuelle_a_examiner()` dans `src/review.py`) — aperçu colonne par colonne (CSV/XLSX/GeoJSON/Parquet + gz/bz2/zip), tag manuel du type de variable (`_TYPES_VARIABLES` : INSEE/IRIS, CP seul, commune, adresse, SIREN/SIRET, lat/lon, circonscription…), recomptage `nb_rm` sur le fichier complet avant confirmation. Tout passe par `resoudre_a_examiner()` (source unique de mutation).
-
-## Monitoring & Superset (sous-système optionnel)
-
-Chaîne d'observation du pipeline, **entièrement optionnelle** (le pipeline de moisson n'en dépend jamais) :
-
-- **Infra** : `docker-compose.yml` → PostGIS 16-3.4 (`mb-postgis`, 127.0.0.1:5433) + Superset 4.1.1 (`mb-superset`, 127.0.0.1:8088). Secrets dans `.env` (gitignoré, gabarit `.env.example`).
-- **`src/monitor.py`** (CLI standalone, nécessite `psycopg2`) : `--init-db` (4 schémas : monitor/ref/decouverte/filtered, DDL idempotent), `--refresh` (métriques des `state*.json` → `metrics_history`), `--import-data` (CSV/GeoJSON filtrés → `filtered.data_rows`/`geo_features`, reprojection EPSG:2154), `--import-ref` (référentiels communes/IRIS/SIREN depuis `conf/communes_rm.py::INSEE_VERS_NOM`), `--geocode` (adresses sans code INSEE via RVA), `--status`, `--full`. Conf : `src/conf/monitor_db.json` (gitignoré, gabarit `.example`) ; les noms de schémas sont validés (`[a-z_][a-z0-9_]*`) avant interpolation SQL.
-- **Journal pipeline** : `cli.executer_pipeline_complet()` journalise chaque étape (durée, succès) dans `monitor.pipeline_runs` si la base est configurée — silencieux sinon.
-- **Provisionnement Superset** : `superset/setup_full.py` (+ `setup_dashboard.py`, `post_setup.py`), à exécuter dans le conteneur (voir docstring). Identifiants lus depuis l'environnement (`SUPERSET_ADMIN_USER/PASSWORD`, `POSTGRES_PASSWORD`). `superset/scratch/` (gitignoré) = scripts de debug jetables.
-- **Contrôle** : menu CLI 19 ou carte Superset du dashboard.
 
 ## Known limitations / not addressed
 

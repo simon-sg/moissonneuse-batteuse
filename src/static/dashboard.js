@@ -99,9 +99,8 @@ let jobEnCours = false;
 
 /* --- Top bar : polling des statuts --- */
 async function actualiserTopBar(){
-  const [noeudR, supersetR, portailR, jobR, examenR] = await Promise.allSettled([
+  const [noeudR, portailR, jobR, examenR] = await Promise.allSettled([
     fetch("/api/noeud").then(r => r.json()),
-    fetch("/api/superset").then(r => r.json()),
     fetch("/api/portail").then(r => r.json()),
     fetch("/api/job").then(r => r.json()),
     fetch("/api/a_examiner").then(r => r.json()),
@@ -114,17 +113,6 @@ async function actualiserTopBar(){
     if (!n.configure){ pill.className = "topbar-pill warn"; pill.title = "Nœud non configuré"; }
     else if (n.pret){ pill.className = "topbar-pill ok"; pill.title = "Opérationnel"; }
     else { pill.className = "topbar-pill warn"; pill.title = "Injoignable"; }
-  }
-
-  // Superset
-  const pillSup = document.getElementById("tb-superset");
-  if (pillSup && supersetR.status === "fulfilled"){
-    const s = supersetR.value;
-    if (!s.docker_installe){ pillSup.className = "topbar-pill warn"; pillSup.title = "Docker introuvable"; }
-    else if (!s.existe){ pillSup.className = "topbar-pill"; pillSup.title = "Conteneur absent"; }
-    else if (s.etat === "running" && !s.pret){ pillSup.className = "topbar-pill running"; pillSup.title = "Démarrage\u2026"; }
-    else if (s.etat === "running"){ pillSup.className = "topbar-pill ok"; pillSup.title = "Opérationnel"; }
-    else { pillSup.className = "topbar-pill warn"; pillSup.title = s.etat || "Arrêté"; }
   }
 
   // Portail RUDI

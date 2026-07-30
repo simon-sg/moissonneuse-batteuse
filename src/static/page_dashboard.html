@@ -49,16 +49,6 @@
 </section>
 
 <section>
-  <h2>Superset <span id="badge-superset" class="badge idle" title="État du conteneur Docker Superset — tableau de bord data.gouv.fr">…</span></h2>
-  <div class="ligne-job">
-    <button id="btn-superset" onclick="basculerSuperset()"
-            title="Démarrer ou arrêter le conteneur Docker Superset">Démarrer</button>
-    <a id="lien-superset" href="#" target="_blank" class="discret desactive"
-       title="Ouvrir l'interface web Superset">Ouvrir Superset</a>
-  </div>
-</section>
-
-<section>
   <h2>Portail RUDI <span id="badge-portail" class="badge idle" title="État du stack Docker Compose portail RUDI (ROOB)">…</span></h2>
   <div class="ligne-job">
     <button id="btn-portail" onclick="basculerPortail()"
@@ -302,57 +292,6 @@ async function basculerNoeud(){
   actualiserNoeud();
 }
 
-let supersetActionEnCours = false;
-
-async function actualiserSuperset(){
-  const {ok, data: s} = await apiFetch("/api/superset");
-  if (!ok || !s) { return; }
-
-  const badge = document.getElementById("badge-superset");
-  const bouton = document.getElementById("btn-superset");
-  const lien = document.getElementById("lien-superset");
-
-  if (!s.docker_installe){
-    badge.className = "badge warn";
-    badge.textContent = "docker introuvable";
-    bouton.textContent = "Démarrer";
-    bouton.className = "";
-    bouton.disabled = true;
-  } else if (!s.existe){
-    badge.className = "badge idle";
-    badge.textContent = "absent";
-    bouton.textContent = "Démarrer";
-    bouton.className = "";
-    bouton.disabled = false;
-  } else {
-    const enCours = s.etat === "running";
-    const enDemarrage = enCours && !s.pret;
-    badge.className = "badge " + (enDemarrage ? "running" : (enCours ? "termine" : "idle"));
-    badge.textContent = enDemarrage ? "démarrage…" : (enCours ? "en cours" : (s.etat || "inconnu"));
-    badge.title = enDemarrage ? "Le conteneur tourne mais Superset n'est pas encore prêt"
-                 : (enCours ? "Superset est opérationnel"
-                    : "Le conteneur est arrêté");
-    bouton.textContent = enCours ? "Arrêter" : "Démarrer";
-    bouton.className = enCours ? "danger" : "";
-    bouton.disabled = supersetActionEnCours;
-  }
-
-  lien.href = s.url || "#";
-  lien.classList.toggle("desactive", !s.pret);
-}
-
-async function basculerSuperset(){
-  const bouton = document.getElementById("btn-superset");
-  const action = bouton.textContent === "Arrêter" ? "arreter" : "demarrer";
-  supersetActionEnCours = true;
-  bouton.disabled = true;
-  const {ok, data} = await apiFetch(`/api/superset/${action}`, {method:"POST"});
-  if (data) notifier(data.message, !ok);
-  supersetActionEnCours = false;
-  actualiserSuperset();
-  return;
-}
-
 let portailActionEnCours = false;
 let intervalleRapidePortail = null;
 
@@ -541,14 +480,12 @@ actualiserJob();
 chargerPurge();
 actualiserBadgeExamen();
 actualiserNoeud();
-actualiserSuperset();
 actualiserPortail();
 setInterval(actualiserEtat, 15000);
 setInterval(actualiserJob, 15000);
 setInterval(chargerPurge, 15000);
 setInterval(actualiserBadgeExamen, 15000);
 setInterval(actualiserNoeud, 15000);
-setInterval(actualiserSuperset, 15000);
 setInterval(actualiserPortail, 15000);
 </script>
 </body>

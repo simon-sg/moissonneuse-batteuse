@@ -37,6 +37,37 @@ def _normaliser_nom_producteur(nom: str) -> str:
     return n
 
 
+def _resoudre_alias(nom: str) -> tuple[bool, str | dict | None]:
+    """Cherche `nom` puis sa forme normalisée dans ALIAS_ORGANISATIONS.
+
+    Retourne (present, valeur) — `present` distingue "absent de la carte"
+    de la valeur légitime None (repli forcé), que `valeur is None` seul
+    ne permet pas de distinguer.
+    """
+    if nom in ALIAS_ORGANISATIONS:
+        return True, ALIAS_ORGANISATIONS[nom]
+    nom_nettoye = _normaliser_nom_producteur(nom)
+    if nom_nettoye in ALIAS_ORGANISATIONS:
+        return True, ALIAS_ORGANISATIONS[nom_nettoye]
+    return False, None
+
+
+def titre_wikipedia_pour(nom: str) -> str | None:
+    """Titre Wikipédia à interroger pour `nom`, sans aucun appel réseau.
+
+    Retourne :
+      - le titre Wikipédia exact (alias `str`, ou nom nettoyé si l'organisation
+        n'est pas dans la carte d'alias) ;
+      - None si l'alias de la carte force un repli sans recherche
+        (valeur `None` littérale, ou `dict` = override manuel).
+    """
+    present, alias = _resoudre_alias(nom)
+    if present:
+        return alias if isinstance(alias, str) else None
+    nom_nettoye = _normaliser_nom_producteur(nom)
+    return nom_nettoye or nom
+
+
 def enrichir_organisation(
     nom: str,
     *,
@@ -55,38 +86,28 @@ def enrichir_organisation(
     """
     from connectors.wikipedia import resumer_wikipedia
 
-    nom_nettoye = _normaliser_nom_producteur(nom)
+    titre = titre_wikipedia_pour(nom)
 
-    # --- 1. Carte d'alias ---
-    alias = ALIAS_ORGANISATIONS.get(nom)
-    if alias is None:
-        alias = ALIAS_ORGANISATIONS.get(nom_nettoye)
-    if nom in ALIAS_ORGANISATIONS or nom_nettoye in ALIAS_ORGANISATIONS:
-        if alias is None:
-            # Clé présente avec valeur None → repli forcé (pas de Wikipédia)
-            return _repli_factuel(source_label, page_url)
-        if isinstance(alias, dict):
-            result = {}
-            if alias.get("caption"):
-                result["organization_caption"] = alias["caption"]
-            if alias.get("summary"):
-                result["organization_summary"] = alias["summary"]
-            return result if result else None
-        # alias est un str = titre Wikipédia exact
-        wikipedia_titre = alias
-    else:
-        # Non présent dans la carte → chercher sur Wikipédia
-        wikipedia_titre = nom_nettoye or nom
+    if titre:
+        # --- Wikipédia ---
+        wiki = resumer_wikipedia(titre)
+        if wiki:
+            caption = wiki.get("caption", "")
+            extract = wiki.get("summary", "")
+            summary = extract + " (source : Wikipédia)" if extract else ""
+            return _construire_resultat(caption, summary)
+        return _repli_factuel(source_label, page_url)
 
-    # --- 2. Wikipédia ---
-    wiki = resumer_wikipedia(wikipedia_titre)
-    if wiki:
-        caption = wiki.get("caption", "")
-        extract = wiki.get("summary", "")
-        summary = extract + " (source : Wikipédia)" if extract else ""
-        return _construire_resultat(caption, summary)
+    # titre est None : soit repli forcé (alias == None), soit override manuel (alias == dict)
+    present, alias = _resoudre_alias(nom)
+    if present and isinstance(alias, dict):
+        result = {}
+        if alias.get("caption"):
+            result["organization_caption"] = alias["caption"]
+        if alias.get("summary"):
+            result["organization_summary"] = alias["summary"]
+        return result if result else None
 
-    # --- 3. Repli factuel ---
     return _repli_factuel(source_label, page_url)
 
 

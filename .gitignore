@@ -28,3 +28,7 @@ __pycache__/
 
 # Logs
 *.log
+
+# Docs internes (plans, procédures) — pas destinées au dépôt public
+*.md
+!CLAUDE.md

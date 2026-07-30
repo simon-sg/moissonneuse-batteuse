@@ -4,7 +4,9 @@ import re
 import uuid
 
 from connectors.contacts import extraire_contacts_datagouv, resoudre_contacts
-from translation.description_secours import description_quasi_vide, entetes_depuis_geojson, generer_complement
+from translation.description_secours import (
+    LIBELLES_THEMES, description_quasi_vide, entetes_depuis_geojson, generer_complement, resumer_court,
+)
 from translation.rudi_builder import construire_rudi_metadata
 
 # Thèmes acceptés par le nœud RUDI (conformes aux catégories RUDI)
@@ -157,10 +159,11 @@ def traduire_metadonnees(metadata_source: dict, zone: str = "Rennes Métropole",
             colonnes=entetes_colonnes, mots_cles=tags,
         )
 
-    synopsis_base = titre_original[:120]
-    synopsis = f"{synopsis_base} — données filtrées sur {zone}."
-    if len(synopsis) > 150:
-        synopsis = synopsis[:149]
+    libelle_theme = LIBELLES_THEMES.get(theme, theme)
+    synopsis = resumer_court(
+        description_originale,
+        repli=f"Jeu de données « {libelle_theme} » de {producer['organization_name']}, filtré sur {zone}.",
+    )
 
     url_source = f"https://www.data.gouv.fr/datasets/{dataset_id}"
     ressource_principale = _trouver_ressource_principale(metadata_source)
@@ -349,7 +352,11 @@ def traduire_metadonnees_service(config: dict,
     if service_type in ("wfs", "ogcapi", "geojson") and fichiers_geojson:
         colonnes = entetes_depuis_geojson(fichiers_geojson[0][0])
 
-    synopsis = f"{titre} — données géographiques pour Rennes Métropole ({service_type.upper()})"[:150]
+    libelle_theme = LIBELLES_THEMES.get(theme, theme)
+    synopsis = (
+        f"Service {service_type.upper()} « {libelle_theme} » de {producteur_nom}, "
+        f"filtré sur Rennes Métropole."
+    )[:150]
     description = (
         f"Service {service_type.upper()} filtré sur Rennes Métropole (43 communes, EPCI 243500139).\n\n"
         f"Source : {url_service}\n\n"

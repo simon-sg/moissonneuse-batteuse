@@ -23,7 +23,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from conf.datasets import DATASETS_INSEE
 from connectors.insee import resoudre_url, extraire_membres, extraire_dictionnaire
 from connectors.http import session
-from translation.description_secours import generer_complement
+from translation.description_secours import LIBELLES_THEMES, generer_complement
 from connectors.rudi_publish import publier_si_configue
 from harvest_batch import filtrer_csv_bytes
 from translation.rudi_builder import (
@@ -104,7 +104,7 @@ def _generer_rudi_metadata(pub: dict, fichiers_data: list[tuple[str, int]],
     return construire_rudi_metadata(
         local_id=str(uuid.uuid5(uuid.NAMESPACE_URL, f"insee:{cle_stable}")),
         titre=f"{pub['titre']} — {_ZONE}",
-        synopsis=f"{pub['titre'][:110]} — données filtrées sur {_ZONE}."[:150],
+        synopsis=f"Données INSEE « {LIBELLES_THEMES.get(theme, theme)} » filtrées sur {_ZONE}."[:150],
         description=description,
         theme=theme,
         keywords=["insee", _ZONE.lower(), pub["id"]],

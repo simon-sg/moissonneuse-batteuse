@@ -48,6 +48,28 @@ def description_quasi_vide(texte: str | None) -> bool:
     return len((texte or "").strip()) < SEUIL_CARACTERES
 
 
+_RE_MD_LIEN = re.compile(r"\[([^\]]+)\]\([^)]+\)")
+_RE_MD_CARACTERES = re.compile(r"[*_#`>]+")
+
+
+def resumer_court(texte_source: str | None, repli: str, max_len: int = 150) -> str:
+    """Construit le `synopsis` RUDI (résumé court affiché sur les fiches catalogue/portail).
+
+    Extrait de la vraie description source (débarrassée du markdown, tronquée proprement)
+    quand elle existe ; sinon retombe sur `repli`. Ne dérive jamais du titre du JDD : celui-ci
+    est déjà affiché juste au-dessus sur les fiches, un synopsis qui le répète fait doublon.
+    """
+    if description_quasi_vide(texte_source):
+        return repli[:max_len]
+    brut = _RE_MD_LIEN.sub(r"\1", texte_source)
+    brut = _RE_MD_CARACTERES.sub("", brut)
+    brut = " ".join(brut.split())
+    if len(brut) > max_len:
+        coupe = brut[:max_len].rsplit(" ", 1)[0].rstrip(",;:.")
+        brut = (coupe or brut[:max_len]) + "…"
+    return brut
+
+
 def entetes_depuis_csv(contenu: bytes | str, max_colonnes: int = 20) -> list[str]:
     """Extrait les noms de colonnes (première ligne) d'un contenu CSV."""
     if isinstance(contenu, bytes):

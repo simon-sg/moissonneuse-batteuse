@@ -27,7 +27,7 @@ from connectors.oeb import (
     BASE_URL,
 )
 from connectors.rudi_publish import publier_si_configue
-from translation.description_secours import generer_complement
+from translation.description_secours import LIBELLES_THEMES, generer_complement, resumer_court
 from state import charger_etat, sauvegarder_etat
 from translation.rudi_builder import construire_rudi_metadata, media_filtre
 
@@ -78,7 +78,10 @@ def _generer_rudi_metadata(
     return construire_rudi_metadata(
         local_id=str(uuid.uuid5(uuid.NAMESPACE_URL, url_source)),
         titre=f"{titre_source} — {_ZONE}",
-        synopsis=f"{titre_source[:100]} — données filtrées sur {_ZONE}."[:150],
+        synopsis=resumer_court(
+            description_source,
+            repli=f"Données OEB « {LIBELLES_THEMES.get(theme, theme)} » filtrées sur {_ZONE}.",
+        ),
         description=description,
         theme=theme,
         keywords=mots_cles,

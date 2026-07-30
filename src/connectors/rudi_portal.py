@@ -1,3 +1,4 @@
+import os
 import re
 import subprocess
 
@@ -17,6 +18,13 @@ _COMPOSE_FILES = [
     "docker-compose-dataverse.yml",
     "docker-compose-network.yml",
 ]
+
+# Override hybride (images :source + extra_hosts) — encode le dernier état réellement
+# déployé (voir PROCEDURE_PATCH_IMAGE_PORTAIL_RUDI.md). Toujours l'inclure quand il existe,
+# même sans override actif : il porte aussi des extra_hosts indépendants de toute image
+# :source (piège vécu — un `up -d` sans ce fichier recrée les conteneurs sur les images de
+# base et perd ces extra_hosts, silencieusement).
+_COMPOSE_FILE_SOURCE = "docker-compose-source.yml"
 
 _CHEMIN_PORTAIL_SOURCE = "/media/simon/DATA4T/Dev/rudi-portal-source"
 
@@ -49,6 +57,8 @@ def _compose_cmd() -> list[str]:
     cmd = ["docker", "compose"]
     for f in _COMPOSE_FILES:
         cmd.extend(["-f", f])
+    if os.path.isfile(os.path.join(_DOCKER_DIR, _COMPOSE_FILE_SOURCE)):
+        cmd.extend(["-f", _COMPOSE_FILE_SOURCE])
     cmd.extend(["--profile", "*"])
     return cmd
 

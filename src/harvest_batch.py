@@ -137,29 +137,6 @@ def filtrer_csv(chemin: str, champ_cp, champ_ville, champ_iris, champ_adresse,
     return lignes, entetes
 
 
-def filtrer_csv_bytes(contenu: bytes, champ_cp, champ_ville, champ_iris, champ_adresse,
-                       champ_siren=None, champ_epci=None, champ_lat=None,
-                       champ_lon=None, champ_circonscription=None, champ_dep=None) -> tuple[list[dict], list[str]]:
-    """Filtre depuis bytes en mémoire — uniquement pour les membres extraits d'un ZIP."""
-    sirens_rm = obtenir_sirens_rm() if champ_siren else None
-    encoding = _detecter_encodage_bytes(contenu[:8192])
-    texte = contenu.decode(encoding, errors="replace")
-    delimiteur = _detecter_delimiteur(texte[:4096])
-    reader = csv.DictReader(io.StringIO(texte), delimiter=delimiteur)
-    entetes = list(reader.fieldnames or [])
-    cp, vil, iris, adr, sir, epci, lat, lon, circo, dep = _resoudre_champs(
-        entetes, champ_cp, champ_ville, champ_iris, champ_adresse, champ_siren,
-        champ_epci, champ_lat, champ_lon, champ_circonscription, champ_dep)
-    nature = "inconnue"
-    if iris:
-        nature = nature_champ_iris(iris, reader)
-        reader = csv.DictReader(io.StringIO(texte), delimiter=delimiteur)
-    lignes = [dict(row) for row in reader
-              if _ligne_est_rm(row, cp, vil, iris, adr, sir, sirens_rm, epci, lat, lon, circo, dep,
-                                nature_iris=nature)]
-    return lignes, entetes
-
-
 def filtrer_json(chemin: str, champ_cp, champ_ville, champ_iris, champ_adresse,
                   champ_siren=None, champ_epci=None, champ_lat=None,
                   champ_lon=None, champ_circonscription=None, champ_dep=None) -> list[dict]:

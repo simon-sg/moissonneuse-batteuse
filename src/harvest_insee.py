@@ -21,11 +21,13 @@ import uuid
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from conf.datasets import DATASETS_INSEE
-from connectors.insee import resoudre_url, extraire_membres, extraire_dictionnaire
+from connectors.insee import (
+    resoudre_url, lister_membres, extraire_membre_vers_fichier, extraire_dictionnaire,
+)
 from connectors.http import session
 from translation.description_secours import LIBELLES_THEMES, generer_complement
 from connectors.rudi_publish import publier_si_configue
-from harvest_batch import filtrer_csv_bytes
+from harvest_batch import filtrer_csv
 from translation.rudi_builder import (
     LICENCE_ETALAB, construire_rudi_metadata,
     media_filtre, media_dict,
@@ -215,13 +217,13 @@ def traiter_publication(pub: dict, state: dict) -> dict:
     except Exception as e:
         return {"statut": "echec", "raison": f"téléchargement : {e}"}
 
-    # 5. Extraction des membres CSV
+    # 5. Liste des membres CSV correspondants (pas de lecture — coût mémoire nul)
     try:
-        membres = extraire_membres(pub, chemin_zip)
+        noms_membres = lister_membres(pub, chemin_zip)
     except Exception as e:
         os.remove(chemin_zip)
         return {"statut": "echec", "raison": f"extraction ZIP : {e}"}
-    if not membres:
+    if not noms_membres:
         os.remove(chemin_zip)
         return {"statut": "echec", "raison": "aucun membre CSV correspondant dans le ZIP"}
 
@@ -237,42 +239,51 @@ def traiter_publication(pub: dict, state: dict) -> dict:
     chemins_csv:   list[str]            = []    # chemins absolus (pour publier_dataset)
     dernieres_entetes: list[str]        = []    # colonnes du dernier fichier filtré (pour la description de secours)
 
-    for nom_membre, contenu_csv in membres:
+    for nom_membre in noms_membres:
         print(f"  Filtrage : {nom_membre}")
+        # Extraction en streaming vers un fichier temporaire — jamais le membre entier
+        # en RAM (la BPE décompressée pèse ~1,4 Go, cause des deux OOM du 2026-07-31).
+        chemin_membre = os.path.join(DATA_DIR, f"_tmp_{pub_id}_membre.csv")
         try:
-            lignes, entetes = filtrer_csv_bytes(
-                contenu_csv, champ_cp, champ_ville, champ_iris, champ_adresse
-            )
-        except Exception as e:
-            print(f"    → Erreur de filtrage : {e}")
-            continue
+            extraire_membre_vers_fichier(chemin_zip, nom_membre, chemin_membre)
 
-        # Failsafe : si 0 lignes et champ_iris absent des colonnes réelles, auto-détection
-        if not lignes and champ_iris and champ_iris not in (entetes or []):
-            auto = _detecter_champs(entetes)[2]  # indice 2 = champ_iris
-            if auto and auto != champ_iris:
-                print(f"    Champ '{champ_iris}' absent — essai auto-détecté : '{auto}'")
-                try:
-                    lignes, entetes = filtrer_csv_bytes(contenu_csv, champ_cp, champ_ville, auto, champ_adresse)
-                except Exception as e:
-                    print(f"    → Erreur (auto) : {e}")
-
-        # OR-filtre : ajouter les lignes où le 2e champ géo est en RM (ex: commune de travail)
-        if champ_iris_ou and entetes and champ_iris_ou in entetes:
             try:
-                lignes_ou, _ = filtrer_csv_bytes(contenu_csv, None, None, champ_iris_ou, None)
-                cles = {tuple(r.values()) for r in lignes}
-                ajouts = 0
-                for r in lignes_ou:
-                    k = tuple(r.values())
-                    if k not in cles:
-                        lignes.append(r)
-                        cles.add(k)
-                        ajouts += 1
-                if ajouts:
-                    print(f"    + {ajouts} lignes via {champ_iris_ou} (travail en RM)")
+                lignes, entetes = filtrer_csv(
+                    chemin_membre, champ_cp, champ_ville, champ_iris, champ_adresse
+                )
             except Exception as e:
-                print(f"    → Erreur OR-filtre ({champ_iris_ou}) : {e}")
+                print(f"    → Erreur de filtrage : {e}")
+                continue
+
+            # Failsafe : si 0 lignes et champ_iris absent des colonnes réelles, auto-détection
+            if not lignes and champ_iris and champ_iris not in (entetes or []):
+                auto = _detecter_champs(entetes)[2]  # indice 2 = champ_iris
+                if auto and auto != champ_iris:
+                    print(f"    Champ '{champ_iris}' absent — essai auto-détecté : '{auto}'")
+                    try:
+                        lignes, entetes = filtrer_csv(chemin_membre, champ_cp, champ_ville, auto, champ_adresse)
+                    except Exception as e:
+                        print(f"    → Erreur (auto) : {e}")
+
+            # OR-filtre : ajouter les lignes où le 2e champ géo est en RM (ex: commune de travail)
+            if champ_iris_ou and entetes and champ_iris_ou in entetes:
+                try:
+                    lignes_ou, _ = filtrer_csv(chemin_membre, None, None, champ_iris_ou, None)
+                    cles = {tuple(r.values()) for r in lignes}
+                    ajouts = 0
+                    for r in lignes_ou:
+                        k = tuple(r.values())
+                        if k not in cles:
+                            lignes.append(r)
+                            cles.add(k)
+                            ajouts += 1
+                    if ajouts:
+                        print(f"    + {ajouts} lignes via {champ_iris_ou} (travail en RM)")
+                except Exception as e:
+                    print(f"    → Erreur OR-filtre ({champ_iris_ou}) : {e}")
+        finally:
+            if os.path.exists(chemin_membre):
+                os.remove(chemin_membre)
 
         if not lignes:
             print(f"    → 0 lignes RM")

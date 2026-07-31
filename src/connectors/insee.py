@@ -13,6 +13,7 @@ La configuration des publications est dans conf/datasets.py (DATASETS_INSEE).
 """
 import html.parser
 import re
+import shutil
 import zipfile
 
 from connectors.http import session
@@ -109,10 +110,10 @@ def resoudre_url(pub: dict) -> str | None:
 # Extraction ZIP
 # ---------------------------------------------------------------------------
 
-def extraire_membres(pub: dict, chemin_zip: str) -> list[tuple[str, bytes]]:
-    """Extrait les membres CSV correspondant à membre_pattern du ZIP (lu depuis le disque).
+def lister_membres(pub: dict, chemin_zip: str) -> list[str]:
+    """Liste les noms des membres CSV correspondant à membre_pattern du ZIP, sans rien
+    lire de leur contenu (coût mémoire nul même pour un ZIP volumineux).
 
-    Retourne [(nom_membre, contenu_csv)].
     En cas d'absence de correspondance, affiche un diagnostic et retourne [].
     """
     pattern_str = pub.get("membre_pattern", r".*\.csv$")
@@ -130,7 +131,7 @@ def extraire_membres(pub: dict, chemin_zip: str) -> list[tuple[str, bytes]]:
             ]
 
             if correspondances:
-                return [(nom, zf.read(nom)) for nom in correspondances]
+                return correspondances
 
             # Aucun match : diagnostic
             tous_csv = [n for n in tous if n.lower().endswith(".csv") and not n.endswith("/")]
@@ -144,6 +145,32 @@ def extraire_membres(pub: dict, chemin_zip: str) -> list[tuple[str, bytes]]:
     except zipfile.BadZipFile as e:
         print(f"  [{pub['id']}] Archive ZIP invalide : {e}")
         return []
+
+
+def extraire_membres(pub: dict, chemin_zip: str) -> list[tuple[str, bytes]]:
+    """Extrait en mémoire les membres CSV correspondant à membre_pattern.
+
+    Réservé aux petits fichiers (ex: dictionnaires des variables via
+    extraire_dictionnaire) — pour un membre potentiellement volumineux (données),
+    utiliser extraire_membre_vers_fichier() à la place (streaming, pas de lecture
+    intégrale en RAM).
+    """
+    noms = lister_membres(pub, chemin_zip)
+    if not noms:
+        return []
+    with zipfile.ZipFile(chemin_zip) as zf:
+        return [(nom, zf.read(nom)) for nom in noms]
+
+
+def extraire_membre_vers_fichier(chemin_zip: str, nom_membre: str, chemin_dest: str) -> None:
+    """Extrait un membre du ZIP vers un fichier sur disque, en streaming.
+
+    Ne charge jamais le membre entier en RAM — indispensable pour les publications
+    dont le CSV décompressé pèse plusieurs centaines de Mo à plusieurs Go (BPE,
+    mobpro) : un zf.read() classique a fait grimper le pipeline à ~15 Go de RSS
+    et provoqué deux OOM le 2026-07-31."""
+    with zipfile.ZipFile(chemin_zip) as zf, zf.open(nom_membre) as src, open(chemin_dest, "wb") as dst:
+        shutil.copyfileobj(src, dst, length=4 * 1024 * 1024)
 
 
 # ---------------------------------------------------------------------------

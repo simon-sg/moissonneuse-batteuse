@@ -261,6 +261,13 @@ def action_reanalyser_faux_positifs(appliquer_interactif: bool = True):
     _executer("Ré-analyse des faux positifs INSEE/CP (dept 35)", _reanalyser)
 
 
+# Parallélisme de l'étape INSEE/OEB/BDNB/géo d'executer_pipeline_complet(). Réduit de
+# 4 (une par moisson) à 2 le 2026-07-31 après deux crashes OOM : INSEE (BPE, jusqu'à
+# ~15 Go de RSS le temps du traitement — voir connectors/insee.py) tournant en même
+# temps que les 3 autres a fait sauter la RAM sur une machine déjà chargée. Baisser
+# encore (1 = tout séquentiel) si l'incident se reproduit malgré ça.
+PARALLELISME_MAX_ETAPES = 2
+
 # Étapes déterministes du pipeline complet (sans découverte, jamais interactives) —
 # réutilisées telles quelles par dashboard.py pour le déclenchement web.
 ETAPES_PIPELINE = [
@@ -279,8 +286,11 @@ def executer_pipeline_complet(etapes_supplementaires: list | None = None) -> lis
     """Exécute ETAPES_PIPELINE (+ étapes optionnelles en tête, ex: découverte) et
     retourne [(label, ok), ...]. Pas d'input() ici — utilisable depuis le web.
 
-    Les 4 étapes de moisson indépendantes (INSEE, OEB, BDNB, géo) sont exécutées
-    en parallèle pour réduire la durée totale du pipeline."""
+    Les 4 étapes de moisson indépendantes (INSEE, OEB, BDNB, géo) tournent avec un
+    parallélisme volontairement limité (voir PARALLELISME_MAX_ETAPES) : les faire
+    toutes tourner en même temps additionne leurs pics mémoire (la BPE — voir
+    connectors/insee.py — peut à elle seule atteindre plusieurs Go) et a provoqué
+    deux OOM (2026-07-31). Ralentir le pipeline est le compromis assumé."""
     from concurrent.futures import ThreadPoolExecutor, as_completed
 
     etapes = (etapes_supplementaires or []) + ETAPES_PIPELINE
@@ -329,8 +339,9 @@ def executer_pipeline_complet(etapes_supplementaires: list | None = None) -> lis
 
     # 2. Étapes parallèles (INSEE || OEB || BDNB || géo)
     if idx_debut_par < idx_fin_par:
-        print(f"\n--- Lancement de {idx_fin_par - idx_debut_par} moissons en parallèle ---")
-        with ThreadPoolExecutor(max_workers=4) as executor:
+        print(f"\n--- Lancement de {idx_fin_par - idx_debut_par} moissons "
+              f"({PARALLELISME_MAX_ETAPES} en parallèle max) ---")
+        with ThreadPoolExecutor(max_workers=PARALLELISME_MAX_ETAPES) as executor:
             futures = {
                 executor.submit(_exec_etape, label, fn, args, kwargs): label
                 for label, fn, args, kwargs in etapes[idx_debut_par:idx_fin_par]

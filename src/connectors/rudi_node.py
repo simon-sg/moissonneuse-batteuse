@@ -401,19 +401,40 @@ def publier_dataset(
         medias[i]["media_id"] = media_id
         caption = medias[i].get("media_caption", "")
         print(f"  [RUDI] upload {nom} (media_id={media_id[:8]}…)")
-        try:
-            media_info: RudiMediaFile = writer.post_local_file_and_media_info(
-                file_local_path=chemin,
-                media_id=media_id,
-            )
-        except Exception as e:
-            if "too big to be uploaded" in str(e):
+        media_info: RudiMediaFile | None = None
+        derniere_erreur: Exception | None = None
+        # Le commit peut échouer par un aléa transitoire côté nœud ("could not commit
+        # file: time exceeded", vu sur des datasets à beaucoup de fichiers séquentiels,
+        # ex. annuaire-avocats avec ~15 CSV) — une seconde tentative suffit en général.
+        for tentative in range(2):
+            try:
+                media_info = writer.post_local_file_and_media_info(
+                    file_local_path=chemin,
+                    media_id=media_id,
+                )
+                derniere_erreur = None
+                break
+            except Exception as e:
+                derniere_erreur = e
+                if "too big to be uploaded" in str(e):
+                    break
+                if "time exceeded" in str(e) and tentative == 0:
+                    print(f"  [RUDI] commit de {nom} expiré côté nœud, nouvelle tentative…")
+                    time.sleep(5)
+                    continue
+                if "time exceeded" not in str(e):
+                    raise
+
+        if derniere_erreur is not None:
+            if "too big to be uploaded" in str(derniere_erreur):
                 taille_mo = os.path.getsize(chemin) / 1_048_576
                 print(f"  [RUDI] {nom} ({taille_mo:.0f} Mo) dépasse la limite de taille du "
                       f"nœud — média écarté, le reste du dataset est publié quand même.")
-                noms_ecartes.add(nom)
-                continue
-            raise
+            else:
+                print(f"  [RUDI] {nom} : échec de commit persistant ({derniere_erreur}) — "
+                      f"média écarté, le reste du dataset est publié quand même.")
+            noms_ecartes.add(nom)
+            continue
         # Remplace le media dict par celui retourné (contient file_type, file_size, checksum…)
         medias[i] = json.loads(str(media_info))
         if caption:

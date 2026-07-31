@@ -28,6 +28,12 @@ STATE_OEB_FILE = os.path.join(DATA_DIR, "state_oeb.json")
 STATE_BDNB_FILE = os.path.join(DATA_DIR, "state_bdnb.json")
 STATE_GEO_FILE = os.path.join(DATA_DIR, "state_geo.json")
 
+# Mappe source → fichier d'état correspondant (pour la sauvegarde incrémentale)
+_FICHIERS_ETAT = {
+    "tabulaire": STATE_TAB_FILE, "insee": STATE_INSEE_FILE,
+    "oeb": STATE_OEB_FILE, "bdnb": STATE_BDNB_FILE,
+}
+
 
 def _fichiers_a_uploader(dossier_path: str, rudi_metadata: dict) -> list[str]:
     """Reconstruit la liste ordonnée des fichiers FILE en tête de available_formats
@@ -101,21 +107,21 @@ def main() -> None:
             fichiers = _fichiers_a_uploader(dossier_path, rudi_metadata)
             publier_dataset(conf=conf_rudi, rudi_metadata=rudi_metadata, fichiers_filtres=fichiers)
             ok += 1
+            # Sauvegarde immédiate — un rattrapage porte sur des dizaines/centaines de JDD
+            # et peut être interrompu en cours de route (nœud injoignable, process tué) ;
+            # ne pas perdre le travail déjà acquis en ne sauvegardant qu'à la toute fin.
             if source == "geo":
                 state_geo.setdefault("_rudi_publie", {})
                 state_geo["_rudi_publie"][dossier] = True
+                sauvegarder_etat(STATE_GEO_FILE, state_geo)
             else:
                 etats[source][cle]["rudi_publie"] = True
+                sauvegarder_etat(_FICHIERS_ETAT[source], etats[source])
         except Exception as e:
             print(f"  [RUDI] ERREUR : {e}")
             echecs += 1
         print()
 
-    sauvegarder_etat(STATE_TAB_FILE, state_tab)
-    sauvegarder_etat(STATE_INSEE_FILE, state_insee)
-    sauvegarder_etat(STATE_OEB_FILE, state_oeb)
-    sauvegarder_etat(STATE_BDNB_FILE, state_bdnb)
-    sauvegarder_etat(STATE_GEO_FILE, state_geo)
     print(f"=== Terminé : {ok} publié(s), {echecs} échec(s) sur {len(a_publier)} ===")
 
 

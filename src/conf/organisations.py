@@ -76,4 +76,18 @@ ALIAS_ORGANISATIONS: dict[str, Union[str, None, dict]] = {
                     "bretonnes dans leurs projets numériques et l'aménagement numérique du "
                     "territoire en très haut débit.",
     },
+
+    # Override manuel : "Ecolab" n'a pas de page Wikipédia propre, et une recherche
+    # Wikipédia sur ce nom résout vers l'entreprise américaine de traitement de l'eau/
+    # hygiène (homonyme, page Wikipédia FR "Ecolab" bien réelle mais sans rapport).
+    # Le vrai producteur est le laboratoire d'innovation numérique du ministère chargé
+    # de l'Écologie (CGDD), cf. https://www.data.gouv.fr/organizations/ecolab-1/.
+    "Ecolab": {
+        "caption": "Laboratoire d'innovation numérique au service de la transition écologique",
+        "summary": "Ecolab est le laboratoire de l'innovation au service de la transition "
+                    "écologique, situé au sein du Commissariat général au développement "
+                    "durable (CGDD), direction interministérielle du ministère chargé de "
+                    "l'Environnement. Il produit et diffuse des données et analyses "
+                    "environnementales, notamment via la plateforme Écosphères.",
+    },
 }

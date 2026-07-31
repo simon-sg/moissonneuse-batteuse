@@ -11,8 +11,9 @@ Pipeline de moisson d'open data pertinent pour Rennes Métropole (43 communes, E
 3. **Moisson géo** (`src/harvest_geo.py`) — WFS (GeoJSON téléchargé), WMS (référence de service), OGC API Features
 4. **Moissons directes** — `src/harvest_insee.py` (insee.fr), `src/harvest_oeb.py` (data-fair OEB), `src/harvest_bdnb.py` (ZIP BDNB dép. 35)
 5. **Catalogue + publication** — `src/catalogue.py` (catalogue.json/html + visionneuses/cartes), `src/publish_rudi.py` (rattrapage RUDI)
+6. **Interrogation en langage naturel (prototype)** — `src/mcp_rudi_server.py`, serveur MCP métadonnées seules (voir « Serveur MCP RUDI »)
 
-**Dépendances** : stdlib + `requests` pour tout le pipeline de moisson. Optionnels, dégradés proprement s'ils manquent : `openpyxl`/`pyarrow`/`fsspec` (analyse XLSX/Parquet en découverte), `rudi_node_write` (publication RUDI). Côté conteneurs : Podman pour le nœud RUDI local.
+**Dépendances** : stdlib + `requests` pour tout le pipeline de moisson. Optionnels, dégradés proprement s'ils manquent : `openpyxl`/`pyarrow`/`fsspec` (analyse XLSX/Parquet en découverte), `rudi_node_write` (publication RUDI). Côté conteneurs : Podman pour le nœud RUDI local. Le serveur MCP (`src/mcp_rudi_server.py`) requiert en plus `mcp` (SDK officiel, épinglé `1.29.0` — la 2.0.0 renomme `FastMCP` en `MCPServer`, API non compatible) ; installé ici via `pip install --user --break-system-packages` (environnement Debian externally-managed, même contrainte que `rudi_node_write`/`openpyxl`).
 
 ## Commands
 
@@ -84,6 +85,7 @@ python3 -m unittest discover tests/
 | `src/publish_rudi.py` | Rattrapage publication + `menage_rudi_one_shot()`/`menage_organisations()` (voir « Publication RUDI ») |
 | `src/enrichir_descriptions.py` / `src/enrichir_contacts.py` / `src/enrichir_organisations.py` | Rattrapages one-shot (descriptions JDD, contacts génériques, descriptions producteurs nœud RUDI) |
 | `src/reanalyser_faux_positifs.py` | Rattrapage offline des faux positifs INSEE/CP (re-filtrage des fichiers moissonnés, dry-run par défaut — menu 16) |
+| `src/mcp_rudi_server.py` | Serveur MCP prototype — interrogation en langage naturel des métadonnées RUDI (voir « Serveur MCP RUDI ») |
 | `src/tee.py` | Classe `Tee` (sortie dupliquée) — dashboard + harvest_auto |
 | `src/static/` | `dashboard.css` + `dashboard.js` partagés, servis sous `/static/` par le dashboard |
 | `data/decouverte.json` | État de découverte : vus, candidats, exclus, echecs, exclusions_termes, a_examiner, historique |
@@ -306,6 +308,21 @@ Entrée non-interactive pour cron/Jenkins — ex. `0 5 * * * cd <repo> && python
 Exit `0` seulement si tout a réussi. **Logs** : chaque run écrit `logs/harvest_auto_<horodatage>.log` (un fichier par run, gitignoré) ; `cli._executer()` imprime la traceback complète sur échec d'étape.
 
 **Revue du backlog `a_examiner`** : dashboard `/examen` (3 actions par entrée : Ajouter aux candidats / Faux positif / Ignorer) ou revue manuelle CLI (menu 2, `discover.revue_manuelle_a_examiner()` dans `src/review.py`) — aperçu colonne par colonne (CSV/XLSX/GeoJSON/Parquet + gz/bz2/zip), tag manuel du type de variable (`_TYPES_VARIABLES` : INSEE/IRIS, CP seul, commune, adresse, SIREN/SIRET, lat/lon, circonscription…), recomptage `nb_rm` sur le fichier complet avant confirmation. Tout passe par `resoudre_a_examiner()` (source unique de mutation).
+
+## Serveur MCP RUDI (`src/mcp_rudi_server.py`) — prototype étape 1
+
+Exploration en cours (2026-07-31) d'une interrogation en langage naturel du catalogue RUDI via MCP (Model Context Protocol), pensée en étapes :
+
+1. **Métadonnées seules** (implémenté) — le serveur ici présent.
+2. Requêtes sur le contenu réel des fichiers tabulaires (non fait — nécessiterait un chargement à la volée, ex. DuckDB, scopé aux formats simples).
+3. Section « analyse » côté portail (cartes/dashboards multi-nœuds) — projet BI séparé, recoupe l'existant Superset ([[project-dashboards-superset]] en mémoire), pas engagé.
+
+Le serveur réutilise le même connecteur que `connectors/rudi_node.py` (`RudiNodeWriter` + `RudiNodeAuth`, config `src/conf/rudi_node.json`) — read-only, aucun outil de mutation exposé. Outils : `rechercher_jeux_de_donnees` (texte libre + filtres thème/producteur), `obtenir_jeu_de_donnees` (fiche complète par `global_id`), `lister_themes`, `lister_producteurs`, `statistiques_catalogue`.
+
+- Recherche texte libre maison (pas l'API du connecteur, qui ne fait que du filtrage structuré exact) : normalisation accents/casse + score par nombre de tokens de la requête trouvés dans titre/synopsis/thème/producteur/mots-clés.
+- `available_formats[].connector.url` est renvoyé tel quel dans `obtenir_jeu_de_donnees` mais pointe vers `host.docker.internal:4031` — résoluble seulement depuis l'intérieur d'un conteneur du nœud source, pas depuis le poste qui exécute le serveur MCP. Attendu à ce stade (étape 1 = métadonnées, pas de téléchargement).
+- Dépendance `mcp` **épinglée à `1.29.0`** (API `FastMCP`) — la version publiée `2.0.0` renomme la classe en `MCPServer` avec une API incompatible, pas adoptée ici volontairement.
+- Enregistré comme serveur MCP local (`claude mcp add`, scope `local` — privé, non commité dans `.mcp.json`) pour test direct depuis Claude Code.
 
 ## Known limitations / not addressed
 

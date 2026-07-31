@@ -243,16 +243,19 @@ DATASETS_INSEE = [
         "theme": "society",
     },
     # ------------------------------------------------------------------
-    # BPE — Base permanente des équipements (millésime 2024)
+    # BPE — Base permanente des équipements (millésime 2025)
     # 1 seul CSV dans le ZIP, pas de dictionnaire inclus (PDF séparé sur la page).
     # Le numéro dans le nom suit les 2 derniers chiffres de l'année : BPE24 → BPE25…
-    # La BPE 2024 contient LATITUDE/LONGITUDE/DCIRIS (géolocalisation).
+    # url_direct à remettre à jour à chaque nouveau millésime : insee.fr garde l'ancien
+    # zip en ligne (HTTP 200), donc un url_direct périmé ne déclenche jamais de 404 —
+    # juste un décalage silencieux avec l'URL déjà en cache (state_insee.json), qui fait
+    # perpétuellement échouer le cache-hit et retélécharge/retraite ~1,4 Go à chaque run.
     # ------------------------------------------------------------------
     {
         "id": "bpe",
         "titre": "Base permanente des équipements (BPE)",
         "url_page": "https://www.insee.fr/fr/statistiques/8217525",
-        "url_direct": "https://www.insee.fr/fr/statistiques/fichier/8217525/BPE24.zip",
+        "url_direct": "https://www.insee.fr/fr/statistiques/fichier/8217525/BPE25.zip",
         "membre_pattern": r"^BPE\d{2}\.csv$",
         "champ_iris": "DEPCOM",
         "dossier": "insee_bpe",

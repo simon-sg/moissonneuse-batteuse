@@ -99,16 +99,24 @@ def _local_id_depuis_dataset_id(dataset_id: str) -> str:
 
 
 def _trouver_ressource_principale(metadata_source: dict) -> dict | None:
-    """Retourne la meilleure ressource téléchargeable : CSV d'abord, JSON ensuite."""
+    """Retourne la meilleure ressource téléchargeable : CSV d'abord, JSON ensuite.
+
+    `.get(clé, "")` ne suffit pas : une ressource data.gouv.fr peut porter `format`
+    ou `title` à `null` (clé présente, valeur absente) plutôt qu'omettre la clé —
+    le défaut de .get() ne s'applique alors pas et .lower() plante sur None."""
     resources = metadata_source.get("resources", [])
     for r in resources:
-        fmt = r.get("format", "").lower()
-        titre = r.get("title", "").lower()
+        if r is None:
+            continue
+        fmt = (r.get("format") or "").lower()
+        titre = (r.get("title") or "").lower()
         if fmt == "csv" and ".zip" not in titre and ".gz" not in titre:
             return r
     for r in resources:
-        fmt = r.get("format", "").lower()
-        titre = r.get("title", "").lower()
+        if r is None:
+            continue
+        fmt = (r.get("format") or "").lower()
+        titre = (r.get("title") or "").lower()
         if fmt == "json" and "geo" not in titre:
             return r
     return None
@@ -140,7 +148,10 @@ def traduire_metadonnees(metadata_source: dict, zone: str = "Rennes Métropole",
     titre_original = metadata_source["title"]
     titre_localise = f"{titre_original} - {zone}"
 
-    org = metadata_source.get("organization", {})
+    # `.get("organization", {})` ne suffit pas : l'API data.gouv.fr renvoie la clé
+    # présente avec la valeur `null` (pas absente) pour un JDD publié par un compte
+    # individuel sans organisation — le défaut de .get() ne s'applique alors pas.
+    org = metadata_source.get("organization") or {}
     producer = {
         "organization_name": org.get("name", "Producteur inconnu"),
     }
@@ -174,7 +185,7 @@ def traduire_metadonnees(metadata_source: dict, zone: str = "Rennes Métropole",
     # Entrées pour les fichiers filtrés (une par ressource sauvegardée)
     if not fichiers_filtres:
         slug = dossier_nom or dataset_id[:30]
-        fmt_filtre = "CSV" if (ressource_principale and ressource_principale.get("format", "").lower() == "csv") else "JSON"
+        fmt_filtre = "CSV" if (ressource_principale and (ressource_principale.get("format") or "").lower() == "csv") else "JSON"
         zone_slug = re.sub(r"[^a-z0-9]", "", zone.lower())  # "rennesmetropole"
         fichiers_filtres = [(f"{slug}-{zone_slug}.{fmt_filtre.lower()}", 0, None)]
 

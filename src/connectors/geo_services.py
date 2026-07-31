@@ -432,7 +432,7 @@ def wms_get_capabilities(url_base: str, timeout: int = 20) -> dict:
 
     contact = _extraire_contact_wms(root)
     return {"titre": titre_service, "couches": couches, "metadata_urls": urls_uniques,
-            "contact": contact}
+            "contact": contact, "last_modified": resp.headers.get("Last-Modified")}
 
 
 def wms_couches_dans_rm(capabilities: dict, base_url: str = "") -> list[dict]:

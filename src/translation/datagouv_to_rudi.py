@@ -7,7 +7,7 @@ from connectors.contacts import extraire_contacts_datagouv, resoudre_contacts
 from translation.description_secours import (
     LIBELLES_THEMES, description_quasi_vide, entetes_depuis_geojson, generer_complement, resumer_court,
 )
-from translation.rudi_builder import construire_rudi_metadata
+from translation.rudi_builder import _parser_date_http, construire_rudi_metadata
 
 # Thèmes acceptés par le nœud RUDI (conformes aux catégories RUDI)
 THEMES_RUDI = {
@@ -334,7 +334,9 @@ def traduire_metadonnees_service(config: dict,
                                   fichiers_geojson: list | None = None,
                                   wms_service: dict | None = None,
                                   metadata_urls: list | None = None,
-                                  contacts_source: list[dict] | None = None) -> dict:
+                                  contacts_source: list[dict] | None = None,
+                                  date_source: str | None = None,
+                                  dates_existantes: dict | None = None) -> dict:
     """
     Traduit un service géographique (WFS, WMS, OGC API) au format RUDI.
 
@@ -343,6 +345,11 @@ def traduire_metadonnees_service(config: dict,
     wms_service     : dict lu depuis wms_service.json, pour WMS
     metadata_urls   : URLs de fiche metadata du producteur (extraites des MetadataURL WMS)
     contacts_source : contacts extraits du service ([{"contact_name": ..., "email": ...}, ...])
+    date_source     : Last-Modified HTTP best-effort de la source (None si le serveur ne le
+                      fournit pas — dataset_dates.updated retombe alors sur l'heure du run,
+                      seul signal disponible)
+    dates_existantes: dataset_dates du rudi_metadata.json précédent, pour préserver "created"
+                      d'un run à l'autre (ne doit pas être régénéré à chaque changement réel)
     """
     service_id = config["id"]
     service_type = config.get("type", "wfs")
@@ -459,7 +466,9 @@ def traduire_metadonnees_service(config: dict,
     contacts = resoudre_contacts(contacts_source or [], producteur_nom)
 
     now = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    dates = {"created": now, "updated": now}
+    created = (dates_existantes or {}).get("created") or now
+    updated = _parser_date_http(date_source) if date_source else now
+    dates = {"created": created, "updated": updated}
 
     return construire_rudi_metadata(
         local_id=local_id,

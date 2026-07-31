@@ -46,11 +46,13 @@ def _sauver_geojson(chemin: str, data: dict) -> None:
     print(f"  Sauvegardé : {os.path.basename(chemin)} ({nb} features)")
 
 
-def traiter_wfs(config: dict, dossier: str, state: dict) -> tuple[list[tuple[str, str]], bool, dict | None]:
+def traiter_wfs(config: dict, dossier: str, state: dict) -> tuple[list[tuple[str, str]], bool, dict | None, str | None]:
     """
     Télécharge les couches WFS dans la bbox RM (sautées si signature inchangée
     et fichier déjà présent — voir _charger_state en tête de fichier).
-    Retourne ([(chemin_fichier, typename), ...], au_moins_une_changee, contact).
+    Retourne ([(chemin_fichier, typename), ...], au_moins_une_changee, contact, date_source).
+    date_source : Last-Modified HTTP best-effort de la couche modifiée la plus récente
+    (None si le serveur ne le fournit pas — fréquent pour les WFS).
     """
     url = nettoyer_url_ogc(config["url"])
     couches = config.get("couches")
@@ -65,6 +67,7 @@ def traiter_wfs(config: dict, dossier: str, state: dict) -> tuple[list[tuple[str
 
     resultats = []
     changee = False
+    date_source = None
     for typename in couches:
         nom_fichier = f"{_slug_typename(typename)}.geojson"
         chemin = os.path.join(dossier, nom_fichier)
@@ -84,14 +87,16 @@ def traiter_wfs(config: dict, dossier: str, state: dict) -> tuple[list[tuple[str
         resultats.append((chemin, typename))
         state[cle] = {"signature": signature} if signature else {}
         changee = True
-    return resultats, changee, contact
+        if signature and signature.get("Last-Modified"):
+            date_source = signature["Last-Modified"]
+    return resultats, changee, contact, date_source
 
 
-def traiter_ogcapi(config: dict, dossier: str, state: dict) -> tuple[list[tuple[str, str]], bool]:
+def traiter_ogcapi(config: dict, dossier: str, state: dict) -> tuple[list[tuple[str, str]], bool, str | None]:
     """
     Télécharge les collections OGC API Features dans la bbox RM (sautées si signature
     inchangée et fichier déjà présent — voir _charger_state en tête de fichier).
-    Retourne ([(chemin_fichier, collection_id), ...], au_moins_une_changee).
+    Retourne ([(chemin_fichier, collection_id), ...], au_moins_une_changee, date_source).
     """
     url = config["url"].rstrip("/")
     couches = config.get("couches")
@@ -103,6 +108,7 @@ def traiter_ogcapi(config: dict, dossier: str, state: dict) -> tuple[list[tuple[
 
     resultats = []
     changee = False
+    date_source = None
     for col_id in couches:
         nom_fichier = f"{_slug_typename(col_id)}.geojson"
         chemin = os.path.join(dossier, nom_fichier)
@@ -122,7 +128,9 @@ def traiter_ogcapi(config: dict, dossier: str, state: dict) -> tuple[list[tuple[
         resultats.append((chemin, col_id))
         state[cle] = {"signature": signature} if signature else {}
         changee = True
-    return resultats, changee
+        if signature and signature.get("Last-Modified"):
+            date_source = signature["Last-Modified"]
+    return resultats, changee, date_source
 
 
 def traiter_geojson(config: dict, dossier: str, state: dict) -> tuple[list[tuple[str, str]], bool]:
@@ -143,7 +151,7 @@ def traiter_geojson(config: dict, dossier: str, state: dict) -> tuple[list[tuple
             "dossier": "centroides-communes-rm",
             "theme": "location",
         }
-    Retourne ([(chemin_fichier, nom_fichier)], au_moins_une_changee).
+    Retourne ([(chemin_fichier, nom_fichier)], au_moins_une_changee, date_source).
     """
     from connectors.http import session
 
@@ -156,13 +164,15 @@ def traiter_geojson(config: dict, dossier: str, state: dict) -> tuple[list[tuple
     # Vérification ETag/Last-Modified pour éviter un re-téléchargement inutile
     try:
         head = session.head(url, timeout=20, allow_redirects=True)
-        sig_actuelle = head.headers.get("ETag") or head.headers.get("Last-Modified")
+        date_source = head.headers.get("Last-Modified")
+        sig_actuelle = head.headers.get("ETag") or date_source
     except Exception:
         sig_actuelle = None
+        date_source = None
 
     if sig_actuelle and os.path.exists(chemin) and sig_actuelle == state.get(cle, {}).get("signature"):
         print(f"  GeoJSON inchangé (cache) : {os.path.basename(chemin)}")
-        return [(chemin, nom_fichier)], False
+        return [(chemin, nom_fichier)], False, date_source
 
     print(f"  Téléchargement GeoJSON : {url[:70]}")
     resp = session.get(url, timeout=120)
@@ -198,17 +208,40 @@ def traiter_geojson(config: dict, dossier: str, state: dict) -> tuple[list[tuple
         json.dump(geojson_rm, f, ensure_ascii=False)
 
     state[cle] = {"signature": sig_actuelle} if sig_actuelle else {}
-    return [(chemin, nom_fichier)], True
+    return [(chemin, nom_fichier)], True, date_source
 
 
-def traiter_wms(config: dict, dossier: str) -> dict:
+def _signature_wms(wms_service: dict) -> list:
+    """Sous-ensemble comparable de wms_service (titre + couches) — ignore contact/metadata_urls,
+    volatils sans rapport avec le contenu, pour détecter un vrai changement de couches/titre."""
+    couches = sorted(
+        (c.get("nom", ""), c.get("titre", ""), c.get("bbox_wgs84", {}))
+        for c in wms_service.get("couches", [])
+    )
+    return [wms_service.get("titre_service", ""), couches]
+
+
+def traiter_wms(config: dict, dossier: str) -> tuple[dict, bool]:
     """
     Sonde le service WMS via GetCapabilities et sauvegarde wms_service.json.
-    Retourne le dict wms_service.
+    Retourne (wms_service, changee) — changee est False si couches/titre sont identiques
+    au wms_service.json précédent (GetCapabilities est re-sondé à chaque run car léger,
+    mais dataset_dates ne doit pas être réécrit si le service n'a pas vraiment changé).
     """
     url = nettoyer_url_ogc(config["url"])
     couches_config = config.get("couches")
+    chemin = os.path.join(dossier, "wms_service.json")
+
+    ancien = None
+    if os.path.isfile(chemin):
+        try:
+            with open(chemin, encoding="utf-8") as f:
+                ancien = json.load(f)
+        except Exception:
+            ancien = None
+
     print("  Sondage WMS GetCapabilities...")
+    caps = None
     try:
         caps = wms_get_capabilities(url)
         couches_rm = wms_couches_dans_rm(caps)
@@ -229,12 +262,14 @@ def traiter_wms(config: dict, dossier: str) -> dict:
         "couches": couches_rm,
         "metadata_urls": caps.get("metadata_urls", []) if caps else [],
         "contact": caps.get("contact") if caps else None,
+        "last_modified": caps.get("last_modified") if caps else None,
     }
-    chemin = os.path.join(dossier, "wms_service.json")
+    changee = ancien is None or _signature_wms(ancien) != _signature_wms(wms_service)
     with open(chemin, "w", encoding="utf-8") as f:
         json.dump(wms_service, f, ensure_ascii=False, indent=2)
-    print(f"  wms_service.json sauvegardé ({len(couches_rm)} couche(s) RM)")
-    return wms_service
+    print(f"  wms_service.json sauvegardé ({len(couches_rm)} couche(s) RM)"
+          + ("" if changee else " — inchangé"))
+    return wms_service, changee
 
 
 def traiter_geo_dataset(config: dict, state: dict) -> None:
@@ -248,26 +283,40 @@ def traiter_geo_dataset(config: dict, state: dict) -> None:
     changee = False
     wms_service: dict | None = None
     contact_source: dict | None = None
+    date_source: str | None = None  # Last-Modified HTTP best-effort — voir traduire_metadonnees_service
 
     if service_type == "wfs":
-        fichiers_geojson, changee, contact_source = traiter_wfs(config, dossier, state)
+        fichiers_geojson, changee, contact_source, date_source = traiter_wfs(config, dossier, state)
     elif service_type == "ogcapi":
-        fichiers_geojson, changee = traiter_ogcapi(config, dossier, state)
+        fichiers_geojson, changee, date_source = traiter_ogcapi(config, dossier, state)
     elif service_type == "wms":
-        wms_service = traiter_wms(config, dossier)
+        wms_service, changee = traiter_wms(config, dossier)
         contact_source = wms_service.get("contact") if wms_service else None
-        changee = True  # WMS toujours regénéré (GetCapabilities léger)
+        date_source = wms_service.get("last_modified") if wms_service else None
     elif service_type == "geojson":
-        fichiers_geojson, changee = traiter_geojson(config, dossier, state)
+        fichiers_geojson, changee, date_source = traiter_geojson(config, dossier, state)
     else:
         print(f"  Type inconnu : {service_type!r}. Types supportés : wfs, wms, ogcapi, geojson")
         return
 
     rudi_metadata_file = os.path.join(dossier, "rudi_metadata.json")
     # Si rien n'a changé et que rudi_metadata.json existe déjà, on garde l'existant
+    # (dataset_dates ne doit pas être réécrit avec l'horodatage du run si le service
+    # source n'a pas vraiment changé — sinon les WMS, toujours re-sondés, remontent
+    # systématiquement en tête du tri "plus récent" du catalogue).
     if not changee and os.path.isfile(rudi_metadata_file):
         print("  Aucune donnée modifiée — métadonnées RUDI et publication inchangées.")
         return
+
+    # dataset_dates.created est préservé d'un run à l'autre (première moisson réelle) ;
+    # seul dataset_dates.updated doit refléter un changement.
+    dates_existantes = None
+    if os.path.isfile(rudi_metadata_file):
+        try:
+            with open(rudi_metadata_file, encoding="utf-8") as f:
+                dates_existantes = json.load(f).get("dataset_dates")
+        except Exception:
+            dates_existantes = None
 
     # Métadonnées RUDI
     metadata_urls = wms_service.get("metadata_urls", []) if wms_service else []
@@ -277,6 +326,8 @@ def traiter_geo_dataset(config: dict, state: dict) -> None:
         wms_service=wms_service,
         metadata_urls=metadata_urls,
         contacts_source=[contact_source] if contact_source else None,
+        date_source=date_source,
+        dates_existantes=dates_existantes,
     )
     with open(rudi_metadata_file, "w", encoding="utf-8") as f:
         json.dump(rudi_metadata, f, ensure_ascii=False, indent=2)

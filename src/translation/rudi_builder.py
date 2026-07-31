@@ -219,6 +219,13 @@ def construire_rudi_metadata(
     except Exception:
         pass  # best-effort : ne jamais échouer la traduction
 
+    # Le nœud RUDI rejette resource_title > 150 caractères. Contrairement au synopsis
+    # (toujours construit avec un [:150] par les appelants), le titre n'était tronqué
+    # nulle part — un titre source déjà long + le suffixe zone ("… — Rennes Métropole")
+    # dépasse la limite pour quelques JDD (ex: intitulés d'arrêtés préfectoraux).
+    if len(titre) > 150:
+        titre = titre[:149] + "…"
+
     return {
         "local_id": local_id,
         "resource_title": titre,

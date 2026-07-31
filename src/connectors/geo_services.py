@@ -146,7 +146,7 @@ def _extraire_contact_wms(root) -> dict | None:
 
 def wfs_get_contact(url_base: str, timeout: int = 20) -> dict | None:
     """Interroge le GetCapabilities WFS et retourne le contact du service, ou None."""
-    from connectors.contacts import _email_valide
+    from connectors.contacts import _desobfusquer_email, _email_valide
     caps_url = f"{url_base}{_sep(url_base)}SERVICE=WFS&REQUEST=GetCapabilities"
     try:
         resp = session.get(caps_url, timeout=timeout)
@@ -155,8 +155,10 @@ def wfs_get_contact(url_base: str, timeout: int = 20) -> dict | None:
     except Exception:
         return None
     contact = _extraire_contact_ows(root)
-    if contact and _email_valide(contact.get("email", "")):
-        return contact
+    if contact:
+        contact["email"] = _desobfusquer_email(contact.get("email", ""))
+        if _email_valide(contact["email"]):
+            return contact
     return None
 
 

@@ -29,18 +29,31 @@ def email_par_defaut(nom: str) -> str:
     return f"{_slug_email(nom)}@{_DOMAINE_DEFAUT}"
 
 
+def _desobfusquer_email(email: str) -> str:
+    """Récupère un email exploitable derrière une obfuscation anti-spam courante.
+
+    Certains producteurs data.gouv.fr publient leur email en `nom[@]domaine.fr`
+    (vu sur plusieurs JDD INSEE) pour tromper les robots collecteurs — l'adresse
+    est par ailleurs parfaitement valide, remplacer `[@]`/`[at]` par `@` la
+    récupère au lieu de tomber sur le contact générique de repli."""
+    if not email:
+        return email
+    return email.strip().replace("[@]", "@").replace("[at]", "@").replace("(at)", "@")
+
+
 def extraire_contacts_datagouv(metadata_source: dict) -> list[dict]:
     """Extrait les contacts depuis le champ contact_points d'un dataset data.gouv.fr.
 
     Chaque entry contient : name, email, role, contact_form, organization.
     Retourne une liste de dicts {"contact_name": ..., "email": ..., "role": ...}
     filtrée pour ne garder que les entrées avec au moins un nom.
-    Les contacts sans email valide sont exclus (le nœud RUDI en exige un).
+    Les contacts sans email valide (même après désobfuscation) sont exclus
+    (le nœud RUDI en exige un).
     """
     contacts = []
     for cp in metadata_source.get("contact_points", []):
         name = (cp.get("name") or "").strip()
-        email = (cp.get("email") or "").strip()
+        email = _desobfusquer_email((cp.get("email") or "").strip())
         role = (cp.get("role") or "").strip()
         if not name and not email:
             continue
@@ -86,14 +99,28 @@ def resoudre_contacts(contacts_source: list[dict], nom_org: str,
     Le nœud RUDI exige un email valide — aucun contact sans email n'est retourné.
     """
     if contacts_source:
-        premier = contacts_source[0]
-        if _email_valide(premier.get("email", "")):
+        premier = dict(contacts_source[0])
+        premier["email"] = _desobfusquer_email(premier.get("email", ""))
+        if _email_valide(premier["email"]):
             return [premier]
     return [contacter_pardefaut(nom_org, email_defaut)]
 
 
+_RE_EMAIL = re.compile(
+    r"^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+"
+    r"@[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?"
+    r"(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)+$"
+)
+
+
 def _email_valide(email: str) -> bool:
-    """Vérifie si une chaîne est un email syntaxiquement valide (RFC simple)."""
+    """Vérifie si une chaîne est un email syntaxiquement valide (RFC simple).
+
+    Restreint aux caractères réellement valides dans une adresse (contrairement à un
+    simple `[^@\\s]+@[^@\\s]+\\.[^@\\s]+`) : certains producteurs data.gouv.fr obfusquent
+    leur email anti-spam avec des crochets (« nom[@]domaine.fr », vu sur un JDD INSEE) —
+    ça contient bien un @ et un point, donc passait l'ancienne regex, mais le nœud RUDI
+    rejette ensuite l'adresse en publication (« is not a valid e-mail »)."""
     if not email or not isinstance(email, str):
         return False
-    return bool(re.match(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", email.strip()))
+    return bool(_RE_EMAIL.match(email.strip()))

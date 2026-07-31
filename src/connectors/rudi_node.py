@@ -387,6 +387,11 @@ def publier_dataset(
 
     medias = rudi_metadata["available_formats"]
 
+    # Médias FILE écartés (upload refusé) — ne doivent pas faire échouer le reste du
+    # dataset ; typiquement une variante JSON trop verbeuse d'un CSV déjà publiable
+    # (ex: sirene-v3-consolidee, JSON à 1,4 Go pour une limite nœud de 500 Mo).
+    noms_ecartes: set[str] = set()
+
     for i, chemin in enumerate(fichiers_filtres):
         if not os.path.isfile(chemin):
             print(f"  [RUDI] fichier introuvable, ignoré : {chemin}")
@@ -396,10 +401,19 @@ def publier_dataset(
         medias[i]["media_id"] = media_id
         caption = medias[i].get("media_caption", "")
         print(f"  [RUDI] upload {nom} (media_id={media_id[:8]}…)")
-        media_info: RudiMediaFile = writer.post_local_file_and_media_info(
-            file_local_path=chemin,
-            media_id=media_id,
-        )
+        try:
+            media_info: RudiMediaFile = writer.post_local_file_and_media_info(
+                file_local_path=chemin,
+                media_id=media_id,
+            )
+        except Exception as e:
+            if "too big to be uploaded" in str(e):
+                taille_mo = os.path.getsize(chemin) / 1_048_576
+                print(f"  [RUDI] {nom} ({taille_mo:.0f} Mo) dépasse la limite de taille du "
+                      f"nœud — média écarté, le reste du dataset est publié quand même.")
+                noms_ecartes.add(nom)
+                continue
+            raise
         # Remplace le media dict par celui retourné (contient file_type, file_size, checksum…)
         medias[i] = json.loads(str(media_info))
         if caption:
@@ -407,8 +421,11 @@ def publier_dataset(
         print(f"  [RUDI] URL storage : {medias[i]['connector']['url']}")
 
     # Nettoyage Local→Rudi : retirer les médias FILE dont le fichier local a disparu
+    # ou dont l'upload a été écarté ci-dessus (trop volumineux pour le nœud)
     noms_locaux = {os.path.basename(p) for p in fichiers_filtres if os.path.isfile(p)}
-    medias[:] = [m for m in medias if m.get("media_type") != "FILE" or m.get("media_name") in noms_locaux]
+    medias[:] = [m for m in medias
+                 if m.get("media_type") != "FILE"
+                 or (m.get("media_name") in noms_locaux and m.get("media_name") not in noms_ecartes)]
 
     # Corrige les media_ids des entrées non uploadées (SERVICE vers data.gouv.fr,
     # source-metadata…) — la lib RUDI valide que tous les media_id sont des UUID v4.
@@ -435,6 +452,21 @@ def supprimer_organisation(conf: dict, org_id: str) -> bool:
         return True
     except Exception as e:
         print(f"  [RUDI] Erreur suppression organisation {org_id[:12]}… : {e}")
+        return False
+
+
+def supprimer_contact(conf: dict, contact_id: str) -> bool:
+    """
+    Supprime un contact du nœud RUDI par son contact_id.
+    Retourne True si la suppression a réussi.
+    """
+    writer = _creer_writer(conf)
+    try:
+        writer.connector.del_catalog(f"contacts/{contact_id}")
+        print(f"  [RUDI] contact {contact_id[:12]}… supprimé du nœud.")
+        return True
+    except Exception as e:
+        print(f"  [RUDI] Erreur suppression contact {contact_id[:12]}… : {e}")
         return False
 
 

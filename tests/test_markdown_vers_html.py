@@ -43,6 +43,25 @@ class TestMarkdownVersHtml(unittest.TestCase):
         html = markdown_vers_html("1. premier\n2. second")
         self.assertEqual(html, "<ol><li>premier</li><li>second</li></ol>")
 
+    def test_liste_precedee_d_une_phrase_d_intro_sans_ligne_vide(self):
+        # Style data.gouv.fr courant : la phrase d'intro est collée aux puces, sans
+        # ligne vide entre les deux (même bloc) — doit devenir intro + <ul>, pas un
+        # paragraphe <br> avec les "- " laissés tels quels.
+        texte = (
+            "Les arbres gérés sont de trois types :\n"
+            "- les arbres d'alignement ;\n"
+            "- les arbres remarquables ;\n"
+            "- les arbres d'ornement."
+        )
+        html = markdown_vers_html(texte)
+        self.assertEqual(
+            html,
+            "<p>Les arbres gérés sont de trois types :</p>"
+            "\n<ul><li>les arbres d'alignement ;</li>"
+            "<li>les arbres remarquables ;</li>"
+            "<li>les arbres d'ornement.</li></ul>",
+        )
+
     def test_lien_markdown(self):
         html = markdown_vers_html("Voir [le site](https://example.org/page).")
         self.assertEqual(

@@ -74,9 +74,11 @@ def markdown_vers_html(texte: str | None) -> str:
     """Convertit le sous-ensemble de Markdown décrit en tête de module en HTML.
 
     Chaîne vide si `texte` est vide/absent. Chaque bloc source (séparé par une ligne
-    vide) devient une liste (<ul>/<ol>) si toutes ses lignes sont des items, un titre
-    (<p><strong>) s'il tient en une ligne commençant par `#`, sinon un paragraphe (<p>,
-    les retours à la ligne simples internes devenant <br>).
+    vide) devient une liste (<ul>/<ol>) si toutes ses lignes sont des items ; si seule
+    une phrase d'intro précède des items collés sans ligne vide (style data.gouv.fr
+    courant), elle devient un paragraphe d'intro suivi de la liste. Un bloc qui tient
+    en une ligne commençant par `#` devient un titre (<p><strong>). Sinon, paragraphe
+    (<p>, les retours à la ligne simples internes devenant <br>).
     """
     if not (texte or "").strip():
         return ""
@@ -91,6 +93,21 @@ def markdown_vers_html(texte: str | None) -> str:
         if all(items):
             type_liste = items[0][0]
             puces = "".join(f"<li>{_inline(_echapper(contenu))}</li>" for _, contenu in items)
+            blocs_html.append(f"<{type_liste}>{puces}</{type_liste}>")
+            continue
+
+        # Phrase d'intro collée à une liste sans ligne vide entre les deux (style
+        # data.gouv.fr courant, ex. "... sont de trois types :\n- item\n- item") :
+        # découpée en paragraphe d'intro + liste, plutôt que de tout retomber en
+        # paragraphe <br> faute de bloc 100% liste.
+        premier_item = next((i for i, it in enumerate(items) if it is not None), None)
+        if premier_item and all(items[premier_item:]) and len({it[0] for it in items[premier_item:]}) == 1:
+            intro = "<br>".join(_inline(_echapper(l)) for l in lignes[:premier_item])
+            type_liste = items[premier_item][0]
+            puces = "".join(
+                f"<li>{_inline(_echapper(contenu))}</li>" for _, contenu in items[premier_item:]
+            )
+            blocs_html.append(f"<p>{intro}</p>")
             blocs_html.append(f"<{type_liste}>{puces}</{type_liste}>")
             continue
 

@@ -269,10 +269,12 @@ def traduire_metadonnees(metadata_source: dict, zone: str = "Rennes Métropole",
     })
 
     dates = {}
-    if metadata_source.get("created_at"):
-        dates["created"] = metadata_source["created_at"][:10] + "T00:00:00Z"
-    if metadata_source.get("last_modified"):
-        dates["updated"] = metadata_source["last_modified"][:10] + "T00:00:00Z"
+    created = _parser_date_http(metadata_source.get("created_at"))
+    if created:
+        dates["created"] = created
+    updated = _parser_date_http(metadata_source.get("last_modified"))
+    if updated:
+        dates["updated"] = updated
 
     contacts_source = extraire_contacts_datagouv(metadata_source)
     contacts = resoudre_contacts(contacts_source, producer["organization_name"])

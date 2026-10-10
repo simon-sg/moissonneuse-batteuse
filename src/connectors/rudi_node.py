@@ -9,6 +9,7 @@ from urllib.parse import urlparse
 from rudi_node_write.rudi_node_writer import RudiNodeWriter
 from rudi_node_write.connectors.rudi_node_auth import RudiNodeAuth
 from rudi_node_write.rudi_types.rudi_media import RudiMediaFile
+from rudi_node_write.rudi_types.rudi_meta import RudiMetadata
 
 from connectors.http import session
 
@@ -292,6 +293,40 @@ def _creer_writer(conf: dict) -> RudiNodeWriter:
     return RudiNodeWriter(pm_url=conf["url"] + "/manager", auth=auth)
 
 
+def _reinjecter_summary_html(rudi_metadata: dict, meta_json: dict) -> dict:
+    """`rudi_node_write` (1.4.4, dernière version publiée) ne modélise que `lang`/`text`
+    pour `summary[]` — son aller-retour from_json()/to_json() perd silencieusement `html`
+    (le champ RichDictionaryEntry que le portail sait afficher depuis sa v3.3.2, voir
+    translation/markdown_vers_html.py). On le réinjecte après coup, apparié par `lang`."""
+    htmls = {e.get("lang"): e["html"] for e in rudi_metadata.get("summary", []) if e.get("html")}
+    if not htmls:
+        return meta_json
+    for entry in meta_json.get("summary", []):
+        html = htmls.get(entry.get("lang"))
+        if html:
+            entry["html"] = html
+    return meta_json
+
+
+def _put_metadata(writer: RudiNodeWriter, rudi_metadata: dict) -> None:
+    """Équivalent de `writer.put_metadata(rudi_metadata)` (validations/normalisations de
+    la lib conservées via RudiMetadata.from_json()), sans perdre `summary[].html` —
+    voir `_reinjecter_summary_html`.
+
+    Sérialise via `to_json_str()` (ce que `put_metadata()` utilise réellement en interne
+    pour construire le corps de la requête), pas via `to_json()` : ce dernier a un bug
+    dans la lib pour les champs de type liste de `Serializable` (`summary`/`synopsis`) —
+    `clean_nones()` les ramène à des `list` Python nues avant le test `isinstance(val,
+    Serializable)` du bloc liste, qui porte alors sur la liste elle-même (toujours fausse)
+    au lieu de chaque élément : les objets `RudiDictionaryEntry` ressortent tels quels,
+    non convertis en dict. `to_json_str()` l'évite en passant par `json.dumps(default=...)`,
+    qui convertit chaque objet individuellement quelle que soit sa position."""
+    meta_obj = RudiMetadata.from_json(rudi_metadata)
+    meta_json = json.loads(meta_obj.to_json_str(ensure_ascii=True))
+    meta_json = _reinjecter_summary_html(rudi_metadata, meta_json)
+    writer.connector.put_catalog("resources", meta_json)
+
+
 def _media_id_v4(existant: dict | None, nom_fichier: str) -> str:
     """Réutilise le media_id existant sur le nœud (UUIDv4), sinon en génère un."""
     if existant:
@@ -457,7 +492,7 @@ def publier_dataset(
             m["media_id"] = _media_id_v4(existant, m.get("media_name", ""))
 
     print(f"  [RUDI] push métadonnées (local_id={local_id[:8]}…)")
-    writer.put_metadata(rudi_metadata)
+    _put_metadata(writer, rudi_metadata)
     print(f"  [RUDI] publié.")
 
 

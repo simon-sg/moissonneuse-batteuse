@@ -36,6 +36,7 @@ python3 src/harvest_geo.py
 python3 src/catalogue.py
 python3 src/publish_rudi.py         # rattrapage publication RUDI
 python3 src/enrichir_descriptions.py # rattrapage descriptions vides
+python3 src/enrichir_html_descriptions.py [--appliquer] [--dossier X] # rattrapage summary[].html (rendu Markdown->HTML, voir « Rendu HTML du summary »)
 python3 src/enrichir_organisations.py [--dry-run] # rattrapage descriptions producteurs (nœud RUDI)
 python3 src/enrichir_contacts.py [--dry-run] # rattrapage contacts génériques
 python3 src/reanalyser_faux_positifs.py [--appliquer] [--dossier X] # rattrapage faux positifs INSEE/CP
@@ -72,7 +73,7 @@ python3 -m unittest discover tests/
 | `src/connectors/geo_services.py` | WFS/WMS/OGC API : capabilities, bbox, **probe GetMap**, contacts OWS, MetadataURL |
 | `src/connectors/insee.py` / `oeb.py` / `bdnb.py` / `sirene.py` | Connecteurs sources (INSEE scraping failsafe, data-fair, ZIP streaming, SIREN RM cache 30 j) |
 | `src/connectors/rudi_node.py` | `publier_dataset()`, `charger_conf_rudi()`, contrôle Podman, `toutes_metadonnees_rudi()`, `supprimer_dataset/_organisation()` |
-| `src/connectors/rudi_publish.py` | `publier_si_configue()` — point unique de publication best-effort, **sérialisé par verrou** (voir « Publication RUDI ») |
+| `src/connectors/rudi_publish.py` | `publier_si_configue()` — point unique de publication best-effort, **sérialisé par verrou** ; accumule aussi les `local_id` publiés ce run (voir « Publication RUDI ») |
 | `src/connectors/contacts.py` | Extraction/résolution de contacts (data.gouv, fallback RFC 2606) |
 | `src/connectors/wikipedia.py` | Résumés Wikipédia/Wikidata pour les organisations (caption CC0 + summary CC BY-SA) |
 | `src/connectors/rva.py` | Géocodage API RVA Rennes Métropole (clé dans `src/conf/rva_key.json`, non commitée ; cache interdit par CGU) |
@@ -80,10 +81,13 @@ python3 -m unittest discover tests/
 | `src/translation/datagouv_to_rudi.py` | `traduire_metadonnees()` + `traduire_metadonnees_service()` (voies data.gouv tabulaire + géo) |
 | `src/translation/rudi_builder.py` | Constructeur partagé `construire_rudi_metadata()` + helpers `media_*()` (voies INSEE/OEB/BDNB) |
 | `src/translation/description_secours.py` | `generer_complement()` — description de secours factuelle (voir « Fallback descriptions ») |
+| `src/translation/markdown_vers_html.py` | `markdown_vers_html()` — convertisseur Markdown léger alimentant `summary[].html` (voir « Rendu HTML du summary ») |
 | `src/translation/organisation_secours.py` | `enrichir_organisation()` — caption + summary des producteurs (voir « Fallback descriptions d'organisations ») |
 | `src/state.py` | `charger_state()`/`sauvegarder_state()` génériques + `construire_index_dossier()` (index dossier→state multi-fichiers) |
 | `src/publish_rudi.py` | Rattrapage publication + `menage_rudi_one_shot()`/`menage_organisations()` (voir « Publication RUDI ») |
+| `src/publish_rudi_geo.py` | Dernière étape du pipeline — déclare les flux WMS/WFS/OGC API (projet voisin `rudi-geo`) pour les JDD publiés ce run (voir « Publication RUDI ») |
 | `src/enrichir_descriptions.py` / `src/enrichir_contacts.py` / `src/enrichir_organisations.py` | Rattrapages one-shot (descriptions JDD, contacts génériques, descriptions producteurs nœud RUDI) |
+| `src/enrichir_html_descriptions.py` | Rattrapage `summary[].html` des JDD déjà moissonnés (voir « Rendu HTML du summary ») — dry-run par défaut, `--appliquer` pour écrire |
 | `src/reanalyser_faux_positifs.py` | Rattrapage offline des faux positifs INSEE/CP (re-filtrage des fichiers moissonnés, dry-run par défaut — menu 16) |
 | `src/mcp_rudi_server.py` | Serveur MCP prototype — interrogation en langage naturel des métadonnées RUDI (voir « Serveur MCP RUDI ») |
 | `src/tee.py` | Classe `Tee` (sortie dupliquée) — dashboard + harvest_auto |
@@ -251,6 +255,10 @@ Chaque script de moisson publie inline via `connectors/rudi_publish.py::publier_
 - Un dossier sans correspondance dans les états ni `DATASETS_GEO` est listé pour revue manuelle, jamais auto-publié.
 - Reconstruit `fichiers_filtres` en prenant le préfixe `media_type: "FILE"` d'`available_formats` dans l'ordre (mapping positionnel — l'ordre doit être préservé).
 
+**Services géo (`src/publish_rudi_geo.py`, dernière étape du pipeline).** Déclare sur le nœud RUDI, pour chaque JDD géo-publiable, des médias `SERVICE` pointant vers les flux WMS/WFS/OGC API Features du projet voisin **`rudi-geo`** (`../rudi-node-build/rudi-geo/`, MapServer au-dessus des fichiers déjà publiés — pas de republication, pas de copie). Scope automatique : uniquement les `local_id` effectivement (re)publiés pendant **ce run**, via `connectors/rudi_publish.py::local_ids_publies_ce_run()` — alimenté par `publier_si_configue()` **et** par la boucle de rattrapage de `publish_rudi.py` (les deux appellent `enregistrer_local_id_publie()`), vidé en tête de `cli.py::executer_pipeline_complet()` (`demarrer_nouveau_run()` — le process peut vivre plus longtemps qu'un run, voir `dashboard.py`). Aucune nouvelle détection de changement : le fast-path "rien n'a changé, on saute" de chaque moisson (déjà en place en amont de la publication RUDI elle-même) est le filtre "nouveau ou modifié" réutilisé tel quel.
+
+Shelle vers `python3 declare_services.py --apply --local-id <uuid> ...` dans le répertoire `rudi-geo` (chemin par défaut : repo voisin au même niveau que `moissonneuse-batteuse` ; surchargeable par la clé `rudi_geo_dir` de `src/conf/rudi_node.json`), credentials/URL manager transmis en variables d'environnement depuis la même config (`RUDI_MANAGER_URL`/`RUDI_USER`/`RUDI_PASSWORD`) — une seule source de vérité pour les identifiants du nœud, jamais dupliqués entre les deux dépôts. Si les conteneurs `rudi-geo` ne répondent pas (port 8090), tente un `docker compose up -d` puis attend, même schéma que `harvest_auto.py::_demarrer_noeud_rudi()` pour le nœud RUDI lui-même. **Toujours best-effort** : une erreur ou une indisponibilité de `rudi-geo` est journalisée et sautée, ne fait jamais échouer le pipeline de moisson.
+
 **Ménage** (menu CLI 15, `action_menage_rudi()`) : `menage_rudi_one_shot()` liste les datasets présents sur le nœud sans contrepartie locale (orphelins), `menage_organisations()` les organisations plus référencées ; le CLI **propose ensuite leur suppression effective** (`supprimer_dataset()`/`supprimer_organisation()`), protégée par la confirmation tapée `SUPPRIMER`. La détection seule ne mute rien.
 
 **Nettoyage des FILE orphelins** : `publier_dataset()` retire d'`available_formats` les entrées FILE dont le fichier local a disparu (le nœud refuse un media FILE sans fichier physique), puis recorrige le `media_id` de toutes les entrées non-FILE (la lib exige des UUIDv4).
@@ -266,6 +274,12 @@ Chaque script de moisson publie inline via `connectors/rudi_publish.py::publier_
 Many sources never provide a usable description (data.gouv datasets with empty `description`, INSEE, geo services). `generer_complement()` builds 1-3 factual sentences from what's actually available — theme label, producer, CSV/GeoJSON column names, WMS layer names, keywords as last resort. It never invents what the data means. `description_quasi_vide()` gates this (< 40 chars pour data.gouv ; toujours pour INSEE et géo).
 
 Wired into every live harvest path (les scripts passent `entetes_colonnes` aux traducteurs). `src/enrichir_descriptions.py` est le rattrapage pour les JDD antérieurs — idempotent via le marqueur "Jeu de données du thème". `catalogue.py::partie_descriptive()` extrait la partie descriptive du `summary` pour l'afficher sur les cartes du catalogue.
+
+## Rendu HTML du summary (`src/translation/markdown_vers_html.py`)
+
+Le portail (depuis sa v3.3.2, 22/09/2025) affiche le résumé long d'un JDD en injectant `summary[].html ?? summary[].text` tel quel en `innerHTML` (`dataset-informations.component.ts::getSummaryDescription()` → `language.service.ts::getRichTextForCurrentLanguage()`). Les descriptions sources (data.gouv.fr notamment) sont écrites en Markdown (gras, listes, liens, paragraphes séparés par une ligne vide) — sans `html`, ce Markdown s'affichait tel quel sur la fiche catalogue (syntaxe littérale, retours à la ligne perdus puisque le rendu HTML ignore les `\n` hors balises).
+
+`markdown_vers_html()` convertit le sous-ensemble réellement utilisé (gras, italique, liens http/https, listes à puces/numérotées, paragraphes, retours à la ligne simples → `<br>`, pseudo-titres `#`/`##`) — volontairement pas un parseur Markdown complet, aucune dépendance ajoutée (voir « Dépendances » en tête de fichier). Tout le texte source est échappé avant insertion ; les liens à schéma non http(s) sont dégradés en texte simple. Câblé dans `construire_rudi_metadata()` (clé `html` omise si vide, pour que le repli `?? text` côté portail fonctionne). `src/enrichir_html_descriptions.py` est le rattrapage pour les JDD déjà moissonnés/publiés — `--appliquer` pour écrire (dry-run par défaut), même mécanique de démarquage `rudi_publie` que `enrichir_synopsis.py`.
 
 ## Fallback descriptions d'organisations (`src/translation/organisation_secours.py`)
 

@@ -16,6 +16,7 @@ import uuid
 
 from conf.communes_rm import BBOX_RM_RUDI as BBOX_RM
 from connectors.contacts import resoudre_contacts
+from translation.markdown_vers_html import markdown_vers_html
 
 # Licence Etalab 2.0, partagée par tous les scripts de moisson
 LICENCE_ETALAB = {
@@ -226,11 +227,22 @@ def construire_rudi_metadata(
     if len(titre) > 150:
         titre = titre[:149] + "…"
 
+    # `html` : version formatée du summary, rendue telle quelle (innerHTML) par le portail
+    # depuis sa v3.3.2 — sans elle, le portail retombe sur `text` mais l'injecte quand même
+    # en HTML, donc le Markdown source (listes, gras, liens de data.gouv.fr notamment)
+    # s'affichait tel quel et les retours à la ligne disparaissaient. Clé omise si vide :
+    # `html ?? text` côté portail ne retombe sur `text` que si `html` est absent (une
+    # chaîne vide ne déclencherait pas ce repli).
+    _summary_fr = {"lang": "fr", "text": description}
+    _summary_html = markdown_vers_html(description)
+    if _summary_html:
+        _summary_fr["html"] = _summary_html
+
     return {
         "local_id": local_id,
         "resource_title": titre,
         "synopsis": [{"lang": "fr", "text": synopsis}],
-        "summary": [{"lang": "fr", "text": description}],
+        "summary": [_summary_fr],
         "theme": theme,
         "keywords": list(dict.fromkeys(keywords)),
         "producer": _producer,

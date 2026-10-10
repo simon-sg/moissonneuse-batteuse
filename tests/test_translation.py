@@ -220,6 +220,16 @@ class TestRudiBuilder(unittest.TestCase):
         avec = self._construire(metadata_dates={"updated": "2025-01-01T00:00:00Z"})
         self.assertIn("metadata_dates", avec["metadata_info"])
 
+    def test_summary_html_genere_depuis_markdown(self):
+        meta = self._construire(description="Un **gras** et une liste :\n\n- un\n- deux")
+        self.assertEqual(meta["summary"][0]["text"], "Un **gras** et une liste :\n\n- un\n- deux")
+        self.assertIn("<strong>gras</strong>", meta["summary"][0]["html"])
+        self.assertIn("<ul><li>un</li><li>deux</li></ul>", meta["summary"][0]["html"])
+
+    def test_summary_sans_html_si_description_vide(self):
+        meta = self._construire(description="")
+        self.assertNotIn("html", meta["summary"][0])
+
 
 class TestParserDateHttp(unittest.TestCase):
     def test_format_http(self):

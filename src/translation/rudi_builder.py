@@ -115,13 +115,24 @@ def _parser_date_http(date_str: str | None) -> str | None:
     # Motif complet obligatoire : un simple `"T" in date_str` matchait aussi
     # le "T" de "GMT" des dates HTTP et produisait "Wed, 12 FeT00:00:00Z".
     if re.match(r"\d{4}-\d{2}-\d{2}T", date_str):
-        return date_str[:10] + "T00:00:00Z"
+        # Conserver l'heure réelle, normalisée en UTC (suffixe `Z` ou offset
+        # explicite type "+00:00"/"+02:00" converti vers UTC).
+        try:
+            dt = datetime.datetime.fromisoformat(date_str.replace("Z", "+00:00"))
+            if dt.tzinfo is None:
+                dt = dt.replace(tzinfo=datetime.timezone.utc)
+            return dt.astimezone(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        except Exception:
+            return datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     # Format HTTP (INSEE/BDNB Last-Modified : "Wed, 12 Feb 2025 09:41:37 GMT")
     try:
         from email.utils import parsedate_to_datetime
-        return parsedate_to_datetime(date_str).strftime("%Y-%m-%dT00:00:00Z")
+        dt = parsedate_to_datetime(date_str)
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=datetime.timezone.utc)
+        return dt.astimezone(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     except Exception:
-        return datetime.date.today().isoformat() + "T00:00:00Z"
+        return datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 # ---------------------------------------------------------------------------

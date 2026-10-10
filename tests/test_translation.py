@@ -234,11 +234,11 @@ class TestRudiBuilder(unittest.TestCase):
 class TestParserDateHttp(unittest.TestCase):
     def test_format_http(self):
         self.assertEqual(_parser_date_http("Wed, 12 Feb 2025 09:41:37 GMT"),
-                         "2025-02-12T00:00:00Z")
+                         "2025-02-12T09:41:37Z")
 
     def test_format_iso(self):
         self.assertEqual(_parser_date_http("2025-01-15T10:30:00.000Z"),
-                         "2025-01-15T00:00:00Z")
+                         "2025-01-15T10:30:00Z")
 
     def test_none(self):
         self.assertIsNone(_parser_date_http(None))

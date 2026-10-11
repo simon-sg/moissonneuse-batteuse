@@ -34,7 +34,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import cli
 import discover
-from catalogue import GABARIT_WMS_MAP
+from catalogue import GABARIT_WMS_MAP, _charger_cle_carto
 from conf.discover import REQUETES_STRUCTUREES, KEYWORDS, NB_PAGES as CONF_NB_PAGES
 from connectors import rudi_node, rudi_portal, rudi_portal_config
 from filters.discovery import _paginer, _filtrer_communs
@@ -661,6 +661,7 @@ def _generer_carte_wms_examen(dataset_id: str) -> str | None:
         "url": entree.get("service_url", ""),
         "couches": couches,
         "producteur": entree.get("organisation", ""),
+        "carto_key": _charger_cle_carto() or "",
     }, ensure_ascii=False).replace("</", r"<\/")
     return GABARIT_WMS_MAP.replace("/*__DATA__*/", data)
 

@@ -6,6 +6,7 @@ data/
 src/conf/rudi_node.json
 src/conf/monitor_db.json
 src/conf/rva_key.json
+src/conf/carto_key.json
 .env
 
 # Nœud RUDI local (volume Podman : db, clés, médias)

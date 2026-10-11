@@ -32,6 +32,24 @@ SORTIE_HTML = os.path.join(DATA, "catalogue.html")
 IGNORER = {"cache"}
 # Fichiers de service présents dans les dossiers mais qui ne sont pas des ressources de données
 NON_RESSOURCES = {"rudi_metadata.json", "wms_service.json"}
+# Clé API CARTO (fonds de carte) — facultative, non commitée (voir .gitignore)
+_CARTO_KEY_FILE = os.path.join(RACINE, "src", "conf", "carto_key.json")
+
+
+def _charger_cle_carto() -> str | None:
+    """Lit la clé API CARTO depuis src/conf/carto_key.json, None si absente/vide.
+
+    CARTO exige désormais une clé pour ses fonds de carte ; sans elle les tuiles
+    portent un filigrane « API KEY REQUIRED ». On continue en mode dégradé.
+    """
+    if not os.path.isfile(_CARTO_KEY_FILE):
+        return None
+    try:
+        with open(_CARTO_KEY_FILE, encoding="utf-8") as f:
+            return json.load(f).get("key", "").strip() or None
+    except (OSError, ValueError):
+        return None
+
 
 def _extraire_description(meta: dict) -> str:
     """Extrait la partie descriptive du résumé RUDI (`summary`), après le préambule de
@@ -870,7 +888,8 @@ function themeEffectif(){
     (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
 }
 function urlFond(theme){
-  return "https://{s}.basemaps.cartocdn.com/" + (theme==="dark"?"dark_all":"light_all") + "/{z}/{x}/{y}{r}.png";
+  const base = "https://{s}.basemaps.cartocdn.com/" + (theme==="dark"?"dark_all":"light_all") + "/{z}/{x}/{y}{r}.png";
+  return D.carto_key ? base + "?key=" + encodeURIComponent(D.carto_key) : base;
 }
 
 const D=JSON.parse(document.getElementById("d").textContent);
@@ -1061,7 +1080,8 @@ function themeEffectif(){
     (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
 }
 function urlFond(theme){
-  return "https://{s}.basemaps.cartocdn.com/" + (theme==="dark"?"dark_all":"light_all") + "/{z}/{x}/{y}{r}.png";
+  const base = "https://{s}.basemaps.cartocdn.com/" + (theme==="dark"?"dark_all":"light_all") + "/{z}/{x}/{y}{r}.png";
+  return D.carto_key ? base + "?key=" + encodeURIComponent(D.carto_key) : base;
 }
 
 const D=JSON.parse(document.getElementById("d").textContent);
@@ -1344,6 +1364,7 @@ def _ecrire_wms_map(chemin: str, nom: str, wms_data: dict, producteur: str = "")
         "url": wms_data.get("url", ""),
         "couches": wms_data.get("couches", []),
         "producteur": producteur or wms_data.get("producteur", ""),
+        "carto_key": _charger_cle_carto() or "",
     }, ensure_ascii=False).replace("</", r"<\/")
     html = GABARIT_WMS_MAP.replace("/*__DATA__*/", data)
     with open(chemin, "w", encoding="utf-8") as f:
@@ -1351,7 +1372,8 @@ def _ecrire_wms_map(chemin: str, nom: str, wms_data: dict, producteur: str = "")
 
 
 def _ecrire_map(chemin: str, nom: str, apercu: dict) -> None:
-    data = json.dumps({"nom": nom, **apercu}, ensure_ascii=False).replace("</", r"<\/")
+    data = json.dumps({"nom": nom, "carto_key": _charger_cle_carto() or "", **apercu},
+                      ensure_ascii=False).replace("</", r"<\/")
     html = GABARIT_MAP.replace("/*__DATA__*/", data)
     with open(chemin, "w", encoding="utf-8") as f:
         f.write(html)

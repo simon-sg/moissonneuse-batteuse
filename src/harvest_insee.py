@@ -26,19 +26,26 @@ from connectors.insee import (
 )
 from connectors.http import session
 from translation.description_secours import LIBELLES_THEMES, generer_complement
-from connectors.rudi_publish import publier_si_configue
+from rudi_harvest_toolkit import publish as rudi_publish
+from rudi_harvest_toolkit.rudi_client import charger_conf_rudi
 from harvest_batch import filtrer_csv
-from translation.rudi_builder import (
-    LICENCE_ETALAB, construire_rudi_metadata,
-    media_filtre, media_dict,
+from rudi_harvest_toolkit.pivot import (
+    LICENCE_ETALAB,
+    construire_rudi_metadata,
+    media_filtre,
+    media_dict,
 )
 from filters.csv import slugifier, sauvegarder_csv
 from filters.harvest import _detecter_encodage_bytes
 from connectors.analyseurs import _detecter_champs
-from state import charger_etat, sauvegarder_etat
+from rudi_harvest_toolkit.state import charger_etat, sauvegarder_etat
+from connectors.contacts import resoudre_contacts
+from translation.organisation_secours import enrichir_organisation
+from conf.communes_rm import BBOX_RM_RUDI
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
 STATE_FILE = os.path.join(DATA_DIR, "state_insee.json")
+CONF_RUDI_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "conf", "rudi_node.json")
 
 _HEADERS = {"User-Agent": "moissonneuse-batteuse/1.0 (projet open-data Rennes Métropole)"}
 
@@ -103,6 +110,20 @@ def _generer_rudi_metadata(pub: dict, fichiers_data: list[tuple[str, int]],
                               colonnes=entetes_colonnes)
     )
 
+    producer_final = {"organization_name": _PRODUCTEUR}
+    try:
+        org_enrichie = enrichir_organisation(
+            _PRODUCTEUR,
+            source_label="insee.fr",
+            page_url=None,
+        )
+        if org_enrichie:
+            producer_final.update(org_enrichie)
+    except Exception:
+        pass
+
+    contacts = resoudre_contacts([], _PRODUCTEUR)
+
     return construire_rudi_metadata(
         local_id=str(uuid.uuid5(uuid.NAMESPACE_URL, f"insee:{cle_stable}")),
         titre=f"{pub['titre']} — {_ZONE}",
@@ -110,13 +131,14 @@ def _generer_rudi_metadata(pub: dict, fichiers_data: list[tuple[str, int]],
         description=description,
         theme=theme,
         keywords=["insee", _ZONE.lower(), pub["id"]],
-        producteur_nom=_PRODUCTEUR,
+        producer=producer_final,
         url_source=pub.get("url_direct", url_page),
         url_fiche=url_page,
         medias=medias,
         date_source=date_maj,
+        contacts_source=contacts,
         metadata_source_label="insee.fr",
-        source_producteur="insee.fr",
+        geography=BBOX_RM_RUDI,
     )
 
 
@@ -332,7 +354,8 @@ def traiter_publication(pub: dict, state: dict) -> dict:
         print(f"  → rudi_metadata.json généré")
 
         # 9. Publication optionnelle sur le nœud RUDI
-        rudi_publie = publier_si_configue(rudi_meta, chemins_csv + chemins_dict)
+        rudi_publie = rudi_publish.publier_si_configue(
+            charger_conf_rudi(CONF_RUDI_FILE), rudi_meta, chemins_csv + chemins_dict)
 
     # 10. Mettre à jour le cache. Le téléchargement/filtrage est acquis dès qu'on
     # arrive ici ; `rudi_publie` distingue séparément si la publication a réussi.

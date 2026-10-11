@@ -4,7 +4,7 @@ Prototype étape 1 (métadonnées seules) : permet à un client MCP (Claude Desk
 Claude Code...) d'interroger en langage naturel le catalogue RUDI — recherche de
 jeux de données, détail d'une fiche, thèmes, producteurs. Aucune donnée (contenu
 des fichiers) n'est téléchargée ni analysée ici : uniquement les métadonnées déjà
-publiées sur le nœud (mêmes API que ``connectors/rudi_node.py``).
+publiées sur le nœud (mêmes API que ``rudi_harvest_toolkit.rudi_client``).
 
 Lancement en standalone (transport stdio, adapté aux clients MCP type Claude
 Desktop/Claude Code) :
@@ -16,14 +16,17 @@ lancement, pas de dégradation silencieuse possible (un serveur MCP sans le SDK
 n'a pas de sens).
 """
 
+import os
 import unicodedata
 from typing import Any
 
 from mcp.server.fastmcp import FastMCP
 
-from connectors.rudi_node import charger_conf_rudi
+from rudi_harvest_toolkit.rudi_client import charger_conf_rudi
 from rudi_node_write.connectors.rudi_node_auth import RudiNodeAuth
 from rudi_node_write.rudi_node_writer import RudiNodeWriter
+
+_CONF_RUDI_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "conf", "rudi_node.json")
 
 # Libellés FR des thèmes RUDI (voir CLAUDE.md, THEMES_RUDI dans translation/datagouv_to_rudi.py).
 LIBELLES_THEMES = {
@@ -54,7 +57,7 @@ def _obtenir_writer() -> RudiNodeWriter:
     """Connecteur RUDI paresseux, réutilisé entre les appels d'outils (cache interne 60 s)."""
     global _writer
     if _writer is None:
-        conf = charger_conf_rudi()
+        conf = charger_conf_rudi(_CONF_RUDI_FILE)
         if not conf:
             raise RuntimeError(
                 "Config RUDI absente (src/conf/rudi_node.json). "

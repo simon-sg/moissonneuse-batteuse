@@ -9,9 +9,9 @@ from translation.datagouv_to_rudi import (
     traduire_metadonnees, traduire_metadonnees_service, THEMES_RUDI, _detecter_theme,
 )
 from translation.description_secours import description_quasi_vide, generer_complement
-from translation.rudi_builder import (
+from rudi_harvest_toolkit.pivot import (
     construire_rudi_metadata, media_filtre, media_source, media_metadata_page,
-    LICENCE_ETALAB, _parser_date_http,
+    LICENCE_ETALAB, parser_date_http,
 )
 
 _META_MIN = {
@@ -185,7 +185,8 @@ class TestRudiBuilder(unittest.TestCase):
             local_id="00000000-0000-5000-8000-000000000001",
             titre="T — Rennes Métropole", synopsis="S", description="D",
             theme="economy", keywords=["a", "b", "a"],
-            producteur_nom="Prod", url_source="https://src", url_fiche="https://fiche",
+            producer={"organization_name": "Prod"},
+            contacts_source=[], url_source="https://src", url_fiche="https://fiche",
             medias=[],
         )
         args.update(surcharge)
@@ -233,16 +234,16 @@ class TestRudiBuilder(unittest.TestCase):
 
 class TestParserDateHttp(unittest.TestCase):
     def test_format_http(self):
-        self.assertEqual(_parser_date_http("Wed, 12 Feb 2025 09:41:37 GMT"),
+        self.assertEqual(parser_date_http("Wed, 12 Feb 2025 09:41:37 GMT"),
                          "2025-02-12T09:41:37Z")
 
     def test_format_iso(self):
-        self.assertEqual(_parser_date_http("2025-01-15T10:30:00.000Z"),
+        self.assertEqual(parser_date_http("2025-01-15T10:30:00.000Z"),
                          "2025-01-15T10:30:00Z")
 
     def test_none(self):
-        self.assertIsNone(_parser_date_http(None))
-        self.assertIsNone(_parser_date_http(""))
+        self.assertIsNone(parser_date_http(None))
+        self.assertIsNone(parser_date_http(""))
 
 
 class TestDescriptionSecours(unittest.TestCase):

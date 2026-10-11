@@ -110,7 +110,9 @@ class TestEnrichirOrganisation(unittest.TestCase):
 
 
 class TestIntegrationRudiBuilder(unittest.TestCase):
-    """Vérifie que construire_rudi_metadata intègre correctement l'enrichissement."""
+    """Vérifie que le producteur pré-résolu par l'appelant (enrichir_organisation) traverse
+    construire_rudi_metadata sans altération — la résolution a migré du builder vers
+    l'appelant avec l'extraction de rudi-harvest-toolkit."""
 
     @patch(_MOCK_WIKI)
     def test_produit_caption_et_summary(self, mock_wiki):
@@ -119,7 +121,10 @@ class TestIntegrationRudiBuilder(unittest.TestCase):
             "summary": "L'INSEE produit des statistiques.",
             "url": "https://fr.wikipedia.org/wiki/INSEE",
         }
-        from translation.rudi_builder import construire_rudi_metadata, LICENCE_ETALAB
+        from rudi_harvest_toolkit.pivot import construire_rudi_metadata, LICENCE_ETALAB
+        nom = "Institut national de la statistique et des études économiques (Insee)"
+        producer = {"organization_name": nom}
+        producer.update(enrichir_organisation(nom) or {})
         result = construire_rudi_metadata(
             local_id="test-123",
             titre="Titre test — Rennes Métropole",
@@ -127,10 +132,11 @@ class TestIntegrationRudiBuilder(unittest.TestCase):
             description="Description test",
             theme="economy",
             keywords=["test"],
-            producteur_nom="Institut national de la statistique et des études économiques (Insee)",
+            producer=producer,
             url_source="https://example.com",
             url_fiche="https://example.com",
             medias=[],
+            contacts_source=[],
             ajouter_medias_source=False,
             licence=LICENCE_ETALAB,
         )
@@ -142,8 +148,10 @@ class TestIntegrationRudiBuilder(unittest.TestCase):
         self.assertIn("source : Wikipédia", producer["organization_summary"])
 
     def test_echec_wikipedia_repli_factuel(self):
-        from translation.rudi_builder import construire_rudi_metadata, LICENCE_ETALAB
+        from rudi_harvest_toolkit.pivot import construire_rudi_metadata, LICENCE_ETALAB
         with patch(_MOCK_WIKI, return_value=None):
+            producer = {"organization_name": "data.gouv.fr"}
+            producer.update(enrichir_organisation("data.gouv.fr", source_label="data.gouv.fr") or {})
             result = construire_rudi_metadata(
                 local_id="test-456",
                 titre="Titre test — Rennes Métropole",
@@ -151,13 +159,13 @@ class TestIntegrationRudiBuilder(unittest.TestCase):
                 description="Description test",
                 theme="economy",
                 keywords=["test"],
-                producteur_nom="data.gouv.fr",
+                producer=producer,
                 url_source="https://example.com",
                 url_fiche="https://example.com",
                 medias=[],
+                contacts_source=[],
                 ajouter_medias_source=False,
                 licence=LICENCE_ETALAB,
-                source_producteur="data.gouv.fr",
             )
         producer = result["producer"]
         self.assertIn("organization_caption", producer)

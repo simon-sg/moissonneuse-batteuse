@@ -16,13 +16,15 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from connectors.rudi_node import (publier_dataset, charger_conf_rudi, toutes_metadonnees_rudi,
-                                   supprimer_dataset, supprimer_organisation, _creer_writer)
-from connectors import rudi_publish
+from rudi_harvest_toolkit.rudi_client import (
+    publier_dataset, charger_conf_rudi, toutes_metadonnees_rudi,
+    supprimer_dataset, supprimer_organisation, _creer_writer)
+from rudi_harvest_toolkit.publish import enregistrer_local_id_publie
+from rudi_harvest_toolkit.state import charger_etat, sauvegarder_etat, construire_index_dossier
 from conf.datasets import DATASETS_GEO
-from state import charger_etat, sauvegarder_etat, construire_index_dossier
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
+CONF_RUDI_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "conf", "rudi_node.json")
 STATE_TAB_FILE = os.path.join(DATA_DIR, "state.json")
 STATE_INSEE_FILE = os.path.join(DATA_DIR, "state_insee.json")
 STATE_OEB_FILE = os.path.join(DATA_DIR, "state_oeb.json")
@@ -48,7 +50,7 @@ def _fichiers_a_uploader(dossier_path: str, rudi_metadata: dict) -> list[str]:
 
 
 def main() -> None:
-    conf_rudi = charger_conf_rudi()
+    conf_rudi = charger_conf_rudi(CONF_RUDI_FILE)
     if not conf_rudi:
         print("src/conf/rudi_node.json absent — impossible de publier.")
         return
@@ -107,7 +109,7 @@ def main() -> None:
                 rudi_metadata = json.load(f)
             fichiers = _fichiers_a_uploader(dossier_path, rudi_metadata)
             publier_dataset(conf=conf_rudi, rudi_metadata=rudi_metadata, fichiers_filtres=fichiers)
-            rudi_publish.enregistrer_local_id_publie(rudi_metadata.get("local_id"))
+            enregistrer_local_id_publie(rudi_metadata.get("local_id"))
             ok += 1
             # Sauvegarde immédiate — un rattrapage porte sur des dizaines/centaines de JDD
             # et peut être interrompu en cours de route (nœud injoignable, process tué) ;
@@ -134,7 +136,7 @@ def menage_rudi_one_shot() -> list[dict]:
 
     Retourne la liste des datasets orphelins (dicts RUDI).
     """
-    conf_rudi = charger_conf_rudi()
+    conf_rudi = charger_conf_rudi(CONF_RUDI_FILE)
     if not conf_rudi:
         print("src/conf/rudi_node.json absent — impossible d'interroger le nœud.")
         return []
@@ -181,7 +183,7 @@ def menage_organisations() -> list[dict]:
 
     Retourne la liste des organisations non utilisées (dicts RUDI).
     """
-    conf_rudi = charger_conf_rudi()
+    conf_rudi = charger_conf_rudi(CONF_RUDI_FILE)
     if not conf_rudi:
         print("src/conf/rudi_node.json absent — impossible d'interroger le nœud.")
         return []

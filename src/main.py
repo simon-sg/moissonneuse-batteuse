@@ -8,7 +8,9 @@ from datetime import datetime, timezone
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from connectors.datagouv import get_dataset_metadata, find_resource_by_format, download_resource
-from connectors.rudi_publish import publier_si_configue
+from rudi_harvest_toolkit import publish as rudi_publish
+from rudi_harvest_toolkit.rudi_client import charger_conf_rudi
+from rudi_harvest_toolkit.state import dataset_a_change
 from connectors.sirene import obtenir_sirens_rm
 from filters.geographic import filter_json_by_postal_codes, load_json, save_json
 from filters.harvest import (
@@ -16,10 +18,11 @@ from filters.harvest import (
 )
 from harvest_batch import _resoudre_champs
 from translation.datagouv_to_rudi import traduire_metadonnees
-from state import charger_state, sauvegarder_state, dataset_a_change
+from state import charger_state, sauvegarder_state
 from conf.datasets import DATASETS
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
+CONF_RUDI_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "conf", "rudi_node.json")
 
 
 def _filtrer_csv(chemin: str, champ_cp, champ_ville, champ_iris, champ_adresse,
@@ -138,7 +141,8 @@ def traiter_dataset(config: dict, state: dict) -> dict:
     print(f"  Métadonnées RUDI sauvegardées.")
 
     # Étape 6 : publication sur le nœud RUDI
-    rudi_publie = publier_si_configue(rudi_metadata, fichiers_filtres)
+    rudi_publie = rudi_publish.publier_si_configue(
+        charger_conf_rudi(CONF_RUDI_FILE), rudi_metadata, fichiers_filtres)
 
     # Étape 7 : mise à jour de l'état
     state[dataset_id] = {

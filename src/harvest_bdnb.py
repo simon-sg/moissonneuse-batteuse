@@ -27,20 +27,24 @@ import uuid
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from conf.communes_rm import CODES_INSEE_RM
+from conf.communes_rm import CODES_INSEE_RM, BBOX_RM_RUDI
 from conf.datasets import DATASETS_BDNB
 from connectors.bdnb import (
     get_zip_info, telecharger_zip,
     extraire_batiments_rm, extraire_table_par_bg_id, sauvegarder_csv,
     TABLES_DEFAUT, CHAMP_BG_ID,
 )
-from connectors.rudi_publish import publier_si_configue
+from rudi_harvest_toolkit import publish as rudi_publish
+from rudi_harvest_toolkit.rudi_client import charger_conf_rudi
+from rudi_harvest_toolkit.pivot import construire_rudi_metadata, media_filtre
 from translation.description_secours import generer_complement
-from state import charger_etat, sauvegarder_etat
-from translation.rudi_builder import construire_rudi_metadata, media_filtre
+from translation.organisation_secours import enrichir_organisation
+from connectors.contacts import resoudre_contacts
+from rudi_harvest_toolkit.state import charger_etat, sauvegarder_etat
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
 STATE_FILE = os.path.join(DATA_DIR, "state_bdnb.json")
+CONF_RUDI_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "conf", "rudi_node.json")
 
 _PRODUCTEUR = "Centre Scientifique et Technique du Bâtiment (CSTB)"
 _ZONE = "Rennes Métropole"
@@ -83,6 +87,16 @@ def _generer_rudi_metadata(config: dict, fichiers: list[tuple[str, list[str], in
                            f"{nom} — données BDNB filtrées sur {_ZONE} (CSV, {nb_rm} bâtiments)")
               for nom, _, nb_rm in fichiers]
 
+    producer_final = {"organization_name": _PRODUCTEUR}
+    try:
+        org_enrichie = enrichir_organisation(_PRODUCTEUR, source_label="bdnb.io", page_url=None)
+        if org_enrichie:
+            producer_final.update(org_enrichie)
+    except Exception:
+        pass
+
+    contacts = resoudre_contacts([], _PRODUCTEUR)
+
     return construire_rudi_metadata(
         local_id=str(uuid.uuid5(uuid.NAMESPACE_URL, f"bdnb/{config_id}")),
         titre=f"{titre_base} — {_ZONE}",
@@ -90,13 +104,14 @@ def _generer_rudi_metadata(config: dict, fichiers: list[tuple[str, list[str], in
         description=description,
         theme=theme,
         keywords=["bdnb", "bâtiment", "dpe", "énergie", _ZONE.lower()],
-        producteur_nom=_PRODUCTEUR,
+        producer=producer_final,
         url_source=url_source,
         url_fiche=url_source,
         medias=medias,
         date_source=last_modified,
+        contacts_source=contacts,
         metadata_source_label="bdnb.io",
-        source_producteur="bdnb.io",
+        geography=BBOX_RM_RUDI,
     )
 
 
@@ -191,7 +206,8 @@ def traiter_config(config: dict, state: dict) -> dict:
     print(f"  → rudi_metadata.json ({len(fichiers_produits)} fichier(s))")
 
     # 6. Publication RUDI
-    rudi_publie = publier_si_configue(rudi_meta, chemins_csv)
+    rudi_publie = rudi_publish.publier_si_configue(
+        charger_conf_rudi(CONF_RUDI_FILE), rudi_meta, chemins_csv)
 
     # 7. État
     nb_total = sum(nb for _, _, nb in fichiers_produits)

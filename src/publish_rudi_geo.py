@@ -1,9 +1,9 @@
 """
 Déclare, sur le catalogue RUDI, les flux WMS/WFS/OGC API Features (pilote
 rudi-geo) pour les JDD effectivement (re)publiés pendant ce run — et eux
-seuls (voir connectors/rudi_publish.py::local_ids_publies_ce_run()).
+seuls (voir rudi_harvest_toolkit.publish::local_ids_publies_ce_run()).
 
-Best-effort, comme la publication RUDI elle-même (connectors/rudi_publish.py) :
+Best-effort, comme la publication RUDI elle-même (rudi_harvest_toolkit.publish) :
 une erreur ici ne doit jamais faire échouer le pipeline de moisson, qui a sa
 propre valeur indépendamment de ce complément géo. Si rudi-geo n'est pas
 démarré, tente de le démarrer (même pattern que
@@ -22,11 +22,13 @@ import time
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from connectors.http import session
-from connectors.rudi_node import charger_conf_rudi
-from connectors.rudi_publish import local_ids_publies_ce_run
+from rudi_harvest_toolkit.rudi_client import charger_conf_rudi
+from rudi_harvest_toolkit.publish import local_ids_publies_ce_run
+
+CONF_RUDI_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "conf", "rudi_node.json")
 
 # Chemin par defaut : repos voisins sous le meme parent (convention deja en
-# place sur cette machine -- voir rudi_node.py::_SCRIPT_NOEUD_SOURCE).
+# place sur cette machine -- voir rudi_node_lifecycle.py::_SCRIPT_NOEUD_SOURCE).
 # Surchargeable via la cle "rudi_geo_dir" de src/conf/rudi_node.json si les
 # deux depots ne sont pas voisins.
 _RUDI_GEO_DIR_DEFAUT = os.path.join(
@@ -89,7 +91,7 @@ def main() -> None:
         print("  [rudi-geo] aucun JDD (re)publie ce run -- rien a declarer.")
         return
 
-    conf_rudi = charger_conf_rudi()
+    conf_rudi = charger_conf_rudi(CONF_RUDI_FILE)
     if not conf_rudi:
         print("  [rudi-geo] src/conf/rudi_node.json absent -- etape sautee.")
         return

@@ -30,8 +30,8 @@ import enrichir_descriptions
 import enrichir_organisations
 import reanalyser_faux_positifs
 from conf.datasets import DATASETS, DATASETS_GEO, DATASETS_INSEE, DATASETS_OEB, DATASETS_BDNB
-from connectors.rudi_node import charger_conf_rudi
-from connectors import rudi_publish
+from rudi_harvest_toolkit.rudi_client import charger_conf_rudi
+from rudi_harvest_toolkit.publish import demarrer_nouveau_run
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
 CONF_RUDI_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "conf", "rudi_node.json")
@@ -190,7 +190,7 @@ def action_verifier_backlog_examen():
 def action_menage_rudi():
     def _detecter_et_proposer():
         orphelins = publish_rudi.menage_rudi_one_shot()
-        conf = charger_conf_rudi()
+        conf = charger_conf_rudi(CONF_RUDI_FILE)
         if not conf:
             if orphelins:
                 print("src/conf/rudi_node.json absent — suppression des orphelins impossible.")
@@ -296,10 +296,10 @@ def executer_pipeline_complet(etapes_supplementaires: list | None = None) -> lis
     deux OOM (2026-07-31). Ralentir le pipeline est le compromis assumé."""
     from concurrent.futures import ThreadPoolExecutor, as_completed
 
-    # Vide l'accumulateur de local_id publiés (voir connectors/rudi_publish.py) :
+    # Vide l'accumulateur de local_id publiés (voir rudi_harvest_toolkit.publish) :
     # ce process peut vivre plus longtemps qu'un run (dashboard.py), il ne faut
     # pas que l'étape "Services géo" de ce run traite des JDD d'un run précédent.
-    rudi_publish.demarrer_nouveau_run()
+    demarrer_nouveau_run()
 
     etapes = (etapes_supplementaires or []) + ETAPES_PIPELINE
     resultats = []

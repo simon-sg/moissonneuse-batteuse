@@ -1,7 +1,7 @@
 """
 Rattrapage des dates : met à jour les rudi_metadata.json existants (source
 data.gouv.fr) dont dataset_dates.created/updated a été tronqué à minuit UTC
-par l'ancien bug de traduction (voir translation/rudi_builder.py::_parser_date_http
+par l'ancien bug de traduction (voir rudi_harvest_toolkit.pivot::parser_date_http
 et translation/datagouv_to_rudi.py), en refetchant created_at/last_modified
 depuis l'API data.gouv.fr et en réappliquant la traduction corrigée.
 
@@ -12,7 +12,7 @@ Usage :
 Ne re-télécharge pas les fichiers de données — uniquement les métadonnées API.
 Scope volontairement limité aux JDD sourcés depuis data.gouv.fr (comme
 enrichir_contacts.py) — INSEE/OEB/BDNB/géo partagent le même bug via
-_parser_date_http mais n'ont pas de source API uniforme pour un rattrapage
+parser_date_http mais n'ont pas de source API uniforme pour un rattrapage
 générique ; à traiter séparément si besoin.
 """
 import glob
@@ -25,10 +25,11 @@ import time
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from connectors.datagouv import get_dataset_metadata
-from connectors.rudi_node import publier_dataset, charger_conf_rudi
-from translation.rudi_builder import _parser_date_http
+from rudi_harvest_toolkit.rudi_client import publier_dataset, charger_conf_rudi
+from rudi_harvest_toolkit.pivot import parser_date_http as _parser_date_http
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
+CONF_RUDI_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "conf", "rudi_node.json")
 _EXTRACT_DATAGOUV_ID = re.compile(r"data\.gouv\.fr/datasets/([a-f0-9-]+)")
 
 
@@ -87,7 +88,7 @@ def enrichir(dry_run: bool = False) -> None:
         return
 
     modifies, echecs, identiques = 0, 0, 0
-    conf_rudi = charger_conf_rudi() if not dry_run else None
+    conf_rudi = charger_conf_rudi(CONF_RUDI_FILE) if not dry_run else None
 
     for i, (chemin, meta, ds_id) in enumerate(a_traiter, 1):
         titre = meta.get("resource_title", "?")[:60]

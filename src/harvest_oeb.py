@@ -26,13 +26,18 @@ from connectors.oeb import (
     telecharger_lignes_rm, lignes_vers_csv,
     BASE_URL,
 )
-from connectors.rudi_publish import publier_si_configue
+from rudi_harvest_toolkit import publish as rudi_publish
+from rudi_harvest_toolkit.rudi_client import charger_conf_rudi
+from rudi_harvest_toolkit.pivot import construire_rudi_metadata, media_filtre
 from translation.description_secours import LIBELLES_THEMES, generer_complement, resumer_court
-from state import charger_etat, sauvegarder_etat
-from translation.rudi_builder import construire_rudi_metadata, media_filtre
+from translation.organisation_secours import enrichir_organisation
+from connectors.contacts import resoudre_contacts
+from conf.communes_rm import BBOX_RM_RUDI
+from rudi_harvest_toolkit.state import charger_etat, sauvegarder_etat
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
 STATE_FILE = os.path.join(DATA_DIR, "state_oeb.json")
+CONF_RUDI_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "conf", "rudi_node.json")
 
 _PRODUCTEUR = "Observatoire de l'Environnement en Bretagne (OEB)"
 _ZONE = "Rennes Métropole"
@@ -75,6 +80,16 @@ def _generer_rudi_metadata(
         if isinstance(tag, str):
             mots_cles.append(tag)
 
+    producer_final = {"organization_name": _PRODUCTEUR}
+    try:
+        org_enrichie = enrichir_organisation(_PRODUCTEUR, source_label="OEB", page_url=None)
+        if org_enrichie:
+            producer_final.update(org_enrichie)
+    except Exception:
+        pass
+
+    contacts = resoudre_contacts([], _PRODUCTEUR)
+
     return construire_rudi_metadata(
         local_id=str(uuid.uuid5(uuid.NAMESPACE_URL, url_source)),
         titre=f"{titre_source} — {_ZONE}",
@@ -85,13 +100,14 @@ def _generer_rudi_metadata(
         description=description,
         theme=theme,
         keywords=mots_cles,
-        producteur_nom=_PRODUCTEUR,
+        producer=producer_final,
         url_source=url_source,
         url_fiche=url_source,
         medias=[media_filtre(slug, nom_csv, _ZONE)],
         date_source=info.get("updatedAt"),
+        contacts_source=contacts,
         metadata_source_label="portail OEB",
-        source_producteur="OEB",
+        geography=BBOX_RM_RUDI,
     )
 
 
@@ -148,7 +164,8 @@ def traiter_dataset(config: dict, state: dict) -> dict:
     print(f"  → rudi_metadata.json généré")
 
     # 6. Publication RUDI
-    rudi_publie = publier_si_configue(rudi_meta, [chemin_csv])
+    rudi_publie = rudi_publish.publier_si_configue(
+        charger_conf_rudi(CONF_RUDI_FILE), rudi_meta, [chemin_csv])
 
     # 7. État
     state[slug] = {

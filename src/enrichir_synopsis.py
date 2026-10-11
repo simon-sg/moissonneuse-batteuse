@@ -32,7 +32,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from conf.datasets import DATASETS_GEO
-from state import charger_etat, sauvegarder_etat, construire_index_dossier
+from rudi_harvest_toolkit.state import charger_etat, sauvegarder_etat, construire_index_dossier
 from translation.description_secours import LIBELLES_THEMES, MARQUEUR, partie_descriptive, resumer_court
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")

@@ -1,10 +1,10 @@
 """
 Régénère `summary[].html` des JDD déjà moissonnés, à partir du `summary[].text` déjà sur
-disque, via le convertisseur Markdown léger (translation/markdown_vers_html.py).
+disque, via le convertisseur Markdown léger (rudi_harvest_toolkit.markdown).
 
 Contexte : le portail (depuis sa v3.3.2) affiche le résumé long d'un JDD en injectant
 `summary[].html ?? summary[].text` tel quel (innerHTML). Les moissons antérieures à
-l'introduction de ce traitement (voir rudi_builder.py::construire_rudi_metadata) n'ont
+l'introduction de ce traitement (voir rudi_harvest_toolkit.pivot::construire_rudi_metadata) n'ont
 jamais rempli `html` : la fiche catalogue affichait donc le `text` brut, Markdown source
 compris (gras « **...** », puces « - ... », liens, et retours à la ligne perdus — le
 rendu HTML ignore les \n hors balises). Les moissons futures appliquent déjà la
@@ -28,8 +28,8 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from conf.datasets import DATASETS_GEO
-from state import charger_etat, sauvegarder_etat, construire_index_dossier
-from translation.markdown_vers_html import markdown_vers_html
+from rudi_harvest_toolkit.state import charger_etat, sauvegarder_etat, construire_index_dossier
+from rudi_harvest_toolkit.markdown import markdown_vers_html
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
 STATE_TAB_FILE = os.path.join(DATA_DIR, "state.json")

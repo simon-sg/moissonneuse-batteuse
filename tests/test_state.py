@@ -7,7 +7,9 @@ import unittest
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "src"))
 
-from state import (charger_etat, sauvegarder_etat, dataset_a_change, construire_index_dossier)
+from rudi_harvest_toolkit.state import (
+    charger_etat, sauvegarder_etat, dataset_a_change, construire_index_dossier,
+)
 
 
 class TestChargerEtat(unittest.TestCase):

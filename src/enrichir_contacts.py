@@ -20,10 +20,11 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from connectors.contacts import extraire_contacts_datagouv, resoudre_contacts
 from connectors.datagouv import get_dataset_metadata
-from connectors.rudi_node import publier_dataset, charger_conf_rudi
+from rudi_harvest_toolkit.rudi_client import publier_dataset, charger_conf_rudi
 from translation.datagouv_to_rudi import _local_id_depuis_dataset_id
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
+CONF_RUDI_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "conf", "rudi_node.json")
 _EMAIL_GENERIQUE = "contact@example.org"
 _EXTRACT_DATAGOUV_ID = re.compile(r"data\.gouv\.fr/datasets/([a-f0-9-]+)")
 
@@ -84,7 +85,7 @@ def enrichir(dry_run: bool = False) -> None:
         return
 
     modifes, echecs, identiques = 0, 0, 0
-    conf_rudi = charger_conf_rudi() if not dry_run else None
+    conf_rudi = charger_conf_rudi(CONF_RUDI_FILE) if not dry_run else None
 
     for i, (chemin, meta, ds_id) in enumerate(a_enrichir, 1):
         titre = meta.get("resource_title", "?")[:60]

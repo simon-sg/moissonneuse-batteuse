@@ -35,10 +35,12 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import discover
 import cli
-from connectors import rudi_node
+from connectors import rudi_node_lifecycle
+from rudi_harvest_toolkit.rudi_client import charger_conf_rudi, noeud_pret
 from tee import Tee as _TeeFichier
 
 LOG_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "logs")
+CONF_RUDI_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "conf", "rudi_node.json")
 
 # Délai maximum d'attente du nœud RUDI après démarrage du conteneur (l'appli interne
 # met plusieurs secondes à démarrer après que Podman rapporte le conteneur "running").
@@ -50,22 +52,22 @@ def _demarrer_noeud_rudi() -> None:
     """Démarre le nœud RUDI source (process natifs) si nécessaire et attend qu'il réponde.
     N'échoue jamais : si le nœud reste indisponible, la publication de cette exécution
     sera simplement différée (rudi_publie=false, rattrapée au prochain run)."""
-    conf = rudi_node.charger_conf_rudi()
+    conf = charger_conf_rudi(CONF_RUDI_FILE)
     if not conf:
         print("[Nœud RUDI] non configuré (src/conf/rudi_node.json absent) — publication ignorée cette fois.")
         return
 
-    if rudi_node.noeud_source_actif(conf):
+    if rudi_node_lifecycle.noeud_source_actif(conf):
         print("[Nœud RUDI] nœud source déjà actif.")
     else:
         print("[Nœud RUDI] nœud source non démarré — démarrage...")
-        ok, message = rudi_node.demarrer_noeud_source(conf)
+        ok, message = rudi_node_lifecycle.demarrer_noeud_source(conf)
         print(f"[Nœud RUDI] {message}")
         if not ok:
             return
 
     for tentative in range(1, _NOEUD_RUDI_TENTATIVES + 1):
-        if rudi_node.noeud_pret(conf):
+        if noeud_pret(conf):
             print(f"[Nœud RUDI] prêt (après {tentative} tentative(s)).")
             return
         time.sleep(_NOEUD_RUDI_DELAI_S)

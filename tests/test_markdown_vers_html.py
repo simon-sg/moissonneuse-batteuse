@@ -5,7 +5,7 @@ import unittest
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "src"))
 
-from translation.markdown_vers_html import markdown_vers_html
+from rudi_harvest_toolkit.markdown import markdown_vers_html
 
 
 class TestMarkdownVersHtml(unittest.TestCase):

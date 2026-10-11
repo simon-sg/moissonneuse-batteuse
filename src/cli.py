@@ -29,7 +29,7 @@ import enrichir_descriptions
 import enrichir_organisations
 import reanalyser_faux_positifs
 from conf.datasets import DATASETS, DATASETS_GEO, DATASETS_INSEE, DATASETS_OEB, DATASETS_BDNB
-from connectors.rudi_node import charger_conf_rudi
+from rudi_harvest_toolkit.rudi_client import charger_conf_rudi
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
 CONF_RUDI_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "conf", "rudi_node.json")
@@ -188,7 +188,7 @@ def action_verifier_backlog_examen():
 def action_menage_rudi():
     def _detecter_et_proposer():
         orphelins = publish_rudi.menage_rudi_one_shot()
-        conf = charger_conf_rudi()
+        conf = charger_conf_rudi(CONF_RUDI_FILE)
         if not conf:
             if orphelins:
                 print("src/conf/rudi_node.json absent — suppression des orphelins impossible.")

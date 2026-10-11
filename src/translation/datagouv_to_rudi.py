@@ -7,7 +7,8 @@ from connectors.contacts import extraire_contacts_datagouv, resoudre_contacts
 from translation.description_secours import (
     LIBELLES_THEMES, description_quasi_vide, entetes_depuis_geojson, generer_complement, resumer_court,
 )
-from translation.rudi_builder import _parser_date_http, construire_rudi_metadata
+from rudi_harvest_toolkit.pivot import construire_rudi_metadata, parser_date_http
+from translation.organisation_secours import enrichir_organisation
 
 # Thèmes acceptés par le nœud RUDI (conformes aux catégories RUDI)
 THEMES_RUDI = {
@@ -269,16 +270,29 @@ def traduire_metadonnees(metadata_source: dict, zone: str = "Rennes Métropole",
     })
 
     dates = {}
-    created = _parser_date_http(metadata_source.get("created_at"))
+    created = parser_date_http(metadata_source.get("created_at"))
     if created:
         dates["created"] = created
-    updated = _parser_date_http(metadata_source.get("last_modified"))
+    updated = parser_date_http(metadata_source.get("last_modified"))
     if updated:
         dates["updated"] = updated
 
     contacts_source = extraire_contacts_datagouv(metadata_source)
     contacts = resoudre_contacts(contacts_source, producer["organization_name"])
 
+    producer_final = dict(producer)
+    try:
+        org_enrichie = enrichir_organisation(
+            producer_final["organization_name"],
+            source_label="data.gouv.fr",
+            page_url=org.get("page"),
+        )
+        if org_enrichie:
+            producer_final.update(org_enrichie)
+    except Exception:
+        pass
+
+    from conf.communes_rm import BBOX_RM_RUDI
     return construire_rudi_metadata(
         local_id=_local_id_depuis_dataset_id(dataset_id),
         titre=titre_localise,
@@ -286,7 +300,7 @@ def traduire_metadonnees(metadata_source: dict, zone: str = "Rennes Métropole",
         description=description_localisee,
         theme=theme,
         keywords=keywords,
-        producteur_nom=producer["organization_name"],
+        producer=producer_final,
         url_source=url_source,
         url_fiche=url_source,
         medias=available_formats,
@@ -295,8 +309,7 @@ def traduire_metadonnees(metadata_source: dict, zone: str = "Rennes Métropole",
         dates=dates,
         metadata_dates=dates,
         ajouter_medias_source=False,  # entrées "source-data-gouv"/"source-metadata" déjà construites
-        source_producteur="data.gouv.fr",
-        page_producteur=org.get("page"),
+        geography=BBOX_RM_RUDI,
     )
 
 
@@ -469,9 +482,23 @@ def traduire_metadonnees_service(config: dict,
 
     now = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     created = (dates_existantes or {}).get("created") or now
-    updated = _parser_date_http(date_source) if date_source else now
+    updated = parser_date_http(date_source) if date_source else now
     dates = {"created": created, "updated": updated}
 
+    producer_final = {"organization_name": producteur_nom}
+    try:
+        host = url_service.split("/")[2] if "/" in url_service else None
+        org_enrichie = enrichir_organisation(
+            producteur_nom,
+            source_label=host,
+            page_url=None,
+        )
+        if org_enrichie:
+            producer_final.update(org_enrichie)
+    except Exception:
+        pass
+
+    from conf.communes_rm import BBOX_RM_RUDI
     return construire_rudi_metadata(
         local_id=local_id,
         titre=f"{titre} — Rennes Métropole",
@@ -479,7 +506,7 @@ def traduire_metadonnees_service(config: dict,
         description=description,
         theme=theme,
         keywords=keywords,
-        producteur_nom=producteur_nom,
+        producer=producer_final,
         url_source=url_service,
         url_fiche=url_service,
         medias=available_formats,
@@ -487,5 +514,5 @@ def traduire_metadonnees_service(config: dict,
         dates=dates,
         metadata_dates=dates,
         ajouter_medias_source=False,  # entrées "service-<type>"/"source-metadata" déjà construites
-        source_producteur=url_service.split("/")[2] if "/" in url_service else None,
+        geography=BBOX_RM_RUDI,
     )

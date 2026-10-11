@@ -14,12 +14,14 @@ import time
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from connectors.rudi_node import charger_conf_rudi, _creer_writer
+from rudi_harvest_toolkit.rudi_client import charger_conf_rudi, _creer_writer
 from translation.organisation_secours import enrichir_organisation
+
+CONF_RUDI_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "conf", "rudi_node.json")
 
 
 def enrichir(dry_run: bool = False, force: bool = False) -> None:
-    conf = charger_conf_rudi()
+    conf = charger_conf_rudi(CONF_RUDI_FILE)
     if not conf:
         print("Configuration RUDI absente (src/conf/rudi_node.json). Rien à faire.")
         return

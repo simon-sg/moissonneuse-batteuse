@@ -30,7 +30,8 @@ from conf.insee_cp_35 import INSEE_SEULEMENT_35, CP_SEULEMENT_35
 from filters.geographic import detecter_nature_colonne
 from filters.harvest import _detecter_delimiteur, _detecter_encodage, _ligne_est_rm
 from harvest_batch import _resoudre_champs
-from state import charger_state, sauvegarder_state, construire_index_dossier
+from state import charger_state, sauvegarder_state
+from rudi_harvest_toolkit.state import construire_index_dossier
 from discover import charger_decouverte, sauvegarder_decouverte
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")

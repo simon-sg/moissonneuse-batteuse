@@ -36,7 +36,10 @@ import cli
 import discover
 from catalogue import GABARIT_WMS_MAP, _charger_cle_carto
 from conf.discover import REQUETES_STRUCTUREES, KEYWORDS, NB_PAGES as CONF_NB_PAGES
-from connectors import rudi_node, rudi_portal, rudi_portal_config
+from connectors import rudi_node_lifecycle as rudi_node, rudi_portal, rudi_portal_config
+from rudi_harvest_toolkit.rudi_client import charger_conf_rudi, noeud_pret
+
+CONF_RUDI_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "conf", "rudi_node.json")
 from filters.discovery import _paginer, _filtrer_communs
 
 HOST = "127.0.0.1"
@@ -368,12 +371,12 @@ def _traiter_purge(idx_str: str, params: dict) -> tuple[int, dict]:
 
 def _etat_noeud() -> dict:
     """État du nœud RUDI configuré — process natifs du nœud source."""
-    conf = rudi_node.charger_conf_rudi()
+    conf = charger_conf_rudi(CONF_RUDI_FILE)
     if not conf:
         return {"configure": False, "pret": False, "actif": False, "url": None, "url_manager": None}
     return {
         "configure": True,
-        "pret": bool(rudi_node.noeud_pret(conf)),
+        "pret": bool(noeud_pret(conf)),
         "actif": bool(rudi_node.noeud_source_actif(conf)),
         "url": conf["url"],
         "url_manager": conf["url"].rstrip("/") + "/manager/",
@@ -412,7 +415,7 @@ def _traiter_konsult_restart() -> tuple[int, dict]:
 # ---------------------------------------------------------------------------
 
 def _etat_infrastructure() -> dict:
-    conf = rudi_node.charger_conf_rudi()
+    conf = charger_conf_rudi(CONF_RUDI_FILE)
     return {
         "noeud_source": {
             "configure": bool(conf),
@@ -466,7 +469,7 @@ def _traiter_portail_upload(handler) -> tuple[int, dict]:
 # ---------------------------------------------------------------------------
 
 def _traiter_noeud_demarrer() -> tuple[int, dict]:
-    conf = rudi_node.charger_conf_rudi()
+    conf = charger_conf_rudi(CONF_RUDI_FILE)
     if not conf:
         return 400, {"ok": False, "message": "Nœud RUDI non configuré."}
     ok, message = rudi_node.demarrer_noeud_source(conf)

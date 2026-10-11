@@ -27,11 +27,13 @@ from connectors.geo_services import (
     ogcapi_lister_collections, ogcapi_telecharger_rm, ogcapi_signature,
 )
 from translation.datagouv_to_rudi import traduire_metadonnees_service
-from connectors.rudi_publish import publier_si_configue
-from state import charger_etat, sauvegarder_etat
+from rudi_harvest_toolkit import publish as rudi_publish
+from rudi_harvest_toolkit.rudi_client import charger_conf_rudi
+from rudi_harvest_toolkit.state import charger_etat, sauvegarder_etat
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
 STATE_FILE = os.path.join(DATA_DIR, "state_geo.json")
+CONF_RUDI_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "conf", "rudi_node.json")
 
 
 def _slug_typename(typename: str) -> str:
@@ -340,7 +342,8 @@ def traiter_geo_dataset(config: dict, state: dict) -> None:
     print("  Métadonnées RUDI sauvegardées.")
 
     # Publication sur le nœud RUDI
-    publie = publier_si_configue(rudi_metadata, [ch for ch, _ in fichiers_geojson])
+    publie = rudi_publish.publier_si_configue(
+        charger_conf_rudi(CONF_RUDI_FILE), rudi_metadata, [ch for ch, _ in fichiers_geojson])
 
     state.setdefault("_rudi_publie", {})
     state["_rudi_publie"][config["dossier"]] = publie

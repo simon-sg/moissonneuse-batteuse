@@ -31,7 +31,7 @@ from translation.description_secours import (
     MARQUEUR, description_quasi_vide, entetes_depuis_csv, entetes_depuis_geojson,
     generer_complement, partie_descriptive,
 )
-from state import charger_etat, sauvegarder_etat, construire_index_dossier
+from rudi_harvest_toolkit.state import charger_etat, sauvegarder_etat, construire_index_dossier
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
 STATE_TAB_FILE = os.path.join(DATA_DIR, "state.json")

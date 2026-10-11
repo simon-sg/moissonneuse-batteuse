@@ -4,7 +4,7 @@ logique pure, aucun réseau (aucun appel à publier_dataset() ni au nœud RUDI).
 
 Contexte : rudi_node_write (1.4.4, dernière version publiée) ne modélise pas `html` sur
 summary[] (RichDictionaryEntry, ajouté côté portail en v3.3.2 — voir
-translation/markdown_vers_html.py). _put_metadata() réinjecte ce champ après la
+rudi_harvest_toolkit.markdown). _put_metadata() réinjecte ce champ après la
 désérialisation/resérialisation de la lib, via _reinjecter_summary_html(). Ces tests
 figent aussi le détour par to_json_str() plutôt que to_json() : ce dernier a un bug dans
 la lib (clean_nones() ramène les champs liste-de-Serializable à des list Python nues, ce
@@ -22,7 +22,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(
 
 from rudi_node_write.rudi_types.rudi_meta import RudiMetadata
 
-from connectors.rudi_node import _reinjecter_summary_html
+from rudi_harvest_toolkit.rudi_client import _reinjecter_summary_html
 
 _META_MINIMALE = {
     "global_id": "e8b513a1-8d0e-4824-9a7d-1087fc66af9d",

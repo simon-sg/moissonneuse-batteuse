@@ -37,10 +37,13 @@ from filters.harvest import (
 )
 from conf.communes_rm import CODES_POSTAUX_RM, CODES_INSEE_RM
 from translation.datagouv_to_rudi import traduire_metadonnees
-from connectors.rudi_publish import publier_si_configue
-from state import charger_state, sauvegarder_state, dataset_a_change
+from rudi_harvest_toolkit import publish as rudi_publish
+from rudi_harvest_toolkit.rudi_client import charger_conf_rudi
+from rudi_harvest_toolkit.state import dataset_a_change
+from state import charger_state, sauvegarder_state
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
+CONF_RUDI_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "conf", "rudi_node.json")
 DECOUVERTE_FILE = os.path.join(DATA_DIR, "decouverte.json")
 CACHE_DIR = os.path.join(DATA_DIR, "cache")  # cache partagé avec discover.py
 _CACHE_TTL_SECS = 7 * 24 * 3600  # 7 jours — les fichiers plus vieux sont re-téléchargés
@@ -807,7 +810,8 @@ def traiter_candidat(candidat: dict, state: dict) -> dict:
 
     # Publication RUDI inline (comme les autres scripts de moisson)
     fichiers_filtres = [os.path.join(dossier, nom) for nom, _, _ in fichiers_data]
-    rudi_publie = publier_si_configue(rudi_metadata, fichiers_filtres)
+    rudi_publie = rudi_publish.publier_si_configue(
+        charger_conf_rudi(CONF_RUDI_FILE), rudi_metadata, fichiers_filtres)
 
     # L'écriture dans `state` (dict partagé entre threads workers) est laissée au
     # thread principal de main() pour qu'elle reste sous le même lock que sauvegarder_state().

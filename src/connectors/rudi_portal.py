@@ -3,7 +3,7 @@ import re
 import subprocess
 
 from connectors.http import session
-from connectors.rudi_node import _etat_git
+from connectors.rudi_node_lifecycle import _etat_git
 
 CONTENEUR_PORTAIL = "rudiplatform-portail-1"
 # Le port 8088 (host) mappe le port 8080 du conteneur reverse-proxy — le dashboard

@@ -25,11 +25,13 @@ import harvest_bdnb
 import harvest_geo
 import catalogue
 import publish_rudi
+import publish_rudi_geo
 import enrichir_descriptions
 import enrichir_organisations
 import reanalyser_faux_positifs
 from conf.datasets import DATASETS, DATASETS_GEO, DATASETS_INSEE, DATASETS_OEB, DATASETS_BDNB
 from connectors.rudi_node import charger_conf_rudi
+from connectors import rudi_publish
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
 CONF_RUDI_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "conf", "rudi_node.json")
@@ -279,6 +281,7 @@ ETAPES_PIPELINE = [
     ("Moisson géo (WFS/WMS/OGC API)", _avec_argv, [["harvest_geo.py"], harvest_geo.main], {}),
     ("Génération du catalogue", catalogue.main, [], {}),
     ("Publication sur le nœud RUDI", publish_rudi.main, [], {}),
+    ("Services géo (rudi-geo)", publish_rudi_geo.main, [], {}),
 ]
 
 
@@ -292,6 +295,11 @@ def executer_pipeline_complet(etapes_supplementaires: list | None = None) -> lis
     connectors/insee.py — peut à elle seule atteindre plusieurs Go) et a provoqué
     deux OOM (2026-07-31). Ralentir le pipeline est le compromis assumé."""
     from concurrent.futures import ThreadPoolExecutor, as_completed
+
+    # Vide l'accumulateur de local_id publiés (voir connectors/rudi_publish.py) :
+    # ce process peut vivre plus longtemps qu'un run (dashboard.py), il ne faut
+    # pas que l'étape "Services géo" de ce run traite des JDD d'un run précédent.
+    rudi_publish.demarrer_nouveau_run()
 
     etapes = (etapes_supplementaires or []) + ETAPES_PIPELINE
     resultats = []

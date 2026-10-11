@@ -18,6 +18,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from connectors.rudi_node import (publier_dataset, charger_conf_rudi, toutes_metadonnees_rudi,
                                    supprimer_dataset, supprimer_organisation, _creer_writer)
+from connectors import rudi_publish
 from conf.datasets import DATASETS_GEO
 from state import charger_etat, sauvegarder_etat, construire_index_dossier
 
@@ -106,6 +107,7 @@ def main() -> None:
                 rudi_metadata = json.load(f)
             fichiers = _fichiers_a_uploader(dossier_path, rudi_metadata)
             publier_dataset(conf=conf_rudi, rudi_metadata=rudi_metadata, fichiers_filtres=fichiers)
+            rudi_publish.enregistrer_local_id_publie(rudi_metadata.get("local_id"))
             ok += 1
             # Sauvegarde immédiate — un rattrapage porte sur des dizaines/centaines de JDD
             # et peut être interrompu en cours de route (nœud injoignable, process tué) ;

@@ -253,7 +253,15 @@ def demarrer_noeud_source(conf: dict) -> tuple[bool, str]:
 
 def arreter_noeud_source() -> tuple[bool, str]:
     """Arrête les 4 process natifs (pkill par motif — idempotent, pkill retourne 1 si rien ne
-    matche). MongoDB n'est volontairement pas arrêté (partagé, coût nul à laisser tourner)."""
+    matche). MongoDB n'est volontairement pas arrêté (partagé, coût nul à laisser tourner).
+
+    Le process catalog fait `process.title = app_name` ('catalog') au démarrage — son
+    `/proc/<pid>/cmdline` ne contient donc plus jamais `run-rudinode-catalog.js`, et le pkill
+    par motif ne le vise jamais (observé le 2026-10-09 : catalog restait seul en vie après
+    « arrêt », ce qui faisait croire à `demarrer_noeud_source()` que le nœud tournait déjà —
+    no-op silencieux, storage/manager/jwtauth jamais relancés). On tue donc aussi par port
+    d'écoute, fiable quel que soit le titre que le process s'est donné.
+    """
     try:
         subprocess.run(
             ["pkill", "-f", _PATTERN_PROCESSUS_NOEUD_SOURCE],
@@ -261,6 +269,14 @@ def arreter_noeud_source() -> tuple[bool, str]:
         )
     except FileNotFoundError:
         return False, "pkill introuvable."
+    for info in MODULES_NOEUD_SOURCE.values():
+        try:
+            subprocess.run(
+                ["fuser", "-k", f"{info['port']}/tcp"],
+                capture_output=True, text=True, timeout=10,
+            )
+        except FileNotFoundError:
+            break
     return True, "Nœud source arrêté (MongoDB laissé tel quel)."
 
 

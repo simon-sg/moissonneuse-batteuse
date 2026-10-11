@@ -48,6 +48,10 @@ python3 src/reanalyser_faux_positifs.py [--appliquer] [--dossier X] # rattrapage
 python3 -m unittest discover tests/
 ```
 
+## Workflow Git / PR
+
+Merger une PR **en local** (`git checkout main && git merge <branche>` puis `git push`), jamais via le bouton "Merge" de l'interface GitHub. Préférence explicite de l'utilisateur (2026-10-11) : un merge sur GitHub laisse le `main` local en retard, ce qui oblige ensuite à `git pull`/`git merge origin/main` pour rattraper — un aller-retour évitable. Un seul geste (merge local + push) au lieu de deux (merge GitHub + pull).
+
 ## Key files
 
 | File | Role |

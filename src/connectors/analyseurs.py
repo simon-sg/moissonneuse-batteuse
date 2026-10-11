@@ -40,7 +40,10 @@ from conf.discover import (
     LOG_FILE, CACHE_DIR,
 )
 from connectors.download import _telecharger, _chemin_cache
-from connectors.geo_services import wms_get_capabilities, wms_couches_dans_rm, nettoyer_url_ogc
+from connectors.geo_services import (
+    wms_get_capabilities, wms_couches_dans_rm, nettoyer_url_ogc,
+    selectionner_couches_pertinentes,
+)
 from filters.harvest import _detecter_encodage_bytes
 from connectors.sirene import obtenir_sirens_rm
 from filters.geographic import (
@@ -1019,7 +1022,7 @@ def _wfs_base_url(url: str) -> str:
     return urlunparse(parsed._replace(query=query))
 
 
-def _wfs_get_layers(base_url: str, verbose: bool) -> list[str]:
+def _wfs_get_layers(base_url: str, verbose: bool) -> list[dict]:
     sep = "&" if "?" in base_url else "?"
     caps_url = f"{base_url}{sep}SERVICE=WFS&REQUEST=GetCapabilities"
     try:
@@ -1034,8 +1037,15 @@ def _wfs_get_layers(base_url: str, verbose: bool) -> list[str]:
     for el in root.iter():
         if el.tag.endswith("}FeatureType"):
             name_el = next((c for c in el if c.tag.endswith("}Name")), None)
-            if name_el is not None and name_el.text:
-                layers.append(name_el.text.strip())
+            if name_el is None or not name_el.text:
+                continue
+            titre = None
+            # cherche Title
+            for c in el:
+                if c.tag.endswith("}Title") and c.text:
+                    titre = c.text
+                    break
+            layers.append({"nom": name_el.text.strip(), "titre": titre.strip() if titre else ""})
     return layers
 
 
@@ -1088,21 +1098,30 @@ def analyser_wfs(url: str, verbose: bool = False,
         return None
     if verbose:
         print(f"  WFS couches ({len(layers)}) : {layers[:10]}")
+    # Trie par pertinence (titre JDD ↔ titre/nom de couche), sans exclure (seuil=0.0)
+    couches_triees, _ = selectionner_couches_pertinentes(layers, titre, seuil=0.0, max_couches=10)
     meilleur = None
-    for layer in layers[:10]:
-        result = _wfs_query_layer(base_url, layer, verbose, dataset_id, titre)
+    meilleure_couche = None
+    wfs_layers_valides: list[dict] = []
+    for couche in couches_triees:
+        layer_nom = couche["nom"] if isinstance(couche, dict) else couche
+        result = _wfs_query_layer(base_url, layer_nom, verbose, dataset_id, titre)
         if result is None:
             continue
+        if result["nb_rm"] > 0 and isinstance(couche, dict):
+            wfs_layers_valides.append(couche)
         if meilleur is None or result["nb_rm"] > meilleur["nb_rm"]:
             meilleur = result
-        if meilleur["nb_rm"] > 0:
-            break
+            meilleure_couche = couche
     log_analyse({"url": url, "dataset_id": dataset_id, "titre": titre,
                  "nb_rm": meilleur["nb_rm"] if meilleur else 0})
     if meilleur is not None:
         meilleur["type"] = "wfs"
         meilleur["url"] = base_url
-        meilleur["wfs_layers"] = layers[:10]
+        if not wfs_layers_valides and meilleure_couche is not None and meilleur["nb_rm"] > 0:
+            # Filet : la couche gagnante si elle a des données RM
+            wfs_layers_valides = [meilleure_couche]
+        meilleur["wfs_layers"] = wfs_layers_valides
     return meilleur
 
 
@@ -1124,7 +1143,7 @@ def analyser_wms(url: str, verbose: bool = False,
         log_analyse({"url": url, "dataset_id": dataset_id, "titre": titre,
                      "erreur": f"WMS GetCapabilities échoué : {e}"})
         return None
-    couches_rm = wms_couches_dans_rm(caps, base_url=base_url)
+    couches_rm = wms_couches_dans_rm(caps, base_url=base_url, titre_jdd=titre)
     nb_couches = len(couches_rm)
     if verbose:
         print(f"  WMS : {nb_couches} couche(s) dans bbox RM")

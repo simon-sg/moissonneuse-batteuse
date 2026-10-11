@@ -55,12 +55,14 @@ def traiter_wfs(config: dict, dossier: str, state: dict) -> tuple[list[tuple[str
     (None si le serveur ne le fournit pas — fréquent pour les WFS).
     """
     url = nettoyer_url_ogc(config["url"])
-    couches = config.get("couches")
+    couches_cfg = config.get("couches")
     contact = None
-    if not couches:
+    if not couches_cfg:
         print("  Détection automatique des couches WFS...")
         couches = wfs_lister_couches(url)
         print(f"  {len(couches)} couche(s) : {couches[:5]}")
+    else:
+        couches = couches_cfg
 
     # Extraction du contact depuis le GetCapabilities (une seule requête)
     contact = wfs_get_contact(url)
@@ -68,7 +70,11 @@ def traiter_wfs(config: dict, dossier: str, state: dict) -> tuple[list[tuple[str
     resultats = []
     changee = False
     date_source = None
-    for typename in couches:
+    for couche in couches:
+        if isinstance(couche, dict):
+            typename = couche["nom"]
+        else:
+            typename = str(couche)
         nom_fichier = f"{_slug_typename(typename)}.geojson"
         chemin = os.path.join(dossier, nom_fichier)
         cle = f"{config['id']}::wfs::{typename}"
@@ -244,7 +250,7 @@ def traiter_wms(config: dict, dossier: str) -> tuple[dict, bool]:
     caps = None
     try:
         caps = wms_get_capabilities(url)
-        couches_rm = wms_couches_dans_rm(caps)
+        couches_rm = wms_couches_dans_rm(caps, titre_jdd=config.get("titre", ""))
         if couches_config:
             couches_rm = [c for c in couches_rm if c["nom"] in couches_config] or couches_rm
         titre_service = caps.get("titre") or config.get("titre", "Service WMS")

@@ -926,6 +926,59 @@ def nettoyer_wms_geo_services() -> dict:
     return stats
 
 
+def detecter_services_partages(seuil_jaccard: float = 0.8) -> list[dict]:
+    """Groupe les entrées de geo_services.json par URL de base normalisée, et signale les
+    groupes dont les couches sont quasi-identiques (Jaccard >= seuil_jaccard) malgré des
+    titres de JDD différents — signe que le service est partagé par plusieurs fiches
+    data.gouv distinctes et que le matching par bbox seul n'a pas su les différencier."""
+    from connectors.geo_services import nettoyer_url_ogc
+    from connectors.analyseurs import _wfs_base_url
+
+    if not os.path.exists(GEO_FILE):
+        return []
+    with open(GEO_FILE, encoding="utf-8") as f:
+        entries = json.load(f)
+
+    groupes: dict[str, list[dict]] = {}
+    for entry in entries:
+        url = entry.get("url", "")
+        if not url:
+            continue
+        type_ = entry.get("type", "")
+        if type_ == "wfs":
+            base = _wfs_base_url(url)
+        else:
+            base = nettoyer_url_ogc(url)
+        groupes.setdefault(base, []).append(entry)
+
+    suspects = []
+    for base, entrees in groupes.items():
+        if len(entrees) < 2:
+            continue
+        ensembles = [
+            {c["nom"] if isinstance(c, dict) else c for c in e.get("couches", [])}
+            for e in entrees
+        ]
+        paires = []
+        for i in range(len(ensembles)):
+            for j in range(i + 1, len(ensembles)):
+                union = ensembles[i] | ensembles[j]
+                inter = ensembles[i] & ensembles[j]
+                paires.append(len(inter) / len(union) if union else 0.0)
+        jaccard_moyen = sum(paires) / len(paires) if paires else 0.0
+        if jaccard_moyen >= seuil_jaccard:
+            suspects.append({
+                "url": base,
+                "jaccard_moyen": jaccard_moyen,
+                "entrees": [
+                    {"id": e.get("id", ""), "titre": e.get("titre", ""),
+                     "dossier": e.get("dossier", "")}
+                    for e in entrees
+                ],
+            })
+    return suspects
+
+
 def marquer_a_examiner_verifie(decouverte: dict, dataset_id: str, sans_ressource: bool,
                                 raison: str | None = None) -> None:
     """

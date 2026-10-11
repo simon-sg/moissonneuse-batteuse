@@ -2,6 +2,7 @@
 Connecteurs pour services géographiques : WFS, WMS, OGC API Features.
 Utilisé par harvest_geo.py et discover.py.
 """
+import re as _re
 import xml.etree.ElementTree as ET
 from urllib.parse import urlencode, urlparse, urlunparse, parse_qs
 
@@ -35,6 +36,9 @@ _OGC_KEYS = {
 # Ensemble normalisé des titres géographiques hors RM (pour filtrage couches WMS)
 _TITRES_HORS_RM_NORM = {normaliser(t) for t in TITRES_HORS_RM}
 
+_STOP_WORDS_FR = {"de", "la", "le", "les", "des", "du", "en", "et", "au", "aux",
+                  "un", "une", "sur", "dans", "par", "pour", "avec", "ou", "est"}
+
 
 def nettoyer_url_ogc(url: str) -> str:
     """Retire les paramètres OGC standard d'une URL de service."""
@@ -43,6 +47,68 @@ def nettoyer_url_ogc(url: str) -> str:
     qs_filtre = {k: v for k, v in qs.items() if k.lower() not in _OGC_KEYS}
     query = "&".join(f"{k}={v[0]}" for k, v in qs_filtre.items())
     return urlunparse(parsed._replace(query=query))
+
+
+def _tokeniser(texte: str) -> set[str]:
+    """Tokens significatifs (>=3 caractères, hors mots vides FR) d'un texte normalisé."""
+    tokens = _re.split(r"[^a-z0-9]+", normaliser(texte or ""))
+    return {t for t in tokens if len(t) >= 3 and t not in _STOP_WORDS_FR}
+
+
+def _corpus_couche(couche: dict) -> str:
+    brut = couche.get("titre") or couche.get("nom") or ""
+    return brut.replace(":", " ").replace("_", " ").replace("-", " ")
+
+
+def _construire_idf(couches: list[dict]) -> dict[str, float]:
+    """Poids IDF (fréquence inverse de document) des tokens à travers les couches candidates
+    d'un même service : un token présent dans beaucoup de couches (vocabulaire générique du
+    service — ex. "route", "commune", ou le nom de la région répété sur chaque couche) pèse
+    moins qu'un token rare et donc spécifique (ex. "dgf", "logement") — évite qu'un mot-outil
+    générique partagé par des couches sans rapport fasse remonter ces couches par coïncidence
+    (cas réel observé : "voirie" partagé par des couches de test "La Ciotat" sans rapport avec
+    le JDD "VOIRIE DGF", alors que "dgf" — spécifique — ne l'est pas)."""
+    import math
+    n = len(couches) or 1
+    freq: dict[str, int] = {}
+    for c in couches:
+        for t in _tokeniser(_corpus_couche(c)):
+            freq[t] = freq.get(t, 0) + 1
+    return {t: math.log((n + 1) / (f + 1)) + 1.0 for t, f in freq.items()}
+
+
+def score_titre_couche(titre_jdd: str, couche: dict, idf: dict[str, float] | None = None) -> float:
+    """Score de pertinence du titre JDD vis-à-vis du titre (ou nom, en repli) de la couche :
+    ratio pondéré (si `idf` fourni, cf. _construire_idf) ou simple ratio de tokens communs
+    sinon. 0.0 si le titre JDD ou le corpus couche n'a aucun token exploitable."""
+    tokens_jdd = _tokeniser(titre_jdd or "")
+    if not tokens_jdd:
+        return 0.0
+    tokens_couche = _tokeniser(_corpus_couche(couche))
+    if not tokens_couche:
+        return 0.0
+    communs = tokens_jdd & tokens_couche
+    if idf is None:
+        return len(communs) / len(tokens_jdd)
+    poids_total = sum(idf.get(t, 1.0) for t in tokens_jdd)
+    if poids_total == 0:
+        return 0.0
+    return sum(idf.get(t, 1.0) for t in communs) / poids_total
+
+
+def selectionner_couches_pertinentes(couches: list[dict], titre_jdd: str,
+                                      seuil: float = 0.55, max_couches: int = 10
+                                     ) -> tuple[list[dict], float]:
+    """Trie `couches` par score_titre_couche desc (pondéré IDF sur ce lot de couches, voir
+    _construire_idf), garde celles >= seuil (bornées à max_couches).
+    Retourne (couches_retenues, meilleur_score) — meilleur_score même si rien ne passe le seuil,
+    pour permettre à l'appelant de décider un routage différent (revue manuelle) dans ce cas."""
+    idf = _construire_idf(couches)
+    scores = [(c, score_titre_couche(titre_jdd, c, idf=idf)) for c in couches]
+    scores.sort(key=lambda cs: cs[1], reverse=True)
+    meilleur_score = scores[0][1] if scores else 0.0
+    retenues = [c for c, s in scores if s >= seuil][:max_couches]
+    return retenues, meilleur_score
 
 
 def _sep(url: str) -> str:
@@ -166,8 +232,8 @@ def wfs_get_contact(url_base: str, timeout: int = 20) -> dict | None:
 # WFS
 # ---------------------------------------------------------------------------
 
-def wfs_lister_couches(url_base: str, timeout: int = 20) -> list[str]:
-    """GetCapabilities WFS → liste des typename disponibles."""
+def wfs_lister_couches(url_base: str, timeout: int = 20) -> list[dict]:
+    """GetCapabilities WFS → liste des couches {"nom","titre"} disponibles."""
     caps_url = f"{url_base}{_sep(url_base)}SERVICE=WFS&REQUEST=GetCapabilities"
     resp = session.get(caps_url, timeout=timeout)
     resp.raise_for_status()
@@ -176,8 +242,14 @@ def wfs_lister_couches(url_base: str, timeout: int = 20) -> list[str]:
     for el in root.iter():
         if el.tag.endswith("}FeatureType"):
             name_el = next((c for c in el if c.tag.endswith("}Name")), None)
-            if name_el is not None and name_el.text:
-                layers.append(name_el.text.strip())
+            if name_el is None or not name_el.text:
+                continue
+            titre = None
+            for c in el:
+                if c.tag.endswith("}Title") and c.text:
+                    titre = c.text
+                    break
+            layers.append({"nom": name_el.text.strip(), "titre": titre.strip() if titre else ""})
     return layers
 
 
@@ -435,7 +507,7 @@ def wms_get_capabilities(url_base: str, timeout: int = 20) -> dict:
             "contact": contact, "last_modified": resp.headers.get("Last-Modified")}
 
 
-def wms_couches_dans_rm(capabilities: dict, base_url: str = "") -> list[dict]:
+def wms_couches_dans_rm(capabilities: dict, base_url: str = "", titre_jdd: str = "") -> list[dict]:
     """Filtre les couches WMS qui contiennent des données Rennes Métropole.
 
     Deux niveaux de vérification :
@@ -448,31 +520,39 @@ def wms_couches_dans_rm(capabilities: dict, base_url: str = "") -> list[dict]:
     """
     if not base_url:
         # Pas d'URL → fallback sur le seul check bbox (mode rétro-compatible)
-        return [c for c in capabilities.get("couches", [])
-                if _bbox_overlap_rm(c.get("bbox_wgs84", {}))]
+        resultats = [c for c in capabilities.get("couches", [])
+                     if _bbox_overlap_rm(c.get("bbox_wgs84", {}))]
+    else:
+        resultats = []
+        for c in capabilities.get("couches", []):
+            bb = c.get("bbox_wgs84", {})
+            nom = c.get("nom", "")
+            if not nom:
+                continue
 
-    resultats = []
-    for c in capabilities.get("couches", []):
-        bb = c.get("bbox_wgs84", {})
-        nom = c.get("nom", "")
-        if not nom:
-            continue
-
-        if _bbox_overlap_rm(bb):
-            area = _bbox_area(bb)
-            if area > 0 and area <= _RM_BBOX_AREA * 10:
-                # bbox déclarée et de taille raisonnable → fiable
-                resultats.append(c)
-            else:
-                # bbox absente ou très large (nationale) → vérifier le titre de la couche
-                # avant de sonder : si le titre mentionne une zone géographique hors RM,
-                # la couche ne concerne probablement pas RM même si le probe retourne des données.
-                titre_couche = normaliser(c.get("titre", ""))
-                if titre_couche and any(t in titre_couche for t in _TITRES_HORS_RM_NORM):
-                    continue
-                if wms_probe_donnees_rm(base_url, nom):
+            if _bbox_overlap_rm(bb):
+                area = _bbox_area(bb)
+                if area > 0 and area <= _RM_BBOX_AREA * 10:
+                    # bbox déclarée et de taille raisonnable → fiable
                     resultats.append(c)
-    return resultats
+                else:
+                    # bbox absente ou très large (nationale) → vérifier le titre de la couche
+                    # avant de sonder : si le titre mentionne une zone géographique hors RM,
+                    # la couche ne concerne probablement pas RM même si le probe retourne des données.
+                    titre_couche = normaliser(c.get("titre", ""))
+                    if titre_couche and any(t in titre_couche for t in _TITRES_HORS_RM_NORM):
+                        continue
+                    if wms_probe_donnees_rm(base_url, nom):
+                        resultats.append(c)
+
+    if not titre_jdd:
+        return resultats
+    retenues, meilleur_score = selectionner_couches_pertinentes(resultats, titre_jdd)
+    if meilleur_score == 0.0 and not retenues and resultats:
+        # Vocabulaire de couches trop pauvre pour matcher le titre JDD (pas de pollution
+        # détectable) → comportement rétro-compatible, on garde tout plutôt que de vider.
+        return resultats
+    return retenues
 
 
 # ---------------------------------------------------------------------------

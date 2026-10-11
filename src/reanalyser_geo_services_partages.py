@@ -49,7 +49,7 @@ from discover import (
     detecter_services_partages,
     sauvegarder_decouverte,
 )
-from state import charger_etat, sauvegarder_etat
+from rudi_harvest_toolkit.state import charger_etat, sauvegarder_etat
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
 GEO_FILE = os.path.join(DATA_DIR, "geo_services.json")

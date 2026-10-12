@@ -89,6 +89,7 @@ Merger une PR **en local** (`git checkout main && git merge <branche>` puis `git
 | `src/translation/organisation_secours.py` | `enrichir_organisation()` — caption + summary des producteurs (voir « Fallback descriptions d'organisations ») |
 | `src/state.py` | `charger_state()`/`sauvegarder_state()` génériques + `construire_index_dossier()` (index dossier→state multi-fichiers) |
 | `src/publish_rudi.py` | Rattrapage publication + `menage_rudi_one_shot()`/`menage_organisations()` (voir « Publication RUDI ») |
+| `src/demo_rm_precheck.py` | Garde-fous pour publier sur un **nœud externe potentiellement partagé** (démo) — pré-checks de collision par `local_id`/organisation/contact, neutralisation de contacts sensibles, scoping du nettoyage par recherche ciblée (pas par diff générique). Jamais utilisé pour le nœud de dev local (voir « Publication sur un nœud externe (démo) ») |
 | `src/publish_rudi_geo.py` | Dernière étape du pipeline — déclare les flux WMS/WFS/OGC API (projet voisin `rudi-geo`) pour les JDD publiés ce run (voir « Publication RUDI ») |
 | `src/enrichir_descriptions.py` / `src/enrichir_contacts.py` / `src/enrichir_organisations.py` | Rattrapages one-shot (descriptions JDD, contacts génériques, descriptions producteurs nœud RUDI) |
 | `src/enrichir_html_descriptions.py` | Rattrapage `summary[].html` des JDD déjà moissonnés (voir « Rendu HTML du summary ») — dry-run par défaut, `--appliquer` pour écrire |
@@ -343,6 +344,34 @@ Le serveur réutilise le même connecteur que `connectors/rudi_node.py` (`RudiNo
 - `available_formats[].connector.url` est renvoyé tel quel dans `obtenir_jeu_de_donnees` mais pointe vers `host.docker.internal:4031` — résoluble seulement depuis l'intérieur d'un conteneur du nœud source, pas depuis le poste qui exécute le serveur MCP. Attendu à ce stade (étape 1 = métadonnées, pas de téléchargement).
 - Dépendance `mcp` **épinglée à `1.29.0`** (API `FastMCP`) — la version publiée `2.0.0` renomme la classe en `MCPServer` avec une API incompatible, pas adoptée ici volontairement.
 - Enregistré comme serveur MCP local (`claude mcp add`, scope `local` — privé, non commité dans `.mcp.json`) pour test direct depuis Claude Code.
+
+## Publication sur un nœud externe (démo)
+
+Le pipeline est pensé mono-nœud (`src/conf/rudi_node.json` unique) et `menage_rudi_one_shot()`
+suppose le nœud **dédié** (tout ce qui y est sans contrepartie locale est un orphelin à
+nettoyer). Ces deux hypothèses tombent pour une démo sur un nœud externe mis à disposition
+par une autre équipe, potentiellement partagé avec d'autres producteurs.
+
+`src/demo_rm_precheck.py` couvre ce cas sans modifier le reste du pipeline :
+- **`verifier`** — avant toute publication : nœud joignable, `url_catalog` explicite, auth
+  réelle (`POST front/login`), thème valide, et surtout **pré-check de collision** par
+  `local_id` (déterministe, cf. `_local_id_depuis_dataset_id()` — identique pour tout
+  producteur moissonnant le même JDD data.gouv, donc `publier_dataset()` écraserait
+  silencieusement un dataset tiers existant), par nom d'organisation et par nom/email de
+  contact. Toute collision avec un objet qui n'est pas à nous est un **STOP dur** (exception
+  `CollisionDetectee`), jamais un avertissement.
+- **`neutraliser`** — remplace les contacts sources identifiés comme portant l'identité
+  d'une vraie personne (ex. `mydataball_iris_2022` : nom + email personnel moissonnés depuis
+  data.gouv.fr) par le repli générique du producteur, **avant** tout rattrapage de
+  publication. `verifier` refuse de continuer si cette neutralisation n'a pas été appliquée.
+- **`snapshot`/`enregistrer`/`diff`** — le nettoyage se base en priorité sur une **recherche
+  ciblée par `local_id` connu** (immune à l'activité d'un tiers pendant la fenêtre de démo),
+  pas sur un diff temporel générique. Les snapshots orgs/contacts "avant" ne servent que de
+  filet de sécurité secondaire. Limitation connue et non résolue : les médias (fichiers)
+  côté storage ne sont pas supprimables par ce toolkit, seule la fiche catalog l'est.
+
+À utiliser uniquement sur une instance clonée séparément (pas le checkout de dev local),
+pointant vers le nœud externe — jamais sur `rudinode`/le nœud source local.
 
 ## Known limitations / not addressed
 

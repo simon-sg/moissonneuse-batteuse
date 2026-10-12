@@ -2,5 +2,6 @@
   "url": "http://localhost:4032",
   "url_catalog": "http://localhost:4030/catalog",
   "usr": "CHANGE_ME",
-  "pwd": "CHANGE_ME"
+  "pwd": "CHANGE_ME",
+  "url_portail": "OPTIONNEL — URL du portail (ex. https://mon-portail.fr), pour demander la validation d'une nouvelle organisation productrice auprès du modérateur (voir rudi-harvest-toolkit/README.md « Organisations productrices et validation portail »). Omettre cette clé si aucun portail intégré."
 }

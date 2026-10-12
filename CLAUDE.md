@@ -370,6 +370,13 @@ par une autre équipe, potentiellement partagé avec d'autres producteurs.
   filet de sécurité secondaire. Limitation connue et non résolue : les médias (fichiers)
   côté storage ne sont pas supprimables par ce toolkit, seule la fiche catalog l'est.
 
+Si une nouvelle organisation productrice doit être créée (cas `mydataball_communes`/
+`mydataball_iris_2022`), ajouter `url_portail` à `src/conf/rudi_node.json` pour que
+`publier_dataset()` (toolkit) demande sa validation auprès du **portail** — un simple
+`PUT /organizations` sur le nœud, sans cette clé, ne déclenche jamais de tâche de
+modération (voir `rudi-harvest-toolkit/README.md` « Organisations productrices et
+validation portail »).
+
 À utiliser uniquement sur une instance clonée séparément (pas le checkout de dev local),
 pointant vers le nœud externe — jamais sur `rudinode`/le nœud source local.
 

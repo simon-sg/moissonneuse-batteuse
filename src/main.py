@@ -20,6 +20,7 @@ from harvest_batch import _resoudre_champs
 from translation.datagouv_to_rudi import traduire_metadonnees
 from state import charger_state, sauvegarder_state
 from conf.datasets import DATASETS
+from filters.csv import slugifier, tronquer_slug
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
 CONF_RUDI_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "conf", "rudi_node.json")
@@ -90,13 +91,19 @@ def traiter_dataset(config: dict, state: dict) -> dict:
 
     print(f"  Changement détecté, lancement du pipeline...")
 
+    # Nom de fichier filtré lisible (pas "filtered.csv" générique) : slug du titre du JDD,
+    # tronqué à la limite d'un mot, suffixé "-rm-filtered" — c'est aussi le media_name
+    # exposé sur le nœud/portail, donc ce qui apparaît comme nom de fichier téléchargeable.
+    nom_jdd_tronque = tronquer_slug(slugifier(metadata.get("title", dataset_id)), 45)
+
     # Étape 3 : recherche de la ressource (JSON en priorité, sinon CSV)
     resource_json = find_resource_by_format(metadata, fmt="json", title_contains=".json")
     resource_csv = find_resource_by_format(metadata, fmt="csv")
 
     if resource_json:
         source_file = os.path.join(dossier, "source.json")
-        filtered_file = os.path.join(dossier, "filtered.json")
+        nom_fichier_filtre = f"{nom_jdd_tronque}-rm-filtered.json"
+        filtered_file = os.path.join(dossier, nom_fichier_filtre)
         download_resource(resource_json["url"], source_file)
         data = load_json(source_file)
         print(f"  {len(data)} enregistrements au total (France entière)")
@@ -109,11 +116,13 @@ def traiter_dataset(config: dict, state: dict) -> dict:
         save_json(filtered, filtered_file)
         entetes_colonnes = list(filtered[0].keys()) if filtered else None
         fichiers_filtres = [filtered_file]
+        descripteurs_fichiers = [(nom_fichier_filtre, len(filtered), resource_json)]
         nb_rm = len(filtered)
         os.remove(source_file)
     elif resource_csv:
         source_file = os.path.join(dossier, "source.csv")
-        filtered_file = os.path.join(dossier, "filtered.csv")
+        nom_fichier_filtre = f"{nom_jdd_tronque}-rm-filtered.csv"
+        filtered_file = os.path.join(dossier, nom_fichier_filtre)
         download_resource(resource_csv["url"], source_file)
         lignes, entetes = _filtrer_csv(
             source_file, champ_cp, champ_ville, champ_iris, champ_adresse,
@@ -127,15 +136,19 @@ def traiter_dataset(config: dict, state: dict) -> dict:
                 writer.writerows(lignes)
         entetes_colonnes = entetes if lignes else None
         fichiers_filtres = [filtered_file] if lignes else []
+        descripteurs_fichiers = [(nom_fichier_filtre, len(lignes), resource_csv)] if lignes else []
         nb_rm = len(lignes)
         os.remove(source_file)
     else:
         print(f"  Erreur : aucune ressource JSON ou CSV trouvée pour {dataset_id}.")
         return state
 
-    # Étape 5 : traduction des métadonnées au format RUDI
+    # Étape 5 : traduction des métadonnées au format RUDI — fichiers_filtres fournis pour que
+    # media_name corresponde exactement au nom réellement sauvegardé sur disque (sinon
+    # traduire_metadonnees() génère son propre slug indépendant, qui diverge).
     rudi_metadata = traduire_metadonnees(metadata, theme=theme,
-                                          entetes_colonnes=entetes_colonnes)
+                                          entetes_colonnes=entetes_colonnes,
+                                          fichiers_filtres=descripteurs_fichiers or None)
     with open(rudi_metadata_file, "w", encoding="utf-8") as f:
         json.dump(rudi_metadata, f, ensure_ascii=False, indent=2)
     print(f"  Métadonnées RUDI sauvegardées.")

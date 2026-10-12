@@ -374,8 +374,13 @@ Si une nouvelle organisation productrice doit être créée (cas `mydataball_com
 `mydataball_iris_2022`), ajouter `url_portail` à `src/conf/rudi_node.json` pour que
 `publier_dataset()` (toolkit) demande sa validation auprès du **portail** — un simple
 `PUT /organizations` sur le nœud, sans cette clé, ne déclenche jamais de tâche de
-modération (voir `rudi-harvest-toolkit/README.md` « Organisations productrices et
-validation portail »).
+modération. Le portail s'authentifie avec **ses propres identifiants ROBOT**
+(`usr_portail`/`pwd_portail` dans `rudi_node.json`, repli automatique sur `usr`/`pwd`
+s'ils manquent) : les identifiants manager du **nœud** et les identifiants ROBOT du
+**portail** (ACL/OAuth2) sont deux systèmes distincts — un `401 invalid_client` signifie
+qu'on a fourni des identifiants nœud, jamais enregistrés côté ACL portail comme client
+OAuth2. Voir `rudi-harvest-toolkit/README.md` « Organisations productrices et validation
+portail ».
 
 À utiliser uniquement sur une instance clonée séparément (pas le checkout de dev local),
 pointant vers le nœud externe — jamais sur `rudinode`/le nœud source local.

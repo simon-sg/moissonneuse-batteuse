@@ -38,14 +38,34 @@ _FICHIERS_ETAT = {
 }
 
 
+_NOMS_FICHIER_FILTRE_PAR_DEFAUT = ("filtered.csv", "filtered.json")
+
+
 def _fichiers_a_uploader(dossier_path: str, rudi_metadata: dict) -> list[str]:
     """Reconstruit la liste ordonnée des fichiers FILE en tête de available_formats
-    (avant les entrées SERVICE) — c'est l'ordre attendu par publier_dataset()."""
+    (avant les entrées SERVICE) — c'est l'ordre attendu par publier_dataset().
+
+    Le nom sur disque ne correspond pas toujours à ``media_name`` : les moissons
+    INSEE/OEB/BDNB/géo sauvegardent leur fichier filtré sous le même nom que
+    ``media_name``, mais ``main.py`` (DATASETS, data.gouv.fr tabulaire) sauvegarde
+    toujours sous ``filtered.csv``/``filtered.json`` quel que soit le ``media_name``
+    réellement généré (calculé indépendamment par ``traduire_metadonnees()``, jamais
+    re-synchronisé avec le nom de fichier local). Sans ce repli, le fichier n'est
+    jamais trouvé et le média FILE est silencieusement écarté par ``publier_dataset()``
+    — confirmé en pratique : un rattrapage via ce module publie `mydataball_communes`
+    sans son CSV."""
     fichiers = []
     for media in rudi_metadata.get("available_formats", []):
         if media.get("media_type") != "FILE":
             break
-        fichiers.append(os.path.join(dossier_path, media.get("media_name", "")))
+        chemin = os.path.join(dossier_path, media.get("media_name", ""))
+        if not os.path.isfile(chemin):
+            for nom_repli in _NOMS_FICHIER_FILTRE_PAR_DEFAUT:
+                chemin_repli = os.path.join(dossier_path, nom_repli)
+                if os.path.isfile(chemin_repli):
+                    chemin = chemin_repli
+                    break
+        fichiers.append(chemin)
     return fichiers
 
 

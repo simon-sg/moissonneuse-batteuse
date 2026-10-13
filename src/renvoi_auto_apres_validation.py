@@ -20,7 +20,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from rudi_harvest_toolkit.rudi_client import (
     charger_conf_rudi, marquer_organisations_traitees,
-    organisations_nouvellement_validees, renvoyer_ressources_noeud,
+    organisations_nouvellement_validees, renvoyer_ressources_connues,
     ressources_pour_organisations, toutes_metadonnees_rudi)
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
@@ -47,15 +47,15 @@ def main() -> None:
         marquer_organisations_traitees(CHEMIN_ETAT, nouvelles)
         return
 
-    global_ids = [m["global_id"] for m in a_renvoyer if m.get("global_id")]
-    print(f"{len(global_ids)} ressource(s) concernée(s), renvoi vers le portail "
-          f"(un par un, pause 2s entre chaque — jamais en lot, voir renvoyer_ressources_noeud)...")
-    bilan = renvoyer_ressources_noeud(conf_rudi, global_ids)
+    print(f"{len(a_renvoyer)} ressource(s) concernée(s), renvoi vers le portail — PUT "
+          f"producteur normal (un par un, pause 2s entre chaque : sendToPortal est "
+          f"fire-and-forget côté nœud, jamais en lot — voir renvoyer_ressources_connues)...")
+    bilan = renvoyer_ressources_connues(conf_rudi, a_renvoyer)
     print(f"Bilan : {bilan['ok']} renvoyé(s), {len(bilan['echecs'])} échec(s).")
     for gid, err in bilan["echecs"]:
         print(f"  ERREUR {gid} : {err}")
 
-    # Marquées traitées après la tentative (pas avant) : si renvoyer_ressources_noeud()
+    # Marquées traitées après la tentative (pas avant) : si renvoyer_ressources_connues()
     # levait une exception avant d'arriver ici, la prochaine exécution les
     # retrouverait encore « nouvelles » et retenterait.
     marquer_organisations_traitees(CHEMIN_ETAT, nouvelles)

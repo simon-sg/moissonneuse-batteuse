@@ -7,6 +7,11 @@ issu de la propriété Wikidata P856 découverte via Wikipédia). Ajoute aussi, 
 Wikidata porte un logo (P154), l'image d'organisation côté portail (téléversée puis
 rattachée à la demande de modification). Ne re-moissonne ni ne re-publie les JDD.
 
+`enrichir()` est aussi **une étape du pipeline complet** (voir cli.ETAPES_PIPELINE) :
+les organisations créées/vues par la publication sont ainsi enrichies — description et
+logo — dès le même run, sans action manuelle. L'action CLI 13 reste disponible pour un
+rattrapage ponctuel (avec --dry-run/--force).
+
 Usage :
   python3 src/enrichir_organisations.py --dry-run  # affiche sans modifier (défaut)
   python3 src/enrichir_organisations.py            # applique les modifications
@@ -70,79 +75,79 @@ def enrichir(dry_run: bool = False, force: bool = False) -> None:
     orgs = writer.organization_list
     print(f"{len(orgs)} organisation(s) sur le nœud RUDI\n")
 
-    a_enrichir = []
+    etat_logo = _charger_etat_logo()
+    url_portail = conf.get("url_portail")
+
+    # Une organisation est traitée si sa description/site web est incomplet OU si son logo
+    # n'a pas encore été soumis — deux raisons indépendantes (une org peut avoir sa
+    # description complète et pas encore de logo). --force re-traite tout le monde.
+    a_traiter = []
     for org in orgs:
-        # Enrichir tant qu'il manque la description OU le site web ; --force re-enrichit tout.
-        a_jour = org.get("organization_summary") and org.get("organization_url")
-        if not force and a_jour:
-            continue
-        a_enrichir.append(org)
+        org_id = org.get("organization_id")
+        manque_desc = force or not (org.get("organization_summary") and org.get("organization_url"))
+        manque_logo = bool(url_portail) and bool(org_id) and org_id not in etat_logo
+        if manque_desc or manque_logo:
+            a_traiter.append(org)
 
-    print(f"{len(a_enrichir)} à enrichir"
-          + (" (mode force)" if force else " (summary ou url vide)") + "\n")
+    print(f"{len(a_traiter)} à traiter"
+          + (" (mode force)" if force else " (description ou logo manquant)") + "\n")
 
-    if not a_enrichir:
+    if not a_traiter:
         print("Rien à faire.")
         return
 
-    etat_logo = _charger_etat_logo()
-    modifies, echecs, identiques, logos = 0, 0, 0, 0
+    modifies, echecs, logos = 0, 0, 0
 
-    for i, org in enumerate(a_enrichir, 1):
+    for i, org in enumerate(a_traiter, 1):
         nom = org.get("organization_name", "?")
         org_id = org.get("organization_id")
-        print(f"[{i}/{len(a_enrichir)}] {nom}")
+        print(f"[{i}/{len(a_traiter)}] {nom}")
 
-        result = enrichir_organisation(nom)
-        if not result:
-            print(f"  — Aucun enrichissement disponible")
-            identiques += 1
-            time.sleep(0.3)
-            continue
-
-        # Ne jamais écraser une valeur déjà présente (sauf --force) : un repli factuel
-        # générique ne doit pas remplacer une vraie description ou un vrai site web.
-        caption = (result.get("organization_caption", "") if force
-                   else org.get("organization_caption") or result.get("organization_caption", ""))
-        summary = (result.get("organization_summary", "") if force
-                   else org.get("organization_summary") or result.get("organization_summary", ""))
-        url = (result.get("organization_url", "") if force
-               else org.get("organization_url") or result.get("organization_url", ""))
-
-        print(f"  caption : {caption[:80]}")
-        print(f"  summary : {summary[:80]}...")
-        if url:
-            print(f"  site web : {url}")
+        # --- Description + site web (fusionnés dans la copie nœud et déposés au portail) ---
+        org_mise_a_jour = dict(org)
+        desc_modifiee = False
+        if force or not (org.get("organization_summary") and org.get("organization_url")):
+            try:
+                result = enrichir_organisation(nom) or {}
+            except Exception as e:
+                print(f"  description : recherche échouée ({e})")
+                result = {}
+            # Ne jamais écraser une valeur déjà présente (sauf --force) : un repli factuel
+            # générique ne doit pas remplacer une vraie description ou un vrai site web.
+            for cle in ("organization_caption", "organization_summary", "organization_url"):
+                val = result.get(cle, "")
+                if val and (force or not org_mise_a_jour.get(cle)):
+                    org_mise_a_jour[cle] = val
+                    desc_modifiee = True
+            print(f"  description : {'mise à jour' if desc_modifiee else 'déjà à jour ou aucune source'}")
 
         # Logo (Wikidata P154) : uniquement côté portail (média), et seulement si pas déjà
         # soumis. Inutile de chercher sans portail configuré.
         logo_url = None
-        if org_id and org_id not in etat_logo and conf.get("url_portail"):
+        if url_portail and org_id and org_id not in etat_logo:
             try:
                 logo_url = logo_wikipedia_pour(nom)
             except Exception as e:
                 print(f"  logo : recherche échouée ({e})")
-        if logo_url:
-            print(f"  logo : {logo_url}")
+            print(f"  logo : {logo_url or 'aucun trouvé'}")
+
+        if not desc_modifiee and not logo_url:
+            # Rien de neuf (description déjà complète, aucun logo disponible) : surtout ne pas
+            # redéposer une demande au portail à chaque run.
+            print("  ↳ rien de nouveau")
+            continue
 
         if dry_run:
             modifies += 1
             time.sleep(0.3)
             continue
 
-        org_mise_a_jour = {
-            **org,
-            "organization_caption": caption,
-            "organization_summary": summary,
-        }
-        if url:
-            org_mise_a_jour["organization_url"] = url
         try:
             writer.connector.put_catalog("organizations", org_mise_a_jour)
             modifies += 1
-            print(f"  ✓ Mis à jour sur le nœud")
+            print("  ✓ mis à jour sur le nœud")
         except Exception as e:
-            print(f"  ✗ Erreur : {e}")
+            print(f"  ✗ erreur nœud : {e}")
             echecs += 1
             time.sleep(0.3)
             continue
@@ -185,8 +190,6 @@ def enrichir(dry_run: bool = False, force: bool = False) -> None:
     print(f"  Enrichis : {modifies}")
     if logos:
         print(f"  Logos soumis au portail : {logos}")
-    if identiques:
-        print(f"  Inchangés : {identiques}")
     if echecs:
         print(f"  Échecs    : {echecs}")
 

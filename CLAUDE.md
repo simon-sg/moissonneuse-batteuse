@@ -18,7 +18,7 @@ Pipeline de moisson d'open data pertinent pour Rennes Métropole (43 communes, E
 ## Commands
 
 ```bash
-python3 src/cli.py         # entrée terminal : menu 21 actions en 4 sections (voir ACTIONS/SECTIONS)
+python3 src/cli.py         # entrée terminal : menu 23 actions en 5 sections (voir ACTIONS/SECTIONS)
 python3 src/dashboard.py   # entrée web : mêmes actions à http://127.0.0.1:8765
 python3 src/harvest_auto.py # entrée cron/Jenkins : découverte auto + pipeline complet (non planifié à ce jour)
 ```
@@ -38,7 +38,7 @@ python3 src/publish_rudi.py         # rattrapage publication RUDI
 python3 src/renvoi_auto_apres_validation.py # renvoi auto après validation d'organisation en UI (cron-friendly)
 python3 src/enrichir_descriptions.py # rattrapage descriptions vides
 python3 src/enrichir_html_descriptions.py [--appliquer] [--dossier X] # rattrapage summary[].html (rendu Markdown->HTML, voir « Rendu HTML du summary »)
-python3 src/enrichir_organisations.py [--dry-run] # rattrapage descriptions producteurs (nœud RUDI)
+python3 src/enrichir_organisations.py [--dry-run] # descriptions + logos producteurs (nœud/portail RUDI)
 python3 src/enrichir_contacts.py [--dry-run] # rattrapage contacts génériques
 python3 src/reanalyser_faux_positifs.py [--appliquer] [--dossier X] # rattrapage faux positifs INSEE/CP
 ```
@@ -57,7 +57,7 @@ Merger une PR **en local** (`git checkout main && git merge <branche>` puis `git
 
 | File | Role |
 |---|---|
-| `src/cli.py` | **Entrée terminal** — 21 actions en 4 sections (Moisson / Pipeline & publication / Maintenance / Données & infos) ; `executer_pipeline_complet()` |
+| `src/cli.py` | **Entrée terminal** — 23 actions en 5 sections (Moisson / Pipeline & publication / Maintenance / Données & infos / Nœud & portail RUDI) ; `executer_pipeline_complet()` |
 | `src/dashboard.py` | **Entrée web** — serveur stdlib local-only réutilisant `cli.py` ; pages `/`, `/examen`, `/decouverte`, `/catalogue` |
 | `src/harvest_auto.py` | **Entrée cron/Jenkins** — découverte non-interactive → warm-up nœud RUDI → pipeline complet |
 | `src/discover.py` | Découverte : recherche API, pré-filtrage, revue interactive, `rechercher_et_filtrer_auto()` |
@@ -93,7 +93,7 @@ Merger une PR **en local** (`git checkout main && git merge <branche>` puis `git
 | `src/renvoi_auto_apres_validation.py` | Renvoi auto vers le portail des JDD dont l'organisation productrice vient d'être validée en UI Strukture — détection par `organisations_nouvellement_validees()` (toolkit, état dans `data/etat_organisations_validees.json`), renvoi un par un via `renvoyer_ressources_connues()` (PUT producteur normal, jamais la route admin — voir « Renvoi auto après validation d'organisation ») |
 | `src/demo_rm_precheck.py` | Garde-fous pour publier sur un **nœud externe potentiellement partagé** (démo) — pré-checks de collision par `local_id`/organisation/contact, neutralisation de contacts sensibles, scoping du nettoyage par recherche ciblée (pas par diff générique). Jamais utilisé pour le nœud de dev local (voir « Publication sur un nœud externe (démo) ») |
 | `src/publish_rudi_geo.py` | Dernière étape du pipeline — déclare les flux WMS/WFS/OGC API (projet voisin `rudi-geo`) pour les JDD publiés ce run (voir « Publication RUDI ») |
-| `src/enrichir_descriptions.py` / `src/enrichir_contacts.py` / `src/enrichir_organisations.py` | Rattrapages one-shot (descriptions JDD, contacts génériques, descriptions producteurs nœud RUDI) |
+| `src/enrichir_descriptions.py` / `src/enrichir_contacts.py` / `src/enrichir_organisations.py` | Rattrapages one-shot (descriptions JDD, contacts génériques) + `enrichir_organisations.enrichir()` (descriptions **et logos** producteurs), aussi **étape du pipeline** |
 | `src/enrichir_html_descriptions.py` | Rattrapage `summary[].html` des JDD déjà moissonnés (voir « Rendu HTML du summary ») — dry-run par défaut, `--appliquer` pour écrire |
 | `src/reanalyser_faux_positifs.py` | Rattrapage offline des faux positifs INSEE/CP (re-filtrage des fichiers moissonnés, dry-run par défaut — menu 16) |
 | `src/mcp_rudi_server.py` | Serveur MCP prototype — interrogation en langage naturel des métadonnées RUDI (voir « Serveur MCP RUDI ») |
@@ -336,7 +336,7 @@ Entrée non-interactive pour cron/Jenkins — ex. `0 5 * * * cd <repo> && python
 
 1. **Découverte non-interactive** — `rechercher_et_filtrer_auto()` (voir « Discovery pipeline » pour les règles d'auto-décision).
 2. **Warm-up nœud RUDI** — démarre le conteneur Podman si besoin, attend `noeud_pret()` ~60 s ; ne fait jamais échouer le run (publication différée sinon).
-3. **Pipeline complet** — `cli.executer_pipeline_complet()` : moisson tabulaire → batch en séquence, puis **INSEE/OEB/BDNB/géo en parallèle** (`ThreadPoolExecutor(max_workers=4)`), puis catalogue → publication RUDI.
+3. **Pipeline complet** — `cli.executer_pipeline_complet()` : moisson tabulaire → batch en séquence, puis **INSEE/OEB/BDNB/géo en parallèle** (`ThreadPoolExecutor(max_workers=4)`), puis catalogue → publication RUDI → **enrichissement des organisations** (descriptions + logos, `enrichir_organisations.enrichir()`) → services géo.
 
 Exit `0` seulement si tout a réussi. **Logs** : chaque run écrit `logs/harvest_auto_<horodatage>.log` (un fichier par run, gitignoré) ; `cli._executer()` imprime la traceback complète sur échec d'étape.
 

@@ -289,8 +289,9 @@ def traduire_metadonnees(metadata_source: dict, zone: str = "Rennes Métropole",
         )
         if org_enrichie:
             producer_final.update(org_enrichie)
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"  [RUDI] AVERTISSEMENT : enrichissement de l'organisation "
+              f"« {producer_final['organization_name']} » échoué ({e})")
 
     from conf.communes_rm import BBOX_RM_RUDI
     return construire_rudi_metadata(
@@ -495,8 +496,9 @@ def traduire_metadonnees_service(config: dict,
         )
         if org_enrichie:
             producer_final.update(org_enrichie)
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"  [RUDI] AVERTISSEMENT : enrichissement de l'organisation "
+              f"« {producteur_nom} » échoué ({e})")
 
     from conf.communes_rm import BBOX_RM_RUDI
     return construire_rudi_metadata(

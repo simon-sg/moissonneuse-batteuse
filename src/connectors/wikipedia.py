@@ -25,6 +25,7 @@ _CACHE_DIR = os.path.join(
 _CACHE_TTL_SECS = 30 * 24 * 3600  # 30 jours
 
 _WIKI_API = "https://fr.wikipedia.org/api/rest_v1"
+_WIKIDATA_API = "https://www.wikidata.org/w/api.php"
 _TIMEOUT = 15
 
 
@@ -102,13 +103,47 @@ def _rechercher_titre(nom: str) -> str | None:
     return None
 
 
+def _site_officiel(qid: str) -> str:
+    """Récupère le site officiel (propriété Wikidata P856) d'une entité, ou "".
+
+    P856 peut porter plusieurs valeurs (versions linguistiques). On prend la
+    première URL http(s) exploitable, sans préférence de langue : le champ
+    `url` du portail Strukture est libre.
+    """
+    if not qid:
+        return ""
+    try:
+        r = session.get(
+            _WIKIDATA_API,
+            params={
+                "action": "wbgetclaims",
+                "entity": qid,
+                "property": "P856",
+                "format": "json",
+            },
+            timeout=_TIMEOUT,
+        )
+        if r.status_code != 200:
+            return ""
+        claims = r.json().get("claims", {}).get("P856", [])
+    except Exception:
+        return ""
+    for claim in claims:
+        valeur = claim.get("mainsnak", {}).get("datavalue", {}).get("value")
+        if isinstance(valeur, str) and valeur.startswith(("http://", "https://")):
+            return valeur
+    return ""
+
+
 def resumer_wikipedia(nom: str) -> dict | None:
     """Retourne un résumé Wikipédia pour une organisation, ou None.
 
-    Retour : {"caption": <description Wikidata>, "summary": <extract>, "url": <page url>}
+    Retour : {"caption": <description Wikidata>, "summary": <extract>,
+              "url": <page Wikipédia>, "site_officiel": <site officiel Wikidata P856>}
     - caption : phrase courte CC0 (description Wikidata via l'API REST)
     - summary : 2-4 phrases CC BY-SA (extract Wikipédia)
     - url : lien vers la page Wikipédia
+    - site_officiel : site internet officiel de l'entité ("" si absent)
     """
     if not nom or not nom.strip():
         return None
@@ -151,6 +186,7 @@ def resumer_wikipedia(nom: str) -> dict | None:
             "caption": caption,
             "summary": extract,
             "url": url,
+            "site_officiel": _site_officiel(data.get("wikibase_item", "")),
         }
         _ecrire_cache(cle, result)
         return result

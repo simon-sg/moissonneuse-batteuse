@@ -6,7 +6,8 @@ pour les organisations qui n'en disposent pas encore.
 
 Stratégie :
   1. Carte d'alias curée (override manuel ou titre Wikipédia exact)
-  2. Recherche Wikipédia FR (caption CC0 Wikidata, summary CC BY-SA Wikipédia)
+  2. Recherche Wikipédia FR (caption CC0 Wikidata, summary CC BY-SA Wikipédia,
+     site officiel Wikidata P856 → organization_url)
   3. Repli factuel (pas de compteur de JDD)
 
 Idempotence : ne produit rien si `organization_summary` est déjà non vide.
@@ -14,7 +15,7 @@ Idempotence : ne produit rien si `organization_summary` est déjà non vide.
 Usage :
     from translation.organisation_secours import enrichir_organisation
     result = enrichir_organisation("Institut national de la statistique (Insee)")
-    # {"organization_caption": "...", "organization_summary": "..."}
+    # {"organization_caption": "...", "organization_summary": "...", "organization_url": "..."}
 """
 import re
 
@@ -74,10 +75,10 @@ def enrichir_organisation(
     source_label: str | None = None,
     page_url: str | None = None,
 ) -> dict | None:
-    """Enrichit une organisation avec caption + summary.
+    """Enrichit une organisation avec caption + summary + site officiel.
 
-    Retourne {"organization_caption": ..., "organization_summary": ...} ou None
-    si aucune source n'a fourni de résultat.
+    Retourne {"organization_caption": ..., "organization_summary": ...,
+    "organization_url": ...} ou None si aucune source n'a fourni de résultat.
 
     Paramètres :
         nom           : nom brut de l'organisation ( tel que dans organization_name)
@@ -95,7 +96,7 @@ def enrichir_organisation(
             caption = wiki.get("caption", "")
             extract = wiki.get("summary", "")
             summary = extract + " (source : Wikipédia)" if extract else ""
-            return _construire_resultat(caption, summary)
+            return _construire_resultat(caption, summary, wiki.get("site_officiel", ""))
         return _repli_factuel(source_label, page_url)
 
     # titre est None : soit repli forcé (alias == None), soit override manuel (alias == dict)
@@ -106,18 +107,22 @@ def enrichir_organisation(
             result["organization_caption"] = alias["caption"]
         if alias.get("summary"):
             result["organization_summary"] = alias["summary"]
+        if alias.get("url"):
+            result["organization_url"] = alias["url"]
         return result if result else None
 
     return _repli_factuel(source_label, page_url)
 
 
-def _construire_resultat(caption: str, summary: str) -> dict | None:
+def _construire_resultat(caption: str, summary: str, url: str = "") -> dict | None:
     """Construit le dict résultat si au moins un champ est non vide."""
     result = {}
     if caption:
         result["organization_caption"] = caption
     if summary:
         result["organization_summary"] = summary
+    if url:
+        result["organization_url"] = url
     return result if result else None
 
 

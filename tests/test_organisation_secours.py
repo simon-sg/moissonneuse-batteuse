@@ -7,7 +7,7 @@ from unittest.mock import patch
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "src"))
 
 from translation.organisation_secours import (
-    _normaliser_nom_producteur, enrichir_organisation, _repli_factuel,
+    _normaliser_nom_producteur, enrichir_organisation, _repli_factuel, _construire_resultat,
 )
 
 _MOCK_WIKI = "connectors.wikipedia.resumer_wikipedia"
@@ -107,6 +107,38 @@ class TestEnrichirOrganisation(unittest.TestCase):
         r = enrichir_organisation("OrgWikiCaption")
         self.assertIsNotNone(r)
         self.assertEqual(r.get("organization_caption"), "Producteur de données ouvertes")
+
+    @patch(_MOCK_WIKI)
+    def test_site_officiel_wikidata_devient_organization_url(self, mock_wiki):
+        mock_wiki.return_value = {
+            "caption": "Administration française",
+            "summary": "Le ministère de l'Intérieur est une administration.",
+            "url": "https://fr.wikipedia.org/wiki/Ministere_de_l'Interieur",
+            "site_officiel": "https://www.interieur.gouv.fr",
+        }
+        r = enrichir_organisation("MinistereInterieurTest")
+        self.assertEqual(r["organization_url"], "https://www.interieur.gouv.fr")
+
+    @patch(_MOCK_WIKI)
+    def test_site_officiel_absent_pas_de_cle_url(self, mock_wiki):
+        """Wikipédia sans P856 → aucune clé organization_url (pas de repli inventé)."""
+        mock_wiki.return_value = {
+            "caption": "Organisation test",
+            "summary": "Une organisation de test.",
+            "url": "https://fr.wikipedia.org/wiki/Organisation_test",
+        }
+        r = enrichir_organisation("OrganisationSansSiteOfficiel")
+        self.assertNotIn("organization_url", r)
+
+
+class TestConstruireResultat(unittest.TestCase):
+    def test_url_incluse_si_presente(self):
+        r = _construire_resultat("caption", "summary", "https://exemple.org")
+        self.assertEqual(r["organization_url"], "https://exemple.org")
+
+    def test_url_vide_omet_la_cle(self):
+        r = _construire_resultat("caption", "summary", "")
+        self.assertNotIn("organization_url", r)
 
 
 class TestIntegrationRudiBuilder(unittest.TestCase):

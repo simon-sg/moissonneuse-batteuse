@@ -26,6 +26,7 @@ import harvest_geo
 import catalogue
 import publish_rudi
 import publish_rudi_geo
+import renvoi_auto_apres_validation
 import enrichir_descriptions
 import enrichir_organisations
 import reanalyser_faux_positifs
@@ -163,6 +164,11 @@ def action_catalogue():
 
 def action_publier_rudi():
     _executer("Publication sur le nœud RUDI", publish_rudi.main)
+
+
+def action_renvoi_auto_apres_validation():
+    _executer("Renvoi auto après validation d'organisation (portail)",
+               renvoi_auto_apres_validation.main)
 
 
 def action_enrichir_descriptions():
@@ -703,24 +709,25 @@ ACTIONS = [
     ("9", "(Re)générer le catalogue", action_catalogue),
     ("10", "Publier sur le nœud RUDI (rattrapage)", action_publier_rudi),
     ("11", "Enrichir les descriptions vides/quasi vides", action_enrichir_descriptions),
+    ("12", "Renvoi auto après validation d'organisation (portail)", action_renvoi_auto_apres_validation),
     # --- Maintenance ---
-    ("12", "Enrichir les descriptions de producteurs (nœud RUDI)", action_enrichir_organisations),
-    ("13", "Vérifier le backlog « à examiner »", action_verifier_backlog_examen),
-    ("14", "Re-analyser les WMS du backlog", action_reanalyser_wms),
-    ("15", "Re-analyser les JDD tabulaires du backlog (nouvelle cascade)", action_reanalyser_a_examiner_tabulaire),
-    ("16", "Nettoyer les WMS de geo_services.json", action_nettoyer_wms_geo),
-    ("17", "Ménage RUDI (orphelins + organisations inutilisées)", action_menage_rudi),
-    ("18", "Ré-analyser les faux positifs INSEE/CP (dept 35)", action_reanalyser_faux_positifs),
+    ("13", "Enrichir les descriptions de producteurs (nœud RUDI)", action_enrichir_organisations),
+    ("14", "Vérifier le backlog « à examiner »", action_verifier_backlog_examen),
+    ("15", "Re-analyser les WMS du backlog", action_reanalyser_wms),
+    ("16", "Re-analyser les JDD tabulaires du backlog (nouvelle cascade)", action_reanalyser_a_examiner_tabulaire),
+    ("17", "Nettoyer les WMS de geo_services.json", action_nettoyer_wms_geo),
+    ("18", "Ménage RUDI (orphelins + organisations inutilisées)", action_menage_rudi),
+    ("19", "Ré-analyser les faux positifs INSEE/CP (dept 35)", action_reanalyser_faux_positifs),
     # --- Données & infos ---
-    ("19", "Purger des données existantes", menu_purge),
-    ("20", "État du projet", action_etat_projet),
+    ("20", "Purger des données existantes", menu_purge),
+    ("21", "État du projet", action_etat_projet),
 ]
 
 SECTIONS = [
     (0, "Moisson"),
     (7, "Pipeline & publication"),
-    (11, "Maintenance"),
-    (18, "Données & infos"),
+    (12, "Maintenance"),
+    (19, "Données & infos"),
 ]
 
 

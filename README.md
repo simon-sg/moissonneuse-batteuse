@@ -31,7 +31,7 @@ Chaque script de moisson conserve un état incrémental sur disque (`data/state*
 
 | Composant | Rôle |
 |---|---|
-| `src/cli.py` | Entrée terminal — menu de 20 actions (moisson, pipeline, maintenance, données) |
+| `src/cli.py` | Entrée terminal — menu de 21 actions (moisson, pipeline, maintenance, données) |
 | `src/dashboard.py` | Entrée web — mêmes actions via une interface locale (`http://127.0.0.1:8765`) |
 | `src/harvest_auto.py` | Entrée cron/Jenkins — découverte automatique + pipeline complet, non interactive |
 | `src/discover.py` | Découverte de nouveaux jeux de données sur data.gouv.fr |
@@ -40,6 +40,7 @@ Chaque script de moisson conserve un état incrémental sur disque (`data/state*
 | `src/harvest_insee.py` / `src/harvest_oeb.py` / `src/harvest_bdnb.py` | Moissons directes spécialisées |
 | `src/catalogue.py` | Génération du catalogue HTML (avec visionneuses et cartes) |
 | `src/publish_rudi.py` | Rattrapage de publication vers le nœud RUDI |
+| `src/renvoi_auto_apres_validation.py` | Renvoi auto vers le portail des JDD dont l'organisation productrice vient d'être validée en UI (cron-friendly, idempotent) |
 
 Le détail exhaustif des modules (connecteurs, filtres, traducteurs, état) est documenté dans [`CLAUDE.md`](CLAUDE.md), qui fait office de documentation technique de référence pour ce dépôt.
 
@@ -105,7 +106,7 @@ Ouvrir `http://127.0.0.1:8765`. Le serveur écoute uniquement en local (pas d'au
 python3 src/cli.py
 ```
 
-Menu interactif à 20 actions réparties en 4 sections : Moisson, Pipeline & publication, Maintenance, Données & infos.
+Menu interactif à 21 actions réparties en 4 sections : Moisson, Pipeline & publication, Maintenance, Données & infos.
 
 ### Scripts individuels
 
@@ -121,6 +122,7 @@ python3 src/harvest_bdnb.py
 python3 src/harvest_geo.py
 python3 src/catalogue.py
 python3 src/publish_rudi.py         # rattrapage de publication RUDI
+python3 src/renvoi_auto_apres_validation.py   # renvoi auto après validation d'organisation en UI
 python3 src/enrichir_descriptions.py   # rattrapage des descriptions vides
 python3 src/enrichir_organisations.py [--dry-run]   # rattrapage des descriptions producteurs
 python3 src/enrichir_contacts.py [--dry-run]        # rattrapage des contacts génériques

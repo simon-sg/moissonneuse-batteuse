@@ -35,6 +35,7 @@ python3 src/harvest_bdnb.py
 python3 src/harvest_geo.py
 python3 src/catalogue.py
 python3 src/publish_rudi.py         # rattrapage publication RUDI
+python3 src/renvoi_auto_apres_validation.py # renvoi auto après validation d'organisation en UI (cron-friendly)
 python3 src/enrichir_descriptions.py # rattrapage descriptions vides
 python3 src/enrichir_html_descriptions.py [--appliquer] [--dossier X] # rattrapage summary[].html (rendu Markdown->HTML, voir « Rendu HTML du summary »)
 python3 src/enrichir_organisations.py [--dry-run] # rattrapage descriptions producteurs (nœud RUDI)
@@ -89,6 +90,7 @@ Merger une PR **en local** (`git checkout main && git merge <branche>` puis `git
 | `src/translation/organisation_secours.py` | `enrichir_organisation()` — caption + summary des producteurs (voir « Fallback descriptions d'organisations ») |
 | `src/state.py` | `charger_state()`/`sauvegarder_state()` génériques + `construire_index_dossier()` (index dossier→state multi-fichiers) |
 | `src/publish_rudi.py` | Rattrapage publication + `menage_rudi_one_shot()`/`menage_organisations()` (voir « Publication RUDI ») |
+| `src/renvoi_auto_apres_validation.py` | Renvoi auto vers le portail des JDD dont l'organisation productrice vient d'être validée en UI Strukture — détection par `organisations_nouvellement_validees()` (toolkit, état dans `data/etat_organisations_validees.json`), renvoi un par un via `renvoyer_ressources_noeud()` (jamais en lot, voir « Renvoi auto après validation d'organisation ») |
 | `src/demo_rm_precheck.py` | Garde-fous pour publier sur un **nœud externe potentiellement partagé** (démo) — pré-checks de collision par `local_id`/organisation/contact, neutralisation de contacts sensibles, scoping du nettoyage par recherche ciblée (pas par diff générique). Jamais utilisé pour le nœud de dev local (voir « Publication sur un nœud externe (démo) ») |
 | `src/publish_rudi_geo.py` | Dernière étape du pipeline — déclare les flux WMS/WFS/OGC API (projet voisin `rudi-geo`) pour les JDD publiés ce run (voir « Publication RUDI ») |
 | `src/enrichir_descriptions.py` / `src/enrichir_contacts.py` / `src/enrichir_organisations.py` | Rattrapages one-shot (descriptions JDD, contacts génériques, descriptions producteurs nœud RUDI) |
@@ -264,7 +266,17 @@ Chaque script de moisson publie inline via `connectors/rudi_publish.py::publier_
 
 Shelle vers `python3 declare_services.py --apply --local-id <uuid> ...` dans le répertoire `rudi-geo` (chemin par défaut : repo voisin au même niveau que `moissonneuse-batteuse` ; surchargeable par la clé `rudi_geo_dir` de `src/conf/rudi_node.json`), credentials/URL manager transmis en variables d'environnement depuis la même config (`RUDI_MANAGER_URL`/`RUDI_USER`/`RUDI_PASSWORD`) — une seule source de vérité pour les identifiants du nœud, jamais dupliqués entre les deux dépôts. Si les conteneurs `rudi-geo` ne répondent pas (port 8090), tente un `docker compose up -d` puis attend, même schéma que `harvest_auto.py::_demarrer_noeud_rudi()` pour le nœud RUDI lui-même. **Toujours best-effort** : une erreur ou une indisponibilité de `rudi-geo` est journalisée et sautée, ne fait jamais échouer le pipeline de moisson.
 
-**Ménage** (menu CLI 15, `action_menage_rudi()`) : `menage_rudi_one_shot()` liste les datasets présents sur le nœud sans contrepartie locale (orphelins), `menage_organisations()` les organisations plus référencées ; le CLI **propose ensuite leur suppression effective** (`supprimer_dataset()`/`supprimer_organisation()`), protégée par la confirmation tapée `SUPPRIMER`. La détection seule ne mute rien.
+**Ménage** (menu CLI 18, `action_menage_rudi()`) : `menage_rudi_one_shot()` liste les datasets présents sur le nœud sans contrepartie locale (orphelins), `menage_organisations()` les organisations plus référencées ; le CLI **propose ensuite leur suppression effective** (`supprimer_dataset()`/`supprimer_organisation()`), protégée par la confirmation tapée `SUPPRIMER`. La détection seule ne mute rien.
+
+## Renvoi auto après validation d'organisation
+
+`src/renvoi_auto_apres_validation.py` (menu CLI 12, `action_renvoi_auto_apres_validation()`) répond à un problème précis : une organisation productrice créée via `publier_dataset()` (cf. ci-dessus) passe par une tâche BPMN de validation modérateur côté UI Strukture ; tant qu'elle n'est pas validée, le nœud reçoit `ERR-112` (« provider non lié à l'organisation ») de Kalim et le JDD concerné reste `metadata_status: refused`. Ce script automatise le rattrapage une fois la validation faite en UI, **sans republier ni retélécharger quoi que ce soit** :
+
+- Détection par `rudi_harvest_toolkit.rudi_client.organisations_nouvellement_validees()` — compare les organisations à `organization_status: VALIDATED` côté nœud à un état persisté (`data/etat_organisations_validees.json`, `{"organisations_traitees": [...]}`) pour ne retraiter que les organisations **nouvellement** validées depuis le dernier passage (jamais tout le catalogue).
+- `ressources_pour_organisations()` filtre `toutes_metadonnees_rudi()` sur `producer.organization_id`.
+- `renvoyer_ressources_noeud()` renvoie chaque `global_id` **un par un** (`POST {url_catalog}/admin/portal/resources/send`, un seul id par appel, pause de 2s entre chaque) — jamais en lot : cette route nœud n'a aucune limite de concurrence interne et un lot déclenche autant d'appels de pré-vérification simultanés vers konsult, assez pour le surcharger (voir [[project_crash_recovery_rudi_stack]] en mémoire).
+- L'état n'est marqué traité qu'**après** la tentative de renvoi (pas avant) : si le process est interrompu en cours de route, la prochaine exécution retrouve les mêmes organisations comme « nouvelles » et retente.
+- Conçu pour un usage périodique (cron, ou relancé à la main après chaque session de validation en UI) et pour fonctionner **sans agent** — un simple `python3 src/renvoi_auto_apres_validation.py`, aucune dépendance au dashboard ni à un LLM.
 
 **Nettoyage des FILE orphelins** : `publier_dataset()` retire d'`available_formats` les entrées FILE dont le fichier local a disparu (le nœud refuse un media FILE sans fichier physique), puis recorrige le `media_id` de toutes les entrées non-FILE (la lib exige des UUIDv4).
 

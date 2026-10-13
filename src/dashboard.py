@@ -112,6 +112,7 @@ _ACTIONS_CMD = {
     "moisson_geo": ["python3", "src/harvest_geo.py"],
     "catalogue": ["python3", "src/catalogue.py"],
     "publier_rudi": ["python3", "src/publish_rudi.py"],
+    "renvoi_auto_apres_validation": ["python3", "src/renvoi_auto_apres_validation.py"],
     "enrichir_descriptions": ["python3", "src/enrichir_descriptions.py"],
     "enrichir_organisations": ["python3", "src/enrichir_organisations.py"],
 }
@@ -231,6 +232,8 @@ ACTIONS = {
     "moisson_geo": ("Moisson géo (WFS/WMS/OGC API)", lambda p: cli.action_moisson_geo()),
     "catalogue": ("Génération du catalogue", lambda p: cli.action_catalogue()),
     "publier_rudi": ("Publication sur le nœud RUDI", lambda p: cli.action_publier_rudi()),
+    "renvoi_auto_apres_validation": ("Renvoi auto après validation d'organisation (portail)",
+                                     lambda p: cli.action_renvoi_auto_apres_validation()),
     "enrichir_descriptions": ("Enrichir les descriptions vides/quasi vides",
                               lambda p: cli.action_enrichir_descriptions()),
     "enrichir_organisations": ("Enrichir les descriptions de producteurs (nœud RUDI)",

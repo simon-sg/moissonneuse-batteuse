@@ -349,6 +349,11 @@ def executer_pipeline_complet(etapes_supplementaires: list | None = None) -> lis
 
     etapes = (etapes_supplementaires or []) + ETAPES_PIPELINE
     resultats = []
+    total = len(etapes)
+
+    print(f"\n{'#' * 60}")
+    print(f"# Pipeline complet — {total} étapes — début {time.strftime('%H:%M:%S')}")
+    print(f"{'#' * 60}")
 
     # Identifier les étapes parallèles (INSEE, OEB, BDNB, géo)
     labels_parallèles = {
@@ -366,11 +371,15 @@ def executer_pipeline_complet(etapes_supplementaires: list | None = None) -> lis
         (i for i, (l, *_) in enumerate(etapes) if i > idx_debut_par and l not in labels_parallèles), len(etapes)
     )
 
-    def _exec_etape(label, fn, args, kwargs):
+    def _exec_etape(index, label, fn, args, kwargs):
+        """Exécute une étape en encadrant clairement son début et sa fin (numéro, heure,
+        durée) — une étape longue et silencieuse (ex. Génération du catalogue) reste
+        ainsi traçable dans la console, et une étape parallèle est identifiable."""
         t0 = time.time()
         ok = False
-        erreur = None
-        print(f"\n{'=' * 60}\n{label}\n{'=' * 60}")
+        print(f"\n{'─' * 60}")
+        print(f"▶ [{index}/{total}] {label} — début {time.strftime('%H:%M:%S')}")
+        print(f"{'─' * 60}")
         try:
             fn(*args, **kwargs)
             ok = True
@@ -381,15 +390,15 @@ def executer_pipeline_complet(etapes_supplementaires: list | None = None) -> lis
         except Exception as e:
             print(f"\n[{label}] ERREUR : {e}")
             traceback.print_exc()
-            erreur = str(e)[:500]
         duree = time.time() - t0
-        if ok:
-            print(f"\n[{label}] terminé en {_formater_duree(duree)}.")
+        marque, verbe = ("✔", "terminé") if ok else ("✗", "ÉCHEC")
+        print(f"\n{marque} [{index}/{total}] {label} — {verbe} en "
+              f"{_formater_duree(duree)} ({time.strftime('%H:%M:%S')})")
         return label, ok
 
     # 1. Étapes séquentielles avant le parallèle (tabulaire, batch)
-    for label, fn, args, kwargs in etapes[:idx_debut_par]:
-        resultats.append(_exec_etape(label, fn, args, kwargs))
+    for index, (label, fn, args, kwargs) in enumerate(etapes[:idx_debut_par], start=1):
+        resultats.append(_exec_etape(index, label, fn, args, kwargs))
 
     # 2. Étapes parallèles (INSEE || OEB || BDNB || géo)
     if idx_debut_par < idx_fin_par:
@@ -397,15 +406,17 @@ def executer_pipeline_complet(etapes_supplementaires: list | None = None) -> lis
               f"({PARALLELISME_MAX_ETAPES} en parallèle max) ---")
         with ThreadPoolExecutor(max_workers=PARALLELISME_MAX_ETAPES) as executor:
             futures = {
-                executor.submit(_exec_etape, label, fn, args, kwargs): label
-                for label, fn, args, kwargs in etapes[idx_debut_par:idx_fin_par]
+                executor.submit(_exec_etape, index, label, fn, args, kwargs): label
+                for index, (label, fn, args, kwargs) in enumerate(
+                    etapes[idx_debut_par:idx_fin_par], start=idx_debut_par + 1
+                )
             }
             for future in as_completed(futures):
                 resultats.append(future.result())
 
     # 3. Étapes séquentielles après le parallèle (catalogue, publication RUDI)
-    for label, fn, args, kwargs in etapes[idx_fin_par:]:
-        resultats.append(_exec_etape(label, fn, args, kwargs))
+    for index, (label, fn, args, kwargs) in enumerate(etapes[idx_fin_par:], start=idx_fin_par + 1):
+        resultats.append(_exec_etape(index, label, fn, args, kwargs))
 
     print(f"\n{'=' * 60}\nRésumé du pipeline complet\n{'=' * 60}")
     for label, ok in resultats:

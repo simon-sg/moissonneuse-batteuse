@@ -325,6 +325,7 @@ ETAPES_PIPELINE = [
     ("Moisson géo (WFS/WMS/OGC API)", _avec_argv, [["harvest_geo.py"], harvest_geo.main], {}),
     ("Génération du catalogue", catalogue.main, [], {}),
     ("Publication sur le nœud RUDI", publish_rudi.main, [], {}),
+    ("Renvoi auto après validation d'organisation (portail)", renvoi_auto_apres_validation.main, [], {}),
     ("Enrichissement des organisations (descriptions + logos)", enrichir_organisations.enrichir, [], {}),
     ("Services géo (rudi-geo)", publish_rudi_geo.main, [], {}),
 ]
@@ -414,7 +415,7 @@ def executer_pipeline_complet(etapes_supplementaires: list | None = None) -> lis
 
 def action_pipeline_complet():
     print("\n=== Pipeline complet ===")
-    print("Enchaîne : tabulaire → batch → INSEE → OEB → BDNB → géo → catalogue → RUDI → organisations.")
+    print("Enchaîne : tabulaire → batch → INSEE → OEB → BDNB → géo → catalogue → RUDI → renvoi après validation → organisations (descriptions + logos).")
     print("La découverte n'est pas incluse par défaut (revue manuelle nécessaire).\n")
 
     etapes_supp = []

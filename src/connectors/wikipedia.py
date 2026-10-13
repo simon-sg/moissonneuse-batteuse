@@ -15,6 +15,7 @@ import os
 import re
 import time
 import unicodedata
+from urllib.parse import quote
 
 from connectors.http import session
 
@@ -26,7 +27,14 @@ _CACHE_TTL_SECS = 30 * 24 * 3600  # 30 jours
 
 _WIKI_API = "https://fr.wikipedia.org/api/rest_v1"
 _WIKIDATA_API = "https://www.wikidata.org/w/api.php"
+_WIKIMEDIA_COMMONS_FICHIER = "https://commons.wikimedia.org/wiki/Special:FilePath/"
 _TIMEOUT = 15
+# Taille max acceptée par le champ image du portail Strukture (10 Mo) — on ne télécharge
+# jamais un logo plus gros que ce qu'on pourra téléverser.
+_TAILLE_MAX_LOGO = 10 * 1024 * 1024
+# Types que le portail accepte pour l'image d'organisation (jpeg/png). Wikimedia peut
+# rendre un SVG en PNG via « Special:FilePath?width=… », mais pas un GIF/WebP : filtrés ici.
+_TYPES_IMAGE_ACCEPTES = ("image/jpeg", "image/png")
 
 
 def _normaliser_cle(nom: str) -> str:
@@ -50,9 +58,15 @@ def _lire_cache(cle: str) -> dict | None:
         return None
     try:
         with open(chemin, encoding="utf-8") as f:
-            return json.load(f)
+            data = json.load(f)
     except (json.JSONDecodeError, OSError):
         return None
+    # Entrée positive écrite avant l'ajout du site officiel (P856) puis du logo (P154) :
+    # format obsolète, on la traite comme un cache *miss* pour forcer un nouvel appel. Le
+    # cache négatif (dict vide, « aucune page Wikipédia ») reste valide, lui.
+    if data and ("site_officiel" not in data or "logo" not in data):
+        return None
+    return data
 
 
 def _ecrire_cache(cle: str, data: dict) -> None:
@@ -135,15 +149,81 @@ def _site_officiel(qid: str) -> str:
     return ""
 
 
+def _logo_officiel(qid: str) -> str:
+    """Récupère le nom de fichier Wikimedia Commons du logo (propriété Wikidata P154), ou "".
+
+    P154 porte un nom de fichier Commons (ex. « Ministère de la Culture.svg »), sans
+    préfixe « File: ». Le portail Strukture n'accepte que jpeg/png : un SVG sera rendu en
+    PNG par Wikimedia (voir ``url_logo_wikimedia``), mais un éventuel autre format est
+    filtré plus tard par ``telecharger_logo``.
+    """
+    if not qid:
+        return ""
+    try:
+        r = session.get(
+            _WIKIDATA_API,
+            params={
+                "action": "wbgetclaims",
+                "entity": qid,
+                "property": "P154",
+                "format": "json",
+            },
+            timeout=_TIMEOUT,
+        )
+        if r.status_code != 200:
+            return ""
+        claims = r.json().get("claims", {}).get("P154", [])
+    except Exception:
+        return ""
+    for claim in claims:
+        valeur = claim.get("mainsnak", {}).get("datavalue", {}).get("value")
+        if isinstance(valeur, str) and valeur.strip():
+            return valeur.strip()
+    return ""
+
+
+def url_logo_wikimedia(nom_fichier: str, largeur: int = 512) -> str:
+    """URL de téléchargement d'un logo Commons, rendu à ``largeur`` px.
+
+    Passe par « Special:FilePath » avec un paramètre ``width`` : Wikimedia rend alors un
+    SVG en PNG (raster) et produit une vignette des images bitmap — indispensable car le
+    portail n'accepte ni SVG ni image surdimensionnée.
+    """
+    return f"{_WIKIMEDIA_COMMONS_FICHIER}{quote(nom_fichier)}?width={largeur}"
+
+
+def telecharger_logo(url: str) -> tuple[bytes, str] | None:
+    """Télécharge un logo et retourne ``(contenu, type_mime)``, ou ``None``.
+
+    Filtre ce que le portail n'accepterait pas : seuls ``image/jpeg`` et ``image/png``,
+    taille ≤ 10 Mo. Toute erreur réseau, statut non-200 ou format non supporté → ``None``.
+    """
+    try:
+        r = session.get(url, timeout=30, allow_redirects=True)
+    except Exception:
+        return None
+    if r.status_code != 200:
+        return None
+    type_mime = (r.headers.get("Content-Type") or "").split(";")[0].strip().lower()
+    if type_mime not in _TYPES_IMAGE_ACCEPTES:
+        return None
+    contenu = r.content
+    if not contenu or len(contenu) > _TAILLE_MAX_LOGO:
+        return None
+    return contenu, type_mime
+
+
 def resumer_wikipedia(nom: str) -> dict | None:
     """Retourne un résumé Wikipédia pour une organisation, ou None.
 
     Retour : {"caption": <description Wikidata>, "summary": <extract>,
-              "url": <page Wikipédia>, "site_officiel": <site officiel Wikidata P856>}
+              "url": <page Wikipédia>, "site_officiel": <site officiel Wikidata P856>,
+              "logo": <nom de fichier Commons du logo Wikidata P154>}
     - caption : phrase courte CC0 (description Wikidata via l'API REST)
     - summary : 2-4 phrases CC BY-SA (extract Wikipédia)
     - url : lien vers la page Wikipédia
     - site_officiel : site internet officiel de l'entité ("" si absent)
+    - logo : nom de fichier Commons du logo ("" si absent)
     """
     if not nom or not nom.strip():
         return None
@@ -182,11 +262,13 @@ def resumer_wikipedia(nom: str) -> dict | None:
             _ecrire_cache(cle, {})
             return None
 
+        qid = data.get("wikibase_item", "")
         result = {
             "caption": caption,
             "summary": extract,
             "url": url,
-            "site_officiel": _site_officiel(data.get("wikibase_item", "")),
+            "site_officiel": _site_officiel(qid),
+            "logo": _logo_officiel(qid),
         }
         _ecrire_cache(cle, result)
         return result

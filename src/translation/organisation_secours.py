@@ -69,6 +69,32 @@ def titre_wikipedia_pour(nom: str) -> str | None:
     return nom_nettoye or nom
 
 
+def logo_wikipedia_pour(nom: str) -> str | None:
+    """URL du logo de l'organisation (Wikidata P154 → Wikimedia Commons), ou None.
+
+    Volontairement séparé d'``enrichir_organisation`` : le logo n'est pas un champ du
+    modèle d'organisation du **nœud** RUDI (contrairement à caption/summary/url, qu'on
+    fusionne dans `producer`), c'est un **média** traité côté portail. Tenir cette URL hors
+    du dict résultat évite qu'elle ne se retrouve sérialisée dans les métadonnées publiées.
+
+    L'alias curé peut forcer un logo via une clé ``"logo"`` de son override ``dict``.
+    """
+    from connectors.wikipedia import resumer_wikipedia, url_logo_wikimedia
+
+    titre = titre_wikipedia_pour(nom)
+    if not titre:
+        # repli forcé (alias == None) ou override manuel (alias == dict)
+        present, alias = _resoudre_alias(nom)
+        if present and isinstance(alias, dict):
+            return alias.get("logo") or None
+        return None
+
+    wiki = resumer_wikipedia(titre)
+    if wiki and wiki.get("logo"):
+        return url_logo_wikimedia(wiki["logo"])
+    return None
+
+
 def enrichir_organisation(
     nom: str,
     *,

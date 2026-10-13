@@ -8,6 +8,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(
 
 from translation.organisation_secours import (
     _normaliser_nom_producteur, enrichir_organisation, _repli_factuel, _construire_resultat,
+    logo_wikipedia_pour,
 )
 
 _MOCK_WIKI = "connectors.wikipedia.resumer_wikipedia"
@@ -129,6 +130,47 @@ class TestEnrichirOrganisation(unittest.TestCase):
         }
         r = enrichir_organisation("OrganisationSansSiteOfficiel")
         self.assertNotIn("organization_url", r)
+
+
+class TestLogoWikipediaPour(unittest.TestCase):
+    @patch(_MOCK_WIKI)
+    def test_logo_wikidata_devient_url_commons(self, mock_wiki):
+        mock_wiki.return_value = {
+            "caption": "Ministère français",
+            "summary": "Le ministère de la Culture est...",
+            "url": "https://fr.wikipedia.org/wiki/Ministere_de_la_Culture",
+            "logo": "Ministère de la Culture.svg",
+        }
+        url = logo_wikipedia_pour("Ministère de la Culture")
+        self.assertIn("Special:FilePath/", url)
+        self.assertIn("Minist%C3%A8re%20de%20la%20Culture.svg", url)
+
+    @patch(_MOCK_WIKI)
+    def test_logo_absent_retourne_none(self, mock_wiki):
+        mock_wiki.return_value = {
+            "caption": "Organisation",
+            "summary": "Une organisation.",
+            "url": "https://fr.wikipedia.org/wiki/Organisation",
+            "logo": "",
+        }
+        self.assertIsNone(logo_wikipedia_pour("OrganisationTestLogo"))
+
+    @patch(_MOCK_WIKI)
+    def test_alias_dict_sans_logo_retourne_none(self, mock_wiki):
+        """Override manuel (dict) sans clé « logo » → aucun logo."""
+        self.assertIsNone(logo_wikipedia_pour("Ecolab"))
+        mock_wiki.assert_not_called()
+
+    def test_alias_dict_avec_logo_retourne_l_url(self):
+        with patch.dict("translation.organisation_secours.ALIAS_ORGANISATIONS",
+                        {"OrganisationTestLogo": {"logo": "https://ex.org/logo.png"}}):
+            self.assertEqual(logo_wikipedia_pour("OrganisationTestLogo"),
+                             "https://ex.org/logo.png")
+
+    @patch(_MOCK_WIKI)
+    def test_wikipedia_inconnu_retourne_none(self, mock_wiki):
+        mock_wiki.return_value = None
+        self.assertIsNone(logo_wikipedia_pour("OrganisationInconnueXYZ"))
 
 
 class TestConstruireResultat(unittest.TestCase):

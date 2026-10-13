@@ -26,6 +26,7 @@ import harvest_geo
 import catalogue
 import publish_rudi
 import publish_rudi_geo
+import vider_rudi
 import renvoi_auto_apres_validation
 import enrichir_descriptions
 import enrichir_organisations
@@ -215,6 +216,43 @@ def action_menage_rudi():
                 print(f"\nOrganisations supprimées : {ok}, échec(s) : {echecs}")
 
     _executer("Ménage RUDI (orphelins + organisations inutilisées)", _detecter_et_proposer)
+
+
+def action_vider_noeud_proprement(interactif: bool = True):
+    """Vide le nœud proprement : supprime tous les JDD (nœud + portail) et demande le
+    détachement de toutes les organisations. La suppression des organisations n'aboutit
+    qu'après validation des détachements dans l'UI Strukture — en mode interactif, une
+    pause laisse le temps de valider ; le dashboard appelle `interactif=False` (sondage)."""
+    if interactif:
+        print("\n⚠️  Conséquences : tous les jeux de données du nœud ET du portail seront "
+              "supprimés (côté portail : déclassement — récupérable dans rudi_archive). Le "
+              "détachement de TOUTES les organisations sera demandé ; leur suppression "
+              "nécessite de valider ces détachements dans l'UI Strukture (une pause vous "
+              "sera demandée le temps de le faire).")
+        if not _confirmer("Vider le nœud RUDI et demander le détachement de toutes les organisations ?",
+                          mot_cle="CONFIRMER"):
+            print("Annulé.")
+            return
+    _executer("Vidage propre du nœud RUDI",
+              vider_rudi.vider_noeud_proprement, interactif=interactif)
+
+
+def action_purger_noeud_portail(interactif: bool = True):
+    """Purge radicale : supprime les JDD et les organisations du nœud ET du portail sans
+    validation modérateur (accès direct Mongo / SQL Strukture / API Dataverse). Aucun
+    `input()` — utilisable depuis le dashboard."""
+    if interactif:
+        print("\n⚠️  Conséquences : action DESTRUCTIVE et IRRÉVERSIBLE. Tous les jeux de "
+              "données seront détruits (Dataverse — pas un simple déclassement, contrairement "
+              "au vidage propre) et TOUTES les organisations seront supprimées du nœud et du "
+              "portail, SANS passer par la validation modérateur de l'UI Strukture. Une "
+              "sauvegarde est faite automatiquement dans _backups_rudi/ avant la purge.")
+        if not _confirmer("Purger le nœud ET le portail RUDI (JDD + organisations, sans validation) ?",
+                          mot_cle="CONFIRMER"):
+            print("Annulé.")
+            return
+    _executer("Purge radicale du nœud et du portail RUDI",
+              vider_rudi.purger_noeud_portail)
 
 
 def action_reanalyser_wms():
@@ -721,6 +759,9 @@ ACTIONS = [
     # --- Données & infos ---
     ("20", "Purger des données existantes", menu_purge),
     ("21", "État du projet", action_etat_projet),
+    # --- Nœud & portail RUDI ---
+    ("22", "Vider le nœud proprement (JDD + détachement des organisations)", action_vider_noeud_proprement),
+    ("23", "Purger nœud et portail (JDD + organisations, sans validation)", action_purger_noeud_portail),
 ]
 
 SECTIONS = [
@@ -728,6 +769,7 @@ SECTIONS = [
     (7, "Pipeline & publication"),
     (12, "Maintenance"),
     (19, "Données & infos"),
+    (21, "Nœud & portail RUDI"),
 ]
 
 

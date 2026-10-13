@@ -252,7 +252,15 @@ ACTIONS = {
     "nettoyer_wms_geo": ("Nettoyer les WMS de geo_services.json", lambda p: cli.action_nettoyer_wms_geo()),
     "pipeline_complet": ("Pipeline complet (sans découverte)",
                          lambda p: cli.executer_pipeline_complet()),
+    "vider_noeud_proprement": ("Vider le nœud RUDI (vidage propre)",
+                               lambda p: cli.action_vider_noeud_proprement(interactif=False)),
+    "purger_noeud_portail": ("Purger nœud + portail RUDI (radical)",
+                             lambda p: cli.action_purger_noeud_portail(interactif=False)),
 }
+
+# Actions exigeant, en plus du bouton, la saisie explicite de « CONFIRMER » (revalidée
+# côté serveur dans _demarrer_job — voir cli._confirmer() pour l'équivalent terminal).
+ACTIONS_CONFIRMATION_REQUISE = {"vider_noeud_proprement", "purger_noeud_portail"}
 
 
 def _etat_job() -> dict:
@@ -270,6 +278,8 @@ def _etat_job() -> dict:
 def _demarrer_job(nom: str, params: dict) -> tuple[bool, str]:
     if nom not in ACTIONS:
         return False, f"Action inconnue : {nom}"
+    if nom in ACTIONS_CONFIRMATION_REQUISE and str(params.get("confirmation", "")).strip() != "CONFIRMER":
+        return False, "Action destructrice : tapez CONFIRMER pour la lancer."
     label, fn = ACTIONS[nom]
 
     with _verrou_job:

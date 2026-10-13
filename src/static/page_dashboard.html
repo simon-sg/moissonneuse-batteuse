@@ -104,6 +104,7 @@ const GROUPES = [
   {id:"catalogue", titre:"Catalogue & publication", couleur:"#2d7d46"},
   {id:"rattrapage", titre:"Rattrapage & secours", couleur:"#8c4a1a"},
   {id:"pipeline", titre:"Pipeline", couleur:"#a3372c"},
+  {id:"rudi", titre:"Nœud & portail RUDI", couleur:"#7a1c1c"},
 ];
 const ACTIONS = [
   {id:"moisson_tabulaire", titre:"Tabulaire", desc:"data.gouv.fr configuré (DATASETS)",
@@ -160,6 +161,14 @@ const ACTIONS = [
   {id:"pipeline_complet", titre:"Pipeline complet", desc:"Tabulaire → batch → INSEE → OEB → BDNB → géo → catalogue → RUDI",
    tooltip:"Exécute toutes les moissons, le catalogue et la publication RUDI à la suite",
    pipeline:true, groupe:"pipeline"},
+  {id:"vider_noeud_proprement", titre:"Vider le nœud (propre)", desc:"JDD supprimés + détachement des organisations",
+   tooltip:"Supprime tous les JDD du nœud et du portail (déclassement côté portail), puis demande le détachement de toutes les organisations. La suppression effective des organisations nécessite une validation modérateur dans l'UI Strukture, puis une nouvelle exécution de cette action.",
+   avertissement:"Action destructive : tous les JDD du nœud ET du portail seront supprimés (déclassement côté portail, récupérable dans rudi_archive) et le détachement de toutes les organisations sera demandé. La suppression effective des organisations exige une validation modérateur dans l'UI Strukture, puis une nouvelle exécution de cette action.",
+   confirmation:"CONFIRMER", groupe:"rudi"},
+  {id:"purger_noeud_portail", titre:"Purger nœud + portail", desc:"JDD + organisations, sans validation modérateur",
+   tooltip:"Supprime définitivement tous les JDD (Dataverse) et toutes les organisations du nœud et du portail, sans validation modérateur. Sauvegarde automatique dans _backups_rudi/ avant la purge.",
+   avertissement:"Action DESTRUCTIVE et IRRÉVERSIBLE : tous les JDD seront détruits dans Dataverse et toutes les organisations supprimées du nœud et du portail, SANS validation modérateur. Une sauvegarde est faite automatiquement dans _backups_rudi/ avant la purge.",
+   confirmation:"CONFIRMER", groupe:"rudi"},
 ];
 
 function rendreActions(){
@@ -206,9 +215,21 @@ function appliquerEtatBoutons(){
 
 async function lancerAction(id){
   let params = {};
+  const action = ACTIONS.find(a => a.id === id);
   if (id === "moisson_insee" || id === "moisson_oeb"){
     const champ = document.getElementById(`champ-${id}`);
     params.ids = champ ? champ.value.trim() : "";
+  }
+  if (action && action.confirmation){
+    const confirme = await confirmerModal({
+      titre: action.titre,
+      message: action.avertissement || action.tooltip || "",
+      motCle: action.confirmation,
+      texteConfirmer: "Lancer",
+      danger: true,
+    });
+    if (!confirme) return;
+    params.confirmation = action.confirmation;
   }
   const {ok, data} = await apiFetch(`/api/job/${id}`, {method:"POST", body: JSON.stringify(params)});
   if (!ok) { if (data) notifier(data.message, true); return; }

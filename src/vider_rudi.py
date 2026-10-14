@@ -16,6 +16,13 @@ Vidage du nœud RUDI local et de son portail — deux niveaux.
   portail en ré-essayant la suppression des organisations encore rattachées, jusqu'à
   validation ou délai maximal.
 
+  **Périmètre — uniquement ce que le pipeline a créé.** Contrairement à la purge radicale
+  ci-dessous, cette action ne touche **jamais** les JDD/organisations déposés par d'autres
+  utilisateurs : elle ne supprime qu'1) les JDD ayant une contrepartie locale
+  (``data/<dossier>/rudi_metadata.json`` — même critère que ``publish_rudi.menage_rudi_one_shot()``)
+  et 2) les organisations productrices de ces JDD qui ne sont référencées par aucun JDD
+  laissé en place (une organisation partagée avec un JDD tiers est donc épargnée).
+
 - ``purger_noeud_portail()`` — procédure **radicale** documentée (``REF_ENV_RUDI_LOCAL.md``
   § « Procédure de vidage complet nœud + portail ») : sauvegarde, puis suppression directe
   (Mongo du nœud, SQL ``strukture_data``, API Dataverse) **sans passer par le workflow
@@ -27,6 +34,7 @@ Journalisation : tout passe par ``journal`` (``print`` par défaut — capturé 
 dashboard web). Aucune fonction ``input()`` hors du mode ``interactif``, pour rester
 utilisable depuis le dashboard.
 """
+import json
 import os
 import subprocess
 import time
@@ -41,6 +49,7 @@ from connectors.http import session
 from connectors.rudi_portal import _DOCKER_DIR
 
 CONF_RUDI_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "conf", "rudi_node.json")
+DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
 
 RACINE_DEPOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BACKUPS_RUDI_DIR = os.path.join(os.path.dirname(RACINE_DEPOT), "_backups_rudi")
@@ -133,10 +142,39 @@ def _supprimer_organisations_avec_attente(conf, orgs, attente_max_s, journal):
     return total_ok, restantes
 
 
+def _local_ids_du_pipeline() -> set[str]:
+    """``local_id`` des JDD réellement moissonnés par le pipeline : ceux qui possèdent un
+    ``data/<dossier>/rudi_metadata.json`` local. Un JDD déposé sur le nœud par un autre
+    utilisateur n'a jamais de contrepartie locale ici — même critère que
+    ``publish_rudi.menage_rudi_one_shot()`` (qui liste l'inverse : les « orphelins »)."""
+    ids: set[str] = set()
+    if not os.path.isdir(DATA_DIR):
+        return ids
+    for nom in os.listdir(DATA_DIR):
+        chemin = os.path.join(DATA_DIR, nom, "rudi_metadata.json")
+        if not os.path.isfile(chemin):
+            continue
+        try:
+            with open(chemin, encoding="utf-8") as f:
+                lid = json.load(f).get("local_id")
+        except (OSError, ValueError):
+            continue
+        if lid:
+            ids.add(lid)
+    return ids
+
+
+def _producteur_id(metadonnee: dict) -> str | None:
+    """``organization_id`` de l'organisation productrice d'un JDD (None si absente)."""
+    return (metadonnee.get("producer") or {}).get("organization_id")
+
+
 def vider_noeud_proprement(conf: dict | None = None, interactif: bool = True,
                            attente_max_s: float = ATTENTE_MAX_S, journal=None) -> dict:
-    """Vidage propre : supprime tous les JDD (nœud + portail), dépose le détachement de
-    toutes les organisations puis, après validation modérateur, les supprime."""
+    """Vidage propre : supprime les JDD **du pipeline** (nœud + portail), dépose le
+    détachement de leurs organisations productrices puis, après validation modérateur,
+    les supprime. Ne touche jamais aux JDD/organisations déposés par d'autres utilisateurs
+    (voir le périmètre décrit dans le docstring du module)."""
     journal = journal or print
     conf = conf or charger_conf_rudi(CONF_RUDI_FILE)
     if not conf:
@@ -145,11 +183,21 @@ def vider_noeud_proprement(conf: dict | None = None, interactif: bool = True,
 
     resume: dict = {}
 
-    # 1. Jeux de données (nœud + portail)
-    metadonnees = toutes_metadonnees_rudi(conf)
-    journal(f"\n{len(metadonnees)} jeu(x) de données à supprimer (nœud + portail)…")
+    # 0. Périmètre : ne garder que ce que le pipeline a créé.
+    locaux_ids = _local_ids_du_pipeline()
+    toutes = toutes_metadonnees_rudi(conf)
+    a_supprimer = [d for d in toutes if d.get("local_id") in locaux_ids]
+    ignorees = len(toutes) - len(a_supprimer)
+    if not locaux_ids:
+        journal("\n⚠️  Aucune contrepartie locale (data/<dossier>/rudi_metadata.json) — "
+                "impossible d'identifier les JDD du pipeline : rien ne sera supprimé.")
+
+    # 1. Jeux de données du pipeline (nœud + portail)
+    suffixe = f" — {ignorees} JDD d'autres utilisateurs ignoré(s)" if ignorees else ""
+    journal(f"\n{len(a_supprimer)} jeu(x) de données du pipeline à supprimer (nœud + portail)"
+            f"{suffixe}…")
     ok = echecs = 0
-    for d in metadonnees:
+    for d in a_supprimer:
         gid = d.get("global_id")
         if gid and supprimer_dataset(conf, gid):
             ok += 1
@@ -157,11 +205,18 @@ def vider_noeud_proprement(conf: dict | None = None, interactif: bool = True,
             echecs += 1
         if gid:
             supprimer_dataset_portail(conf, gid)
-    resume["jdd"] = {"total": len(metadonnees), "supprimes": ok, "echecs": echecs}
+    resume["jdd"] = {"total": len(a_supprimer), "supprimes": ok, "echecs": echecs,
+                     "ignores": ignorees}
 
-    # 2. Détachement des organisations (validation modérateur requise ensuite)
-    orgs = lister_organisations(conf)
-    journal(f"\n{len(orgs)} organisation(s) : demande de détachement du producteur…")
+    # 2. Détachement des organisations productrices de ces JDD (validation modérateur
+    #    requise ensuite). On épargne toute organisation encore référencée par un JDD
+    #    laissé en place (déposé par un tiers) : la supprimer casserait son dataset.
+    supprimes_gids = {d.get("global_id") for d in a_supprimer}
+    prod_pipeline = {_producteur_id(d) for d in a_supprimer} - {None}
+    prod_tiers = {_producteur_id(d) for d in toutes if d.get("global_id") not in supprimes_gids} - {None}
+    org_ids = prod_pipeline - prod_tiers
+    orgs = [o for o in lister_organisations(conf) if o.get("organization_id") in org_ids]
+    journal(f"\n{len(orgs)} organisation(s) du pipeline : demande de détachement du producteur…")
     detaches = 0
     for org in orgs:
         if demander_detachement_producteur(conf, org["organization_id"]):
@@ -303,8 +358,8 @@ def main() -> None:
     import sys
     if len(sys.argv) < 2 or sys.argv[1] not in ("propre", "purge"):
         print("Usage : python3 src/vider_rudi.py [propre|purge]")
-        print("  propre : supprime les JDD (nœud + portail) et demande le détachement des organisations")
-        print("  purge  : supprime JDD + organisations (nœud + portail) sans validation modérateur")
+        print("  propre : supprime les JDD **du pipeline** (nœud + portail) et demande le détachement de leurs organisations")
+        print("  purge  : supprime TOUS les JDD + organisations (nœud + portail) sans validation modérateur")
         return
     if sys.argv[1] == "propre":
         vider_noeud_proprement(interactif=True)

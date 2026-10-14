@@ -45,11 +45,22 @@ class _SessionDataverse:
 
 
 class TestVidagePropre(unittest.TestCase):
-    def _patch_depot(self, stack):
+    def _patch_depot(self, stack, metadonnees=None, organisations=None, locaux=None):
+        if metadonnees is None:
+            metadonnees = [
+                {"global_id": "g1", "local_id": "l1", "producer": {"organization_id": "o1"}},
+                {"global_id": "g2", "local_id": "l2", "producer": {"organization_id": "o1"}},
+            ]
+        if organisations is None:
+            organisations = [{"organization_id": "o1", "organization_name": "Org1"}]
+        if locaux is None:
+            locaux = {"l1", "l2"}
         stack.enter_context(mock.patch("vider_rudi.toutes_metadonnees_rudi",
-                                       return_value=[{"global_id": "g1"}, {"global_id": "g2"}]))
+                                       return_value=metadonnees))
         stack.enter_context(mock.patch("vider_rudi.lister_organisations",
-                                       return_value=[{"organization_id": "o1", "organization_name": "Org1"}]))
+                                       return_value=organisations))
+        stack.enter_context(mock.patch("vider_rudi._local_ids_du_pipeline",
+                                       return_value=locaux))
         for nom in ("supprimer_dataset", "supprimer_dataset_portail",
                     "demander_detachement_producteur", "demander_suppression_organisation",
                     "supprimer_organisation"):
@@ -60,10 +71,53 @@ class TestVidagePropre(unittest.TestCase):
             self._patch_depot(stack)
             resume = vider_rudi.vider_noeud_proprement(
                 {"url": "x"}, interactif=False, journal=lambda *_: None)
-        self.assertEqual(resume["jdd"], {"total": 2, "supprimes": 2, "echecs": 0})
+        self.assertEqual(resume["jdd"], {"total": 2, "supprimes": 2, "echecs": 0, "ignores": 0})
         self.assertEqual(resume["organisations"]["detachements"], 1)
         self.assertEqual(resume["organisations"]["supprimees"], 1)
         self.assertEqual(resume["organisations"]["echecs"], 0)
+
+    def test_ignore_les_jdd_des_autres_utilisateurs(self):
+        metadonnees = [
+            {"global_id": "g1", "local_id": "l1", "producer": {"organization_id": "o1"}},
+            {"global_id": "g9", "local_id": "tiers", "producer": {"organization_id": "o9"}},
+        ]
+        with contextlib.ExitStack() as stack:
+            self._patch_depot(stack, metadonnees=metadonnees, locaux={"l1"})
+            m_suppr = stack.enter_context(mock.patch("vider_rudi.supprimer_dataset", return_value=True))
+            resume = vider_rudi.vider_noeud_proprement(
+                {"url": "x"}, interactif=False, journal=lambda *_: None)
+        self.assertEqual(resume["jdd"], {"total": 1, "supprimes": 1, "echecs": 0, "ignores": 1})
+        m_suppr.assert_called_once_with({"url": "x"}, "g1")
+
+    def test_epargne_organisation_partagee_avec_un_jdd_tiers(self):
+        metadonnees = [
+            {"global_id": "g1", "local_id": "l1", "producer": {"organization_id": "o1"}},
+            {"global_id": "g9", "local_id": "tiers", "producer": {"organization_id": "o1"}},
+        ]
+        with contextlib.ExitStack() as stack:
+            self._patch_depot(stack, metadonnees=metadonnees, locaux={"l1"},
+                              organisations=[{"organization_id": "o1", "organization_name": "Org1"}])
+            m_detach = stack.enter_context(mock.patch("vider_rudi.demander_detachement_producteur"))
+            resume = vider_rudi.vider_noeud_proprement(
+                {"url": "x"}, interactif=False, journal=lambda *_: None)
+        m_detach.assert_not_called()
+        self.assertEqual(resume["organisations"]["total"], 0)
+
+    def test_sans_contrepartie_locale_ne_supprime_rien(self):
+        metadonnees = [
+            {"global_id": "g1", "local_id": "l1", "producer": {"organization_id": "o1"}},
+        ]
+        with contextlib.ExitStack() as stack:
+            self._patch_depot(stack, metadonnees=metadonnees, locaux=set(),
+                              organisations=[{"organization_id": "o1", "organization_name": "Org1"}])
+            m_suppr = stack.enter_context(mock.patch("vider_rudi.supprimer_dataset"))
+            m_detach = stack.enter_context(mock.patch("vider_rudi.demander_detachement_producteur"))
+            resume = vider_rudi.vider_noeud_proprement(
+                {"url": "x"}, interactif=False, journal=lambda *_: None)
+        m_suppr.assert_not_called()
+        m_detach.assert_not_called()
+        self.assertEqual(resume["jdd"]["total"], 0)
+        self.assertEqual(resume["jdd"]["ignores"], 1)
 
     def test_interactif_pause_puis_supprime(self):
         with contextlib.ExitStack() as stack:
@@ -78,6 +132,7 @@ class TestVidagePropre(unittest.TestCase):
         with contextlib.ExitStack() as stack:
             stack.enter_context(mock.patch("vider_rudi.toutes_metadonnees_rudi", return_value=[]))
             stack.enter_context(mock.patch("vider_rudi.lister_organisations", return_value=[]))
+            stack.enter_context(mock.patch("vider_rudi._local_ids_du_pipeline", return_value=set()))
             m_suppr = stack.enter_context(mock.patch("vider_rudi.demander_suppression_organisation"))
             resume = vider_rudi.vider_noeud_proprement(
                 {"url": "x"}, interactif=False, journal=lambda *_: None)

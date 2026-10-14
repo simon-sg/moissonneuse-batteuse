@@ -224,17 +224,19 @@ def action_menage_rudi():
 
 
 def action_vider_noeud_proprement(interactif: bool = True):
-    """Vide le nœud proprement : supprime tous les JDD (nœud + portail) et demande le
-    détachement de toutes les organisations. La suppression des organisations n'aboutit
-    qu'après validation des détachements dans l'UI Strukture — en mode interactif, une
-    pause laisse le temps de valider ; le dashboard appelle `interactif=False` (sondage)."""
+    """Vide le nœud proprement : supprime les JDD **du pipeline** (nœud + portail) et demande
+    le détachement de leurs organisations productrices. Les JDD/organisations déposés par
+    d'autres utilisateurs ne sont jamais touchés. La suppression des organisations n'aboutit
+    qu'après validation des détachements dans l'UI Strukture — en mode interactif, une pause
+    laisse le temps de valider ; le dashboard appelle `interactif=False` (sondage)."""
     if interactif:
-        print("\n⚠️  Conséquences : tous les jeux de données du nœud ET du portail seront "
-              "supprimés (côté portail : déclassement — récupérable dans rudi_archive). Le "
-              "détachement de TOUTES les organisations sera demandé ; leur suppression "
-              "nécessite de valider ces détachements dans l'UI Strukture (une pause vous "
-              "sera demandée le temps de le faire).")
-        if not _confirmer("Vider le nœud RUDI et demander le détachement de toutes les organisations ?",
+        print("\n⚠️  Conséquences : les jeux de données du pipeline (ceux avec une contrepartie "
+              "locale) seront supprimés du nœud ET du portail (côté portail : déclassement — "
+              "récupérable dans rudi_archive). Les JDD et organisations déposés par d'autres "
+              "utilisateurs sont laissés intacts. Le détachement des organisations productrices "
+              "du pipeline sera demandé ; leur suppression nécessite de valider ces détachements "
+              "dans l'UI Strukture (une pause vous sera demandée le temps de le faire).")
+        if not _confirmer("Vider le nœud RUDI (JDD du pipeline) et demander le détachement des organisations ?",
                           mot_cle="CONFIRMER"):
             print("Annulé.")
             return
@@ -778,7 +780,7 @@ ACTIONS = [
     ("20", "Purger des données existantes", menu_purge),
     ("21", "État du projet", action_etat_projet),
     # --- Nœud & portail RUDI ---
-    ("22", "Vider le nœud proprement (JDD + détachement des organisations)", action_vider_noeud_proprement),
+    ("22", "Vider le nœud proprement (JDD du pipeline + détachement des organisations)", action_vider_noeud_proprement),
     ("23", "Purger nœud et portail (JDD + organisations, sans validation)", action_purger_noeud_portail),
     ("24", "Réparer les JDD refusés (re-soumission unique vers le portail)", action_reparer_jdd_refuses),
 ]

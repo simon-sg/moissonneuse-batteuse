@@ -255,7 +255,7 @@ ACTIONS = {
     "nettoyer_wms_geo": ("Nettoyer les WMS de geo_services.json", lambda p: cli.action_nettoyer_wms_geo()),
     "pipeline_complet": ("Pipeline complet (sans découverte)",
                          lambda p: cli.executer_pipeline_complet()),
-    "vider_noeud_proprement": ("Vider le nœud RUDI (vidage propre)",
+    "vider_noeud_proprement": ("Vider le nœud RUDI (vidage propre, JDD du pipeline)",
                                lambda p: cli.action_vider_noeud_proprement(interactif=False)),
     "purger_noeud_portail": ("Purger nœud + portail RUDI (radical)",
                              lambda p: cli.action_purger_noeud_portail(interactif=False)),

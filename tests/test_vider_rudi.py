@@ -4,8 +4,10 @@ Toutes les dépendances (toolkit RUDI, session HTTP, subprocess) sont remplacée
 doubles : ces tests ne touchent ni le nœud, ni le portail, ni les conteneurs.
 """
 import contextlib
+import json
 import os
 import sys
+import tempfile
 import unittest
 from unittest import mock
 
@@ -65,16 +67,21 @@ class TestVidagePropre(unittest.TestCase):
                     "demander_detachement_producteur", "demander_suppression_organisation",
                     "supprimer_organisation"):
             stack.enter_context(mock.patch(f"vider_rudi.{nom}", return_value=True))
+        return stack.enter_context(mock.patch("vider_rudi.reinitialiser_rudi_publie", return_value=0))
 
     def test_supprime_jdd_et_organisations_non_interactif(self):
         with contextlib.ExitStack() as stack:
-            self._patch_depot(stack)
+            m_reset = self._patch_depot(stack)
             resume = vider_rudi.vider_noeud_proprement(
                 {"url": "x"}, interactif=False, journal=lambda *_: None)
         self.assertEqual(resume["jdd"], {"total": 2, "supprimes": 2, "echecs": 0, "ignores": 0})
         self.assertEqual(resume["organisations"]["detachements"], 1)
         self.assertEqual(resume["organisations"]["supprimees"], 1)
         self.assertEqual(resume["organisations"]["echecs"], 0)
+        # Réinitialisation de l'état scopée aux seuls local_id effectivement supprimés
+        # du nœud (jamais aux JDD laissés en place).
+        m_reset.assert_called_once_with({"l1", "l2"}, mock.ANY)
+        self.assertEqual(resume["rudi_publie_reinitialises"], 0)
 
     def test_ignore_les_jdd_des_autres_utilisateurs(self):
         metadonnees = [
@@ -200,20 +207,101 @@ class TestPurgeRadicale(unittest.TestCase):
              mock.patch("vider_rudi._vider_mongo", return_value={"ok": True}), \
              mock.patch("vider_rudi._vider_strukture", return_value={"ok": True}), \
              mock.patch("vider_rudi._vider_dataverse",
-                        return_value={"ok": True, "supprimes": 0, "total": 0}):
+                        return_value={"ok": True, "supprimes": 0, "total": 0}), \
+             mock.patch("vider_rudi.reinitialiser_rudi_publie", return_value=0) as m_reset:
             res = vider_rudi.purger_noeud_portail(journal=lambda *_: None)
         self.assertEqual(res["sauvegarde"], "/tmp/backup")
         self.assertTrue(res["mongo"]["ok"])
         self.assertTrue(res["strukture"]["ok"])
+        m_reset.assert_called_once_with(None, mock.ANY)
 
     def test_purger_sans_sauvegarde(self):
         with mock.patch("vider_rudi._sauvegarder") as m_sauv, \
              mock.patch("vider_rudi._vider_mongo", return_value={"ok": True}), \
              mock.patch("vider_rudi._vider_strukture", return_value={"ok": True}), \
              mock.patch("vider_rudi._vider_dataverse",
-                        return_value={"ok": True, "supprimes": 0, "total": 0}):
+                        return_value={"ok": True, "supprimes": 0, "total": 0}), \
+             mock.patch("vider_rudi.reinitialiser_rudi_publie", return_value=0):
             vider_rudi.purger_noeud_portail(sauvegarder=False, journal=lambda *_: None)
         m_sauv.assert_not_called()
+
+
+class TestReinitialiserRudiPublie(unittest.TestCase):
+    """reinitialiser_rudi_publie() : logique pure sur des state*.json temporaires —
+    jamais les vrais fichiers data/ du dépôt."""
+
+    def _preparer(self, tmp, tab=None, geo_publie=None, dossiers_locaux=None):
+        fichiers = {}
+        for source, nom in (("tabulaire", "state.json"), ("insee", "state_insee.json"),
+                            ("oeb", "state_oeb.json"), ("bdnb", "state_bdnb.json")):
+            chemin = os.path.join(tmp, nom)
+            with open(chemin, "w", encoding="utf-8") as f:
+                json.dump(tab if source == "tabulaire" and tab is not None else {}, f)
+            fichiers[source] = chemin
+
+        state_geo_file = os.path.join(tmp, "state_geo.json")
+        with open(state_geo_file, "w", encoding="utf-8") as f:
+            json.dump({"_rudi_publie": geo_publie or {}}, f)
+
+        data_dir = os.path.join(tmp, "data")
+        for dossier, lid in (dossiers_locaux or {}).items():
+            d = os.path.join(data_dir, dossier)
+            os.makedirs(d, exist_ok=True)
+            with open(os.path.join(d, "rudi_metadata.json"), "w", encoding="utf-8") as f:
+                json.dump({"local_id": lid}, f)
+
+        return fichiers, state_geo_file, data_dir
+
+    def test_scope_precis_ne_touche_pas_le_reste(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tab = {"d1": {"dossier": "d1", "rudi_publie": True},
+                   "d2": {"dossier": "d2", "rudi_publie": True}}
+            fichiers, state_geo_file, data_dir = self._preparer(
+                tmp, tab=tab, dossiers_locaux={"d1": "l1", "d2": "l2"})
+            with mock.patch("vider_rudi._FICHIERS_ETAT", fichiers), \
+                 mock.patch("vider_rudi.STATE_GEO_FILE", state_geo_file), \
+                 mock.patch("vider_rudi.DATA_DIR", data_dir):
+                n = vider_rudi.reinitialiser_rudi_publie({"l1"}, lambda *_: None)
+            self.assertEqual(n, 1)
+            relu = json.load(open(fichiers["tabulaire"], encoding="utf-8"))
+            self.assertFalse(relu["d1"]["rudi_publie"])
+            self.assertTrue(relu["d2"]["rudi_publie"])  # hors scope, jamais touché
+
+    def test_none_reinitialise_tout_y_compris_geo(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tab = {"d1": {"dossier": "d1", "rudi_publie": True}}
+            fichiers, state_geo_file, data_dir = self._preparer(
+                tmp, tab=tab, geo_publie={"g1": True}, dossiers_locaux={"d1": "l1"})
+            with mock.patch("vider_rudi._FICHIERS_ETAT", fichiers), \
+                 mock.patch("vider_rudi.STATE_GEO_FILE", state_geo_file), \
+                 mock.patch("vider_rudi.DATA_DIR", data_dir):
+                n = vider_rudi.reinitialiser_rudi_publie(None, lambda *_: None)
+            self.assertEqual(n, 2)
+            self.assertFalse(json.load(open(fichiers["tabulaire"], encoding="utf-8"))["d1"]["rudi_publie"])
+            self.assertEqual(json.load(open(state_geo_file, encoding="utf-8"))["_rudi_publie"], {})
+
+    def test_rien_a_faire_renvoie_zero_et_n_ecrit_rien(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            fichiers, state_geo_file, data_dir = self._preparer(tmp)
+            mtime_avant = os.path.getmtime(fichiers["tabulaire"])
+            with mock.patch("vider_rudi._FICHIERS_ETAT", fichiers), \
+                 mock.patch("vider_rudi.STATE_GEO_FILE", state_geo_file), \
+                 mock.patch("vider_rudi.DATA_DIR", data_dir):
+                n = vider_rudi.reinitialiser_rudi_publie(set(), lambda *_: None)
+            self.assertEqual(n, 0)
+            self.assertEqual(os.path.getmtime(fichiers["tabulaire"]), mtime_avant)
+
+    def test_deja_false_n_est_pas_recompte(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tab = {"d1": {"dossier": "d1", "rudi_publie": False}}
+            fichiers, state_geo_file, data_dir = self._preparer(
+                tmp, tab=tab, dossiers_locaux={"d1": "l1"})
+            with mock.patch("vider_rudi._FICHIERS_ETAT", fichiers), \
+                 mock.patch("vider_rudi.STATE_GEO_FILE", state_geo_file), \
+                 mock.patch("vider_rudi.DATA_DIR", data_dir):
+                n = vider_rudi.reinitialiser_rudi_publie({"l1"}, lambda *_: None)
+            self.assertEqual(n, 0)
+
 
 
 class TestExecuter(unittest.TestCase):

@@ -11,6 +11,11 @@ Vidage du nœud RUDI local et de son portail — deux niveaux.
   (``demander_suppression_organisation()`` + ``supprimer_organisation()``) — jamais
   avant, sous peine de ``409`` (contrainte de clé étrangère ``linked_producer``).
 
+  Dernière étape, toujours exécutée : réinitialisation de ``rudi_publie`` dans l'état
+  local (``reinitialiser_rudi_publie()``) pour les seuls JDD supprimés du nœud — sans
+  ça, le fast-path « rien n'a changé » des scripts de moisson laisserait l'ancien flag
+  intact, et un pipeline relancé sur un nœud vidé ne republierait jamais rien.
+
   En mode ``interactif`` (menu terminal), la fonction s'arrête au milieu pour laisser
   l'utilisateur valider dans l'UI (``input()``) ; sinon (dashboard) elle **sonde** le
   portail en ré-essayant la suppression des organisations encore rattachées, jusqu'à
@@ -28,7 +33,8 @@ Vidage du nœud RUDI local et de son portail — deux niveaux.
   (Mongo du nœud, SQL ``strukture_data``, API Dataverse) **sans passer par le workflow
   BPMN** — donc sans validation modérateur, ni une par une dans l'UI. À réserver au
   repartir-de-zéro (gros volumes). ``provider``/``node_provider`` ne sont jamais touchés
-  (raccordement nœud↔portail).
+  (raccordement nœud↔portail). Réinitialise aussi ``rudi_publie`` dans **tout** l'état
+  local (plus rien n'existe côté nœud/portail, donc pas de scoping à faire).
 
 Journalisation : tout passe par ``journal`` (``print`` par défaut — capturé par le
 dashboard web). Aucune fonction ``input()`` hors du mode ``interactif``, pour rester
@@ -44,12 +50,22 @@ from rudi_harvest_toolkit.rudi_client import (
     supprimer_dataset, supprimer_dataset_portail,
     supprimer_organisation, demander_detachement_producteur,
     demander_suppression_organisation)
+from rudi_harvest_toolkit.state import charger_etat, sauvegarder_etat, construire_index_dossier
 
 from connectors.http import session
 from connectors.rudi_portal import _DOCKER_DIR
 
 CONF_RUDI_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "conf", "rudi_node.json")
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
+
+STATE_TAB_FILE = os.path.join(DATA_DIR, "state.json")
+STATE_INSEE_FILE = os.path.join(DATA_DIR, "state_insee.json")
+STATE_OEB_FILE = os.path.join(DATA_DIR, "state_oeb.json")
+STATE_BDNB_FILE = os.path.join(DATA_DIR, "state_bdnb.json")
+STATE_GEO_FILE = os.path.join(DATA_DIR, "state_geo.json")
+
+_FICHIERS_ETAT = {"tabulaire": STATE_TAB_FILE, "insee": STATE_INSEE_FILE,
+                  "oeb": STATE_OEB_FILE, "bdnb": STATE_BDNB_FILE}
 
 RACINE_DEPOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BACKUPS_RUDI_DIR = os.path.join(os.path.dirname(RACINE_DEPOT), "_backups_rudi")
@@ -142,14 +158,11 @@ def _supprimer_organisations_avec_attente(conf, orgs, attente_max_s, journal):
     return total_ok, restantes
 
 
-def _local_ids_du_pipeline() -> set[str]:
-    """``local_id`` des JDD réellement moissonnés par le pipeline : ceux qui possèdent un
-    ``data/<dossier>/rudi_metadata.json`` local. Un JDD déposé sur le nœud par un autre
-    utilisateur n'a jamais de contrepartie locale ici — même critère que
-    ``publish_rudi.menage_rudi_one_shot()`` (qui liste l'inverse : les « orphelins »)."""
-    ids: set[str] = set()
+def _dossiers_locaux() -> dict[str, str]:
+    """dossier → ``local_id``, pour tous les ``data/<dossier>/rudi_metadata.json`` locaux."""
+    mapping: dict[str, str] = {}
     if not os.path.isdir(DATA_DIR):
-        return ids
+        return mapping
     for nom in os.listdir(DATA_DIR):
         chemin = os.path.join(DATA_DIR, nom, "rudi_metadata.json")
         if not os.path.isfile(chemin):
@@ -160,8 +173,72 @@ def _local_ids_du_pipeline() -> set[str]:
         except (OSError, ValueError):
             continue
         if lid:
-            ids.add(lid)
-    return ids
+            mapping[nom] = lid
+    return mapping
+
+
+def _local_ids_du_pipeline() -> set[str]:
+    """``local_id`` des JDD réellement moissonnés par le pipeline : ceux qui possèdent un
+    ``data/<dossier>/rudi_metadata.json`` local. Un JDD déposé sur le nœud par un autre
+    utilisateur n'a jamais de contrepartie locale ici — même critère que
+    ``publish_rudi.menage_rudi_one_shot()`` (qui liste l'inverse : les « orphelins »)."""
+    return set(_dossiers_locaux().values())
+
+
+def reinitialiser_rudi_publie(local_ids: set[str] | None, journal) -> int:
+    """Remet ``rudi_publie`` à ``False`` dans les 5 ``state*.json`` pour que
+    ``publish_rudi.py`` retente la publication au prochain passage du pipeline.
+
+    Sans ça, le fast-path « rien n'a changé depuis le dernier run » de chaque script
+    de moisson (``last_modified`` inchangé) laisse silencieusement l'ancien flag
+    ``rudi_publie: true`` intact — même après avoir vidé le nœud/portail — et
+    ``publish_rudi.py`` (qui ne regarde que ce flag) ne republie alors jamais les JDD
+    qu'on vient pourtant de faire disparaître de la cible. Ne touche ni
+    ``data/cache/`` ni les fichiers déjà filtrés/traduits sur disque : zéro
+    retéléchargement, zéro refiltrage, juste une republication directe depuis les
+    ``rudi_metadata.json`` déjà présents (voir le docstring de ``publish_rudi.py``).
+
+    ``local_ids=None`` : réinitialise TOUT l'état (purge radicale — plus rien n'existe
+    côté nœud/portail). Sinon, restreint aux dossiers locaux correspondant à ces
+    ``local_id`` (vidage propre, scope JDD-du-pipeline-supprimés-du-nœud) — n'affecte
+    jamais l'état des JDD laissés en place. Retourne le nombre d'entrées modifiées."""
+    etats = {source: charger_etat(chemin) for source, chemin in _FICHIERS_ETAT.items()}
+    index = construire_index_dossier(*etats.items())
+    state_geo = charger_etat(STATE_GEO_FILE)
+    geo_publie = state_geo.setdefault("_rudi_publie", {})
+
+    if local_ids is None:
+        dossiers_cibles = set(index) | set(geo_publie)
+    else:
+        mapping = _dossiers_locaux()
+        dossiers_cibles = {d for d, lid in mapping.items() if lid in local_ids}
+
+    n = 0
+    sources_modifiees = set()
+    geo_modifie = False
+    for dossier in dossiers_cibles:
+        source_cle = index.get(dossier)
+        if source_cle:
+            source, cle = source_cle
+            if etats[source][cle].get("rudi_publie"):
+                etats[source][cle]["rudi_publie"] = False
+                n += 1
+                sources_modifiees.add(source)
+        if dossier in geo_publie:
+            del geo_publie[dossier]
+            n += 1
+            geo_modifie = True
+
+    for source in sources_modifiees:
+        sauvegarder_etat(_FICHIERS_ETAT[source], etats[source])
+    if geo_modifie:
+        sauvegarder_etat(STATE_GEO_FILE, state_geo)
+
+    if n:
+        journal(f"  {n} entrée(s) d'état repassée(s) « à republier » (rudi_publie) — "
+                f"publish_rudi.py les republiera depuis les rudi_metadata.json déjà sur "
+                f"disque, sans retéléchargement ni refiltrage.")
+    return n
 
 
 def _producteur_id(metadonnee: dict) -> str | None:
@@ -236,6 +313,11 @@ def vider_noeud_proprement(conf: dict | None = None, interactif: bool = True,
             ech_orgs = len(restantes)
         resume["organisations"].update({
             "supprimees": ok_orgs, "echecs": ech_orgs, "en_attente": len(restantes)})
+
+    # 4. Réinitialisation de l'état local (rudi_publie) des JDD supprimés, pour que le
+    #    prochain passage du pipeline les republie au lieu de les fast-pather en silence.
+    local_ids_supprimes = {d.get("local_id") for d in a_supprimer} - {None}
+    resume["rudi_publie_reinitialises"] = reinitialiser_rudi_publie(local_ids_supprimes, journal)
 
     return resume
 
@@ -351,6 +433,8 @@ def purger_noeud_portail(sauvegarder: bool = True, journal=None) -> dict:
     resume["strukture"] = _vider_strukture(journal)
     journal("\nSuppression de tous les jeux de données du portail (Dataverse) :")
     resume["dataverse"] = _vider_dataverse(journal)
+    journal("\nRéinitialisation de l'état de publication local (rudi_publie) :")
+    resume["rudi_publie_reinitialises"] = reinitialiser_rudi_publie(None, journal)
     return resume
 
 

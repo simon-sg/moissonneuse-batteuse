@@ -3,8 +3,12 @@ Réparation ponctuelle : re-soumet au portail les JDD marqués `refused` sur le 
 
 Certains JDD sont bel et bien intégrés au portail mais restent `metadata_status: refused`
 sur le nœud : un second envoi concurrent a produit un `ERR-304` (« valeur déjà utilisée »)
-côté Kalim, qui a écrasé le statut (voir `renvoi_auto_apres_validation`). Leurs
-organisations étant déjà marquées traitées, le renvoi auto ne les repasse plus jamais.
+côté Kalim, qui a écrasé le statut (voir `renvoi_auto_apres_validation`).
+
+Depuis que `renvoi_auto_apres_validation` retente aussi les `refused` hors vol dont
+l'organisation est `VALIDATED` (étape du pipeline), ce script est un **levier manuel** :
+il force une reprise immédiate, sans attendre un passage du pipeline, et couvre un JDD
+`refused` dont l'organisation n'est pas (plus) marquée `VALIDATED`.
 
 Ce script les re-soumet **une seule fois**, un par un (pause de sécurité entre chaque :
 `sendToPortal()` est fire-and-forget côté nœud). Cette fois aucun autre envoi n'est en vol :

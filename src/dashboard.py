@@ -939,6 +939,14 @@ class Handler(http.server.BaseHTTPRequestHandler):
     def log_message(self, format, *args):
         pass  # silence le log d'accès par défaut — la console reste dédiée aux jobs
 
+    def handle_one_request(self):
+        try:
+            super().handle_one_request()
+        except (BrokenPipeError, ConnectionResetError):
+            # Client déconnecté avant la fin de la réponse (onglet fermé, reload,
+            # polling coupé) — rien à faire côté serveur, inutile de tracebacker.
+            self.close_connection = True
+
     def _repondre_json(self, code: int, payload) -> None:
         corps = json.dumps(payload, ensure_ascii=False).encode("utf-8")
         self.send_response(code)

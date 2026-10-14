@@ -36,6 +36,8 @@ Vidage du nœud RUDI local et de son portail — deux niveaux.
   (raccordement nœud↔portail). Réinitialise aussi ``rudi_publie`` dans **tout** l'état
   local (plus rien n'existe côté nœud/portail, donc pas de scoping à faire).
 
+  Vide aussi l'historique de la file d'intégration Kalim (``kalim_data.integration_request``) : un nœud repeuplé réutilise les mêmes ``local_id``/``global_id`` (dérivés déterministiquement des sources) — une vieille ligne y survivant peut faire échouer une resoumission pourtant neuve avec un ``ERR-304``.
+
 Journalisation : tout passe par ``journal`` (``print`` par défaut — capturé par le
 dashboard web). Aucune fonction ``input()`` hors du mode ``interactif``, pour rester
 utilisable depuis le dashboard.
@@ -376,6 +378,24 @@ def _vider_strukture(journal) -> dict:
     return {"ok": code == 0}
 
 
+def _vider_file_kalim(journal) -> dict:
+    """Vide l'historique de la file d'intégration Kalim (``kalim_data.integration_request``
+    + ``integration_request_error``, FK ordonnée). Jamais touché par ailleurs : un nœud/portail
+    repeuplé réutilise les mêmes ``local_id``/``global_id`` (dérivés déterministiquement des
+    sources), et une vieille ligne présente dans cette table peut provoquer un ``ERR-304``
+    (« valeur déjà utilisée ») sur une resoumission pourtant neuve, sans rapport avec une
+    quelconque course entre deux process. Sans effet sur le réglage du planificateur
+    (``config/kalim/kalim.properties``, voir mémoire projet « lenteur Kalim »)."""
+    sql = ("BEGIN;"
+           "DELETE FROM kalim_data.integration_request_error;"
+           "DELETE FROM kalim_data.integration_request;"
+           "COMMIT;")
+    code, _out, _err = _executer(["docker", "exec", CONTENEUR_STRUKTURE_DB, "psql",
+                                  "-U", STRUKTURE_DB_USER, "-d", STRUKTURE_DB_NAME,
+                                  "-v", "ON_ERROR_STOP=1", "-c", sql], journal)
+    return {"ok": code == 0}
+
+
 def _lire_token_dataverse() -> str | None:
     chemin = os.path.join(_DOCKER_DIR, "config", "kalim", "kalim.properties")
     if not os.path.isfile(chemin):
@@ -424,13 +444,17 @@ def _vider_dataverse(journal) -> dict:
 
 def purger_noeud_portail(sauvegarder: bool = True, journal=None) -> dict:
     """Purge radicale : sauvegarde puis vide le nœud (Mongo), le référentiel d'organisations
-    du portail (SQL ``strukture_data``) et les datasets Dataverse — sans validation modérateur."""
+    du portail (SQL ``strukture_data``), la file d'intégration Kalim (évite qu'une resoumission
+    future retombe sur un ``ERR-304`` à cause d'une vieille ligne du même ``global_id``) et les
+    datasets Dataverse — sans validation modérateur."""
     journal = journal or print
     resume: dict = {"sauvegarde": _sauvegarder(journal) if sauvegarder else None}
     journal("\nSuppression de toutes les organisations dans le nœud :")
     resume["mongo"] = _vider_mongo(journal)
     journal("\nSuppression de toutes les organisations dans le portail (Strukture) :")
     resume["strukture"] = _vider_strukture(journal)
+    journal("\nVidage de la file d'intégration Kalim (historique integration_request) :")
+    resume["kalim"] = _vider_file_kalim(journal)
     journal("\nSuppression de tous les jeux de données du portail (Dataverse) :")
     resume["dataverse"] = _vider_dataverse(journal)
     journal("\nRéinitialisation de l'état de publication local (rudi_publie) :")

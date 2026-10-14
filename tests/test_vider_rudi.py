@@ -206,6 +206,7 @@ class TestPurgeRadicale(unittest.TestCase):
         with mock.patch("vider_rudi._sauvegarder", return_value="/tmp/backup"), \
              mock.patch("vider_rudi._vider_mongo", return_value={"ok": True}), \
              mock.patch("vider_rudi._vider_strukture", return_value={"ok": True}), \
+             mock.patch("vider_rudi._vider_file_kalim", return_value={"ok": True}), \
              mock.patch("vider_rudi._vider_dataverse",
                         return_value={"ok": True, "supprimes": 0, "total": 0}), \
              mock.patch("vider_rudi.reinitialiser_rudi_publie", return_value=0) as m_reset:
@@ -213,17 +214,32 @@ class TestPurgeRadicale(unittest.TestCase):
         self.assertEqual(res["sauvegarde"], "/tmp/backup")
         self.assertTrue(res["mongo"]["ok"])
         self.assertTrue(res["strukture"]["ok"])
+        self.assertTrue(res["kalim"]["ok"])
         m_reset.assert_called_once_with(None, mock.ANY)
 
     def test_purger_sans_sauvegarde(self):
         with mock.patch("vider_rudi._sauvegarder") as m_sauv, \
              mock.patch("vider_rudi._vider_mongo", return_value={"ok": True}), \
              mock.patch("vider_rudi._vider_strukture", return_value={"ok": True}), \
+             mock.patch("vider_rudi._vider_file_kalim", return_value={"ok": True}), \
              mock.patch("vider_rudi._vider_dataverse",
                         return_value={"ok": True, "supprimes": 0, "total": 0}), \
              mock.patch("vider_rudi.reinitialiser_rudi_publie", return_value=0):
             vider_rudi.purger_noeud_portail(sauvegarder=False, journal=lambda *_: None)
         m_sauv.assert_not_called()
+
+    def test_vider_file_kalim_ordre_fk(self):
+        capture = {}
+
+        def faux_executer(cmd, journal):
+            capture["sql"] = cmd[-1]
+            return 0, "", ""
+
+        with mock.patch("vider_rudi._executer", side_effect=faux_executer):
+            res = vider_rudi._vider_file_kalim(lambda *_: None)
+        self.assertTrue(res["ok"])
+        sql = capture["sql"]
+        self.assertLess(sql.index("integration_request_error"), sql.index("DELETE FROM kalim_data.integration_request;"))
 
 
 class TestReinitialiserRudiPublie(unittest.TestCase):

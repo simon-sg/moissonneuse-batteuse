@@ -290,7 +290,9 @@ une à la main par un animateur avant que ses JDD ne passent de `refused` (`ERR-
 production, où la validation doit rester un geste humain réfléchi.
 
 **Flux API** (confirmé dans le code source de `rudi-portal-source` — `TasksController`,
-`OrganizationsController`, `AbstractTaskServiceImpl`, `organization-process.bpmn20.xml`) :
+`OrganizationsController`, `LinkedProducerController`, `AbstractTaskServiceImpl`,
+`OrganizationWorkflowContext`, `organization-process.bpmn20.xml`,
+`linked-producer-process.bpmn20.xml`) :
 1. `POST {url_portail}/authenticate` (`login`/`password` du compte **animateur**, lu depuis
    `src/conf/credentials_animateur.json`, gitignoré — voir `credentials_animateur.example.json`)
    — le JWT est dans le header de réponse `Authorization` (déjà préfixé `"Bearer "`), pas dans
@@ -300,17 +302,27 @@ production, où la validation doit rester un geste humain réfléchi.
    organisations validées avec succès une fois corrigé). Le filtre serveur `status` est un
    faux-ami : il correspond à une variable de process BPMN interne (`TaskConstants.STATUS`),
    pas au champ `Task.status` visible dans la réponse JSON — lui passer `"PENDING"` renvoie
-   silencieusement `[]`. Filtrage entièrement côté client sur
-   `asset.process_definition_key == "organization-process"` et `assignee is None`.
-3. `PUT .../organizations/tasks/{id}/claim` puis `PUT .../organizations/tasks/{id}/do-it/validated`
+   silencieusement `[]`. Filtrage entièrement côté client sur `assignee is None` et
+   `asset.process_definition_key` présent dans `PROCESS_SEGMENTS` (voir point 4).
+3. `PUT .../{segment}/tasks/{id}/claim` puis `PUT .../{segment}/tasks/{id}/do-it/validated`
    (aucun corps dans les deux cas) — `do-it` doit être appelé avec le **même** compte que le
    `claim`, sinon `AbstractTaskServiceImpl.doIt()` refuse (« Task is not assigned to you »).
-   `"validated"` est la seule action positive du BPMN (confirmée pour les 3 `UserTask` du
-   process : création, modification, archivage) ; l'autre valeur possible est `"refused"`.
+   `"validated"` est la seule action positive du BPMN ; l'autre valeur possible est `"refused"`.
+4. **Deux process BPMN distincts** (`PROCESS_SEGMENTS`), chacun avec son propre segment d'URL :
+   `organization-process` → `/organizations/tasks/...` (création/modification/archivage d'une
+   organisation) et `linked-producer-process` → `/linked-producers/tasks/...` (rattachement/
+   détachement producteur↔organisation). **Valider une tâche `organization-process` de
+   création déclenche automatiquement, dans le même appel `do-it/validated`
+   (`OrganizationWorkflowContext.startAttachOrganizationToProvider()`), la création d'une
+   nouvelle tâche `linked-producer-process`** non assignée — c'est la « demande de
+   rattachement » qui reste indéfiniment en attente si on ne reliste pas les tâches après
+   coup (bug constaté le 2026-10-14 : seule `organization-process` était couverte, la
+   validation semblait complète mais les JDD restaient `refused`/`ERR-112`). Pour la
+   rattraper, `valider_toutes_organisations()` boucle en plusieurs passes (liste → validation
+   → re-liste, jusqu'à `MAX_PASSES` ou jusqu'à une passe sans **nouvelle** tâche) — une tâche
+   déjà tentée (succès ou échec) n'est jamais retentée à la passe suivante.
 
-Ne couvre que `organization-process` — pas `linked-producer-process` (rattachement/détachement
-producteur), dont l'endpoint n'a pas été confirmé. Best-effort par tâche : une tâche en échec
-n'empêche pas de traiter les suivantes.
+Best-effort par tâche : une tâche en échec n'empêche pas de traiter les suivantes.
 
 ## Renvoi auto après validation d'organisation
 

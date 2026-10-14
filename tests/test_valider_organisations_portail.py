@@ -89,21 +89,23 @@ class TestListerTachesOrganisationEnAttente(unittest.TestCase):
         faux = _SessionFactice({("GET", "/strukture/v1/tasks"): _Rep(data=taches)})
         with mock.patch.object(vop, "session", faux):
             resultat = vop._lister_taches_organisation_en_attente("http://rudi.localhost", "Bearer x")
-        self.assertEqual([t["id"] for t in resultat], ["t1"])
+        # t2 écartée (assignee déjà pris), t4 écartée (process hors périmètre) ;
+        # t1 (organization-process) ET t3 (linked-producer-process) retenues.
+        self.assertEqual([t["id"] for t in resultat], ["t1", "t3"])
         _, _, kwargs = faux.appels[0]
         self.assertEqual(kwargs["params"], {"asAdmin": "true"})
         self.assertEqual(kwargs["headers"], {"Authorization": "Bearer x"})
 
 
 class TestValiderToutesOrganisations(unittest.TestCase):
-    def _routes(self, taches, echec_do_it_pour=None):
-        def do_it(tid):
-            if tid == echec_do_it_pour:
-                return _Rep(status=400)
-            return _Rep(status=204)
+    def _routes_statiques(self, taches):
+        """GET /tasks renvoie toujours la même liste — suffisant quand le test ne
+        porte pas sur l'effet d'une validation sur les passes suivantes."""
         return {
             ("POST", "/authenticate"): _Rep(headers={"Authorization": "Bearer x"}),
             ("GET", "/strukture/v1/tasks"): _Rep(data=taches),
+            ("PUT", "/claim"): _Rep(status=204),
+            ("PUT", "/do-it/validated"): _Rep(status=204),
         }
 
     def test_valide_toutes_les_taches_en_attente(self):
@@ -111,9 +113,7 @@ class TestValiderToutesOrganisations(unittest.TestCase):
             {"id": "t1", "assignee": None, "asset": {"process_definition_key": "organization-process", "name": "Org1"}},
             {"id": "t2", "assignee": None, "asset": {"process_definition_key": "organization-process", "name": "Org2"}},
         ]
-        faux = _SessionFactice(self._routes(taches))
-        faux.routes[("PUT", "/claim")] = _Rep(status=204)
-        faux.routes[("PUT", "/do-it/validated")] = _Rep(status=204)
+        faux = _SessionFactice(self._routes_statiques(taches))
         with mock.patch.object(vop, "session", faux):
             bilan = vop.valider_toutes_organisations("http://rudi.localhost", "animateur", "pw",
                                                       journal=lambda *_: None)
@@ -123,12 +123,67 @@ class TestValiderToutesOrganisations(unittest.TestCase):
         self.assertTrue(all("/organizations/tasks/t1/" in u or "/organizations/tasks/t2/" in u
                             for u in urls_put))
 
+    def test_valide_aussi_les_taches_de_rattachement_deja_en_attente(self):
+        """Une tâche linked-producer-process déjà en attente (indépendamment de toute
+        cascade) doit être validée via le bon segment d'URL, /linked-producers/..."""
+        taches = [
+            {"id": "lp1", "assignee": None,
+             "asset": {"process_definition_key": "linked-producer-process", "name": "Rattachement1"}},
+        ]
+        faux = _SessionFactice(self._routes_statiques(taches))
+        with mock.patch.object(vop, "session", faux):
+            bilan = vop.valider_toutes_organisations("http://rudi.localhost", "animateur", "pw",
+                                                      journal=lambda *_: None)
+        self.assertEqual(bilan, {"total": 1, "validees": 1, "echecs": 0})
+        urls_put = [u for m, u, _ in faux.appels if m == "PUT"]
+        self.assertTrue(all("/linked-producers/tasks/lp1/" in u for u in urls_put))
+
+    def test_cascade_rattachement_apres_validation_organisation(self):
+        """Reproduit le bug rapporté : valider une organization-process de création
+        engendre côté portail une NOUVELLE tâche linked-producer-process (le rattachement
+        auto, voir OrganizationWorkflowContext.startAttachOrganizationToProvider), absente
+        de la liste récupérée avant cette validation. Elle doit être rattrapée à la passe
+        suivante, sans action manuelle ni ré-exécution du menu."""
+        pendantes = [
+            {"id": "org1", "assignee": None,
+             "asset": {"process_definition_key": "organization-process", "name": "Org1"}},
+        ]
+        appels_do_it = []
+
+        def get_tasks(url, **kwargs):
+            return _Rep(data=list(pendantes))
+
+        def put_route(url, **kwargs):
+            if "/do-it/validated" in url and "/organizations/tasks/org1/" in url:
+                appels_do_it.append(url)
+                pendantes.remove(next(t for t in pendantes if t["id"] == "org1"))
+                pendantes.append({"id": "lp-auto", "assignee": None,
+                                   "asset": {"process_definition_key": "linked-producer-process",
+                                             "name": "RattachementAuto"}})
+                return _Rep(status=204)
+            if "/do-it/validated" in url and "/linked-producers/tasks/lp-auto/" in url:
+                appels_do_it.append(url)
+                pendantes.remove(next(t for t in pendantes if t["id"] == "lp-auto"))
+                return _Rep(status=204)
+            return _Rep(status=204)  # claim, peu importe la cible
+
+        faux = _SessionFactice({("POST", "/authenticate"): _Rep(headers={"Authorization": "Bearer x"})})
+        faux.get = get_tasks
+        faux.put = put_route
+
+        with mock.patch.object(vop, "session", faux):
+            bilan = vop.valider_toutes_organisations("http://rudi.localhost", "animateur", "pw",
+                                                      journal=lambda *_: None)
+        self.assertEqual(bilan, {"total": 2, "validees": 2, "echecs": 0})
+        self.assertEqual(len(appels_do_it), 2)
+        self.assertEqual(pendantes, [])
+
     def test_une_tache_en_echec_n_empeche_pas_les_autres(self):
         taches = [
             {"id": "t1", "assignee": None, "asset": {"process_definition_key": "organization-process"}},
             {"id": "t2", "assignee": None, "asset": {"process_definition_key": "organization-process"}},
         ]
-        faux = _SessionFactice(self._routes(taches))
+        faux = _SessionFactice(self._routes_statiques(taches))
 
         def put_route(url, **kwargs):
             if "/t1/claim" in url:
@@ -139,6 +194,8 @@ class TestValiderToutesOrganisations(unittest.TestCase):
         with mock.patch.object(vop, "session", faux):
             bilan = vop.valider_toutes_organisations("http://rudi.localhost", "animateur", "pw",
                                                       journal=lambda *_: None)
+        # t1 échoue au claim mais n'est jamais retentée à une passe suivante (liste
+        # statique dans ce test) — une seule passe, pas de boucle jusqu'à MAX_PASSES.
         self.assertEqual(bilan, {"total": 2, "validees": 1, "echecs": 1})
 
     def test_refuse_un_portail_non_local_sans_appel_reseau(self):

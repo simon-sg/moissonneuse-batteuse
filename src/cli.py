@@ -180,11 +180,13 @@ def action_reparer_jdd_refuses():
 
 
 def action_valider_organisations_portail(interactif: bool = True):
-    """Valide automatiquement toutes les demandes d'organisation en attente côté
-    portail (création/modification/archivage) — remplace le clic manuel « valider »
-    dans l'UI Strukture (rôle animateur/MODERATOR). Réservé au portail local de
-    dev/test — garde-fou dur dans valider_organisations_portail lui-même, jamais
-    contournable même en mode non-interactif (dashboard)."""
+    """Valide automatiquement toutes les demandes en attente côté portail —
+    organisation (création/modification/archivage) ET rattachement producteur↔
+    organisation (déclenché en cascade par la validation d'une création) — remplace
+    le clic manuel « valider » dans l'UI Strukture (rôle animateur/MODERATOR).
+    Réservé au portail local de dev/test — garde-fou dur dans
+    valider_organisations_portail lui-même, jamais contournable même en mode
+    non-interactif (dashboard)."""
     if interactif:
         print("\n⚠️  Valide automatiquement TOUTES les demandes d'organisation en attente "
               "côté portail (compte animateur) — réservé au portail local de dev/test, "

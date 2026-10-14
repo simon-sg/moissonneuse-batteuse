@@ -175,6 +175,10 @@ const ACTIONS = [
   {id:"reparer_medias_dupliques", titre:"Médias dupliqués", desc:"Dédoublonne les médias FILE (ERR-500)",
    tooltip:"Dédoublonne les médias FILE des rudi_metadata.json (deux ressources au même titre → même media_id → bug portail A7 « Duplicate key » → ERR-500) puis re-publie les JDD concernés",
    groupe:"rudi"},
+  {id:"valider_organisations_portail", titre:"Valider les organisations", desc:"Validation auto (portail local, dev)",
+   tooltip:"Valide automatiquement toutes les demandes d'organisation en attente côté portail (création/modification/archivage) avec le compte animateur — remplace le clic manuel dans l'UI Strukture. Réservé au portail local de dev/test (garde-fou dans le script : refuse tout portail qui n'est pas localhost/rudi.localhost).",
+   avertissement:"Valide automatiquement TOUTES les demandes d'organisation en attente côté portail avec le compte animateur, sans revue individuelle. Réservé au portail local de dev/test — refusé automatiquement si le portail configuré n'est pas reconnu comme local.",
+   confirmation:"CONFIRMER", groupe:"rudi"},
 ];
 
 function rendreActions(){

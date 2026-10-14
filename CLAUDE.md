@@ -18,7 +18,7 @@ Pipeline de moisson d'open data pertinent pour Rennes Métropole (43 communes, E
 ## Commands
 
 ```bash
-python3 src/cli.py         # entrée terminal : menu 25 actions en 5 sections (voir ACTIONS/SECTIONS)
+python3 src/cli.py         # entrée terminal : menu 26 actions en 5 sections (voir ACTIONS/SECTIONS)
 python3 src/dashboard.py   # entrée web : mêmes actions à http://127.0.0.1:8765
 python3 src/harvest_auto.py # entrée cron/Jenkins : découverte auto + pipeline complet (non planifié à ce jour)
 ```
@@ -57,7 +57,7 @@ Merger une PR **en local** (`git checkout main && git merge <branche>` puis `git
 
 | File | Role |
 |---|---|
-| `src/cli.py` | **Entrée terminal** — 25 actions en 5 sections (Moisson / Pipeline & publication / Maintenance / Données & infos / Nœud & portail RUDI) ; `executer_pipeline_complet()` |
+| `src/cli.py` | **Entrée terminal** — 26 actions en 5 sections (Moisson / Pipeline & publication / Maintenance / Données & infos / Nœud & portail RUDI) ; `executer_pipeline_complet()` |
 | `src/dashboard.py` | **Entrée web** — serveur stdlib local-only réutilisant `cli.py` ; pages `/`, `/examen`, `/decouverte`, `/catalogue` |
 | `src/harvest_auto.py` | **Entrée cron/Jenkins** — découverte non-interactive → warm-up nœud RUDI → pipeline complet |
 | `src/discover.py` | Découverte : recherche API, pré-filtrage, revue interactive, `rechercher_et_filtrer_auto()` |
@@ -94,6 +94,7 @@ Merger une PR **en local** (`git checkout main && git merge <branche>` puis `git
 | `src/renvoi_auto_apres_validation.py` | Renvoi auto vers le portail des JDD dont l'organisation productrice vient d'être validée en UI Strukture — détection par `organisations_nouvellement_validees()` (toolkit, état dans `data/etat_organisations_validees.json`), renvoi un par un via `renvoyer_ressources_connues()` (PUT producteur normal, jamais la route admin — voir « Renvoi auto après validation d'organisation ») |
 | `src/reparer_jdd_refuses.py` | Réparation ponctuelle (menu 24) — re-soumet **une fois** chaque JDD `refused` du nœud pour résorber les JDD restés refusés alors qu'ils sont intégrés au portail (doublons `ERR-304`, voir « Renvoi auto après validation d'organisation ») |
 | `src/reparer_medias_dupliques.py` | Réparation ponctuelle (menu 25) — dédoublonne les médias FILE des `rudi_metadata.json` sur disque puis re-publie les JDD concernés (bug portail A7 « Duplicate key » → `ERR-500`, voir « Renvoi auto après validation d'organisation ») |
+| `src/valider_organisations_portail.py` | Validation automatique (menu 26) des demandes d'organisation en attente côté portail (création/modification/archivage), avec le compte animateur — **réservé au portail local de dev/test** (voir « Validation automatique des organisations ») |
 | `src/demo_rm_precheck.py` | Garde-fous pour publier sur un **nœud externe potentiellement partagé** (démo) — pré-checks de collision par `local_id`/organisation/contact, neutralisation de contacts sensibles, scoping du nettoyage par recherche ciblée (pas par diff générique). Jamais utilisé pour le nœud de dev local (voir « Publication sur un nœud externe (démo) ») |
 | `src/publish_rudi_geo.py` | Dernière étape du pipeline — déclare les flux WMS/WFS/OGC API (projet voisin `rudi-geo`) pour les JDD publiés ce run (voir « Publication RUDI ») |
 | `src/enrichir_descriptions.py` / `src/enrichir_contacts.py` / `src/enrichir_organisations.py` | Rattrapages one-shot (descriptions JDD, contacts génériques) + `enrichir_organisations.enrichir()` (descriptions **et logos** producteurs), aussi **étape du pipeline** |
@@ -274,6 +275,39 @@ Shelle vers `python3 declare_services.py --apply --local-id <uuid> ...` dans le 
 **Vidage scopé au pipeline** (menu 22, `vider_rudi.vider_noeud_proprement()`) : ne touche **que ce que le pipeline a créé** — les JDD ayant une contrepartie locale (`data/<dossier>/rudi_metadata.json`), et leurs organisations productrices **non référencées par un JDD laissé en place** (une organisation partagée avec un dataset d'un tiers est épargnée). Les JDD/organisations déposés par d'autres utilisateurs restent intacts ; sans aucune contrepartie locale, rien n'est supprimé (journalisé). À ne pas confondre avec `purger_noeud_portail()` (menu 23), la purge **radicale** qui efface vraiment tout (Mongo du nœud + Strukture + Dataverse, après sauvegarde).
 
 **Réinitialisation de `rudi_publie`** (dernière étape des deux actions ci-dessus, `vider_rudi.reinitialiser_rudi_publie()`) : sans elle, un nœud/portail vidé ne republie **jamais** les JDD déjà moissonnés — le fast-path « rien n'a changé depuis le dernier run » de chaque script de moisson (`last_modified` inchangé) retourne avant même d'appeler la publication, laissant intact l'ancien flag `rudi_publie: true` posé lors d'un run précédent (constaté le 2026-10-14 : un pipeline relancé sur un nœud vierge n'a republié que les JDD réellement nouveaux/modifiés depuis le dernier run, tout le reste étant silencieusement sauté par `publish_rudi.py`, qui ne regarde que ce flag). Remet `rudi_publie` à `False` dans les 5 `state*.json` — scopé aux seuls JDD effectivement supprimés pour le vidage propre, à tout l'état pour la purge radicale — sans jamais toucher `data/cache/` ni les fichiers déjà filtrés/traduits sur disque (zéro retéléchargement, zéro refiltrage ; `publish_rudi.py` republie directement depuis les `rudi_metadata.json` déjà sur disque).
+
+## Validation automatique des organisations (portail local, dev)
+
+`src/valider_organisations_portail.py` (menu 26, `action_valider_organisations_portail()`,
+dashboard) remplace le clic manuel « valider » dans l'UI Strukture pendant un test de
+bout-en-bout — sans ça, chaque organisation créée par le pipeline doit être validée une par
+une à la main par un animateur avant que ses JDD ne passent de `refused` (`ERR-112`) à
+`published`.
+
+**Garde-fou dur, non contournable même en mode non-interactif (dashboard)** :
+`_verifier_portail_local()` refuse toute URL dont l'hôte n'est pas `rudi.localhost`/
+`localhost`/`127.0.0.1` — cette action ne doit **jamais** s'exécuter contre un portail de
+production, où la validation doit rester un geste humain réfléchi.
+
+**Flux API** (confirmé dans le code source de `rudi-portal-source` — `TasksController`,
+`OrganizationsController`, `AbstractTaskServiceImpl`, `organization-process.bpmn20.xml`) :
+1. `POST {url_portail}/authenticate` (`login`/`password` du compte **animateur**, lu depuis
+   `src/conf/credentials_animateur.json`, gitignoré — voir `credentials_animateur.example.json`)
+   — le JWT est dans le header de réponse `Authorization` (déjà préfixé `"Bearer "`), pas dans
+   le corps.
+2. `GET {url_portail}/strukture/v1/tasks?status=PENDING` — le filtre serveur
+   `process-definition-keys` est actuellement sans effet sur cet endpoint (jamais appliqué côté
+   recherche de tâches « live », seulement sur l'historique) : filtrage côté client sur
+   `asset.process_definition_key == "organization-process"` et `assignee is None`.
+3. `PUT .../organizations/tasks/{id}/claim` puis `PUT .../organizations/tasks/{id}/do-it/validated`
+   (aucun corps dans les deux cas) — `do-it` doit être appelé avec le **même** compte que le
+   `claim`, sinon `AbstractTaskServiceImpl.doIt()` refuse (« Task is not assigned to you »).
+   `"validated"` est la seule action positive du BPMN (confirmée pour les 3 `UserTask` du
+   process : création, modification, archivage) ; l'autre valeur possible est `"refused"`.
+
+Ne couvre que `organization-process` — pas `linked-producer-process` (rattachement/détachement
+producteur), dont l'endpoint n'a pas été confirmé. Best-effort par tâche : une tâche en échec
+n'empêche pas de traiter les suivantes.
 
 ## Renvoi auto après validation d'organisation
 

@@ -262,11 +262,13 @@ ACTIONS = {
                                lambda p: cli.action_vider_noeud_proprement(interactif=False)),
     "purger_noeud_portail": ("Purger nœud + portail RUDI (radical)",
                              lambda p: cli.action_purger_noeud_portail(interactif=False)),
+    "valider_organisations_portail": ("Valider toutes les organisations en attente (portail local, dev)",
+                                      lambda p: cli.action_valider_organisations_portail(interactif=False)),
 }
 
 # Actions exigeant, en plus du bouton, la saisie explicite de « CONFIRMER » (revalidée
 # côté serveur dans _demarrer_job — voir cli._confirmer() pour l'équivalent terminal).
-ACTIONS_CONFIRMATION_REQUISE = {"vider_noeud_proprement", "purger_noeud_portail"}
+ACTIONS_CONFIRMATION_REQUISE = {"vider_noeud_proprement", "purger_noeud_portail", "valider_organisations_portail"}
 
 
 def _etat_job() -> dict:

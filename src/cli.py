@@ -27,6 +27,7 @@ import catalogue
 import publish_rudi
 import publish_rudi_geo
 import vider_rudi
+import valider_organisations_portail
 import renvoi_auto_apres_validation
 import reparer_jdd_refuses
 import reparer_medias_dupliques
@@ -176,6 +177,36 @@ def action_renvoi_auto_apres_validation():
 
 def action_reparer_jdd_refuses():
     _executer("Réparation des JDD refusés (re-soumission unique)", reparer_jdd_refuses.main)
+
+
+def action_valider_organisations_portail(interactif: bool = True):
+    """Valide automatiquement toutes les demandes d'organisation en attente côté
+    portail (création/modification/archivage) — remplace le clic manuel « valider »
+    dans l'UI Strukture (rôle animateur/MODERATOR). Réservé au portail local de
+    dev/test — garde-fou dur dans valider_organisations_portail lui-même, jamais
+    contournable même en mode non-interactif (dashboard)."""
+    if interactif:
+        print("\n⚠️  Valide automatiquement TOUTES les demandes d'organisation en attente "
+              "côté portail (compte animateur) — réservé au portail local de dev/test, "
+              "jamais à une installation de production.")
+        if not _confirmer("Valider toutes les organisations en attente ?"):
+            print("Annulé.")
+            return
+
+    def _valider():
+        conf_rudi = charger_conf_rudi(CONF_RUDI_FILE)
+        if not conf_rudi or not conf_rudi.get("url_portail"):
+            print("src/conf/rudi_node.json absent ou sans url_portail — impossible.")
+            return
+        creds = valider_organisations_portail.charger_credentials_animateur()
+        if not creds:
+            print(f"{valider_organisations_portail.CREDENTIALS_FILE} absent — voir "
+                  f"conf/credentials_animateur.example.json.")
+            return
+        valider_organisations_portail.valider_toutes_organisations(
+            conf_rudi["url_portail"], creds["login"], creds["password"])
+
+    _executer("Validation automatique des organisations (portail local)", _valider)
 
 
 def action_reparer_medias_dupliques():
@@ -790,6 +821,7 @@ ACTIONS = [
     ("23", "Purger nœud et portail (JDD + organisations, sans validation)", action_purger_noeud_portail),
     ("24", "Réparer les JDD refusés (re-soumission unique vers le portail)", action_reparer_jdd_refuses),
     ("25", "Réparer les médias FILE dupliqués (ERR-500)", action_reparer_medias_dupliques),
+    ("26", "Valider toutes les organisations en attente (portail local, dev)", action_valider_organisations_portail),
 ]
 
 SECTIONS = [

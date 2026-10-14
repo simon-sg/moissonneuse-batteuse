@@ -14,12 +14,14 @@ Flux API confirmé dans le code source de ``rudi-portal-source``
 1. ``POST {url_portail}/authenticate`` (``login``/``password`` animateur,
    form-urlencoded) → le header de réponse ``Authorization`` porte le JWT,
    déjà préfixé ``"Bearer "`` (pas de corps JSON utile).
-2. ``GET {url_portail}/strukture/v1/tasks?status=PENDING`` → le filtre serveur
-   ``process-definition-keys`` est actuellement sans effet sur cet endpoint
-   (confirmé dans ``AbstractTaskQueryServiceImpl`` — jamais appliqué côté
-   recherche de tâches « live », seulement sur l'historique) : on filtre donc
-   nous-mêmes sur ``asset.process_definition_key == "organization-process"``
-   et ``assignee is None`` (jamais claim par quelqu'un d'autre).
+2. ``GET {url_portail}/strukture/v1/tasks?asAdmin=true`` — ``asAdmin`` est
+   obligatoire (sans lui : 500 sec, confirmé en conditions réelles le
+   2026-10-14). Le filtre serveur ``status`` correspond à une variable de
+   process interne, PAS au champ ``Task.status`` visible dans la réponse —
+   lui passer ``"PENDING"`` renvoie silencieusement ``[]``. On filtre donc
+   entièrement côté client, sur ``asset.process_definition_key ==
+   "organization-process"`` et ``assignee is None`` (jamais claim par
+   quelqu'un d'autre).
 3. ``PUT .../organizations/tasks/{id}/claim`` puis
    ``PUT .../organizations/tasks/{id}/do-it/validated`` — aucun corps dans les
    deux cas ; ``do-it`` doit être appelé avec le **même** compte que le
@@ -83,8 +85,14 @@ def se_connecter_animateur(url_portail: str, login: str, password: str) -> str:
 
 
 def _lister_taches_organisation_en_attente(url_portail: str, auth: str) -> list[dict]:
+    """``asAdmin=true`` est obligatoire — sans lui, l'endpoint renvoie un 500 sec (testé
+    en conditions réelles). Pas de filtre serveur ``status`` : ce paramètre correspond à
+    une variable de process interne (``TaskConstants.STATUS``, ex. ``"IN_PROGRESS"``),
+    PAS au champ ``Task.status`` technique (``DRAFT``/``PENDING``/...) visible dans la
+    réponse JSON — même nom, deux concepts différents ; lui passer ``"PENDING"`` renvoie
+    silencieusement une liste vide. Le filtrage se fait donc entièrement côté client."""
     r = session.get(f"{url_portail.rstrip('/')}/strukture/v1/tasks",
-                     params={"status": "PENDING"},
+                     params={"asAdmin": "true"},
                      headers={"Authorization": auth}, timeout=30)
     r.raise_for_status()
     taches = r.json()

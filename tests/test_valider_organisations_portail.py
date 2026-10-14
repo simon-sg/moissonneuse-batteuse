@@ -91,7 +91,7 @@ class TestListerTachesOrganisationEnAttente(unittest.TestCase):
             resultat = vop._lister_taches_organisation_en_attente("http://rudi.localhost", "Bearer x")
         self.assertEqual([t["id"] for t in resultat], ["t1"])
         _, _, kwargs = faux.appels[0]
-        self.assertEqual(kwargs["params"], {"status": "PENDING"})
+        self.assertEqual(kwargs["params"], {"asAdmin": "true"})
         self.assertEqual(kwargs["headers"], {"Authorization": "Bearer x"})
 
 

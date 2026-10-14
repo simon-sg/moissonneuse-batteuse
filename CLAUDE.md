@@ -295,9 +295,12 @@ production, où la validation doit rester un geste humain réfléchi.
    `src/conf/credentials_animateur.json`, gitignoré — voir `credentials_animateur.example.json`)
    — le JWT est dans le header de réponse `Authorization` (déjà préfixé `"Bearer "`), pas dans
    le corps.
-2. `GET {url_portail}/strukture/v1/tasks?status=PENDING` — le filtre serveur
-   `process-definition-keys` est actuellement sans effet sur cet endpoint (jamais appliqué côté
-   recherche de tâches « live », seulement sur l'historique) : filtrage côté client sur
+2. `GET {url_portail}/strukture/v1/tasks?asAdmin=true` — `asAdmin` est **obligatoire** :
+   sans lui, l'endpoint renvoie un 500 sec (confirmé en conditions réelles le 2026-10-14, 86
+   organisations validées avec succès une fois corrigé). Le filtre serveur `status` est un
+   faux-ami : il correspond à une variable de process BPMN interne (`TaskConstants.STATUS`),
+   pas au champ `Task.status` visible dans la réponse JSON — lui passer `"PENDING"` renvoie
+   silencieusement `[]`. Filtrage entièrement côté client sur
    `asset.process_definition_key == "organization-process"` et `assignee is None`.
 3. `PUT .../organizations/tasks/{id}/claim` puis `PUT .../organizations/tasks/{id}/do-it/validated`
    (aucun corps dans les deux cas) — `do-it` doit être appelé avec le **même** compte que le

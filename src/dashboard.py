@@ -113,6 +113,7 @@ _ACTIONS_CMD = {
     "catalogue": ["python3", "src/catalogue.py"],
     "publier_rudi": ["python3", "src/publish_rudi.py"],
     "renvoi_auto_apres_validation": ["python3", "src/renvoi_auto_apres_validation.py"],
+    "reparer_jdd_refuses": ["python3", "src/reparer_jdd_refuses.py"],
     "enrichir_descriptions": ["python3", "src/enrichir_descriptions.py"],
     "enrichir_organisations": ["python3", "src/enrichir_organisations.py"],
 }
@@ -234,6 +235,8 @@ ACTIONS = {
     "publier_rudi": ("Publication sur le nœud RUDI", lambda p: cli.action_publier_rudi()),
     "renvoi_auto_apres_validation": ("Renvoi auto après validation d'organisation (portail)",
                                      lambda p: cli.action_renvoi_auto_apres_validation()),
+    "reparer_jdd_refuses": ("Réparer les JDD refusés (re-soumission unique)",
+                            lambda p: cli.action_reparer_jdd_refuses()),
     "enrichir_descriptions": ("Enrichir les descriptions vides/quasi vides",
                               lambda p: cli.action_enrichir_descriptions()),
     "enrichir_organisations": ("Enrichir les descriptions de producteurs (nœud RUDI)",

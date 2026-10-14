@@ -28,6 +28,7 @@ import publish_rudi
 import publish_rudi_geo
 import vider_rudi
 import renvoi_auto_apres_validation
+import reparer_jdd_refuses
 import enrichir_descriptions
 import enrichir_organisations
 import reanalyser_faux_positifs
@@ -170,6 +171,10 @@ def action_publier_rudi():
 def action_renvoi_auto_apres_validation():
     _executer("Renvoi auto après validation d'organisation (portail)",
                renvoi_auto_apres_validation.main)
+
+
+def action_reparer_jdd_refuses():
+    _executer("Réparation des JDD refusés (re-soumission unique)", reparer_jdd_refuses.main)
 
 
 def action_enrichir_descriptions():
@@ -775,6 +780,7 @@ ACTIONS = [
     # --- Nœud & portail RUDI ---
     ("22", "Vider le nœud proprement (JDD + détachement des organisations)", action_vider_noeud_proprement),
     ("23", "Purger nœud et portail (JDD + organisations, sans validation)", action_purger_noeud_portail),
+    ("24", "Réparer les JDD refusés (re-soumission unique vers le portail)", action_reparer_jdd_refuses),
 ]
 
 SECTIONS = [

@@ -18,7 +18,7 @@ Pipeline de moisson d'open data pertinent pour Rennes Métropole (43 communes, E
 ## Commands
 
 ```bash
-python3 src/cli.py         # entrée terminal : menu 23 actions en 5 sections (voir ACTIONS/SECTIONS)
+python3 src/cli.py         # entrée terminal : menu 24 actions en 5 sections (voir ACTIONS/SECTIONS)
 python3 src/dashboard.py   # entrée web : mêmes actions à http://127.0.0.1:8765
 python3 src/harvest_auto.py # entrée cron/Jenkins : découverte auto + pipeline complet (non planifié à ce jour)
 ```
@@ -57,7 +57,7 @@ Merger une PR **en local** (`git checkout main && git merge <branche>` puis `git
 
 | File | Role |
 |---|---|
-| `src/cli.py` | **Entrée terminal** — 23 actions en 5 sections (Moisson / Pipeline & publication / Maintenance / Données & infos / Nœud & portail RUDI) ; `executer_pipeline_complet()` |
+| `src/cli.py` | **Entrée terminal** — 24 actions en 5 sections (Moisson / Pipeline & publication / Maintenance / Données & infos / Nœud & portail RUDI) ; `executer_pipeline_complet()` |
 | `src/dashboard.py` | **Entrée web** — serveur stdlib local-only réutilisant `cli.py` ; pages `/`, `/examen`, `/decouverte`, `/catalogue` |
 | `src/harvest_auto.py` | **Entrée cron/Jenkins** — découverte non-interactive → warm-up nœud RUDI → pipeline complet |
 | `src/discover.py` | Découverte : recherche API, pré-filtrage, revue interactive, `rechercher_et_filtrer_auto()` |
@@ -91,6 +91,7 @@ Merger une PR **en local** (`git checkout main && git merge <branche>` puis `git
 | `src/state.py` | `charger_state()`/`sauvegarder_state()` génériques + `construire_index_dossier()` (index dossier→state multi-fichiers) |
 | `src/publish_rudi.py` | Rattrapage publication + `menage_rudi_one_shot()`/`menage_organisations()` (voir « Publication RUDI ») |
 | `src/renvoi_auto_apres_validation.py` | Renvoi auto vers le portail des JDD dont l'organisation productrice vient d'être validée en UI Strukture — détection par `organisations_nouvellement_validees()` (toolkit, état dans `data/etat_organisations_validees.json`), renvoi un par un via `renvoyer_ressources_connues()` (PUT producteur normal, jamais la route admin — voir « Renvoi auto après validation d'organisation ») |
+| `src/reparer_jdd_refuses.py` | Réparation ponctuelle (menu 24) — re-soumet **une fois** chaque JDD `refused` du nœud pour résorber les JDD restés refusés alors qu'ils sont intégrés au portail (doublons `ERR-304`, voir « Renvoi auto après validation d'organisation ») |
 | `src/demo_rm_precheck.py` | Garde-fous pour publier sur un **nœud externe potentiellement partagé** (démo) — pré-checks de collision par `local_id`/organisation/contact, neutralisation de contacts sensibles, scoping du nettoyage par recherche ciblée (pas par diff générique). Jamais utilisé pour le nœud de dev local (voir « Publication sur un nœud externe (démo) ») |
 | `src/publish_rudi_geo.py` | Dernière étape du pipeline — déclare les flux WMS/WFS/OGC API (projet voisin `rudi-geo`) pour les JDD publiés ce run (voir « Publication RUDI ») |
 | `src/enrichir_descriptions.py` / `src/enrichir_contacts.py` / `src/enrichir_organisations.py` | Rattrapages one-shot (descriptions JDD, contacts génériques) + `enrichir_organisations.enrichir()` (descriptions **et logos** producteurs), aussi **étape du pipeline** |
@@ -274,9 +275,12 @@ Shelle vers `python3 declare_services.py --apply --local-id <uuid> ...` dans le 
 
 - Détection par `rudi_harvest_toolkit.rudi_client.organisations_nouvellement_validees()` — compare les organisations à `organization_status: VALIDATED` côté nœud à un état persisté (`data/etat_organisations_validees.json`, `{"organisations_traitees": [...]}`) pour ne retraiter que les organisations **nouvellement** validées depuis le dernier passage (jamais tout le catalogue).
 - `ressources_pour_organisations()` filtre `toutes_metadonnees_rudi()` sur `producer.organization_id`.
+- **Périmètre restreint aux seules ressources encore `refused` et non déjà (re)soumises par un autre maillon du même run** (`local_ids_publies_ce_run()`). Renvoyer une ressource déjà `published`/`sent` — ou déjà publiée par la moisson inline / le rattrapage `publish_rudi` dans le même run — redéclenche `sendToPortal()` côté nœud alors que Kalim traite encore l'envoi précédent : le `GET` préalable du nœud ne trouve pas encore la ressource → `POST` en double → `ERR-304` (« valeur déjà utilisée »), qui fait repasser le JDD en `refused` alors qu'il est bien intégré au portail. C'était la cause des JDD « visibles dans le portail mais refusés côté nœud » (constaté : 33 JDD avec un rapport `OK` puis un `ERR-304`). Une organisation reste non marquée traitée si une de ses ressources bloquées a été laissée en vol ce run (retentée au passage suivant).
 - `renvoyer_ressources_connues()` renvoie chaque ressource **un par un** (`PUT /catalog/v1/resources` — la route producteur normale, celle que `publier_dataset()` utilise déjà — **jamais** la route admin `/catalog/admin/portal/resources/send`, qui exige un profil qu'un harvester ne doit jamais détenir). Un `PUT` déclenche lui-même `sendToPortal()` côté nœud (`overwriteMetadata`, indépendant du statut de l'organisation). Pause de 2s entre chaque PUT, jamais en lot : `sendToPortal()` est fire-and-forget côté nœud (pas attendu par le PUT qui le déclenche), donc des envois consécutifs sans pause restent concurrents et peuvent surcharger konsult — ce risque existait déjà avec l'ancienne route admin (voir [[project_crash_recovery_rudi_stack]] en mémoire, qui documente l'incident sur cette route-là) et persiste par ce nouveau chemin, pour la même raison de fond.
 - L'état n'est marqué traité qu'**après** la tentative de renvoi (pas avant) : si le process est interrompu en cours de route, la prochaine exécution retrouve les mêmes organisations comme « nouvelles » et retente.
 - Conçu pour un usage périodique (cron, ou relancé à la main après chaque session de validation en UI) et pour fonctionner **sans agent** — un simple `python3 src/renvoi_auto_apres_validation.py`, aucune dépendance au dashboard ni à un LLM. **Inclus dans `cli.ETAPES_PIPELINE`** (après la publication RUDI) : chaque passage du pipeline renvoie donc automatiquement les JDD dont l'organisation a été validée depuis le run précédent.
+
+**Réparation des JDD refusés** (menu 24, `src/reparer_jdd_refuses.py`) : une organisation déjà marquée traitée ne repasse plus jamais par le renvoi — les JDD restés `refused` alors qu'ils sont intégrés au portail (doublons `ERR-304` antérieurs au correctif de périmètre ci-dessus) doivent être re-soumis une fois. Ce script liste les `metadata_status: refused` du nœud et les re-soumet un par un (même `renvoyer_ressources_connues()`, PUT producteur) : sans envoi concurrent, le nœud `GET` la ressource côté portail, la met à jour (`PUT`) → `OK` → le JDD repasse en `published`. Idempotent.
 
 **Nettoyage des FILE orphelins** : `publier_dataset()` retire d'`available_formats` les entrées FILE dont le fichier local a disparu (le nœud refuse un media FILE sans fichier physique), puis recorrige le `media_id` de toutes les entrées non-FILE (la lib exige des UUIDv4).
 

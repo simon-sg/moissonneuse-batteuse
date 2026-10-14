@@ -18,6 +18,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+from rudi_harvest_toolkit.publish import local_ids_publies_ce_run
 from rudi_harvest_toolkit.rudi_client import (
     charger_conf_rudi, marquer_organisations_traitees,
     organisations_nouvellement_validees, renvoyer_ressources_connues,
@@ -41,15 +42,46 @@ def main() -> None:
     print(f"{len(nouvelles)} organisation(s) nouvellement validée(s) côté portail : {nouvelles}")
 
     metadonnees = toutes_metadonnees_rudi(conf_rudi)
-    a_renvoyer = ressources_pour_organisations(metadonnees, nouvelles)
+    concernees = ressources_pour_organisations(metadonnees, nouvelles)
+
+    # Ne renvoyer QUE les ressources encore bloquées (`refused`) — jamais `published`/`sent`.
+    # Repousser une ressource déjà intégrée redéclenche `sendToPortal()` côté nœud
+    # (fire-and-forget, donc concurrent) pendant que Kalim traite encore l'envoi précédent :
+    # le `GET` préalable du nœud ne trouve pas encore la ressource → `POST` en double →
+    # `ERR-304` (« valeur déjà utilisée »), qui fait repasser le JDD en `refused` alors
+    # qu'il est bel et bien dans le portail. C'est la cause des JDD « visibles dans le
+    # portail mais refusés sur le nœud ».
+    # Et jamais une ressource déjà (re)publiée par un autre maillon de CE run (moisson
+    # inline, rattrapage `publish_rudi`) : son envoi est déjà en vol, un second envoi
+    # concurrent recréerait exactement le doublon ci-dessus.
+    deja_ce_run = local_ids_publies_ce_run()
+    a_renvoyer = [m for m in concernees
+                  if m.get("metadata_status") == "refused"
+                  and m.get("local_id") not in deja_ce_run]
+    # Ressources bloquées mais dont l'envoi de ce run est encore en vol : on ne les renvoie
+    # pas maintenant, mais on ne marque pas non plus leur organisation comme traitée — une
+    # organisation validée en cours de run pourrait avoir été refusée (ERR-112) avant sa
+    # validation, on retentera donc au prochain passage.
+    en_vol = [m for m in concernees
+              if m.get("metadata_status") == "refused"
+              and m.get("local_id") in deja_ce_run]
+
     if not a_renvoyer:
-        print("Aucune ressource locale ne référence ces organisations — rien à renvoyer.")
-        marquer_organisations_traitees(CHEMIN_ETAT, nouvelles)
+        if concernees:
+            print(f"{len(concernees)} ressource(s) pour ces organisations, aucune à renvoyer "
+                  f"({len(concernees) - len(en_vol)} déjà publiée(s)/en cours, "
+                  f"{len(en_vol)} déjà envoyée(s) par ce run).")
+        else:
+            print("Aucune ressource locale ne référence ces organisations — rien à renvoyer.")
+        if not en_vol:
+            marquer_organisations_traitees(CHEMIN_ETAT, nouvelles)
         return
 
-    print(f"{len(a_renvoyer)} ressource(s) concernée(s), renvoi vers le portail — PUT "
-          f"producteur normal (un par un, pause 2s entre chaque : sendToPortal est "
-          f"fire-and-forget côté nœud, jamais en lot — voir renvoyer_ressources_connues)...")
+    print(f"{len(a_renvoyer)} ressource(s) bloquée(s) à renvoyer"
+          f"{f' ({len(en_vol)} déjà envoyée(s) par ce run, ignorée(s))' if en_vol else ''}, "
+          f"renvoi vers le portail — PUT producteur normal (un par un, pause 2s entre chaque : "
+          f"sendToPortal est fire-and-forget côté nœud, jamais en lot — voir "
+          f"renvoyer_ressources_connues)...")
     bilan = renvoyer_ressources_connues(conf_rudi, a_renvoyer)
     print(f"Bilan : {bilan['ok']} renvoyé(s), {len(bilan['echecs'])} échec(s).")
     for gid, err in bilan["echecs"]:
@@ -57,8 +89,10 @@ def main() -> None:
 
     # Marquées traitées après la tentative (pas avant) : si renvoyer_ressources_connues()
     # levait une exception avant d'arriver ici, la prochaine exécution les
-    # retrouverait encore « nouvelles » et retenterait.
-    marquer_organisations_traitees(CHEMIN_ETAT, nouvelles)
+    # retrouverait encore « nouvelles » et retenterait. Idem si des ressources bloquées
+    # ont été laissées de côté parce qu'envoyées par ce run (voir `en_vol`).
+    if not en_vol:
+        marquer_organisations_traitees(CHEMIN_ETAT, nouvelles)
 
 
 if __name__ == "__main__":

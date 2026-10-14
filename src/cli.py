@@ -29,7 +29,6 @@ import publish_rudi_geo
 import vider_rudi
 import valider_organisations_portail
 import renvoi_auto_apres_validation
-import reparer_jdd_refuses
 import reparer_medias_dupliques
 import enrichir_descriptions
 import enrichir_organisations
@@ -170,13 +169,15 @@ def action_publier_rudi():
     _executer("Publication sur le nœud RUDI", publish_rudi.main)
 
 
-def action_renvoi_auto_apres_validation():
+def action_renvoi_auto_apres_validation(force: bool | None = None):
+    """force : renvoie aussi les JDD refused dont l'organisation n'est pas (encore)
+    validée (ex-menu « Réparer les JDD refusés », fusionné ici le 2026-10-14).
+    Si None (appel depuis le menu terminal), demande interactivement."""
+    if force is None:
+        force = _confirmer("Forcer aussi les JDD refusés dont l'organisation n'est pas "
+                            "(encore) validée (ex-action « Réparer les JDD refusés ») ?")
     _executer("Renvoi auto après validation d'organisation (portail)",
-               renvoi_auto_apres_validation.main)
-
-
-def action_reparer_jdd_refuses():
-    _executer("Réparation des JDD refusés (re-soumission unique)", reparer_jdd_refuses.main)
+               renvoi_auto_apres_validation.main, force=force)
 
 
 def action_valider_organisations_portail(interactif: bool = True):
@@ -821,9 +822,8 @@ ACTIONS = [
     # --- Nœud & portail RUDI ---
     ("22", "Vider le nœud proprement (JDD du pipeline + détachement des organisations)", action_vider_noeud_proprement),
     ("23", "Purger nœud et portail (JDD + organisations, sans validation)", action_purger_noeud_portail),
-    ("24", "Réparer les JDD refusés (re-soumission unique vers le portail)", action_reparer_jdd_refuses),
-    ("25", "Réparer les médias FILE dupliqués (ERR-500)", action_reparer_medias_dupliques),
-    ("26", "Valider toutes les organisations en attente (portail local, dev)", action_valider_organisations_portail),
+    ("24", "Réparer les médias FILE dupliqués (ERR-500)", action_reparer_medias_dupliques),
+    ("25", "Valider toutes les organisations en attente (portail local, dev)", action_valider_organisations_portail),
 ]
 
 SECTIONS = [

@@ -131,7 +131,8 @@ def main(appliquer: bool | None = None) -> None:
 
     print(f"=== Terminé : {ok} corrigé(s), {echecs} échec(s) sur {len(concernees)} ===")
     print("Les JDD concernés repasseront en `published` une fois le rapport portail revenu "
-          "(revérifier `metadata_status` côté nœud, ou relancer `reparer_jdd_refuses.py`).")
+          "(revérifier `metadata_status` côté nœud, ou relancer "
+          "`renvoi_auto_apres_validation.py --force`).")
 
 
 if __name__ == "__main__":

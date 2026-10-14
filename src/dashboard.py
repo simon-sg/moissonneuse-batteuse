@@ -113,7 +113,6 @@ _ACTIONS_CMD = {
     "catalogue": ["python3", "src/catalogue.py"],
     "publier_rudi": ["python3", "src/publish_rudi.py"],
     "renvoi_auto_apres_validation": ["python3", "src/renvoi_auto_apres_validation.py"],
-    "reparer_jdd_refuses": ["python3", "src/reparer_jdd_refuses.py"],
     "reparer_medias_dupliques": ["python3", "src/reparer_medias_dupliques.py", "--appliquer"],
     "enrichir_descriptions": ["python3", "src/enrichir_descriptions.py"],
     "enrichir_organisations": ["python3", "src/enrichir_organisations.py"],
@@ -138,6 +137,8 @@ def _construire_commandes(nom: str, params: dict) -> list[list[str]] | None:
             ids = (params.get("ids") or "").strip()
             if ids:
                 cmd.extend(ids.split())
+        if nom == "renvoi_auto_apres_validation" and params.get("force"):
+            cmd.append("--force")
         return [cmd]
     if nom in _ACTIONS_COMPOSEES:
         cmds = []
@@ -235,9 +236,8 @@ ACTIONS = {
     "catalogue": ("Génération du catalogue", lambda p: cli.action_catalogue()),
     "publier_rudi": ("Publication sur le nœud RUDI", lambda p: cli.action_publier_rudi()),
     "renvoi_auto_apres_validation": ("Renvoi auto après validation d'organisation (portail)",
-                                     lambda p: cli.action_renvoi_auto_apres_validation()),
-    "reparer_jdd_refuses": ("Réparer les JDD refusés (re-soumission unique)",
-                            lambda p: cli.action_reparer_jdd_refuses()),
+                                     lambda p: cli.action_renvoi_auto_apres_validation(
+                                         force=bool(p.get("force")))),
     "reparer_medias_dupliques": ("Réparer les médias FILE dupliqués (ERR-500)",
                                  lambda p: cli.action_reparer_medias_dupliques()),
     "enrichir_descriptions": ("Enrichir les descriptions vides/quasi vides",

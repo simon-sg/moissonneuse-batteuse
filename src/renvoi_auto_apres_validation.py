@@ -8,11 +8,20 @@ Renvoie automatiquement vers le portail les JDD déjà publiés sur le nœud RUD
    dernier appel (état persisté dans `data/etat_organisations_validees.json`).
 2. **JDD `refused` hors vol** dont l'organisation est déjà `VALIDATED` — rattrapage
    automatique des refus transitoires / anciens (`ERR-304`, `ERR-500` corrigés depuis)
-   qui ne sont plus rattachés à une validation fraîche. Équivalent automatisé et borné de
-   `src/reparer_jdd_refuses.py` (menu 24) : jamais une ressource déjà (re)publiée par un
-   autre maillon de ce run (`local_ids_publies_ce_run()`), jamais une ressource dont
-   l'organisation n'est pas encore validée (ce serait un `ERR-112` futile, repris dès la
-   validation grâce au cas 1).
+   qui ne sont plus rattachés à une validation fraîche. Jamais une ressource déjà
+   (re)publiée par un autre maillon de ce run (`local_ids_publies_ce_run()`), et par
+   défaut jamais une ressource dont l'organisation n'est pas encore validée (ce serait
+   un `ERR-112` futile, repris dès la validation grâce au cas 1) — sauf avec
+   ``force=True``/``--force`` (voir ci-dessous), qui désactive ce filtre.
+
+**`force`** (ex-menu 24, `reparer_jdd_refuses.py`, fusionné ici le 2026-10-14) : renvoie
+TOUS les JDD `refused` hors vol, y compris ceux dont l'organisation n'est pas (encore)
+marquée `VALIDATED` — le levier manuel pour forcer une reprise immédiate sans attendre un
+passage du pipeline, ou pour un refus dont la cause n'a rien à voir avec une organisation
+(vieux `ERR-304`/`ERR-500` déjà corrigés). Sans ``force``, ce script reste sans risque à
+rejouer ou automatiser (jamais un `ERR-112` futile) ; avec ``force``, c'est un geste
+délibéré — un JDD dont l'organisation n'est réellement pas validée sera retenté pour rien
+(mais sans effet de bord, le PUT producteur est idempotent).
 
 Travaille uniquement à partir de ce que le nœud sait déjà (organisations, métadonnées
 déjà publiées) : ne republie rien de nouveau, ne retélécharge/refiltre rien. Pensé pour
@@ -20,7 +29,7 @@ un usage périodique (cron, ou relancé à la main après chaque session de vali
 l'UI Strukture) — jamais tout le catalogue.
 
 Usage (autonome, sans dépendance à un agent) :
-    python3 src/renvoi_auto_apres_validation.py
+    python3 src/renvoi_auto_apres_validation.py [--force]
 """
 import os
 import sys
@@ -38,7 +47,7 @@ CONF_RUDI_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "conf"
 CHEMIN_ETAT = os.path.join(DATA_DIR, "etat_organisations_validees.json")
 
 
-def main() -> None:
+def main(force: bool = False) -> None:
     conf_rudi = charger_conf_rudi(CONF_RUDI_FILE)
     if not conf_rudi:
         print("src/conf/rudi_node.json absent — impossible de vérifier les organisations.")
@@ -63,9 +72,11 @@ def main() -> None:
 
     # 1. Résultats de validation fraîche : ressources `refused` des organisations
     #    nouvellement validées (cas historique).
-    # 2. Rattrapage automatique (menu 24) : toutes les ressources `refused` hors vol dont
+    # 2. Rattrapage automatique : toutes les ressources `refused` hors vol dont
     #    l'organisation est VALIDATED — refus transitoires ou anciens qu'aucune validation
     #    fraîche ne reprendrait jamais. Union des deux pour ne pas envoyer deux fois la même.
+    #    `force=True` désactive le filtre `_org_validee` (ex-menu 24) : renvoie tout JDD
+    #    `refused` hors vol, même si son organisation n'est pas (encore) VALIDATED.
     #
     # Dans tous les cas, on ne renvoie QUE des ressources `refused` (jamais `published`/
     # `sent`) : repousser une ressource déjà intégrée redéclenche `sendToPortal()` côté nœud
@@ -78,12 +89,13 @@ def main() -> None:
     a_renvoyer = [m for m in metadonnees
                   if m.get("metadata_status") == "refused"
                   and m.get("local_id") not in deja_ce_run
-                  and _org_validee(m)]
+                  and (force or _org_validee(m))]
     if a_renvoyer:
         print(f"{len(a_renvoyer)} ressource(s) `refused` à renvoyer "
-              f"(organisation validée, pas en vol), renvoi vers le portail — PUT producteur "
-              f"normal (un par un, pause 2s entre chaque : sendToPortal est fire-and-forget "
-              f"côté nœud, jamais en lot — voir renvoyer_ressources_connues)...")
+              f"({'forcé, organisation ignorée' if force else 'organisation validée'}, pas "
+              f"en vol), renvoi vers le portail — PUT producteur normal (un par un, pause 2s "
+              f"entre chaque : sendToPortal est fire-and-forget côté nœud, jamais en lot — "
+              f"voir renvoyer_ressources_connues)...")
         bilan = renvoyer_ressources_connues(conf_rudi, a_renvoyer)
         print(f"Bilan : {bilan['ok']} renvoyé(s), {len(bilan['echecs'])} échec(s).")
         for gid, err in bilan["echecs"]:
@@ -107,4 +119,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    main(force="--force" in sys.argv[1:])

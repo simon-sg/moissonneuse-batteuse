@@ -77,16 +77,16 @@ Merger une PR **en local** (`git checkout main && git merge <branche>` puis `git
 | `src/connectors/analyseurs.py` | Analyse des ressources (CSV/XLSX/ZIP/GZ/Parquet/GeoJSON/WMS/WFS), cascade `_detecter_champs()` |
 | `src/connectors/geo_services.py` | WFS/WMS/OGC API : capabilities, bbox, **probe GetMap**, contacts OWS, MetadataURL |
 | `src/connectors/insee.py` / `oeb.py` / `bdnb.py` / `sirene.py` | Connecteurs sources (INSEE scraping failsafe, data-fair, ZIP streaming, SIREN RM cache 30 j) |
-| `src/connectors/rudi_node.py` | `publier_dataset()`, `charger_conf_rudi()`, contrôle Podman, `toutes_metadonnees_rudi()`, `supprimer_dataset/_organisation()`, `_put_metadata()` (contourne la perte de `summary[].html` par `rudi_node_write`, voir « Rendu HTML du summary ») |
+| `src/connectors/rudi_node_lifecycle.py` | Hérité de l'ancien `connectors/rudi_node.py`, amputé de la publication (passée au toolkit) : contrôle Podman, démarrage/arrêt du nœud source, `etat_modules_noeud_source()` |
 | `src/connectors/rudi_publish.py` | `publier_si_configue()` — point unique de publication best-effort, **sérialisé par verrou** ; accumule aussi les `local_id` publiés ce run (voir « Publication RUDI ») |
 | `src/connectors/contacts.py` | Extraction/résolution de contacts (data.gouv, fallback RFC 2606) |
 | `src/connectors/wikipedia.py` | Résumés Wikipédia/Wikidata pour les organisations (caption CC0 + summary CC BY-SA) |
 | `src/connectors/rva.py` | Géocodage API RVA Rennes Métropole (clé dans `src/conf/rva_key.json`, non commitée ; cache interdit par CGU) |
 | `src/connectors/download.py` | Téléchargement streaming vers cache disque partagé (`data/cache/`) |
 | `src/translation/datagouv_to_rudi.py` | `traduire_metadonnees()` + `traduire_metadonnees_service()` (voies data.gouv tabulaire + géo) |
-| `src/translation/rudi_builder.py` | Constructeur partagé `construire_rudi_metadata()` + helpers `media_*()` (voies INSEE/OEB/BDNB) |
+| `rudi_harvest_toolkit.pivot` (package `rudi-harvest-toolkit`) | Constructeur partagé `construire_rudi_metadata()` + helpers `media_*()` (voies INSEE/OEB/BDNB) — extrait de ce repo le 2026-10-11 |
 | `src/translation/description_secours.py` | `generer_complement()` — description de secours factuelle (voir « Fallback descriptions ») |
-| `src/translation/markdown_vers_html.py` | `markdown_vers_html()` — convertisseur Markdown léger alimentant `summary[].html` (voir « Rendu HTML du summary ») |
+| `rudi_harvest_toolkit.markdown` (package `rudi-harvest-toolkit`) | `markdown_vers_html()` — convertisseur Markdown léger alimentant `summary[].html` (voir « Rendu HTML du summary ») — extrait de ce repo le 2026-10-11 |
 | `src/translation/organisation_secours.py` | `enrichir_organisation()` — caption + summary des producteurs (voir « Fallback descriptions d'organisations ») |
 | `src/state.py` | `charger_state()`/`sauvegarder_state()` génériques + `construire_index_dossier()` (index dossier→state multi-fichiers) |
 | `src/publish_rudi.py` | Rattrapage publication + `menage_rudi_one_shot()`/`menage_organisations()` (voir « Publication RUDI ») |
@@ -238,7 +238,7 @@ Add to `DATASETS_GEO` in `src/conf/datasets.py`:
 
 - Tout code HTTP passe par la `session` partagée de `src/connectors/http.py` — pool de connexions + retry/backoff (3 retries sur 429/5xx et erreurs de connexion, pas de retry 4xx) + **timeout par défaut de 30 s** (sous-classe de `Session` ; un `timeout=` explicite prime toujours). Ne pas appeler `requests.get/head/post` directement — plus aucun appel direct ne subsiste dans `src/`.
 - Continuer à poser un `timeout=` explicite proportionné au payload (métadonnées : ~10-30 s ; téléchargements streaming : 30-120 s) — le défaut est un filet de sécurité, pas une dispense.
-- `src/connectors/rudi_node.py` est le foyer canonique de `charger_conf_rudi()`. Ne pas redéfinir un loader local dans un nouveau script.
+- `rudi_harvest_toolkit.rudi_client` (package `rudi-harvest-toolkit`) est le foyer canonique de `charger_conf_rudi()`. Ne pas redéfinir un loader local dans un nouveau script.
 
 ## Discipline d'état (state*.json) pour un script de moisson
 
@@ -295,7 +295,7 @@ Shelle vers `python3 declare_services.py --apply --local-id <uuid> ...` dans le 
 
 ## Contacts
 
-`connectors/contacts.py` : `extraire_contacts_datagouv()` (depuis les métadonnées data.gouv) et `resoudre_contacts()` avec fallback `contact@example.org` (domaine réservé RFC 2606). Branché dans `traduire_metadonnees()`/`traduire_metadonnees_service()`/`rudi_builder`. Côté géo, `geo_services.py` extrait les contacts OWS (WFS) et WMS (`wfs_get_contact`, `_extraire_contact_wms`) + MetadataURL. `publier_dataset()` privilégie les contacts de la source et ne retombe sur le contact générique du nœud qu'en dernier recours. `src/enrichir_contacts.py` rattrape les JDD déjà moissonnés restés au fallback.
+`connectors/contacts.py` : `extraire_contacts_datagouv()` (depuis les métadonnées data.gouv) et `resoudre_contacts()` avec fallback `contact@example.org` (domaine réservé RFC 2606). Branché dans `traduire_metadonnees()`/`traduire_metadonnees_service()`/`rudi_harvest_toolkit.pivot`. Côté géo, `geo_services.py` extrait les contacts OWS (WFS) et WMS (`wfs_get_contact`, `_extraire_contact_wms`) + MetadataURL. `publier_dataset()` privilégie les contacts de la source et ne retombe sur le contact générique du nœud qu'en dernier recours. `src/enrichir_contacts.py` rattrape les JDD déjà moissonnés restés au fallback.
 
 ## Fallback descriptions (`src/translation/description_secours.py`)
 
@@ -303,13 +303,13 @@ Many sources never provide a usable description (data.gouv datasets with empty `
 
 Wired into every live harvest path (les scripts passent `entetes_colonnes` aux traducteurs). `src/enrichir_descriptions.py` est le rattrapage pour les JDD antérieurs — idempotent via le marqueur "Jeu de données du thème". `catalogue.py::partie_descriptive()` extrait la partie descriptive du `summary` pour l'afficher sur les cartes du catalogue.
 
-## Rendu HTML du summary (`src/translation/markdown_vers_html.py`)
+## Rendu HTML du summary (`rudi_harvest_toolkit.markdown`, package `rudi-harvest-toolkit`)
 
 Le portail (depuis sa v3.3.2, 22/09/2025) affiche le résumé long d'un JDD en injectant `summary[].html ?? summary[].text` tel quel en `innerHTML` (`dataset-informations.component.ts::getSummaryDescription()` → `language.service.ts::getRichTextForCurrentLanguage()`). Les descriptions sources (data.gouv.fr notamment) sont écrites en Markdown (gras, listes, liens, paragraphes séparés par une ligne vide) — sans `html`, ce Markdown s'affichait tel quel sur la fiche catalogue (syntaxe littérale, retours à la ligne perdus puisque le rendu HTML ignore les `\n` hors balises).
 
 `markdown_vers_html()` convertit le sous-ensemble réellement utilisé (gras, italique, liens http/https, listes à puces/numérotées, paragraphes, retours à la ligne simples → `<br>`, pseudo-titres `#`/`##`) — volontairement pas un parseur Markdown complet, aucune dépendance ajoutée (voir « Dépendances » en tête de fichier). Tout le texte source est échappé avant insertion ; les liens à schéma non http(s) sont dégradés en texte simple. Câblé dans `construire_rudi_metadata()` (clé `html` omise si vide, pour que le repli `?? text` côté portail fonctionne). `src/enrichir_html_descriptions.py` est le rattrapage pour les JDD déjà moissonnés/publiés — `--appliquer` pour écrire (dry-run par défaut), même mécanique de démarquage `rudi_publie` que `enrichir_synopsis.py`.
 
-**Piège côté publication** : `rudi_node_write` (1.4.4, dernière version publiée sur PyPI) ne modélise que `lang`/`text` pour `summary[]` — son `RudiMetadata.from_json()`/`put_metadata()` perd silencieusement `html` en le faisant passer par ce modèle incomplet. `connectors/rudi_node.py::_put_metadata()` contourne ça : valide via `RudiMetadata.from_json()` (mêmes erreurs qu'avant en cas de dict malformé), sérialise via `to_json_str()` (**pas** `to_json()` — ce dernier a un bug propre à la lib pour les champs liste-de-`Serializable` du type de `summary`/`synopsis`, voir commentaire dans le code), puis réinjecte `html` apparié par `lang` (`_reinjecter_summary_html()`) avant le `PUT /resources`. `publier_dataset()` l'appelle à la place de `writer.put_metadata()`. Si une future version de `rudi_node_write` modélise `html`, cette réinjection devient un no-op inoffensif.
+**Piège côté publication** : `rudi_node_write` (1.4.4, dernière version publiée sur PyPI) ne modélise que `lang`/`text` pour `summary[]` — son `RudiMetadata.from_json()`/`put_metadata()` perd silencieusement `html` en le faisant passer par ce modèle incomplet. `rudi_harvest_toolkit.rudi_client::_put_metadata()` (toolkit) contourne ça : valide via `RudiMetadata.from_json()` (mêmes erreurs qu'avant en cas de dict malformé), sérialise via `to_json_str()` (**pas** `to_json()` — ce dernier a un bug propre à la lib pour les champs liste-de-`Serializable` du type de `summary`/`synopsis`, voir commentaire dans le code), puis réinjecte `html` apparié par `lang` (`_reinjecter_summary_html()`) avant le `PUT /resources`. `publier_dataset()` l'appelle à la place de `writer.put_metadata()`. Si une future version de `rudi_node_write` modélise `html`, cette réinjection devient un no-op inoffensif.
 
 ## Fallback descriptions d'organisations (`src/translation/organisation_secours.py`)
 
@@ -361,7 +361,7 @@ Exploration en cours (2026-07-31) d'une interrogation en langage naturel du cata
 2. Requêtes sur le contenu réel des fichiers tabulaires (non fait — nécessiterait un chargement à la volée, ex. DuckDB, scopé aux formats simples).
 3. Section « analyse » côté portail (cartes/dashboards multi-nœuds) — projet BI séparé, recoupe l'existant Superset ([[project-dashboards-superset]] en mémoire), pas engagé.
 
-Le serveur réutilise le même connecteur que `connectors/rudi_node.py` (`RudiNodeWriter` + `RudiNodeAuth`, config `src/conf/rudi_node.json`) — read-only, aucun outil de mutation exposé. Outils : `rechercher_jeux_de_donnees` (texte libre + filtres thème/producteur), `obtenir_jeu_de_donnees` (fiche complète par `global_id`), `lister_themes`, `lister_producteurs`, `statistiques_catalogue`.
+Le serveur réutilise le même connecteur que `rudi_harvest_toolkit.rudi_client` (`RudiNodeWriter` + `RudiNodeAuth` du package `rudi_node_write`, config `src/conf/rudi_node.json`) — read-only, aucun outil de mutation exposé. Outils : `rechercher_jeux_de_donnees` (texte libre + filtres thème/producteur), `obtenir_jeu_de_donnees` (fiche complète par `global_id`), `lister_themes`, `lister_producteurs`, `statistiques_catalogue`.
 
 - Recherche texte libre maison (pas l'API du connecteur, qui ne fait que du filtrage structuré exact) : normalisation accents/casse + score par nombre de tokens de la requête trouvés dans titre/synopsis/thème/producteur/mots-clés.
 - `available_formats[].connector.url` est renvoyé tel quel dans `obtenir_jeu_de_donnees` mais pointe vers `host.docker.internal:4031` — résoluble seulement depuis l'intérieur d'un conteneur du nœud source, pas depuis le poste qui exécute le serveur MCP. Attendu à ce stade (étape 1 = métadonnées, pas de téléchargement).

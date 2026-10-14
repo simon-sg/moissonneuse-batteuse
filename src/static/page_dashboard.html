@@ -169,6 +169,12 @@ const ACTIONS = [
    tooltip:"Supprime définitivement tous les JDD (Dataverse) et toutes les organisations du nœud et du portail, sans validation modérateur. Sauvegarde automatique dans _backups_rudi/ avant la purge.",
    avertissement:"Action DESTRUCTIVE et IRRÉVERSIBLE : tous les JDD seront détruits dans Dataverse et toutes les organisations supprimées du nœud et du portail, SANS validation modérateur. Une sauvegarde est faite automatiquement dans _backups_rudi/ avant la purge.",
    confirmation:"CONFIRMER", groupe:"rudi"},
+  {id:"reparer_jdd_refuses", titre:"JDD refusés", desc:"Re-soumission unique des JDD refused",
+   tooltip:"Re-soumet une fois chaque JDD resté refusé sur le nœud alors qu'il est intégré au portail (doublons ERR-304) — sans envoi concurrent, le JDD repasse en published",
+   groupe:"rudi"},
+  {id:"reparer_medias_dupliques", titre:"Médias dupliqués", desc:"Dédoublonne les médias FILE (ERR-500)",
+   tooltip:"Dédoublonne les médias FILE des rudi_metadata.json (deux ressources au même titre → même media_id → bug portail A7 « Duplicate key » → ERR-500) puis re-publie les JDD concernés",
+   groupe:"rudi"},
 ];
 
 function rendreActions(){

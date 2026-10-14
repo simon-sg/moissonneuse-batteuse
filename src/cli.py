@@ -29,6 +29,7 @@ import publish_rudi_geo
 import vider_rudi
 import renvoi_auto_apres_validation
 import reparer_jdd_refuses
+import reparer_medias_dupliques
 import enrichir_descriptions
 import enrichir_organisations
 import reanalyser_faux_positifs
@@ -175,6 +176,11 @@ def action_renvoi_auto_apres_validation():
 
 def action_reparer_jdd_refuses():
     _executer("Réparation des JDD refusés (re-soumission unique)", reparer_jdd_refuses.main)
+
+
+def action_reparer_medias_dupliques():
+    _executer("Réparation des médias FILE dupliqués (ERR-500)",
+               lambda: reparer_medias_dupliques.main(appliquer=True))
 
 
 def action_enrichir_descriptions():
@@ -783,6 +789,7 @@ ACTIONS = [
     ("22", "Vider le nœud proprement (JDD du pipeline + détachement des organisations)", action_vider_noeud_proprement),
     ("23", "Purger nœud et portail (JDD + organisations, sans validation)", action_purger_noeud_portail),
     ("24", "Réparer les JDD refusés (re-soumission unique vers le portail)", action_reparer_jdd_refuses),
+    ("25", "Réparer les médias FILE dupliqués (ERR-500)", action_reparer_medias_dupliques),
 ]
 
 SECTIONS = [

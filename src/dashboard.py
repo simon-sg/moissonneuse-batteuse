@@ -114,6 +114,7 @@ _ACTIONS_CMD = {
     "publier_rudi": ["python3", "src/publish_rudi.py"],
     "renvoi_auto_apres_validation": ["python3", "src/renvoi_auto_apres_validation.py"],
     "reparer_jdd_refuses": ["python3", "src/reparer_jdd_refuses.py"],
+    "reparer_medias_dupliques": ["python3", "src/reparer_medias_dupliques.py", "--appliquer"],
     "enrichir_descriptions": ["python3", "src/enrichir_descriptions.py"],
     "enrichir_organisations": ["python3", "src/enrichir_organisations.py"],
 }
@@ -237,6 +238,8 @@ ACTIONS = {
                                      lambda p: cli.action_renvoi_auto_apres_validation()),
     "reparer_jdd_refuses": ("Réparer les JDD refusés (re-soumission unique)",
                             lambda p: cli.action_reparer_jdd_refuses()),
+    "reparer_medias_dupliques": ("Réparer les médias FILE dupliqués (ERR-500)",
+                                 lambda p: cli.action_reparer_medias_dupliques()),
     "enrichir_descriptions": ("Enrichir les descriptions vides/quasi vides",
                               lambda p: cli.action_enrichir_descriptions()),
     "enrichir_organisations": ("Enrichir les descriptions de producteurs (nœud RUDI)",

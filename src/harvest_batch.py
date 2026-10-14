@@ -794,6 +794,25 @@ def traiter_candidat(candidat: dict, state: dict) -> dict:
             if chemin_cache and os.path.exists(chemin_cache):
                 os.remove(chemin_cache)
 
+    # Dédoublonne les fichiers par nom : deux ressources sources au même titre produisent
+    # le même slug (donc le même nom de fichier). Sans ce filtre, `available_formats` porte
+    # deux médias FILE identiques (même média, même media_id) et le portail RUDI plante à
+    # l'intégration (bug A7 : IllegalStateException « Duplicate key » → rapport ERR-500) —
+    # le JDD reste alors `refused` côté nœud bien qu'il soit intégré.
+    def _dedoublonner_par_nom(entrees):
+        vus, uniques = set(), []
+        for e in entrees:
+            nom = e[0]
+            if nom in vus:
+                continue
+            vus.add(nom)
+            uniques.append(e)
+        return uniques
+
+    fichiers_data = _dedoublonner_par_nom(fichiers_data)
+    fichiers_dicts = _dedoublonner_par_nom(fichiers_dicts)
+    fichiers_pdfs = _dedoublonner_par_nom(fichiers_pdfs)
+
     # Sommer les CSV uniquement (les JSON régénérés ont le même nb_rm, on évite le double-compte)
     nb_rm_total = sum(nb for nom, nb, _ in fichiers_data if nom.endswith(".csv")) \
                or sum(nb for nom, nb, _ in fichiers_data if nom.endswith(".json"))

@@ -453,19 +453,30 @@ tâche de modération créée, validée en UI, cascade `linked-producer-process`
 `organization_status`/`linked_producer_status` passés à `VALIDATED`). **`url_portail` n'est
 plus nécessaire pour la création** — ni `usr_portail`/`pwd_portail`.
 
-**Mise à jour / détachement / suppression d'organisation : toujours un appel portail
-direct**, qui nécessite de vrais identifiants ROBOT portail (`usr_portail`/`pwd_portail`,
-repli sur `usr`/`pwd` sinon) — **distincts** des identifiants manager du nœud. Confirmé en
-conditions réelles contre RM/R7 (2026-10-15) que le compte nœud fourni échoue aussi bien en
-OAuth2 client_credentials (`401 invalid_client`) qu'en login classique `POST /authenticate`
-(`401 Unauthorized`, testé avec le format form-encodé exact utilisé par
-`valider_organisations_portail.py`) : **ce compte n'a aucune identité côté portail**, ni
-robot ACL ni utilisateur. Confirmé aussi côté code nœud (`genericController.js::
-deleteSingleObject`) qu'**aucun relais vers le portail n'existe pour les organisations**
-(seul `OBJ_METADATA`/les ressources en bénéficient) — contrairement à la création, il n'y a
-pas d'équivalent "relais via le nœud" à trouver pour ces 3 opérations : il faut soit de
-vrais identifiants ROBOT portail auprès de l'équipe qui fournit l'accès, soit passer par un
-compte humain avec accès modérateur/animateur sur le portail (UI). Voir
+**Détachement d'organisation (corrigé le 2026-10-15, même jour que la création)** :
+`demander_detachement_producteur()` passe elle aussi par le **nœud** (`GET
+{url_catalog}/admin/portal/organizations/{uuid}/detach`, auth nœud habituelle) — trouvé en
+capturant le trafic réseau (HAR) du bouton « détacher » de l'UI nœud (`rudi-manager`,
+`producerCard.js`), pas en devinant : l'ancien appel portail direct (`DELETE
+{url_portail}/strukture/v1/linked-producers/request/{uuid}`) échouait systématiquement en
+`401` contre RM/R7 (ce compte n'a aucune identité portail, ni OAuth2 client_credentials ni
+login classique `POST /authenticate`) — confirmé par 3 méthodes d'auth testées avant de
+trouver la bonne route. **`url_portail` n'est plus nécessaire non plus pour le
+détachement.**
+
+**Mise à jour d'organisation : abandonnée (2026-10-15, signalé cassé par l'équipe RUDI
+elle-même)** — `demander_mise_a_jour_organisation()` n'est plus à utiliser. Conséquence :
+une organisation créée par le pipeline doit être complète **dès la création**
+(description, URL…) plutôt que compter sur un enrichissement a posteriori — contrainte
+plus forte qu'avant pour `demander_creation_organisation()`/`enrichir_organisations.py`.
+
+**Suppression d'organisation : toujours un appel portail direct**, sans route nœud
+équivalente trouvée (vérifié : le bouton "corbeille" de l'UI nœud ne fait qu'un `DELETE`
+nœud classique, sans aucun relais portail — cohérent avec `genericController.js::
+deleteSingleObject`, qui ne relaie que `OBJ_METADATA`, jamais les organisations). Nécessite
+donc toujours de vrais identifiants ROBOT portail (`usr_portail`/`pwd_portail`), absents
+pour RM — à défaut, suppression à faire par un compte humain modérateur/animateur sur le
+portail (UI), après que le détachement (lui automatisable) a été validé. Voir
 `rudi-harvest-toolkit/README.md` « Organisations productrices et validation portail ».
 
 À utiliser uniquement sur une instance clonée séparément (pas le checkout de dev local),

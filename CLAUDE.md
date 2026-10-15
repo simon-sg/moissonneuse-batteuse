@@ -455,13 +455,17 @@ plus nécessaire pour la création** — ni `usr_portail`/`pwd_portail`.
 
 **Détachement d'organisation (corrigé le 2026-10-15, même jour que la création)** :
 `demander_detachement_producteur()` passe elle aussi par le **nœud** (`GET
-{url_catalog}/admin/portal/organizations/{uuid}/detach`, auth nœud habituelle) — trouvé en
-capturant le trafic réseau (HAR) du bouton « détacher » de l'UI nœud (`rudi-manager`,
-`producerCard.js`), pas en devinant : l'ancien appel portail direct (`DELETE
-{url_portail}/strukture/v1/linked-producers/request/{uuid}`) échouait systématiquement en
-`401` contre RM/R7 (ce compte n'a aucune identité portail, ni OAuth2 client_credentials ni
-login classique `POST /authenticate`) — confirmé par 3 méthodes d'auth testées avant de
-trouver la bonne route. **`url_portail` n'est plus nécessaire non plus pour le
+{url_catalog}/portal/organizations/{uuid}/detach` — **sans** segment `admin/`, sinon le
+manager redirige silencieusement (308) vers l'UI et `requests` suit cette redirection,
+donnant un faux succès sans qu'aucune tâche ne soit créée ; bug trouvé et corrigé le
+2026-10-15 contre le nœud source local avant de valider le chemin définitif), auth nœud
+habituelle) — trouvé en capturant le trafic réseau (HAR) du bouton « détacher » de l'UI
+nœud (`rudi-manager`, `producerCard.js`), pas en devinant : l'ancien appel portail direct
+(`DELETE {url_portail}/strukture/v1/linked-producers/request/{uuid}`) échouait
+systématiquement en `401` contre RM/R7 (ce compte n'a aucune identité portail, ni OAuth2
+client_credentials ni login classique `POST /authenticate`) — confirmé par 3 méthodes
+d'auth testées avant de trouver la bonne route. **`url_portail` n'est plus nécessaire non
+plus pour le
 détachement.**
 
 **Mise à jour d'organisation : abandonnée (2026-10-15, signalé cassé par l'équipe RUDI

@@ -158,7 +158,7 @@ def traduire_metadonnees(metadata_source: dict, zone: str = "Rennes Métropole",
     }
     tags = [t.get("name", t) if isinstance(t, dict) else t for t in metadata_source.get("tags", [])]
 
-    description_originale = metadata_source.get("description", "")
+    description_originale = metadata_source.get("description") or metadata_source.get("description_short") or ""
     description_localisee = (
         f"Version localisée sur {zone}. "
         f"Données filtrées pour ne conserver que les enregistrements des communes de {zone}.\n\n"

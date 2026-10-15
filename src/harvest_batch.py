@@ -827,8 +827,16 @@ def traiter_candidat(candidat: dict, state: dict) -> dict:
     with open(rudi_file, "w", encoding="utf-8") as f:
         json.dump(rudi_metadata, f, ensure_ascii=False, indent=2)
 
-    # Publication RUDI inline (comme les autres scripts de moisson)
-    fichiers_filtres = [os.path.join(dossier, nom) for nom, _, _ in fichiers_data]
+    # Publication RUDI inline (comme les autres scripts de moisson). Les dictionnaires et
+    # PDF doivent être inclus ici : publier_dataset() retire toute entrée FILE non
+    # retrouvée dans fichiers_filtres, donc un fichier téléchargé mais absent de cette
+    # liste disparaît silencieusement du JDD publié (bug réimplémenté le 2026-10-15,
+    # retrouvé dans une ancienne branche jamais mergée).
+    fichiers_filtres = (
+        [os.path.join(dossier, nom) for nom, _, _ in fichiers_data] +
+        [os.path.join(dossier, nom) for nom, _ in fichiers_dicts] +
+        [os.path.join(dossier, nom) for nom, _ in fichiers_pdfs]
+    )
     rudi_publie = rudi_publish.publier_si_configue(
         charger_conf_rudi(CONF_RUDI_FILE), rudi_metadata, fichiers_filtres)
 

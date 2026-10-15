@@ -74,6 +74,21 @@ class TestTraduireMetadonnees(unittest.TestCase):
         summary = meta["summary"][0]["text"]
         self.assertIn("Jeu de données du thème", summary)
 
+    def test_description_short_utilise_quand_vide(self):
+        meta = dict(_META_MIN, description="", description_short="Résumé court des prix.")
+        result = traduire_metadonnees(meta, theme="economy")
+        summary = result["summary"][0]["text"]
+        self.assertIn("Résumé court des prix.", summary)
+
+    def test_description_short_ignore_quand_description_presente(self):
+        meta = dict(_META_MIN,
+                     description="Description longue et détaillée des carburants.",
+                     description_short="Résumé court.")
+        result = traduire_metadonnees(meta, theme="economy")
+        summary = result["summary"][0]["text"]
+        self.assertIn("Description longue et détaillée", summary)
+        self.assertNotIn("Résumé court", summary)
+
 
 _GEO_CONFIG_MIN = {
     "id": "geo-test-1",

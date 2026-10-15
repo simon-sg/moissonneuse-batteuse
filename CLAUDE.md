@@ -445,17 +445,28 @@ par une autre équipe, potentiellement partagé avec d'autres producteurs.
   filet de sécurité secondaire. Limitation connue et non résolue : les médias (fichiers)
   côté storage ne sont pas supprimables par ce toolkit, seule la fiche catalog l'est.
 
-Si une nouvelle organisation productrice doit être créée (cas `mydataball_communes`/
-`mydataball_iris_2022`), ajouter `url_portail` à `src/conf/rudi_node.json` pour que
-`publier_dataset()` (toolkit) demande sa validation auprès du **portail** — un simple
-`PUT /organizations` sur le nœud, sans cette clé, ne déclenche jamais de tâche de
-modération. Le portail s'authentifie avec **ses propres identifiants ROBOT**
-(`usr_portail`/`pwd_portail` dans `rudi_node.json`, repli automatique sur `usr`/`pwd`
-s'ils manquent) : les identifiants manager du **nœud** et les identifiants ROBOT du
-**portail** (ACL/OAuth2) sont deux systèmes distincts — un `401 invalid_client` signifie
-qu'on a fourni des identifiants nœud, jamais enregistrés côté ACL portail comme client
-OAuth2. Voir `rudi-harvest-toolkit/README.md` « Organisations productrices et validation
-portail ».
+**Création d'organisation (corrigé le 2026-10-15)** : `demander_creation_organisation()`
+passe désormais par un `POST {url_catalog}/organizations` sur le **nœud**, avec les
+identifiants nœud habituels — c'est le nœud lui-même qui relaie la demande au portail en
+utilisant **sa propre identité pré-configurée** (confirmée en conditions réelles contre RM/R7 :
+tâche de modération créée, validée en UI, cascade `linked-producer-process` validée,
+`organization_status`/`linked_producer_status` passés à `VALIDATED`). **`url_portail` n'est
+plus nécessaire pour la création** — ni `usr_portail`/`pwd_portail`.
+
+**Mise à jour / détachement / suppression d'organisation : toujours un appel portail
+direct**, qui nécessite de vrais identifiants ROBOT portail (`usr_portail`/`pwd_portail`,
+repli sur `usr`/`pwd` sinon) — **distincts** des identifiants manager du nœud. Confirmé en
+conditions réelles contre RM/R7 (2026-10-15) que le compte nœud fourni échoue aussi bien en
+OAuth2 client_credentials (`401 invalid_client`) qu'en login classique `POST /authenticate`
+(`401 Unauthorized`, testé avec le format form-encodé exact utilisé par
+`valider_organisations_portail.py`) : **ce compte n'a aucune identité côté portail**, ni
+robot ACL ni utilisateur. Confirmé aussi côté code nœud (`genericController.js::
+deleteSingleObject`) qu'**aucun relais vers le portail n'existe pour les organisations**
+(seul `OBJ_METADATA`/les ressources en bénéficient) — contrairement à la création, il n'y a
+pas d'équivalent "relais via le nœud" à trouver pour ces 3 opérations : il faut soit de
+vrais identifiants ROBOT portail auprès de l'équipe qui fournit l'accès, soit passer par un
+compte humain avec accès modérateur/animateur sur le portail (UI). Voir
+`rudi-harvest-toolkit/README.md` « Organisations productrices et validation portail ».
 
 À utiliser uniquement sur une instance clonée séparément (pas le checkout de dev local),
 pointant vers le nœud externe — jamais sur `rudinode`/le nœud source local.

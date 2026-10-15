@@ -95,6 +95,18 @@ class TestDevinerChampIrisGardeFou(unittest.TestCase):
         self.assertIsNone(deviner_champ_iris(["code_postal", "nom"]))
         self.assertIsNone(deviner_champ_iris(["Code postal lieu de cours", "nom"]))
 
+    def test_comptage_iris_jamais_champ_iris(self):
+        """"Nombre IRIS secrétisés" est un comptage, pas un code géographique — préservé
+        depuis une branche non mergée (2026-10-15) retrouvée lors d'un nettoyage de
+        worktrees, portée vers la vraie cascade (connectors.analyseurs, pas l'ancienne
+        copie morte de discover.py)."""
+        self.assertIsNone(deviner_champ_iris(["Nombre IRIS secrétisés", "commune"]))
+        self.assertIsNone(deviner_champ_iris(["nb iris", "commune"]))
+        self.assertIsNone(deviner_champ_iris(["nbre iris", "commune"]))
+
+    def test_vraie_colonne_iris_toujours_detectee(self):
+        self.assertEqual(deviner_champ_iris(["Code IRIS", "commune"]), "Code IRIS")
+
 
 class TestLigneEstRMIntegration(unittest.TestCase):
     """Cas réels : RNIC (colonne CP taguée iris) et fichier des décès (INSEE + ville)."""

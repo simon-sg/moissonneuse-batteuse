@@ -177,11 +177,16 @@ def deviner_champ_iris(entetes: list[str]) -> str | None:
         # (collisions INSEE/CP du dept 35 — voir filters/geographic.py).
         return "postal" in e or e in CHAMPS_CP
 
+    def _est_comptage(e: str) -> bool:
+        # Garde-fou : "Nombre IRIS secrétisés" est un comptage, pas un code géographique.
+        return any(e.startswith(p) for p in ("nombre", "nbre", "nb "))
+
     for nom in CHAMPS_IRIS:
         if nom in entetes_norm and not _est_cp(nom):
             return entetes[entetes_norm.index(nom)]
     for i, e in enumerate(entetes_norm):
-        if "iris" in e and "libelle" not in e and "lib" not in e and not _est_cp(e):
+        if "iris" in e and "libelle" not in e and "lib" not in e and not _est_cp(e) \
+                and not _est_comptage(e):
             return entetes[i]
     _SUFFIXES_GEO_EXCLUS = ("reg", "region", "dep", "departement", "arr", "arrondissement")
     _PREFIXES_INSEE_EXCLUS = ("pollution", "declarant", "journey", "res",

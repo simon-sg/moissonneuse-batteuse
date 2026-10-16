@@ -445,6 +445,29 @@ par une autre équipe, potentiellement partagé avec d'autres producteurs.
   filet de sécurité secondaire. Limitation connue et non résolue : les médias (fichiers)
   côté storage ne sont pas supprimables par ce toolkit, seule la fiche catalog l'est.
 
+**Étapes de rattrapage qui balaient *tout* le nœud (pas seulement nos dossiers locaux) —
+à restreindre explicitement sur un nœud partagé.** Constaté en démo RM le 2026-10-16 :
+`renvoi_auto_apres_validation.py` a renvoyé 6 vraies ressources RM (organisation
+`IRISA - RM_migration`, validée de longue date mais traitée comme « nouvellement validée »
+par un clone sans historique) en plus des 2 JDD MyDataBall visés — comportement normal et
+documenté (son cas 2, rattrapage de tout `refused` dont l'organisation est `VALIDATED`,
+sans distinction de propriétaire) mais hors périmètre d'une démo sur nœud tiers. Contrairement
+aux rattrapages `enrichir_descriptions.py`/`enrichir_contacts.py`/`enrichir_html_descriptions.py`
+(qui ne lisent que `data/*/rudi_metadata.json`, donc déjà scopés à nos propres dossiers), ces
+deux-là interrogent l'état complet du nœud :
+- `renvoi_auto_apres_validation.py --scope-fichier <chemin>` : restreint l'ensemble des
+  ressources `refused` renvoyées aux seuls `local_id` présents comme clés dans le fichier
+  JSON donné — passer le `data/_publies_par_nous.json` écrit par
+  `demo_rm_precheck.py enregistrer`.
+- `enrichir_organisations.py --organisations "Nom1,Nom2"` : restreint le balayage de
+  `writer.organization_list` aux seuls `organization_name` listés — sinon une organisation
+  tierce sans résumé (ex. `IRISA - RM_migration`) se verrait enrichie, une écriture sur une
+  donnée qui n'est pas la nôtre.
+
+Sans l'une de ces options (usage normal du pipeline sur le nœud de dev dédié), le
+comportement est inchangé : « tout le nœud » veut dire « tout ce qui est à nous », donc
+aucune restriction n'est appliquée par défaut.
+
 **Création d'organisation (corrigé le 2026-10-15)** : `demander_creation_organisation()`
 passe désormais par un `POST {url_catalog}/organizations` sur le **nœud**, avec les
 identifiants nœud habituels — c'est le nœud lui-même qui relaie la demande au portail en

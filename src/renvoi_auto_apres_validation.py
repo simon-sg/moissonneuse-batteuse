@@ -23,14 +23,29 @@ rejouer ou automatiser (jamais un `ERR-112` futile) ; avec ``force``, c'est un g
 délibéré — un JDD dont l'organisation n'est réellement pas validée sera retenté pour rien
 (mais sans effet de bord, le PUT producteur est idempotent).
 
+**`--scope-fichier`** (nœud externe potentiellement partagé, ex. démo RM — voir
+`src/demo_rm_precheck.py`) : sur le nœud de dev dédié, « toutes les ressources `refused`
+dont l'organisation est validée » veut toujours dire « toutes NOS ressources », donc le
+comportement par défaut ci-dessus (cas 1 et 2) est volontairement sans restriction.
+Sur un nœud partagé avec un tiers (ex. une organisation du nœud lui-même, type
+`IRISA - RM_migration`, validée depuis longtemps et rattachée à de vraies ressources du
+tiers), ce même comportement renvoie aussi des ressources qui ne sont pas les nôtres dès
+qu'elles sont `refused` pour une raison sans rapport avec notre run (constaté le
+2026-10-16 en démo RM : 6 JDD RM renvoyés en plus des 2 nôtres). ``--scope-fichier
+<chemin>`` restreint l'ensemble `a_renvoyer` aux seuls `local_id` présents comme clés
+dans le fichier JSON donné — passer le `_publies_par_nous.json` écrit par
+`demo_rm_precheck.py enregistrer` pour ne jamais renvoyer que nos propres JDD connus.
+Omis (usage normal du pipeline), aucune restriction n'est appliquée.
+
 Travaille uniquement à partir de ce que le nœud sait déjà (organisations, métadonnées
 déjà publiées) : ne republie rien de nouveau, ne retélécharge/refiltre rien. Pensé pour
 un usage périodique (cron, ou relancé à la main après chaque session de validation dans
 l'UI Strukture) — jamais tout le catalogue.
 
 Usage (autonome, sans dépendance à un agent) :
-    python3 src/renvoi_auto_apres_validation.py [--force]
+    python3 src/renvoi_auto_apres_validation.py [--force] [--scope-fichier <chemin>]
 """
+import json
 import os
 import sys
 
@@ -47,7 +62,17 @@ CONF_RUDI_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "conf"
 CHEMIN_ETAT = os.path.join(DATA_DIR, "etat_organisations_validees.json")
 
 
-def main(force: bool = False) -> None:
+def _charger_scope_local_ids(chemin: str | None) -> set[str] | None:
+    """Charge l'ensemble de `local_id` connus comme à nous depuis un fichier JSON dont les
+    clés sont des `local_id` (même forme que `_publies_par_nous.json` de
+    `demo_rm_precheck.py`). Retourne None si `chemin` est absent (aucune restriction)."""
+    if not chemin:
+        return None
+    with open(chemin, encoding="utf-8") as f:
+        return set(json.load(f).keys())
+
+
+def main(force: bool = False, restreindre_local_ids: set[str] | None = None) -> None:
     conf_rudi = charger_conf_rudi(CONF_RUDI_FILE)
     if not conf_rudi:
         print("src/conf/rudi_node.json absent — impossible de vérifier les organisations.")
@@ -89,7 +114,8 @@ def main(force: bool = False) -> None:
     a_renvoyer = [m for m in metadonnees
                   if m.get("metadata_status") == "refused"
                   and m.get("local_id") not in deja_ce_run
-                  and (force or _org_validee(m))]
+                  and (force or _org_validee(m))
+                  and (restreindre_local_ids is None or m.get("local_id") in restreindre_local_ids)]
     if a_renvoyer:
         print(f"{len(a_renvoyer)} ressource(s) `refused` à renvoyer "
               f"({'forcé, organisation ignorée' if force else 'organisation validée'}, pas "
@@ -118,5 +144,14 @@ def main(force: bool = False) -> None:
             marquer_organisations_traitees(CHEMIN_ETAT, nouvelles)
 
 
+def _arg_scope_fichier(argv: list[str]) -> str | None:
+    if "--scope-fichier" in argv:
+        i = argv.index("--scope-fichier")
+        if i + 1 < len(argv):
+            return argv[i + 1]
+    return None
+
+
 if __name__ == "__main__":
-    main(force="--force" in sys.argv[1:])
+    main(force="--force" in sys.argv[1:],
+         restreindre_local_ids=_charger_scope_local_ids(_arg_scope_fichier(sys.argv[1:])))

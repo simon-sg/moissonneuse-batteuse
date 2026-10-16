@@ -42,7 +42,7 @@ def _org(nom="Ministère de la Culture", org_id="o1", summary="s", url="u"):
 
 
 class TestEnrichirOrganisations(unittest.TestCase):
-    def _lancer(self, orgs, *, desc=None, force=False, leve=None):
+    def _lancer(self, orgs, *, desc=None, force=False, leve=None, restreindre_noms=None):
         writer = _FauxWriter(orgs, leve=leve)
         conf = {"url": "http://noeud"}
         with contextlib.ExitStack() as stack:
@@ -51,7 +51,7 @@ class TestEnrichirOrganisations(unittest.TestCase):
             stack.enter_context(patch("enrichir_organisations._creer_writer", return_value=writer))
             stack.enter_context(patch("enrichir_organisations.enrichir_organisation",
                                       return_value=desc or {}))
-            eo.enrichir(force=force)
+            eo.enrichir(force=force, restreindre_noms=restreindre_noms)
         return writer
 
     def test_sans_conf_ne_fait_rien(self):
@@ -102,6 +102,42 @@ class TestEnrichirOrganisations(unittest.TestCase):
                                       side_effect=Exception("réseau indisponible")))
             eo.enrichir()
         self.assertEqual(writer.connector.puts, [])
+
+    def test_restreindre_noms_ignore_les_organisations_hors_scope(self):
+        """Nœud externe potentiellement partagé (démo RM) : une organisation tierce (ex.
+        IRISA - RM_migration) sans résumé ne doit pas être enrichie quand un scope
+        explicite est donné."""
+        desc = {"organization_summary": "s"}
+        orgs = [
+            _org(nom="MyDataBall", org_id="o1", summary="", url=""),
+            _org(nom="IRISA - RM_migration", org_id="o2", summary="", url=""),
+        ]
+        writer = self._lancer(orgs, desc=desc, restreindre_noms={"MyDataBall"})
+        self.assertEqual(len(writer.connector.puts), 1)
+        _ressource, obj = writer.connector.puts[0]
+        self.assertEqual(obj["organization_name"], "MyDataBall")
+
+    def test_restreindre_noms_none_ne_change_rien(self):
+        """Usage normal du pipeline (nœud dédié) : sans scope explicite, comportement
+        inchangé (toutes les organisations incomplètes sont traitées)."""
+        desc = {"organization_summary": "s"}
+        orgs = [
+            _org(nom="MyDataBall", org_id="o1", summary="", url=""),
+            _org(nom="Autre Org", org_id="o2", summary="", url=""),
+        ]
+        writer = self._lancer(orgs, desc=desc, restreindre_noms=None)
+        self.assertEqual(len(writer.connector.puts), 2)
+
+
+class TestArgOrganisations(unittest.TestCase):
+    def test_absent(self):
+        self.assertIsNone(eo._arg_organisations(["--force"]))
+
+    def test_present(self):
+        self.assertEqual(
+            eo._arg_organisations(["--organisations", "MyDataBall, Autre Org"]),
+            {"MyDataBall", "Autre Org"},
+        )
 
 
 if __name__ == "__main__":

@@ -468,6 +468,20 @@ Sans l'une de ces options (usage normal du pipeline sur le nœud de dev dédié)
 comportement est inchangé : « tout le nœud » veut dire « tout ce qui est à nous », donc
 aucune restriction n'est appliquée par défaut.
 
+**Aucune suppression de média (fichier storage) n'est possible, sur aucun nœud** (trouvé le
+2026-10-16, vérifié par code source + test réel, y compris avec un compte manager admin
+local — voir [[project_rudi_storage_media_suppression_impossible]] en mémoire). Retirer un
+média d'`available_formats` ou supprimer le dataset entier ne libère jamais l'espace
+storage ; la vraie route de suppression de `rudi-storage` existe mais exige une permission
+réservée à des comptes système internes au service, hors de portée pour tout compte
+producteur **ou** admin manager. **Règle à respecter sans exception pour tout essai de
+taille/volume sur un nœud externe** : toujours le même nom de fichier pour un même « slot »
+de test (le `media_id` est dérivé du nom — un nom différent crée un orphelin permanent et
+invisible, jamais un remplacement). Un orphelin déjà créé se neutralise en ré-uploadant un
+fichier vide sous le même `media_id` connu, directement vers storage. **Démo RM (2026-10-16)**
+: budget fixé à 200 Mo maximum de données uploadées au total tant que la vraie limite de ce
+nœud n'est pas confirmée (le nœud local, lui, a un seuil codé en dur à 500 000 000 octets).
+
 **Création d'organisation (corrigé le 2026-10-15)** : `demander_creation_organisation()`
 passe désormais par un `POST {url_catalog}/organizations` sur le **nœud**, avec les
 identifiants nœud habituels — c'est le nœud lui-même qui relaie la demande au portail en

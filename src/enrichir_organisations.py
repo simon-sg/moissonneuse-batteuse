@@ -18,6 +18,15 @@ désormais : une organisation doit être complète **dès sa création**
 organisations créées/vues par la publication sont ainsi enrichies localement dès le même
 run. L'action CLI 13 reste disponible pour un rattrapage ponctuel (avec --dry-run/--force).
 
+**`--organisations`** (nœud externe potentiellement partagé, ex. démo RM — voir
+`src/demo_rm_precheck.py`) : sur le nœud de dev dédié, « toutes les organisations du
+nœud » veut toujours dire « toutes nos organisations », donc le comportement par défaut
+ci-dessus balaie `writer.organization_list` sans restriction. Sur un nœud partagé, ce même
+balayage enrichirait aussi des organisations tierces (ex. `IRISA - RM_migration`, qui
+appartient au nœud lui-même) dès qu'il leur manque un résumé ou un site web — une écriture
+sur une donnée qui n'est pas la nôtre. ``--organisations "Nom1,Nom2"`` restreint
+`a_traiter` aux seuls `organization_name` listés (séparés par des virgules).
+
 Usage :
   python3 src/enrichir_organisations.py --dry-run  # affiche sans modifier (défaut)
   python3 src/enrichir_organisations.py            # applique les modifications
@@ -34,7 +43,7 @@ from translation.organisation_secours import enrichir_organisation
 CONF_RUDI_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "conf", "rudi_node.json")
 
 
-def enrichir(dry_run: bool = False, force: bool = False) -> None:
+def enrichir(dry_run: bool = False, force: bool = False, restreindre_noms: set[str] | None = None) -> None:
     conf = charger_conf_rudi(CONF_RUDI_FILE)
     if not conf:
         print("Configuration RUDI absente (src/conf/rudi_node.json). Rien à faire.")
@@ -46,7 +55,8 @@ def enrichir(dry_run: bool = False, force: bool = False) -> None:
 
     a_traiter = [
         org for org in orgs
-        if force or not (org.get("organization_summary") and org.get("organization_url"))
+        if (force or not (org.get("organization_summary") and org.get("organization_url")))
+        and (restreindre_noms is None or org.get("organization_name") in restreindre_noms)
     ]
 
     print(f"{len(a_traiter)} à traiter"
@@ -103,16 +113,26 @@ def enrichir(dry_run: bool = False, force: bool = False) -> None:
         print(f"  Échecs    : {echecs}")
 
 
+def _arg_organisations(argv: list[str]) -> set[str] | None:
+    if "--organisations" not in argv:
+        return None
+    i = argv.index("--organisations")
+    if i + 1 >= len(argv):
+        return None
+    return {nom.strip() for nom in argv[i + 1].split(",") if nom.strip()}
+
+
 def main() -> None:
     dry_run = "--dry-run" in sys.argv
     force = "--force" in sys.argv
+    restreindre_noms = _arg_organisations(sys.argv[1:])
     if dry_run:
         print("=== Mode dry-run (aucune modification) ===\n")
     elif force:
         print("=== Enrichissement des organisations (mode force) ===\n")
     else:
         print("=== Enrichissement des organisations ===\n")
-    enrichir(dry_run=dry_run, force=force)
+    enrichir(dry_run=dry_run, force=force, restreindre_noms=restreindre_noms)
 
 
 if __name__ == "__main__":

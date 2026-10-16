@@ -114,7 +114,12 @@ def est_iris_rm(code: str) -> bool:
     code = str(code).strip()
     if code == EPCI_SIREN_RM:
         return True
-    return len(code) >= 5 and code[:5] in CODES_INSEE_RM
+    # Longueur exacte exigée (5 = commune, 9 = IRIS) : un `>=` acceptait n'importe quelle
+    # chaîne numérique plus longue (ex. une population "350240") dès que ses 5 premiers
+    # caractères coïncident par hasard avec un vrai code commune RM — faux positif trouvé
+    # en démo RM le 2026-10-16 (JDD "observatoire open data des territoires", colonne
+    # pop-insee mal taguée champ_iris, valeur 350240 tronquée en 35024 = Bécherel).
+    return len(code) in (5, 9) and code[:5] in CODES_INSEE_RM
 
 
 # ---------------------------------------------------------------------------

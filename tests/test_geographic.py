@@ -63,6 +63,16 @@ class TestIrisEpci(unittest.TestCase):
         self.assertTrue(est_epci_rm("243500139"))
         self.assertFalse(est_epci_rm("243300316"))  # Bordeaux Métropole
 
+    def test_longueur_ni_5_ni_9_rejetee_meme_si_prefixe_coincide(self):
+        # Trouvé en démo RM le 2026-10-16 : une colonne "pop-insee" (population, pas un
+        # code) contenait "350240" — ses 5 premiers caractères ("35024") coïncident par
+        # hasard avec le vrai code commune RM de Bécherel, mais la valeur entière n'est
+        # ni un code commune (5) ni un code IRIS (9) valide.
+        self.assertTrue(est_iris_rm("35024"))        # Bécherel, code commune RM réel
+        self.assertFalse(est_iris_rm("350240"))       # 6 chiffres : jamais un code RM
+        self.assertFalse(est_iris_rm("3502"))         # 4 chiffres : trop court
+        self.assertFalse(est_iris_rm("3502400000"))   # 10 chiffres : trop long
+
 
 class TestCirconscription(unittest.TestCase):
     def test_formats_equivalents(self):

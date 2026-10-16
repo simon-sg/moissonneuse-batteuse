@@ -70,6 +70,19 @@ def _datasets_cibles() -> list[dict]:
     return [{**d, "local_id": _local_id_depuis_dataset_id(d["dataset_id"])} for d in DATASETS]
 
 
+def _dossiers_locaux() -> list[tuple[str, dict]]:
+    """Tous les dossiers sous data/ qui ont un rudi_metadata.json, avec son contenu déjà
+    chargé — utilisé par enregistrer_publications() pour couvrir toute publication
+    manuelle (salve de JDD divers, services géo...), pas seulement les DATASETS curés."""
+    resultats = []
+    for nom in sorted(os.listdir(DATA_DIR)):
+        chemin = os.path.join(DATA_DIR, nom, "rudi_metadata.json")
+        meta = _charger_json(chemin)
+        if meta is not None:
+            resultats.append((nom, meta))
+    return resultats
+
+
 def _charger_json(chemin: str):
     if not os.path.isfile(chemin):
         return None
@@ -211,18 +224,25 @@ def snapshot_avant(conf: dict) -> None:
 def enregistrer_publications(conf: dict) -> dict:
     """À lancer juste après une publication réussie : retrouve le vrai global_id de chaque
     dataset connu par recherche local_id (jamais par diff temporel — immune à l'activité
-    d'un tiers sur un nœud partagé), et le journalise pour le nettoyage et les re-runs."""
+    d'un tiers sur un nœud partagé), et le journalise pour le nettoyage et les re-runs.
+
+    Balaie tous les ``data/*/rudi_metadata.json`` présents sur disque (généralisé le
+    2026-10-16) — pas seulement les DATASETS curés : couvre aussi bien une salve de JDD
+    divers publiés manuellement que les services géo (WMS/WFS), sans entrée à ajouter à la
+    main pour chaque nouveau dossier."""
     writer = _creer_writer(conf)
     publies = _charger_json(CHEMIN_PUBLIES) or {}
-    for d in _datasets_cibles():
-        local_id = d["local_id"]
+    for dossier, meta in _dossiers_locaux():
+        local_id = meta.get("local_id")
+        if not local_id:
+            continue
         trouves = writer.filter_metadata_list({"local_id": local_id})
         if not trouves:
-            print(f"  [ABSENT] {d['dossier']} : pas (encore) trouvé sur le nœud.")
+            print(f"  [ABSENT] {dossier} : pas (encore) trouvé sur le nœud.")
             continue
         global_id = trouves[0]["global_id"]
-        publies[local_id] = {"dataset_id": d["dataset_id"], "dossier": d["dossier"], "global_id": global_id}
-        print(f"  {d['dossier']} : global_id={global_id}")
+        publies[local_id] = {"dossier": dossier, "global_id": global_id}
+        print(f"  {dossier} : global_id={global_id}")
     _sauvegarder_json(CHEMIN_PUBLIES, publies)
     return publies
 

@@ -7,7 +7,11 @@ from connectors.contacts import extraire_contacts_datagouv, resoudre_contacts
 from translation.description_secours import (
     LIBELLES_THEMES, description_quasi_vide, entetes_depuis_geojson, generer_complement, resumer_court,
 )
-from rudi_harvest_toolkit.pivot import construire_rudi_metadata, parser_date_http
+from rudi_harvest_toolkit.pivot import (
+    LICENCES_DATAGOUV_CONNUES as LICENCES,
+    construire_rudi_metadata,
+    parser_date_http,
+)
 from translation.organisation_secours import enrichir_organisation
 
 # Thèmes acceptés par le nœud RUDI (conformes aux catégories RUDI)
@@ -79,20 +83,6 @@ def _detecter_theme(metadata_source: dict) -> str:
             scores[theme] = score
 
     return max(scores, key=scores.__getitem__) if scores else "society"
-
-# Correspondance licences data.gouv.fr → RUDI
-LICENCES = {
-    "lov2": {
-        "licence_type": "STANDARD",
-        "licence_label": "etalab-2.0",
-        "licence_uri": "https://www.etalab.gouv.fr/licence-ouverte-open-licence",
-    },
-    "odc-odbl": {
-        "licence_type": "STANDARD",
-        "licence_label": "odbl-1.0",
-        "licence_uri": "https://opendatacommons.org/licenses/odbl/1-0",
-    },
-}
 
 def _local_id_depuis_dataset_id(dataset_id: str) -> str:
     """Génère un local_id stable à partir de l'identifiant data.gouv.fr."""

@@ -67,6 +67,12 @@ class TestTraduireMetadonnees(unittest.TestCase):
         meta = traduire_metadonnees(_META_MIN, theme="economy")
         self.assertEqual(meta["access_condition"]["licence"]["licence_label"], "etalab-2.0")
 
+    def test_licence_odc_odbl(self):
+        meta_odbl = dict(_META_MIN, license="odc-odbl")
+        meta = traduire_metadonnees(meta_odbl, theme="economy")
+        self.assertEqual(meta["access_condition"]["licence"]["licence_label"], "odbl-1.0")
+        self.assertEqual(meta["access_condition"]["licence"]["licence_type"], "STANDARD")
+
     def test_description_courte_completee(self):
         meta_vide = dict(_META_MIN, description="")
         meta = traduire_metadonnees(meta_vide, theme="economy",

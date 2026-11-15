@@ -1205,4 +1205,7 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    from rudi_harvest_toolkit.console import configurer_sortie_console
+
+    configurer_sortie_console()
     main()

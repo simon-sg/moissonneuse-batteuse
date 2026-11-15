@@ -153,5 +153,8 @@ def _arg_scope_fichier(argv: list[str]) -> str | None:
 
 
 if __name__ == "__main__":
+    from rudi_harvest_toolkit.console import configurer_sortie_console
+
+    configurer_sortie_console()
     main(force="--force" in sys.argv[1:],
          restreindre_local_ids=_charger_scope_local_ids(_arg_scope_fichier(sys.argv[1:])))

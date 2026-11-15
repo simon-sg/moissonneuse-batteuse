@@ -17,6 +17,7 @@ n'a pas de sens).
 """
 
 import os
+import sys
 import unicodedata
 from typing import Any
 
@@ -238,4 +239,8 @@ def statistiques_catalogue() -> dict:
 
 
 if __name__ == "__main__":
+    from rudi_harvest_toolkit.console import configurer_sortie_console
+
+    # stderr, jamais stdout : stdout porte le protocole JSON-RPC du transport stdio MCP.
+    configurer_sortie_console(flux=sys.stderr)
     mcp.run(transport="stdio")

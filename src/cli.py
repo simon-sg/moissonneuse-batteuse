@@ -863,6 +863,9 @@ def menu_principal():
 
 
 if __name__ == "__main__":
+    from rudi_harvest_toolkit.console import configurer_sortie_console
+
+    configurer_sortie_console()
     try:
         menu_principal()
     except KeyboardInterrupt:

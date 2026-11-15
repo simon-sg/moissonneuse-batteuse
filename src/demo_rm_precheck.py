@@ -279,6 +279,9 @@ def _charger_conf_ou_sortir() -> dict:
 
 
 if __name__ == "__main__":
+    from rudi_harvest_toolkit.console import configurer_sortie_console
+
+    configurer_sortie_console()
     ACTIONS_SANS_CONF = {"neutraliser": neutraliser_contacts_sensibles}
     ACTIONS_AVEC_CONF = {
         "verifier": verifier_avant_publication,
